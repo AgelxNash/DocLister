@@ -134,16 +134,18 @@ abstract class DocLister {
         $IDs=$this->cleanIDs($IDs);
         $type = $this->getCFGDef('idType','parents');
         $depth = $this->getCFGDef('depth','1');
-        if($type=='parents' && count($IDs) && $depth>1){
-            $id=$IDs;
+        if($type=='parents' && $depth>1){
+            $tmp=$IDs;
             do{
-                $tmp=$this->getChildernFolder($id);
-                $IDs=array_merge($IDs,$tmp);
-                $id=$tmp;
+                if(count($tmp)>0){
+                    $tmp=$this->getChildernFolder($tmp);
+                    $IDs=array_merge($IDs,$tmp);
+                }
             }while((--$depth)>1);
         }
         return ($this->IDs=$IDs);
     }
+
     final public function cleanIDs($IDs,$sep=',') {
         $out=array();
         if(!is_array($IDs)){
@@ -165,6 +167,7 @@ abstract class DocLister {
      * SQL BLOCK
      */
     abstract public function getChildrenCount();
+    abstract public function getChildernFolder($id);
 
     final protected  function LimitSQL($limit=0,$offset=0){
 		$ret='';

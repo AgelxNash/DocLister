@@ -239,7 +239,7 @@ class site_contentDocLister extends DocLister{
 		return $out;
 	}
 
-    protected  function getChildernFolder($id){
+    public function getChildernFolder($id){
 		/*
 		* @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
 		* @TODO: 5) Добавить фильтрацию по основным параметрам документа
@@ -325,15 +325,6 @@ class site_contentDocLister extends DocLister{
 			ORDER BY ".$this->getCFGDef('sortBy','c.createdon')." ".$this->getCFGDef('order','DESC')." ".
 			$this->LimitSQL($this->getCFGDef('queryLimit',0))
 		);
-/* echo "
-			SELECT * FROM ".$this->modx->getFullTableName("site_content")." as c ".$join."
-			WHERE ".$where." 
-				c.parent IN (".$this->sanitarIn($this->IDs).") 
-				AND c.deleted=0 
-				AND c.published=1 ".
-				(($this->getCFGDef('showParent','0')) ? "" : "AND c.id NOT IN(".$this->sanitarIn($this->IDs).")")."
-			ORDER BY ".$this->getCFGDef('sortBy','c.createdon')." ".$this->getCFGDef('order','DESC')." ".
-			$this->LimitSQL($this->getCFGDef('queryLimit',0)); */
 		$rows=$this->modx->db->makeArray($sql);
 		$out=array();
 		foreach($rows as $item){
