@@ -31,8 +31,8 @@ class ticketDocLister extends DocLister{
 	}
 
      public function getChildrenCount(){
-        $sql=$this->modx->db->query("SELECT count(`id`) as `count` FROM ".$this->modx->getFullTableName("hesk_tickets"));
-		return $this->modx->db->getValue($sql);
+        $rs=$this->modx->db->select('count(`id`) as `count`', $this->modx->getFullTableName('hesk_tickets'));
+		return $this->modx->db->getValue($rs);
      }
 
     public function render($tpl=''){
@@ -95,10 +95,12 @@ class ticketDocLister extends DocLister{
 		* @TODO: 3) ������������ ����� � ��������� ������� (���� ��������� ��������� � ���� ��������������� ������)
 		* @TODO: 5) �������� ���������� �� �������� ���������� ���������
 		*/
-		$sql=$this->modx->db->query("SELECT * FROM ".$this->modx->getFullTableName("hesk_tickets")." ORDER BY ".$this->getCFGDef('sortBy','createdon')." ".$this->getCFGDef('order','DESC')." ".$this->LimitSQL($this->getCFGDef('queryLimit',0)));
-		$sql=$this->modx->db->makeArray($sql);
+		$orderby = $this->getCFGDef('sortBy','createdon') . ' ' . $this->getCFGDef('order','DESC');
+		$limit   = $this->LimitSQL($this->getCFGDef('queryLimit',0));
+		$rs=$this->modx->db->select('*', $this->modx->getFullTableName('hesk_tickets'), '', $orderby, $limit);
+		$rows=$this->modx->db->makeArray($rs);
 		$out=array();
-		foreach($sql as $item){
+		foreach($rows as $item){
 			$out[$item['id']]=$item;
 		}
 		return $out;
