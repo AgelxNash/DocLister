@@ -9,8 +9,7 @@
 $dir = MODX_BASE_PATH. (isset($dir) ? $dir : 'assets/snippets/DocLister/');
 $cfg=array();
 
-// @TODO: параметр showFolder - включать ли в выборку контейнеры (отличается от showParent тем, что если showFolder включен - то доки на заданой глубине не отображаются). Когда будут фильтры можно будет удалить параметр showFolder
-// @TODO: поиск какие-TV переменные используются
+//
 
 $cfg=$modx->event->params;
 

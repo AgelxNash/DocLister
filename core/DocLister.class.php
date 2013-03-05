@@ -1,12 +1,20 @@
 <?php
 if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
-
-
-/*
-* @version 2
-*	@TODO : Добавить плагин http://modx.com/extras/package/quid
-*	@TODO : Переделать выборку документов и значений TV параметров на LEFT JOIN таблиц из плагина quid
-*	@TODO : Добавить фильтрацию по TV-параметрам
+/**
+ * DocLister
+ *
+ * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
+ * @author Agel_Nash <Agel_Nash@xaker.ru>
+ * @date 19.12.2012
+ *
+ *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
+ *	@TODO add controller for filter by TV values
+ *  @TODO add extender user for information user by id
+ *  @TODO add method load default template
+ *  @TODO add example custom controller for build google sitemap.xml
+ *  @TODO add method build tree for replace Wayfinder if need TV value in menu OR sitemap
+ *  @TODO add controller for show list web-user with filter by group and other user information
+ *  @TODO create new site_content controller without TagSaver plugin
 */
 
 abstract class DocLister {
@@ -156,7 +164,7 @@ abstract class DocLister {
                 $out[]=$item;
             }
         }
-        $out=array_unique($out,SORT_NUMERIC);
+        $out = array_unique($out);
 		return $out;
 	}
     final protected function checkIDs(){
@@ -187,22 +195,20 @@ abstract class DocLister {
 			$ret="LIMIT ".(int)$offset.",".(int)$limit;
 		}else{
 			if($offset!=0){
-				/*
-				* Если мы хотим полнучить не все элементы, а с отступом на 1,
-				* то чтобы не делать еще один sql запрос для подсчета числа строк
-				* выставляем нереально больше число. Как в мануале MySQL и ниебет
-				* http://dev.mysql.com/doc/refman/5.0/en/select.html
-				* To retrieve all rows from a certain offset up to the end of the result set, you can use some large number for the second parameter
-				*/
+				 /*
+				 * To retrieve all rows from a certain offset up to the end of the result set, you can use some large number for the second parameter
+				 * @see http://dev.mysql.com/doc/refman/5.0/en/select.html
+				 */
 				$ret="LIMIT ".(int)$offset.",18446744073709551615";
 			}
 		}
 		return $ret;
 	}
+
+    /*
+    * @TODO: replace { and }
+    */
 	final public function sanitarData($data){
-		/*
-		* @TODO: замена { и }
-		*/
 		$data=str_replace(array('[', '%5B', ']', '%5D'), array('&#91;', '&#91;', '&#93;', '&#93;'),htmlspecialchars($data));
 		return $data;
 	}

@@ -1,21 +1,23 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: Agel_Nash
- * Date: 19.12.12
- * Time: 12:24
- * To change this template use File | Settings | File Templates.
+ * site_content controller with TagSaver plugin
+ * @see http://modx.im/blog/addons/374.html
+ *
+ * @category controller
+ * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
+ * @author Agel_Nash <Agel_Nash@xaker.ru>
+ * @date 19.12.2012
+ *
+ * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  */
- 
+
 class site_contentDocLister extends DocLister{
     private $tag=array();
 	/*
      * @absctract
+	 * @todo link maybe include other GET parameter with use pagination. For example - filter
      */
 	public function getUrl($id=0){
-		/*
-		* @TODO: ссылки могут содержать дополнительные $_GET параметры при использовании пагинации с фильтрами в URL
-		*/
         $id=$id>0?$id:$this->modx->documentIdentifier;
         $link = ($this->extender['request'] instanceof requestDocLister) ? $this->extender['request']->getLink() : "";
 		$tag=$this->checkTag();
@@ -51,6 +53,9 @@ class site_contentDocLister extends DocLister{
 
      /*
      * @absctract
+     * @todo set correct active placeholder if you work with other table. Because $item['id'] can differ of $modx->documentIdentifier (for other controller)
+     * @todo set author placeholder (author name). Get id from Createdby OR editedby AND get info from extender user
+     * @todo set filter placeholder with string filtering for insert URL
      */
 	public function render($tpl=''){
 		$out='';
@@ -81,38 +86,34 @@ class site_contentDocLister extends DocLister{
 						}
 					}
 					
-					$item=array_merge($item,$sysPlh); //Внутри чанка доступны все плейсхолдеры установленные через $modx->toPlaceholders с префиксом как у ditto, так и с префиксом sysKey
+					$item=array_merge($item,$sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
 					$item['title'] = ($item['menutitle']=='' ? $item['pagetitle'] : $item['menutitle']);
-					$item['iteration']=$i; //[+iteration+] порядковый номер элемента от нуля.
+					$item['iteration']=$i; //[+iteration+] - Number element. Starting from zero
 
 					$item['url'] = ($item['type']=='reference') ? $item['content'] : $this->getUrl($item['id']);
 
-					$item['author'] = ''; //@TODO: [+author+] – Имя автора. Основано на createdby или editedby
+					$item['author'] = '';
 
-					//@TODO: [+active+] если работаем с другими таблицами, то $item['id'] может и отличаться от $modx->documentIdentifier
-					$item['active'] = ($this->modx->documentIdentifier == $item['id']) ? 'active' : '';  //[+active+] - 0 или 1 если $modx->documentIdentifer совпадает с ID текущего элемента
+
+					$item['active'] = ($this->modx->documentIdentifier == $item['id']) ? 'active' : '';  //[+active+] - 0 or 1 if $modx->documentIdentifer equal ID this element
 					$item['date']=(isset($item[$date]) && $date!='createdon' && $item[$date]!=0 && $item[$date]==(int)$item[$date]) ? $item[$date] : $item['createdon'];
 					$item['date']=strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item['date']+$this->modx->config['server_offset_time']);
 					$tmp=$this->modx->parseChunk($tpl,$item,"[+","+]");
 					if($this->getCFGDef('contentPlaceholder',0)!==0){
-						$this->toPlaceholders($tmp,1,"item[".$i."]"); // [+item[x]+] – Сформированный вывод индивидуального документа
+						$this->toPlaceholders($tmp,1,"item[".$i."]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
 					}
 					$out.=$tmp;
 					$i++;
 				}
 			}
             $ownerTPL=$this->getCFGDef("ownerTPL","");
-                          // echo $this->modx->getChunk($ownerTPL);
+            // echo $this->modx->getChunk($ownerTPL);
             if($ownerTPL!=''){
                 $out=$this->modx->parseChunk($ownerTPL,array($this->getCFGDef("sysKey","dl").".wrap"=>$out),"[+","+]");
             }
 		}else{
 			$out='none TPL';
 		}
-
-		/*
-		* @TODO: [+filter+] - строка фильтрации (для подстановки в URL)
-		*/
 
 		return $this->toPlaceholders($out);
 	}
@@ -303,11 +304,13 @@ class site_contentDocLister extends DocLister{
 		$out=array("where"=>$where,"join"=>$join);
 		return $out;
 	}
+
+    /*
+	* @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
+	* @TODO: 5) Добавить фильтрацию по основным параметрам документа
+	*/
 	protected  function getChildrenList(){
-		/*
-		* @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
-		* @TODO: 5) Добавить фильтрацию по основным параметрам документа
-		*/
+
 		$where=$this->getCFGDef('addWhereList','');
 		$join='';
 		if($where!=''){
