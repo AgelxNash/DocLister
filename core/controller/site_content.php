@@ -63,10 +63,6 @@ class site_contentDocLister extends DocLister{
 			$tpl=$this->getCFGDef('tpl','');
 		}
 		if($tpl!=''){
-			$locale=$this->getCFGDef('locale','');
-			if($locale!=''){
-				setlocale(LC_ALL, $locale);
-			}
 			$date=$this->getCFGDef('dateSource','createdon');
 
             $this->toPlaceholders(count($this->_docs),1,"display"); // [+display+] - сколько показано на странице.
@@ -117,7 +113,29 @@ class site_contentDocLister extends DocLister{
 
 		return $this->toPlaceholders($out);
 	}
-
+	
+	public function getJSON($data,$fields){
+        $out=array();
+		$fields = is_array($fields) ? $fields : explode(",",$fields);
+		$date=$this->getCFGDef('dateSource','createdon');
+		
+		foreach($data as $num=>$item){
+			switch(true){
+				case ((array('1')==$fields || in_array('summary',$fields)) && $this->extender['summary'] instanceof summaryDocLister):{
+					$out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $this->extender['summary']->init($this,array("content"=>$this->_docs[$num]['content'],"summary"=>$this->getCFGDef("summary","")));
+					//without break
+				}
+				case (array('1')==$fields || in_array('date',$fields)):{
+					$tmp = (isset($this->_docs[$num][$date]) && $date!='createdon' && $this->_docs[$num][$date]!=0 && $this->_docs[$num][$date]==(int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
+					$out[$num]['date']=strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$tmp + $this->modx->config['server_offset_time']);
+					//without break
+				}
+			}
+		}
+		
+        return parent::getJSON($data,$fields,$out);
+    }
+	
     protected function getTVList($IDs,$tvlist){
 		$tv=$this->getTVid($tvlist);
 		$tvId=array_keys($tv);

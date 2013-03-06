@@ -6,12 +6,7 @@
  * Time: 0:19
  * To change this template use File | Settings | File Templates.
  */
-$dir = MODX_BASE_PATH. (isset($dir) ? $dir : 'assets/snippets/DocLister/');
-$cfg=array();
-
-//
-
-$cfg=$modx->event->params;
+$dir = MODX_BASE_PATH. (isset($dir) ? $dir : 'assets/snippets/'.$modx->getSnippetName().'/');
 
 if(!isset($dir)){
     die('Check param dir');
@@ -19,6 +14,9 @@ if(!isset($dir)){
     $cfg['snippetFolder']=$dir;
 }
 include_once($dir . "core/DocLister.class.php");
+
+$cfg=array();
+$cfg=$modx->event->params;
 
 if(isset($cfg['documents'])){
     $cfg['idType'] = "documents";
@@ -32,6 +30,14 @@ if(isset($cfg['documents'])){
 }
 
 $cfg['extender'] = isset($cfg['extender']) ? $cfg['extender'] : "";
+
+if(!(isset($cfg['display']) && (int)$cfg['display']>0)){
+    unset($cfg['paginate']);
+    if(stristr($cfg['extender'],'paginate')){
+        $cfg['extender']=str_replace("paginate","",$cfg['extender']);
+    }
+}
+
 if(isset($cfg['paginate']) && $cfg['paginate']!=''){
     $cfg['extender']=implode(",",array($cfg['extender'],"paginate"));
 }
@@ -58,6 +64,7 @@ if(class_exists($classname,false) && $classname!='DocLister'){
    $DocLister=new $classname($modx,$cfg);
    $DocLister->setIDs($IDs);
    $data=$DocLister->getDocs();
-   return isset($cfg['api']) ? json_encode($data) : $DocLister->render();
+   $DocLister->render();
+   return isset($cfg['api']) ? $DocLister->getJSON($data,$cfg['api']) : $DocLister->render();
 }
 ?>

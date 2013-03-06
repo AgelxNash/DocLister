@@ -15,6 +15,8 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *  @TODO add method build tree for replace Wayfinder if need TV value in menu OR sitemap
  *  @TODO add controller for show list web-user with filter by group and other user information
  *  @TODO create new site_content controller without TagSaver plugin
+ *  @TODO depending on the parameters
+ *  @TODO prepare value before return final data (maybe callback function OR extender)
 */
 
 abstract class DocLister {
@@ -32,6 +34,7 @@ abstract class DocLister {
 		$this->modx=$modx;
 		$this->setConfig($cfg);
 		$this->loadLang('core');
+		$this->setLocate();
         $this->loadExtender($this->getCFGDef("extender",""));
         if($this->extender['request'] instanceof requestDocLister){
             $this->extender['request']->init($this,$this->getCFGDef("requestActive",""));
@@ -114,6 +117,42 @@ abstract class DocLister {
         }
         return $out;
     }
+	final public function setLocate($locale=''){
+		switch(true){
+			case (''==$locale):{
+				$locale = $this->getCFGDef('locale','');
+				//without break
+			}
+			case (''!=$locale):{
+				setlocale(LC_ALL, $locale);
+				break;
+			}
+		}
+		return $locale;
+	}
+    public function getJSON($data,$fields,$array=array()){
+        $out=array();
+        $fields = is_array($fields) ? $fields : explode(",",$fields);
+		if(is_array($array) && count($array) > 0){
+			foreach($data as $i=>$v){ //array_merge not valid work with integer index key
+				$tmp[$i]= (isset($array[$i]) ? array_merge($v,$array[$i]) : $v);
+			}
+			$data = $tmp;
+		}
+
+        foreach($data as $num=>$doc){
+			foreach($doc as $name=>$value){
+				if(in_array($name,$fields) || array('1')==$fields){
+					$tmp[str_replace(".","_",$name)]=$value; //JSON element name without dot 
+				}
+			}
+			$out[$num]=$tmp; 
+        }
+		
+		// $out = prepareJsonData($out); 
+        return json_encode($out);
+    }
+
     final private function _loadExtender($name){
         $flag=false;
 
