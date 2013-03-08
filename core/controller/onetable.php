@@ -9,10 +9,16 @@
  * @version 1.0.0
  *
  * @TODO add controller for construct tree from table
+ * @TODO custom prepare field before parse chunk
+ * @param introField=`` //introtext
+ * @param contentField=`description` //content
+ * @param idField=`` //id
+ * @param table=`` //table name
  */
 
-class allDocLister extends DocLister{
-    protected $table='';
+class onetableDocLister extends DocLister{
+    protected $table='site_content';
+    protected $idField='id';
     /*
      * @absctract
 	 * @todo link maybe include other GET parameter with use pagination. For example - filter
@@ -28,6 +34,8 @@ class allDocLister extends DocLister{
      */
 	public function getDocs($tvlist=''){
         $this->table = $this->modx->getFullTableName($this->getCFGDef('table','site_content'));
+        $this->idField=$this->getCFGDef('idField','id');
+
         if($this->extender['paginate'] instanceof paginateDocLister){
             $pages=$this->extender['paginate']->init($this);
         }else{
@@ -44,8 +52,6 @@ class allDocLister extends DocLister{
 			$tpl=$this->getCFGDef('tpl','');
 		}
 		if($tpl!=''){
-			$date=$this->getCFGDef('dateSource','pub_date');
-
             $this->toPlaceholders(count($this->_docs),1,"display"); // [+display+] - сколько показано на странице.
 
             $i=0;
@@ -56,25 +62,28 @@ class allDocLister extends DocLister{
 			}else{
 				foreach($this->_docs as $item){
 					if($this->extender['summary'] instanceof summaryDocLister){
-						if(mb_strlen($item['introtext'], 'UTF-8') > 0){
-							$item['dl.summary']=$item['introtext'];
+                        $introField=$this->getCFGDef("introField","");
+						if(isset($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0){
+							$item['dl.summary']=$item[$introField];
 						}else{
-						   $item['dl.summary']= $this->extender['summary']->init($this,array("content"=>$item['content'],"summary"=>$this->getCFGDef("summary","")));
+                           $contentField=$this->getCFGDef("contentField","");
+                            if(isset($item[$contentField])){
+						        $item['dl.summary']= $this->extender['summary']->init($this,array("content"=>$item[$contentField],"summary"=>$this->getCFGDef("summary","")));
+                            }else{
+                                $item['dl.summary']='';
+                            }
 						}
 					}
 					
 					$item=array_merge($item,$sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
-					$item['title'] = ($item['menutitle']=='' ? $item['pagetitle'] : $item['menutitle']);
-					$item['iteration']=$i; //[+iteration+] - Number element. Starting from zero
+					$item['dl.iteration']=$i; //[+iteration+] - Number element. Starting from zero
 
-					$item['url'] = ($item['type']=='reference') ? $item['content'] : $this->getUrl($item['id']);
+					$item['dl.author'] = '';
 
-					$item['author'] = '';
+                    $date=$this->getCFGDef('dateSource','pub_date');
+					$item['dl.date']=isset($item[$date]) ? strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item[$date]+$this->modx->config['server_offset_time']) : '';
 
-
-					$item['date']=(isset($item[$date]) && $date!='createdon' && $item[$date]!=0 && $item[$date]==(int)$item[$date]) ? $item[$date] : $item['createdon'];
-					$item['date']=strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item['date']+$this->modx->config['server_offset_time']);
-					$tmp=$this->modx->parseChunk($tpl,$item,"[+","+]");
+                    $tmp=$this->modx->parseChunk($tpl,$item,"[+","+]");
 					if($this->getCFGDef('contentPlaceholder',0)!==0){
 						$this->toPlaceholders($tmp,1,"item[".$i."]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
 					}
@@ -83,7 +92,6 @@ class allDocLister extends DocLister{
 				}
 			}
             $ownerTPL=$this->getCFGDef("ownerTPL","");
-            // echo $this->modx->getChunk($ownerTPL);
             if($ownerTPL!=''){
                 $out=$this->modx->parseChunk($ownerTPL,array($this->getCFGDef("sysKey","dl").".wrap"=>$out),"[+","+]");
             }
@@ -118,17 +126,16 @@ class allDocLister extends DocLister{
 
     protected  function getDocList(){
 		$where=$this->getCFGDef('addWhereList','');
-		if($where!=''){
-			$where.=" AND ";
-		}
-
-		$limit   = $this->LimitSQL($this->getCFGDef('queryLimit',0));
-		$rs=$this->modx->db->query("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL('id')} {$limit}");
+        if($where!=''){
+            $where="WHERE ".$where;
+        }
+        $limit   = $this->LimitSQL($this->getCFGDef('queryLimit',0));
+		$rs=$this->modx->db->query("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->idField)} {$limit}");
 
 		$rows=$this->modx->db->makeArray($rs);
 		$out=array();
 		foreach($rows as $item){
-			$out[$item['id']]=$item;
+			$out[$item[$this->idField]]=$item;
 		}
 		return $out;
 	}
@@ -136,11 +143,7 @@ class allDocLister extends DocLister{
     // @abstract
     public function getChildrenCount(){
         $where=$this->getCFGDef('addWhereList','');
-        if($where!=''){
-            $where.=" AND ";
-        }
-
-        $fields = 'count(c.`id`) as `count`';
+        $fields = "count(c.`{$this->idField}`) as `count`";
         $from   = "{$this->table} as c";
         $rs=$this->modx->db->select($fields, $from, $where);
         return $this->modx->db->getValue($rs);
@@ -148,16 +151,12 @@ class allDocLister extends DocLister{
 
     public function getChildernFolder($id){
         $where=$this->getCFGDef('addWhereFolder','');
-        if($where!=''){
-            $where.=" AND ";
-        }
-
-        $rs=$this->modx->db->select('id', $this->table, $where);
+        $rs=$this->modx->db->select($this->idField, $this->table, $where);
 
         $rows=$this->modx->db->makeArray($rs);
         $out=array();
         foreach($rows as $item){
-            $out[]=$item['id'];
+            $out[]=$item[$this->idField];
         }
         return $out;
     }

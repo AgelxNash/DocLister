@@ -330,7 +330,6 @@ class site_contentDocLister extends DocLister{
 	protected  function getChildrenList(){
 
 		$where=$this->getCFGDef('addWhereList','');
-		$join='';
 		if($where!=''){
 			$where.=" AND ";
 		}
@@ -338,7 +337,7 @@ class site_contentDocLister extends DocLister{
 
 		$sql=$this->modx->db->query("
 			SELECT c.* FROM ".$this->modx->getFullTableName('site_content')." as c ".$where['join']."
-			WHERE ".$where['where']." 
+			WHERE ".$where['where']."
 				c.parent IN (".$this->sanitarIn($this->IDs).") 
 				AND c.deleted=0 
 				AND c.published=1 ".

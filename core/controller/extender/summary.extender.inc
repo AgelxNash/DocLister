@@ -21,6 +21,10 @@ class summaryDocLister extends extDocLister{
                         $this->_cfg['content']=strip_tags($this->_cfg['content']);
                         break;
                     }
+                    case 'noparser':{
+                        $this->_cfg['content']=$this->DocLister->sanitarData($this->_cfg['content']);
+                        break;
+                    }
                     case 'len':{
                         if(!(isset($process[1]) && $process[1]>0)){
                             $process[1]=200;
