@@ -7,7 +7,7 @@
  * @date 08.03.2013
  * @version 1.0.3
  */
-$dir = MODX_BASE_PATH. (isset($dir) ? $dir : 'assets/snippets/'.$modx->getSnippetName().'/');
+$dir = MODX_BASE_PATH. (isset($dir) ? $dir : 'assets/snippets/DocLister/');
 
 if(!isset($dir)){
     die('Check param dir');
