@@ -1,10 +1,11 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: Agel_Nash
- * Date: 19.12.12
- * Time: 0:19
- * To change this template use File | Settings | File Templates.
+ * DocLister snippet
+ *
+ * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
+ * @author Agel_Nash <Agel_Nash@xaker.ru>
+ * @date 08.03.2013
+ * @version 1.0.3
  */
 $dir = MODX_BASE_PATH. (isset($dir) ? $dir : 'assets/snippets/'.$modx->getSnippetName().'/');
 

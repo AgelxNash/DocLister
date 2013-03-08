@@ -1,11 +1,12 @@
 <?php
 if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
 /**
- * DocLister
+ * DocLister class
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 19.12.2012
+ * @date 08.03.2013
+ * @version 1.0.3
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
@@ -216,6 +217,42 @@ abstract class DocLister {
     abstract public function getChildrenCount();
     abstract public function getChildernFolder($id);
 
+    /*
+     *    Sorting method in SQL queries
+     *
+     *    @global string $order
+     *    @global string $orderBy
+     *    @global string sortBy
+     *
+     *    @param string $sortNme default sort field
+     *    @param string $orderDef default order (ASC|DESC)
+     *
+     *    @return string Order by for SQL
+     */
+    final protected function SortOrderSQL($sortName,$orderDef='DESC'){
+        $out=array('orderBy'=>'','order'=>'','sortBy'=>'');
+        if(($tmp=$this->getCFGDef('orderBy',''))!=''){
+            $out['orderBy']=$tmp;
+        }else{
+            switch(true){
+                case (''!=($tmp=$this->getCFGDef('sortDir',''))):{ //higher priority than order
+                    $out['order']=$tmp;
+                }
+                case (''!=($tmp=$this->getCFGDef('order',''))):{
+                    $out['order']=$tmp;
+                }
+            }
+            if(''==$out['order'] || !in_array(strtoupper($out['order']),array('ASC','DESC'))){
+                $out['order']=$orderDef; //Default
+            }
+
+            $out['sortBy']= (($tmp=$this->getCFGDef('sortBy',''))!='') ? $tmp : $sortName;
+            $out['orderBy'] = $out['sortBy']. " ".$out['order'];
+        }
+        $this->setConfig($out); //reload config;
+        return $out['orderBy'];
+    }
+
     final protected  function LimitSQL($limit=0,$offset=0){
 		$ret='';
 		if($limit==0){
@@ -253,6 +290,15 @@ abstract class DocLister {
 	}
 }
 
+/**
+ * DocLister abstract extender class
+ *
+ * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
+ * @author Agel_Nash <Agel_Nash@xaker.ru>
+ * @date 19.12.2012
+ * @version 1.0.0
+ *
+ */
 abstract class extDocLister{
     protected $DocLister;
     protected $_cfg=array();

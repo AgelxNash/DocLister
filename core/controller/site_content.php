@@ -6,7 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 19.12.2012
+ * @date 08.03.2013
+ * @version 1.0.3
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  */
@@ -63,7 +64,7 @@ class site_contentDocLister extends DocLister{
 			$tpl=$this->getCFGDef('tpl','');
 		}
 		if($tpl!=''){
-			$date=$this->getCFGDef('dateSource','createdon');
+			$date=$this->getCFGDef('dateSource','pub_date');
 
             $this->toPlaceholders(count($this->_docs),1,"display"); // [+display+] - сколько показано на странице.
 
@@ -117,7 +118,7 @@ class site_contentDocLister extends DocLister{
 	public function getJSON($data,$fields){
         $out=array();
 		$fields = is_array($fields) ? $fields : explode(",",$fields);
-		$date=$this->getCFGDef('dateSource','createdon');
+		$date=$this->getCFGDef('dateSource','pub_date');
 		
 		foreach($data as $num=>$item){
 			switch(true){
@@ -246,9 +247,8 @@ class site_contentDocLister extends DocLister{
 		$tbl_site_content = $this->modx->getFullTableName('site_content');
 		$sanitarInIDs = $this->sanitarIn($this->IDs);
 		$where   = "{$where} id IN ({$sanitarInIDs}) AND deleted=0 AND published=1";
-		$orderby = $this->getCFGDef('sortBy','createdon') . ' ' . $this->getCFGDef('order','DESC');
 		$limit   = $this->LimitSQL($this->getCFGDef('queryLimit',0));
-		$rs=$this->modx->db->select('*', $tbl_site_content, $where, $orderby, $limit);
+		$rs=$this->modx->db->select('*', $tbl_site_content, $where, $this->SortOrderSQL('pub_date'), $limit);
 		
 		$rows=$this->modx->db->makeArray($rs);
 		$out=array();
@@ -343,7 +343,7 @@ class site_contentDocLister extends DocLister{
 				AND c.deleted=0 
 				AND c.published=1 ".
 				(($this->getCFGDef('showParent','0')) ? "" : "AND c.id NOT IN(".$this->sanitarIn($this->IDs).")")."
-			ORDER BY ".$this->getCFGDef('sortBy','c.createdon')." ".$this->getCFGDef('order','DESC')." ".
+			ORDER BY ".$this->SortOrderSQL('pub_date')." ".
 			$this->LimitSQL($this->getCFGDef('queryLimit',0))
 		);
 		$rows=$this->modx->db->makeArray($sql);

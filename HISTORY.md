@@ -1,3 +1,10 @@
+## 1.0.3 (2013-03-08)
+
+* change default dateSource to pub_date in site_content controller
+* add orderBy parameter. combine sortBy and sortDir
+* add sortDir parameter. Synonym order parameter
+* add fieldSort parameter. Default field sort
+
 ## 1.0.2 (2013-03-07)
 
 * API mode refactor

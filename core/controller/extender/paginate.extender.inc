@@ -6,6 +6,7 @@
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
  * @date 19.12.2012
+ * @version 1.0.0
  */
  
 class paginateDocLister extends extDocLister{
