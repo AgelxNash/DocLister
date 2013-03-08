@@ -342,8 +342,8 @@ class site_contentDocLister extends DocLister{
 				c.parent IN (".$this->sanitarIn($this->IDs).") 
 				AND c.deleted=0 
 				AND c.published=1 ".
-				(($this->getCFGDef('showParent','0')) ? "" : "AND c.id NOT IN(".$this->sanitarIn($this->IDs).")")."
-			ORDER BY ".$this->SortOrderSQL('pub_date')." ".
+				(($this->getCFGDef('showParent','0')) ? "" : "AND c.id NOT IN(".$this->sanitarIn($this->IDs).")").
+			$this->SortOrderSQL('pub_date')." ".
 			$this->LimitSQL($this->getCFGDef('queryLimit',0))
 		);
 		$rows=$this->modx->db->makeArray($sql);
