@@ -99,7 +99,7 @@ class paginateDocLister extends extDocLister{
 				* @see http://mis-algoritmos.com/2007/05/27/digg-style-pagination-class
 				*/
                 $out='';
-                $dir=$this->DocLister->getCFGDef('snippetFolder',dirname(__FILE__));
+                $dir=$this->DocLister->getCFGDef('snippetFolder',dirname(dirname(dirname(dirname(__FILE__)))));
                 if(file_exists($dir."/lib/pagination.class.php")){
                     include_once($dir."/lib/pagination.class.php");
                     if(class_exists("pagination",false) && $this->_pages['total']>1){

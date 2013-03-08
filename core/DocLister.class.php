@@ -250,7 +250,7 @@ abstract class DocLister {
             $out['orderBy'] = $out['sortBy']. " ".$out['order'];
         }
         $this->setConfig($out); //reload config;
-        return $out['orderBy'];
+        return "ORDER BY ".$out['orderBy'];
     }
 
     final protected  function LimitSQL($limit=0,$offset=0){
