@@ -6,8 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 08.03.2013
- * @version 1.0.3
+ * @date 09.03.2013
+ * @version 1.0.4
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  */
@@ -74,7 +74,14 @@ class site_contentDocLister extends DocLister{
 			if(count($this->_docs)==0 && $noneTPL!=''){
 				$out=$this->modx->parseChunk($noneTPL,$sysPlh,"[+","+]");
 			}else{
+                if($this->extender['user'] instanceof userDocLister){
+                    $this->extender['user']->init($this,array('fields'=>$this->getCFGDef("userFields","")));
+                }
 				foreach($this->_docs as $item){
+                    if($this->extender['user'] instanceof userDocLister){
+                        $item=$this->extender['user']->setUserData($item);  //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
+                    }
+
 					if($this->extender['summary'] instanceof summaryDocLister){
 						if(mb_strlen($item['introtext'], 'UTF-8') > 0){
 							$item['summary']=$item['introtext'];

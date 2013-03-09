@@ -5,12 +5,11 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 08.03.2013
- * @version 1.0.3
+ * @date 09.03.2013
+ * @version 1.0.4
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
- *  @TODO add extender user for information user by id
  *  @TODO add method load default template
  *  @TODO add example custom controller for build google sitemap.xml
  *  @TODO add method build tree for replace Wayfinder if need TV value in menu OR sitemap
@@ -18,6 +17,7 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *  @TODO create new site_content controller without TagSaver plugin
  *  @TODO depending on the parameters
  *  @TODO prepare value before return final data (maybe callback function OR extender)
+ *  @TODO Class name extender and class name controller
 */
 
 abstract class DocLister {
@@ -49,6 +49,9 @@ abstract class DocLister {
     /*
      * CORE Block
      */
+    final public function getMODX(){
+        return $this->modx;
+    }
     final public function loadExtender($ext){
          $ext=explode(",",$ext);
          foreach($ext as $item){
@@ -101,7 +104,7 @@ abstract class DocLister {
     final public function getMsg($name,$def=''){
         return (isset($this->_lang[$name])) ? $this->_lang[$name] : $def;
     }
-    final protected  function renameKeyArr($data,$prefix='',$suffix='',$sep='.'){
+    final public function renameKeyArr($data,$prefix='',$suffix='',$sep='.'){
         $out=array();
         if($prefix=='' && $suffix==''){
             $out=$data;
@@ -212,6 +215,24 @@ abstract class DocLister {
     }
 
     /*
+     * Get all field values from array documents
+     *
+     * @param string $userField field name
+     * @param boolean $uniq Only unique values
+     * @global array $_docs all documents
+     * @return array all field values
+     */
+    final public function getOneField($userField,$uniq=false){
+        $out=array();
+        foreach($this->_docs as $doc=>$val){
+            if(isset($val[$userField]) && (($uniq && !in_array($val[$userField],$out)) || !$uniq)){
+                $out[$doc]=$val[$userField];
+            }
+        }
+        return $out;
+    }
+
+    /*
      * SQL BLOCK
      */
     abstract public function getChildrenCount();
@@ -295,12 +316,13 @@ abstract class DocLister {
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 19.12.2012
- * @version 1.0.0
+ * @date 09.03.2012
+ * @version 1.0.1
  *
  */
 abstract class extDocLister{
     protected $DocLister;
+    protected $modx;
     protected $_cfg=array();
 
     abstract protected function run();
@@ -309,6 +331,7 @@ abstract class extDocLister{
         $flag=false;
         if($DocLister instanceof DocLister){
             $this->DocLister=$DocLister;
+            $this->modx=$this->DocLister->getMODX();
             $this->checkParam(func_get_args());
             $flag=$this->run();
         }

@@ -60,7 +60,15 @@ class onetableDocLister extends DocLister{
 			if(count($this->_docs)==0 && $noneTPL!=''){
 				$out=$this->modx->parseChunk($noneTPL,$sysPlh,"[+","+]");
 			}else{
+                if($this->extender['user'] instanceof userDocLister){
+                    $this->extender['user']->init($this,array('fields'=>$this->getCFGDef("userFields","")));
+                }
+
 				foreach($this->_docs as $item){
+                    if($this->extender['user'] instanceof userDocLister){
+                        $item=$this->extender['user']->setUserData($item);  //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
+                    }
+
 					if($this->extender['summary'] instanceof summaryDocLister){
                         $introField=$this->getCFGDef("introField","");
 						if(isset($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0){
@@ -74,11 +82,11 @@ class onetableDocLister extends DocLister{
                             }
 						}
 					}
-					
+
 					$item=array_merge($item,$sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
 					$item['dl.iteration']=$i; //[+iteration+] - Number element. Starting from zero
 
-					$item['dl.author'] = '';
+
 
                     $date=$this->getCFGDef('dateSource','pub_date');
 					$item['dl.date']=isset($item[$date]) ? strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item[$date]+$this->modx->config['server_offset_time']) : '';
