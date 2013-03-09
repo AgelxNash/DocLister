@@ -5,6 +5,7 @@
 * add access to $modx of DocList extender
 * add new action noparser for summary extender
 * user user extender in all controller
+* iteration placeholder start from 1
 
 ## 1.0.3 (2013-03-08)
 * change default dateSource to pub_date in site_content controller

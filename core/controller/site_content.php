@@ -68,7 +68,7 @@ class site_contentDocLister extends DocLister{
 
             $this->toPlaceholders(count($this->_docs),1,"display"); // [+display+] - сколько показано на странице.
 
-            $i=0;
+            $i=1;
             $sysPlh=$this->renameKeyArr($this->_plh,$this->getCFGDef("sysKey","dl"));
 			$noneTPL=$this->getCFGDef("noneTPL","");
 			if(count($this->_docs)==0 && $noneTPL!=''){
