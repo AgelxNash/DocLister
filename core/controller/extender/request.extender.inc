@@ -13,7 +13,7 @@
 /*
  * @TODO: не юзать. сырой, дырявый и вообще удалить нафиг
  */
-class requestDocLister extends extDocLister{
+class request_DL_Extender extends extDocLister{
     private $param=array();
 
     protected function run(){

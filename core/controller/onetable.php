@@ -26,7 +26,7 @@ class onetableDocLister extends DocLister{
 
 	public function getUrl($id=0){
         $id=$id>0?$id:$this->modx->documentIdentifier;
-        $link = ($this->extender['request'] instanceof requestDocLister) ? $this->extender['request']->getLink() : "";
+        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : "";
         return $this->modx->makeUrl($id, '', $link, 'full');
 	}
      /*
@@ -36,7 +36,7 @@ class onetableDocLister extends DocLister{
         $this->table = $this->modx->getFullTableName($this->getCFGDef('table','site_content'));
         $this->idField=$this->getCFGDef('idField','id');
 
-        if($this->extender['paginate'] instanceof paginateDocLister){
+        if($this->checkExtender('paginate')){
             $pages=$this->extender['paginate']->init($this);
         }else{
             $this->setConfig(array('start'=>0));
@@ -60,16 +60,16 @@ class onetableDocLister extends DocLister{
 			if(count($this->_docs)==0 && $noneTPL!=''){
 				$out=$this->modx->parseChunk($noneTPL,$sysPlh,"[+","+]");
 			}else{
-                if($this->extender['user'] instanceof userDocLister){
+                if($this->checkExtender('user')){
                     $this->extender['user']->init($this,array('fields'=>$this->getCFGDef("userFields","")));
                 }
 
 				foreach($this->_docs as $item){
-                    if($this->extender['user'] instanceof userDocLister){
+                    if($this->checkExtender('user')){
                         $item=$this->extender['user']->setUserData($item);  //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
-					if($this->extender['summary'] instanceof summaryDocLister){
+					if($this->checkExtender('summary')){
                         $introField=$this->getCFGDef("introField","");
 						if(isset($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0){
 							$item['dl.summary']=$item[$introField];
@@ -117,7 +117,7 @@ class onetableDocLister extends DocLister{
 		
 		foreach($data as $num=>$item){
 			switch(true){
-				case ((array('1')==$fields || in_array('summary',$fields)) && $this->extender['summary'] instanceof summaryDocLister):{
+				case ((array('1')==$fields || in_array('summary',$fields)) && $this->checkExtender('summary')):{
 					$out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $this->extender['summary']->init($this,array("content"=>$this->_docs[$num]['content'],"summary"=>$this->getCFGDef("summary","")));
 					//without break
 				}

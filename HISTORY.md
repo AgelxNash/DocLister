@@ -1,4 +1,12 @@
-## 1.0.4 (2013-03-08)
+## 1.0.5 (2013-03-10)
+* rename class extenders
+* add new method DocLister::checkExtender() for check extender
+* add usertype parameter for user extender
+* add new controller site_content without Tag and rename site_content with tag to site_content_tags
+* add new method DocLister::treeBuild() for build tree array
+* test controller tree
+
+## 1.0.4 (2013-03-09)
 * add user extender
 * add new controller onetable for show info from custom table
 * add new method DocLister::getOneField

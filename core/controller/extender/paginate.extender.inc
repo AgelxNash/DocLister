@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
  
-class paginateDocLister extends extDocLister{
+class paginate_DL_Extender extends extDocLister{
     private $_pages=array();
 
     /*

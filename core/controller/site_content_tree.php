@@ -10,10 +10,9 @@
  * @version 1.0.4
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
- * @TODO st placeholder [+dl.title+] if menutitle not empty
  */
 
-class site_contentDocLister extends DocLister{
+class site_content_treeDocLister extends DocLister{
     /*
      * @absctract
 	 * @todo link maybe include other GET parameter with use pagination. For example - filter
@@ -45,16 +44,37 @@ class site_contentDocLister extends DocLister{
 				$this->_docs[$docID]=array_merge($this->_docs[$docID],$TVitem);
 		    }
         }
+        $this->treeBuild('id','parent');
         return $this->_docs;
 	}
 
+    public function render($tpl=''){
+        $out='';
+        foreach($this->_tree as $item){
+            $out.=$this->renderTree($item);
+        }
+        return $this->modx->parseChunk($this->getCFGDef("ownerTPL",""),array($this->getCFGDef("sysKey","dl").".wrap"=>$out),"[+","+]");
+    }
+
+    private function renderTree($data){
+        $out='';
+        if(!empty($data['#childNodes'])){
+            foreach($data['#childNodes'] as $item){
+                $out .= $this->renderTree($item);
+            }
+        }
+
+        $data[$this->getCFGDef("sysKey","dl").".wrap"]=$this->modx->parseChunk($this->getCFGDef("ownerTPL",""),array($this->getCFGDef("sysKey","dl").".wrap"=>$out),"[+","+]");
+        $out=$this->modx->parseChunk($this->getCFGDef('tpl',''),$data,"[+","+]");
+        return $out;
+    }
      /*
      * @absctract
      * @todo set correct active placeholder if you work with other table. Because $item['id'] can differ of $modx->documentIdentifier (for other controller)
      * @todo set author placeholder (author name). Get id from Createdby OR editedby AND get info from extender user
      * @todo set filter placeholder with string filtering for insert URL
      */
-	public function render($tpl=''){
+	public function _render($tpl=''){
 		$out='';
 		if($tpl==''){
 			$tpl=$this->getCFGDef('tpl','');
@@ -117,7 +137,7 @@ class site_contentDocLister extends DocLister{
 
 		return $this->toPlaceholders($out);
 	}
-	
+
 	public function getJSON($data,$fields){
         $out=array();
 		$fields = is_array($fields) ? $fields : explode(",",$fields);
@@ -294,13 +314,14 @@ class site_contentDocLister extends DocLister{
 			$where.=" AND ";
 		}
 
+        $IDs=$this->sanitarIn($this->IDs);
 		$sql=$this->modx->db->query("
 			SELECT c.* FROM ".$this->modx->getFullTableName('site_content')." as c
 			WHERE ".$where."
-				c.parent IN (".$this->sanitarIn($this->IDs).") 
+			    c.parent IN (".$IDs.")
 				AND c.deleted=0 
 				AND c.published=1 ".
-				(($this->getCFGDef('showParent','0')) ? "" : "AND c.id NOT IN(".$this->sanitarIn($this->IDs).")").
+                (1==$this->getCFGDef('showParent','0') ? "" : "AND c.id NOT IN(".$IDs.") ").
 			$this->SortOrderSQL('pub_date')." ".
 			$this->LimitSQL($this->getCFGDef('queryLimit',0))
 		);

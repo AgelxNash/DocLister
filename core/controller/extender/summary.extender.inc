@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
  
-class summaryDocLister extends extDocLister{
+class summary_DL_Extender extends extDocLister{
 
     protected function run(){
         if(isset($this->_cfg['content'],$this->_cfg['summary']) && $this->_cfg['summary']!='' && $this->_cfg['content']!=''){

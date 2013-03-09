@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
  
-class exampleDocLister extends extDocLister{
+class example_DL_Extender extends extDocLister{
 
     protected function run(){
         print_r($this->_cfg);

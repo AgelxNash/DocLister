@@ -5,19 +5,22 @@
  * @category extender
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 09.03.2012
- * @version 1.0.0
+ * @date 10.03.2012
+ * @version 1.0.1
  *
- * @TODO web_user
  * @param $userFields fields with user id
+ * @param $usertype get information about managers or web users
+ *
  */
  
-class userDocLister extends extDocLister{
+class user_DL_Extender extends extDocLister{
     private $fields=array();
     private $userinfo=array();
+    private $table=array();
 
     protected function run(){
         if(''!=$this->_cfg['fields']){
+            $this->table=$this->getTable();
             $this->_cfg['fields']=explode(",",$this->_cfg['fields']);
             $userid=array();
             foreach($this->_cfg['fields'] as $item){
@@ -45,7 +48,32 @@ class userDocLister extends extDocLister{
         }
         return $arr;
     }
+    /*
+     * get table name
+     *
+     * @global string $usertype type users (manager or web user). Default web
+     */
+    private function getTable(){
+        $type=$this->DocLister->getCFGDef('usertype','web');
+        $table=array();
+        switch($type){
+            case 'manager':{
+                $table['users']=$this->modx->getFullTableName('manager_users');
+                $table['attributes']=$this->modx->getFullTableName('user_attributes');
+                break;
+            }
+            case 'web':
+            default:{
+                $table['users']=$this->modx->getFullTableName('web_users');
+                $table['attributes']=$this->modx->getFullTableName('web_user_attributes');
+                break;
+            }
+        }
+        return $table;
+    }
     private function getInfo($user=array()){
+        if(!isset($this->table['users'],$this->table['attributes'])) $this->table=$this->getTable();
+
         $out=array();
         if(count($user)>0){
             $user=implode(",",$this->DocLister->cleanIDs($user));
@@ -75,9 +103,9 @@ class userDocLister extends extDocLister{
                     a.photo,
                     a.comment
                 FROM
-                    {$this->modx->getFullTableName('manager_users')} as u
+                    {$this->table['users']} as u
                 LEFT JOIN
-                    {$this->modx->getFullTableName('user_attributes')} as a
+                    {$this->table['attributes']} as a
                 ON
                     a.internalKey=u.id
                 WHERE

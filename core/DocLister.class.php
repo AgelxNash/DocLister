@@ -5,8 +5,8 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 09.03.2013
- * @version 1.0.4
+ * @date 10.03.2013
+ * @version 1.0.5
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
@@ -14,21 +14,19 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *  @TODO add example custom controller for build google sitemap.xml
  *  @TODO add method build tree for replace Wayfinder if need TV value in menu OR sitemap
  *  @TODO add controller for show list web-user with filter by group and other user information
- *  @TODO create new site_content controller without TagSaver plugin
  *  @TODO depending on the parameters
  *  @TODO prepare value before return final data (maybe callback function OR extender)
- *  @TODO Class name extender and class name controller
 */
 
 abstract class DocLister {
     protected  $_docs=array();
+    protected $_tree=array();
     protected $IDs;
     protected $modx;
     protected $extender;
     protected $_plh=array();
     protected $_lang=array();
     private  $_cfg=array();
-
 
     function __construct($modx,$cfg){
 		mb_internal_encoding("UTF-8");
@@ -37,7 +35,7 @@ abstract class DocLister {
 		$this->loadLang('core');
 		$this->setLocate();
         $this->loadExtender($this->getCFGDef("extender",""));
-        if($this->extender['request'] instanceof requestDocLister){
+        if($this->checkExtender('request')){
             $this->extender['request']->init($this,$this->getCFGDef("requestActive",""));
         }
 	}
@@ -156,11 +154,18 @@ abstract class DocLister {
 		// $out = prepareJsonData($out); 
         return json_encode($out);
     }
+    /*
+     * @param string $name extender name
+     * @return boolean status extender load
+     */
+    final protected function checkExtender($name){
+        return (isset($this->extender[$name]) && $this->extender[$name] instanceof $name."_DL_Extender");
+    }
 
     final private function _loadExtender($name){
         $flag=false;
 
-        $classname=($name!='') ? $name."DocLister" : "";
+        $classname=($name!='') ? $name."_DL_Extender" : "";
         if($classname!='' && isset($this->extender[$name]) && $this->extender[$name] instanceof $classname){
             $flag=true;
         }else{
@@ -309,6 +314,45 @@ abstract class DocLister {
 		$data=str_replace(array('[', '%5B', ']', '%5D'), array('&#91;', '&#91;', '&#93;', '&#93;'),htmlspecialchars($data));
 		return $data;
 	}
+    /*
+     * run tree build
+     *
+     * @param string $idField default name id field
+     * @param string $parentField default name parent field
+     */
+    final public function treeBuild($idField='id',$parentField='parent'){
+        return $this->_treeBuild($this->_docs,$this->getCFGDef('idField',$idField),$this->getCFGDef('parentField',$parentField));
+    }
+    /*
+	* @see: https://github.com/DmitryKoterov/DbSimple/blob/master/lib/DbSimple/Generic.php#L986
+     *
+     * @param array $data Associative data array
+     * @param string $idName name ID field in associative data array
+     * @param string $pidName name parent field in associative data array
+	*/
+    final private function _treeBuild($data, $idName, $pidName){
+        $children = array(); // children of each ID
+        $ids = array();
+        foreach ($data as $i=>$r) {
+            $row =& $data[$i];
+            $id = $row[$idName];
+            $pid = $row[$pidName];
+            $children[$pid][$id] =& $row;
+            if (!isset($children[$id])) $children[$id] = array();
+            $row['#childNodes'] =& $children[$id];
+            $ids[$row[$idName]] = true;
+        }
+        // Root elements are elements with non-found PIDs.
+        $this->_tree = array();
+        foreach ($data as $i=>$r) {
+            $row =&$data[$i];
+            if (!isset($ids[$row[$pidName]])) {
+                $this->_tree[$row[$idName]] =$row;
+            }
+        }
+
+        return $this->_tree;
+    }
 }
 
 /**

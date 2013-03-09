@@ -1,26 +1,30 @@
 <?php
 /**
- * site_content controller
+ * site_content_tags controller with TagSaver plugin
  * @see http://modx.im/blog/addons/374.html
  *
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 10.03.2013
+ * @date 09.03.2013
  * @version 1.0.4
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
- * @TODO st placeholder [+dl.title+] if menutitle not empty
  */
 
-class site_contentDocLister extends DocLister{
-    /*
+class site_content_tagsDocLister extends DocLister{
+    private $tag=array();
+	/*
      * @absctract
 	 * @todo link maybe include other GET parameter with use pagination. For example - filter
      */
 	public function getUrl($id=0){
         $id=$id>0?$id:$this->modx->documentIdentifier;
         $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : "";
+		$tag=$this->checkTag();
+		if($tag!=false && is_array($tag) && $tag['mode']=='get'){
+			$link.="&tag=".urlencode($tag['tag']);
+		}
 		return $this->modx->makeUrl($id, '', $link, 'full');
 	}
      /*
@@ -226,12 +230,13 @@ class site_contentDocLister extends DocLister{
 		if($where!=''){
 			$where.=" AND ";
 		}
+		$wheres=$this->whereTag($where);
 		$tbl_site_content = $this->modx->getFullTableName('site_content');
 		$sanitarInIDs = $this->sanitarIn($this->IDs);
 		$getCFGDef = $this->getCFGDef('showParent','0') ? '' : "AND c.id NOT IN({$sanitarInIDs})";
 		$fields = 'count(c.`id`) as `count`';
-		$from   = "{$tbl_site_content} as c";
-		$where  = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 {$getCFGDef}";
+		$from   = "{$tbl_site_content} as c {$wheres['join']}";
+		$where  = "{$wheres['where']} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 {$getCFGDef}";
 		$rs=$this->modx->db->select($fields, $from, $where);
 		return $this->modx->db->getValue($rs);
 	}
@@ -282,8 +287,50 @@ class site_contentDocLister extends DocLister{
 		}
 		return $out;
 	}
+	private function getTag(){
+		$tags=$this->getCFGDef('tagsData','');
+		$this->tag=array();
+		if($tags!=''){
+			$tmp=explode(":",$tags,2);
+			if(count($tmp)==2){
+				switch($tmp[0]){
+					case 'get':{
+						$tag = (isset($_GET[$tmp[1]]) && !is_array($_GET[$tmp[1]]))? $_GET[$tmp[1]] : '';
+						break;
+					}
+					case 'static':
+					default:{
+						$tag=$tmp[1];
+						break;
+					}
+				}
+				$this->tag=array("mode"=>$tmp[0],"tag"=>$tag);
+				$this->toPlaceholders($this->sanitarData($tag),1,"tag");
+			}
+		}
+		return $this->checkTag();
+	}
+	private function checkTag($reconst=false){
+		$data=(is_array($this->tag) && count($this->tag)==2 && isset($this->tag['tag']) && $this->tag['tag']!='') ? $this->tag: false;
+		if($data===false && $reconst===true){
+			$data=$this->getTag();
+		}
+		return $data;
+	}
+	private function whereTag($where){
+		$join='';
+		$tag=$this->checkTag(true);
+		if($tag!==false){
+			$join="RIGHT JOIN ".$this->modx->getFullTableName('site_content_tags')." as ct on ct.doc_id=c.id 
+					RIGHT JOIN ".$this->modx->getFullTableName('tags')." as t on t.id=ct.tag_id";
+			$where.= ($where!='' ? "" : " AND ")."t.`name`='".$this->modx->db->escape($tag['tag'])."'".
+					(($this->getCFGDef('tagsData','')>0) ? "AND ct.tv_id=".(int)$this->getCFGDef('tagsData','') : "")." AND ";
+		}
+		$out=array("where"=>$where,"join"=>$join);
+		return $out;
+	}
 
-	/*
+    /*
 	* @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
 	* @TODO: 5) Добавить фильтрацию по основным параметрам документа
 	*/
@@ -293,10 +340,11 @@ class site_contentDocLister extends DocLister{
 		if($where!=''){
 			$where.=" AND ";
 		}
+		$where=$this->whereTag($where);
 
 		$sql=$this->modx->db->query("
-			SELECT c.* FROM ".$this->modx->getFullTableName('site_content')." as c
-			WHERE ".$where."
+			SELECT c.* FROM ".$this->modx->getFullTableName('site_content')." as c ".$where['join']."
+			WHERE ".$where['where']."
 				c.parent IN (".$this->sanitarIn($this->IDs).") 
 				AND c.deleted=0 
 				AND c.published=1 ".
