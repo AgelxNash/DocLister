@@ -5,6 +5,7 @@
 * add new controller site_content without Tag and rename site_content with tag to site_content_tags
 * add new method DocLister::treeBuild() for build tree array
 * test controller tree
+* add parameter pageAdjacents and pageLimit for paginate extender
 
 ## 1.0.4 (2013-03-09)
 * add user extender

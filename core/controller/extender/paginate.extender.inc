@@ -5,8 +5,8 @@
  * @category extender
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 19.12.2012
- * @version 1.0.0
+ * @date 11.04.2013
+ * @version 1.0.1
  */
  
 class paginate_DL_Extender extends extDocLister{
@@ -112,7 +112,8 @@ class paginate_DL_Extender extends extDocLister{
 							$p->prevI = '';
 							$p->mainTpl=$this->DocLister->getCFGDef('TplWrapPaginate','<div class="[+class+]">[+wrap+]</div>');
 							$p->Items($this->_pages['total']);
-							$p->limit(1); //show page count
+							$p->limit($this->DocLister->getCFGDef("pageLimit",1)); //show page count
+                            $p->adjacents($this->DocLister->getCFGDef("pageAdjacents",4));
 							$p->target($this->DocLister->getUrl()); //getUrlPage
 							$p->currentPage($this->_pages['current']);
 							$p->parameterName($key."page");
