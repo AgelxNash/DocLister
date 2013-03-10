@@ -1,3 +1,7 @@
+## 1.0.6 (2013-03-11)
+* add parameter pageAdjacents and pageLimit for paginate extender
+* try-catch in construct DocLister
+
 ## 1.0.5 (2013-03-10)
 * rename class extenders
 * add new method DocLister::checkExtender() for check extender
@@ -5,7 +9,6 @@
 * add new controller site_content without Tag and rename site_content with tag to site_content_tags
 * add new method DocLister::treeBuild() for build tree array
 * test controller tree
-* add parameter pageAdjacents and pageLimit for paginate extender
 
 ## 1.0.4 (2013-03-09)
 * add user extender

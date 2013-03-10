@@ -21,19 +21,37 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
 abstract class DocLister {
     protected  $_docs=array();
     protected $_tree=array();
-    protected $IDs;
-    protected $modx;
-    protected $extender;
+    protected $IDs=0;
+    protected $modx=null;
+    protected $extender='';
     protected $_plh=array();
     protected $_lang=array();
     private  $_cfg=array();
 
     function __construct($modx,$cfg){
-		mb_internal_encoding("UTF-8");
-		$this->modx=$modx;
-		$this->setConfig($cfg);
-		$this->loadLang('core');
-		$this->setLocate();
+        try{
+            if(extension_loaded('mbstring')){
+		        mb_internal_encoding("UTF-8");
+            }else{
+                throw new Exception('Not found php extension mbstring');
+            }
+
+            if($modx instanceof DocumentParser){
+                $this->modx=$modx;
+            }else{
+                throw new Exception('MODX var is not instaceof DocumentParser');
+            }
+
+            if(!$this->setConfig($cfg)){
+                throw new Exception('no parameters to run DocLister');
+            }
+
+            $this->loadLang('core');
+            $this->setLocate();
+        }catch(Exception $e){
+            $this->ErrorLogger($e->getMessage(),$e->getCode(),$e->getFile(),$e->getLine(),$e->getTrace());
+        }
+
         $this->loadExtender($this->getCFGDef("extender",""));
         if($this->checkExtender('request')){
             $this->extender['request']->init($this,$this->getCFGDef("requestActive",""));
@@ -47,6 +65,29 @@ abstract class DocLister {
     /*
      * CORE Block
      */
+
+    /*
+     * Display and save error information
+     *
+     * @param string $message error message
+     * @param integer $code error number
+     * @param string $file error on file
+     * @param integer $line error on line
+     * @param array $trace stack trace
+     *
+     * @todo $this->modx->debug
+     * @todo $this->modx->logEvent(4001,3,$msg,'DocLister');
+     */
+    final public function ErrorLogger($message,$code,$file,$line,$trace){
+        if($this->getCFGDef('debug','0')=='1'){
+            echo "CODE #".$code."<br />";
+            echo "on file: ".$file.":".$line."<br />";
+            echo "<pre>";
+            var_dump($trace);
+            echo "</pre>";
+        }
+        die($message);
+    }
     final public function getMODX(){
         return $this->modx;
     }
@@ -59,7 +100,11 @@ abstract class DocLister {
     final public function setConfig($cfg){
 		if(is_array($cfg)){
 			$this->_cfg=array_merge($this->_cfg,$cfg);
-		}
+            $ret=count($this->_cfg);
+        }else{
+            $ret=false;
+        }
+        return $ret;
 	}
     final public function getCFGDef($name,$def){
 		return isset($this->_cfg[$name])?$this->_cfg[$name]:$def;
@@ -98,6 +143,7 @@ abstract class DocLister {
                 $this->_lang=array_merge($this->_lang,$tmp);
             }
         }
+        return $this->_lang;
 	}
     final public function getMsg($name,$def=''){
         return (isset($this->_lang[$name])) ? $this->_lang[$name] : $def;
