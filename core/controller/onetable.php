@@ -87,7 +87,10 @@ class onetableDocLister extends DocLister{
 					$item[$this->getCFGDef("sysKey","dl").'.iteration']=$i; //[+iteration+] - Number element. Starting from zero
 
                     $date=$this->getCFGDef('dateSource','pub_date');
-					$item[$this->getCFGDef("sysKey","dl").'.date']=isset($item[$date]) ? strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item[$date]+$this->modx->config['server_offset_time']) : '';
+					$date=isset($item[$date]) ? $item[$date]+$this->modx->config['server_offset_time'] : '';
+                    if($date!='' && $this->getCFGDef('dateFormat','%d.%b.%y %H:%M')!=''){
+                        $item[$this->getCFGDef("sysKey","dl").'.date']=strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$date);
+                    }
 
                     $class=array();
                     $class[] = ($i%2==0) ? 'odd' : 'even';

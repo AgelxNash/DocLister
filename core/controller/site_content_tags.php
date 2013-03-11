@@ -97,7 +97,10 @@ class site_content_tagsDocLister extends DocLister{
 					$item['url'] = ($item['type']=='reference') ? $item['content'] : $this->getUrl($item['id']);
 
 					$item['date']=(isset($item[$date]) && $date!='createdon' && $item[$date]!=0 && $item[$date]==(int)$item[$date]) ? $item[$date] : $item['createdon'];
-					$item['date']=strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item['date']+$this->modx->config['server_offset_time']);
+					$item['date']=$item['date']+$this->modx->config['server_offset_time'];
+                    if($this->getCFGDef('dateFormat','%d.%b.%y %H:%M')!=''){
+                        $item['date']=strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item['date']);
+                    }
 
                     $class=array();
                     $class[] = ($i%2==0) ? 'odd' : 'even';

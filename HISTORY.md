@@ -3,6 +3,7 @@
 * try-catch in construct DocLister
 * new parser template (new method DocLister::parseChunk())
 * add filtering { and } in DocLister::sanitarData()
+* refactor date placeholder
 
 ## 1.0.5 (2013-03-10)
 * rename class extenders
