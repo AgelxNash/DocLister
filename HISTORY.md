@@ -2,6 +2,7 @@
 * add parameter pageAdjacents and pageLimit for paginate extender
 * try-catch in construct DocLister
 * new parser template (new method DocLister::parseChunk())
+* add filtering { and } in DocLister::sanitarData()
 
 ## 1.0.5 (2013-03-10)
 * rename class extenders

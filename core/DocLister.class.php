@@ -19,15 +19,42 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
 */
 
 abstract class DocLister {
+    /*
+    * @TODO description DocLister::$_docs;
+    */
     protected  $_docs=array();
+    /*
+    * @TODO description DocLister::$_tree;
+    */
     protected $_tree=array();
+    /*
+    * @TODO description DocLister::$IDs;
+    */
     protected $IDs=0;
+    /*
+    * @TODO description DocLister::$modx;
+    */
     protected $modx=null;
+    /*
+    * @TODO description DocLister::$extender;
+    */
     protected $extender='';
+    /*
+    * @TODO description DocLister::$_plh;
+    */
     protected $_plh=array();
+    /*
+    * @TODO description DocLister::$_lang;
+    */
     protected $_lang=array();
+    /*
+    * @TODO description DocLister::$_cfg;
+    */
     private  $_cfg=array();
 
+    /*
+    * @TODO description DocLister::__construct()
+    */
     function __construct($modx,$cfg){
         try{
             if(extension_loaded('mbstring')){
@@ -58,8 +85,19 @@ abstract class DocLister {
         }
 	}
 
+    /*
+    * @TODO description DocLister::getUrl()
+    */
     abstract public function getUrl($id=0);
+
+    /*
+    * @TODO description DocLister::getDocs()
+    */
     abstract public function getDocs($tvlist='');
+
+    /*
+    * @TODO description DocLister::render()
+    */
     abstract public function render($tpl='');
 
     /*
@@ -88,15 +126,38 @@ abstract class DocLister {
         }
         die($message);
     }
+
+    /*
+    * @TODO description DocLister::getMODX()
+    */
     final public function getMODX(){
         return $this->modx;
     }
-    final public function loadExtender($ext){
-         $ext=explode(",",$ext);
-         foreach($ext as $item){
-             $this->_loadExtender($item);
-         }
+
+    /*
+     * load extenders
+     *
+     * @param string $ext name extender separated by ,
+     * @return boolean status load extenders
+     */
+    final public function loadExtender($ext=''){
+        $out=true;
+        if($ext!=''){
+            $ext=explode(",",$ext);
+            foreach($ext as $item){
+                if(!$this->_loadExtender($item)){
+                    $out=false;
+                    break;
+                }
+            }
+        }
+        return $out;
     }
+
+    /*
+    * save config array
+    * @TODO description DocLister::setConfig()
+    */
     final public function setConfig($cfg){
 		if(is_array($cfg)){
 			$this->_cfg=array_merge($this->_cfg,$cfg);
@@ -106,9 +167,17 @@ abstract class DocLister {
         }
         return $ret;
 	}
+
+    /*
+    * @TODO description DocLister::getCFGDef()
+    */
     final public function getCFGDef($name,$def){
 		return isset($this->_cfg[$name])?$this->_cfg[$name]:$def;
 	}
+
+    /*
+    * @TODO description DocLister::toPlaceholders()
+    */
     final public function toPlaceholders($data,$set=0,$key='contentPlaceholder'){
         $this->_plh[$key]=$data;
 		if($set==0){
@@ -122,6 +191,10 @@ abstract class DocLister {
 			return $data;
 		}
 	}
+
+    /*
+    * @TODO description DocLister::sanitarIn()
+    */
 	final protected function sanitarIn($data,$sep=','){
 		if(!is_array($data)){
 			$data=explode($sep,$data);
@@ -133,6 +206,10 @@ abstract class DocLister {
 		$out="'".implode("','",$out)."'";
 		return $out;
 	}
+
+    /*
+    * @TODO description DocLister::loadLang()
+    */
     final protected function loadLang($name='core',$lang=''){
 		if($lang==''){
 			$lang=$this->getCFGDef('lang',$this->modx->config['manager_language']);
@@ -145,9 +222,17 @@ abstract class DocLister {
         }
         return $this->_lang;
 	}
+
+    /*
+    * @TODO description DocLister::getMsg()
+    */
     final public function getMsg($name,$def=''){
         return (isset($this->_lang[$name])) ? $this->_lang[$name] : $def;
     }
+
+    /*
+    * @TODO description DocLister::renameKeyArr()
+    */
     final public function renameKeyArr($data,$prefix='',$suffix='',$sep='.'){
         $out=array();
         if($prefix=='' && $suffix==''){
@@ -165,6 +250,10 @@ abstract class DocLister {
         }
         return $out;
     }
+
+    /*
+    * @TODO description DocLister::setLocate()
+    */
 	final public function setLocate($locale=''){
 		switch(true){
 			case (''==$locale):{
@@ -178,42 +267,62 @@ abstract class DocLister {
 		}
 		return $locale;
 	}
-    public function parseChunk($name,$data){
-        $out='';
+    /*
+     * refactor $modx->getChunk();
+     *
+     * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
+     * @return string html template with placeholders without data
+     */
+    private function _getChunk($name){
         if($name!='' && !isset($this->modx->chunkCache[$name])){
             $mode=substr($name,0,6);
             switch($mode){
-                case '@FILE:':{ //chunk in file
+                case '@FILE:':{ //tpl in file
                     $tpl=trim(substr($name, 6));
-                    if(file_exists($data)){
-                        $tpl=file_get_contents($tpl); //@todo: validate filename
+                    $real=realpath(MODX_BASE_PATH.'assets/templates');
+                    $path=realpath(MODX_BASE_PATH.'assets/templates/'. preg_replace(array('/\.*[\/|\\\]/i', '/[\/|\\\]+/i'), array('/', '/'), $tpl).'.html');
+                    $fname=explode(".",$path);
+                    if($real == substr($path,0, strlen($real)) && end($fname)=='html' && file_exists($path)){
+                        $tpl=file_get_contents($path);
                     }else{
-                        $tpl=null;
+                        $tpl='';
                     }
                     break;
                 }
                 case '@CODE:':{ //name is tpl
                     $tpl=trim(substr($name, 6));
+                    break;
                 }
                 default:{  //not exist chunk
-                    $tpl=null;
+                    $tpl='';
                 }
             }
-            if(isset($tpl)){
-                $this->modx->chunkCache[$name]=$tpl;
+            if($tpl!=''){
+                $this->modx->chunkCache[$name]=$tpl; //save tpl
             }
         }
-        if(is_array($data) && $name!=''){
-            $out = isset($this->modx->chunkCache[$name]) ? $this->modx->chunkCache[$name] : ''; //get tpl
-            if($out!=''){
-                foreach ($data as $key => $value) {
-                    $out = str_replace('[+' . $key . '+]', $value, $out);
-                }
-            }
+        $tpl = isset($this->modx->chunkCache[$name]) ? $this->modx->chunkCache[$name] : '';
+        return $tpl;
+    }
+
+    /*
+     * refactor $modx->parseChunk();
+     *
+     * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
+     * @param array $data paceholder
+     * @return string html template with data without placeholders
+     */
+    public function parseChunk($name,$data){
+        if(is_array($data) && ($out=$this->_getChunk($name))!=''){
+             $data=$this->renameKeyArr($data,'[',']','+');
+             $out = str_replace(array_keys($data),array_values($data),$out);
         }
         return $out;
     }
 
+    /*
+    * @TODO description DocLister::getJSON()
+    */
     public function getJSON($data,$fields,$array=array()){
         $out=array();
         $fields = is_array($fields) ? $fields : explode(",",$fields);
@@ -244,6 +353,12 @@ abstract class DocLister {
         return (isset($this->extender[$name]) && $this->extender[$name] instanceof $name."_DL_Extender");
     }
 
+    /*
+     * load extender
+     *
+     * @param string $name name extender
+     * @return boolean $flag status load extender
+     */
     final private function _loadExtender($name){
         $flag=false;
 
@@ -268,6 +383,10 @@ abstract class DocLister {
     /*
      * IDs BLOCK
      */
+
+    /*
+    * @TODO description DocLister::setIDs()
+    */
     final public function setIDs($IDs){
         $IDs=$this->cleanIDs($IDs);
         $type = $this->getCFGDef('idType','parents');
@@ -284,6 +403,9 @@ abstract class DocLister {
         return ($this->IDs=$IDs);
     }
 
+    /*
+    * @TODO description DocLister::cleanIDs()
+    */
     final public function cleanIDs($IDs,$sep=',') {
         $out=array();
         if(!is_array($IDs)){
@@ -297,6 +419,10 @@ abstract class DocLister {
         $out = array_unique($out);
 		return $out;
 	}
+
+    /*
+    * @TODO description DocLister::checkIDs()
+    */
     final protected function checkIDs(){
            return (is_array($this->IDs) && count($this->IDs)>0) ? true : false;
     }
@@ -322,7 +448,15 @@ abstract class DocLister {
     /*
      * SQL BLOCK
      */
+
+    /*
+    * @TODO description DocLister::getChildrenCount()
+    */
     abstract public function getChildrenCount();
+
+    /*
+    * @TODO description DocLister::getChildernFolder()
+    */
     abstract public function getChildernFolder($id);
 
     /*
@@ -361,6 +495,9 @@ abstract class DocLister {
         return "ORDER BY ".$out['orderBy'];
     }
 
+    /*
+     * @TODO description DocLister::LimitSQL()
+     */
     final protected  function LimitSQL($limit=0,$offset=0){
 		$ret='';
 		if($limit==0){
@@ -390,12 +527,13 @@ abstract class DocLister {
 	}
 
     /*
-    * @TODO: replace { and }
-    */
+     * Clean up the modx and html tags
+     *
+     * @param string $data String for cleaning
+     * @return string Clear string
+     */
 	final public function sanitarData($data){
-		$data=str_replace(array('[', '%5B', ']', '%5D'), array('&#91;', '&#91;', '&#93;', '&#93;'),htmlspecialchars($data));
-		return $data;
-	}
+        return is_string($data) ? str_replace(array('[', '%5B', ']', '%5D','{','%7B','}','%7D'), array('&#91;', '&#91;', '&#93;', '&#93;','&#123;','&#123;','&#125;','&#125;'),htmlspecialchars($data)) : '';	}
     /*
      * run tree build
      *
@@ -447,12 +585,27 @@ abstract class DocLister {
  *
  */
 abstract class extDocLister{
+    /*
+    * @TODO description extDocLister::$DocLister;
+    */
     protected $DocLister;
+    /*
+    * @TODO description extDocLister::$modx;
+    */
     protected $modx;
+    /*
+    * @TODO description extDocLister::$_cfg;
+    */
     protected $_cfg=array();
 
+    /*
+    * @TODO description extDocLister::run();
+    */
     abstract protected function run();
 
+    /*
+    * @TODO description extDocLister::init();
+    */
     final public function init($DocLister){
         $flag=false;
         if($DocLister instanceof DocLister){
@@ -463,13 +616,18 @@ abstract class extDocLister{
         }
         return $flag;
     }
-    
+
+    /*
+    * @TODO description extDocLister::checkParam();
+    */
     final protected function checkParam($args){
         if(isset($args[1])){
             $this->_cfg=$args[1];
         }
     }
-
+    /*
+    * @TODO description extDocLister::getCFGDef();
+    */
     final protected function getCFGDef($name,$def){
 		return isset($this->_cfg[$name])?$this->_cfg[$name]:$def;
 	}
