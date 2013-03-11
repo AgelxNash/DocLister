@@ -268,7 +268,7 @@ class site_content_treeDocLister extends DocLister{
 		
 		$tbl_site_content = $this->modx->getFullTableName('site_content');
 		$sanitarInIDs = $this->sanitarIn($this->IDs);
-		$where   = "{$where} id IN ({$sanitarInIDs}) AND deleted=0 AND published=1";
+		$where   = "WHERE {$where} id IN ({$sanitarInIDs}) AND deleted=0 AND published=1";
 		$limit   = $this->LimitSQL($this->getCFGDef('queryLimit',0));
 		$rs=$this->modx->db->query("SELECT * FROM {$tbl_site_content} {$where} {$this->SortOrderSQL("pub_date")} {$limit}");
 		
