@@ -145,9 +145,14 @@ abstract class DocLister {
         if($ext!=''){
             $ext=explode(",",$ext);
             foreach($ext as $item){
-                if(!$this->_loadExtender($item)){
-                    $out=false;
-                    break;
+                try{
+                    if($item!='' && !$this->_loadExtender($item)){
+                        $out=false;
+                        throw new Exception('Error load '.htmlspecialchars($item).' extender');
+                        break;
+                    }
+                }catch(Exception $e){
+                    $this->ErrorLogger($e->getMessage(),$e->getCode(),$e->getFile(),$e->getLine(),$e->getTrace());
                 }
             }
         }
