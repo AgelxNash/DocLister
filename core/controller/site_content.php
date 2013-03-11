@@ -92,14 +92,25 @@ class site_contentDocLister extends DocLister{
 
 					$item['url'] = ($item['type']=='reference') ? $item['content'] : $this->getUrl($item['id']);
 
-					$item['author'] = '';
-
-
-					$item['active'] = ($this->modx->documentIdentifier == $item['id']) ? 'active' : '';  //[+active+] - 0 or 1 if $modx->documentIdentifer equal ID this element
 					$item['date']=(isset($item[$date]) && $date!='createdon' && $item[$date]!=0 && $item[$date]==(int)$item[$date]) ? $item[$date] : $item['createdon'];
 					$item['date']=strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item['date']+$this->modx->config['server_offset_time']);
-					$tmp=$this->modx->parseChunk($tpl,$item,"[+","+]");
-					if($this->getCFGDef('contentPlaceholder',0)!==0){
+
+                    $class=array();
+                    $class[] = ($i%2==0) ? 'odd' : 'even';
+                    if($i==0) $class[]='first';
+                    if($i==count($this->_docs)) $class[]='last';
+                    if($this->modx->documentIdentifier == $item['id']){
+                        $item[$this->getCFGDef("sysKey","dl").'.active']=1;  //[+active+] - 1 if $modx->documentIdentifer equal ID this element
+                        $class[]='current';
+                    }else{
+                        $item['active']=0;
+                    }
+                    $class=implode(" ",$class);
+                    $item[$this->getCFGDef("sysKey","dl").'.class']=$class;
+
+                    $tmp=$this->modx->parseChunk($tpl,$item,"[+","+]");
+
+                    if($this->getCFGDef('contentPlaceholder',0)!==0){
 						$this->toPlaceholders($tmp,1,"item[".$i."]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
 					}
 					$out.=$tmp;

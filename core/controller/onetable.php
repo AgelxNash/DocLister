@@ -72,24 +72,35 @@ class onetableDocLister extends DocLister{
 					if($this->checkExtender('summary')){
                         $introField=$this->getCFGDef("introField","");
 						if(isset($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0){
-							$item['dl.summary']=$item[$introField];
+							$item[$this->getCFGDef("sysKey","dl").'.summary']=$item[$introField];
 						}else{
                            $contentField=$this->getCFGDef("contentField","");
                             if(isset($item[$contentField])){
-						        $item['dl.summary']= $this->extender['summary']->init($this,array("content"=>$item[$contentField],"summary"=>$this->getCFGDef("summary","")));
+						        $item[$this->getCFGDef("sysKey","dl").'.summary']= $this->extender['summary']->init($this,array("content"=>$item[$contentField],"summary"=>$this->getCFGDef("summary","")));
                             }else{
-                                $item['dl.summary']='';
+                                $item[$this->getCFGDef("sysKey","dl").'.summary']='';
                             }
 						}
 					}
 
 					$item=array_merge($item,$sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
-					$item['dl.iteration']=$i; //[+iteration+] - Number element. Starting from zero
-
-
+					$item[$this->getCFGDef("sysKey","dl").'.iteration']=$i; //[+iteration+] - Number element. Starting from zero
 
                     $date=$this->getCFGDef('dateSource','pub_date');
-					$item['dl.date']=isset($item[$date]) ? strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item[$date]+$this->modx->config['server_offset_time']) : '';
+					$item[$this->getCFGDef("sysKey","dl").'.date']=isset($item[$date]) ? strftime($this->getCFGDef('dateFormat','%d.%b.%y %H:%M'),$item[$date]+$this->modx->config['server_offset_time']) : '';
+
+                    $class=array();
+                    $class[] = ($i%2==0) ? 'odd' : 'even';
+                    if($i==0) $class[]='first';
+                    if($i==count($this->_docs)) $class[]='last';
+                    if($this->modx->documentIdentifier == $item['id']){
+                        $item[$this->getCFGDef("sysKey","dl").'.active']=1;  //[+active+] - 1 if $modx->documentIdentifer equal ID this element
+                        $class[]='current';
+                    }else{
+                        $item['active']=0;
+                    }
+                    $class=implode(" ",$class);
+                    $item[$this->getCFGDef("sysKey","dl").'.class']=$class;
 
                     $tmp=$this->modx->parseChunk($tpl,$item,"[+","+]");
 					if($this->getCFGDef('contentPlaceholder',0)!==0){
