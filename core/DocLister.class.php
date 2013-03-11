@@ -5,8 +5,8 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 10.03.2013
- * @version 1.0.5
+ * @date 11.03.2013
+ * @version 1.0.6
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
@@ -178,6 +178,42 @@ abstract class DocLister {
 		}
 		return $locale;
 	}
+    public function parseChunk($name,$data){
+        $out='';
+        if($name!='' && !isset($this->modx->chunkCache[$name])){
+            $mode=substr($name,0,6);
+            switch($mode){
+                case '@FILE:':{ //chunk in file
+                    $tpl=trim(substr($name, 6));
+                    if(file_exists($data)){
+                        $tpl=file_get_contents($tpl); //@todo: validate filename
+                    }else{
+                        $tpl=null;
+                    }
+                    break;
+                }
+                case '@CODE:':{ //name is tpl
+                    $tpl=trim(substr($name, 6));
+                }
+                default:{  //not exist chunk
+                    $tpl=null;
+                }
+            }
+            if(isset($tpl)){
+                $this->modx->chunkCache[$name]=$tpl;
+            }
+        }
+        if(is_array($data) && $name!=''){
+            $out = isset($this->modx->chunkCache[$name]) ? $this->modx->chunkCache[$name] : ''; //get tpl
+            if($out!=''){
+                foreach ($data as $key => $value) {
+                    $out = str_replace('[+' . $key . '+]', $value, $out);
+                }
+            }
+        }
+        return $out;
+    }
+
     public function getJSON($data,$fields,$array=array()){
         $out=array();
         $fields = is_array($fields) ? $fields : explode(",",$fields);

@@ -53,7 +53,7 @@ class site_content_treeDocLister extends DocLister{
         foreach($this->_tree as $item){
             $out.=$this->renderTree($item);
         }
-        return $this->modx->parseChunk($this->getCFGDef("ownerTPL",""),array($this->getCFGDef("sysKey","dl").".wrap"=>$out),"[+","+]");
+        return $this->parseChunk($this->getCFGDef("ownerTPL",""),array($this->getCFGDef("sysKey","dl").".wrap"=>$out));
     }
 
     private function renderTree($data){
@@ -64,8 +64,8 @@ class site_content_treeDocLister extends DocLister{
             }
         }
 
-        $data[$this->getCFGDef("sysKey","dl").".wrap"]=$this->modx->parseChunk($this->getCFGDef("ownerTPL",""),array($this->getCFGDef("sysKey","dl").".wrap"=>$out),"[+","+]");
-        $out=$this->modx->parseChunk($this->getCFGDef('tpl',''),$data,"[+","+]");
+        $data[$this->getCFGDef("sysKey","dl").".wrap"]=$this->parseChunk($this->getCFGDef("ownerTPL",""),array($this->getCFGDef("sysKey","dl").".wrap"=>$out));
+        $out=$this->parseChunk($this->getCFGDef('tpl',''),$data);
         return $out;
     }
      /*
@@ -88,7 +88,7 @@ class site_content_treeDocLister extends DocLister{
             $sysPlh=$this->renameKeyArr($this->_plh,$this->getCFGDef("sysKey","dl"));
 			$noneTPL=$this->getCFGDef("noneTPL","");
 			if(count($this->_docs)==0 && $noneTPL!=''){
-				$out=$this->modx->parseChunk($noneTPL,$sysPlh,"[+","+]");
+				$out=$this->parseChunk($noneTPL,$sysPlh);
 			}else{
                 if($this->checkExtender('user')){
                     $this->extender['user']->init($this,array('fields'=>$this->getCFGDef("userFields","")));
@@ -128,7 +128,7 @@ class site_content_treeDocLister extends DocLister{
                     $class=implode(" ",$class);
                     $item[$this->getCFGDef("sysKey","dl").'.class']=$class;
 
-                    $tmp=$this->modx->parseChunk($tpl,$item,"[+","+]");
+                    $tmp=$this->parseChunk($tpl,$item);
 					if($this->getCFGDef('contentPlaceholder',0)!==0){
 						$this->toPlaceholders($tmp,1,"item[".$i."]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
 					}
@@ -139,7 +139,7 @@ class site_content_treeDocLister extends DocLister{
             $ownerTPL=$this->getCFGDef("ownerTPL","");
             // echo $this->modx->getChunk($ownerTPL);
             if($ownerTPL!=''){
-                $out=$this->modx->parseChunk($ownerTPL,array($this->getCFGDef("sysKey","dl").".wrap"=>$out),"[+","+]");
+                $out=$this->parseChunk($ownerTPL,array($this->getCFGDef("sysKey","dl").".wrap"=>$out));
             }
 		}else{
 			$out='none TPL';

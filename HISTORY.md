@@ -1,6 +1,7 @@
 ## 1.0.6 (2013-03-11)
 * add parameter pageAdjacents and pageLimit for paginate extender
 * try-catch in construct DocLister
+* new parser template (new method DocLister::parseChunk())
 
 ## 1.0.5 (2013-03-10)
 * rename class extenders
