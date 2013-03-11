@@ -55,7 +55,7 @@ abstract class DocLister {
     /*
     * @TODO description DocLister::__construct()
     */
-    function __construct($modx,$cfg){
+    function __construct($modx,$cfg=array()){
         try{
             if(extension_loaded('mbstring')){
 		        mb_internal_encoding("UTF-8");
@@ -65,6 +65,7 @@ abstract class DocLister {
 
             if($modx instanceof DocumentParser){
                 $this->modx=$modx;
+                if(!is_array($cfg) || empty($cfg)) $cfg=$this->modx->Event->params;
             }else{
                 throw new Exception('MODX var is not instaceof DocumentParser');
             }
@@ -72,19 +73,87 @@ abstract class DocLister {
             if(!$this->setConfig($cfg)){
                 throw new Exception('no parameters to run DocLister');
             }
-
-            $this->loadLang('core');
-            $this->setLocate();
         }catch(Exception $e){
             $this->ErrorLogger($e->getMessage(),$e->getCode(),$e->getFile(),$e->getLine(),$e->getTrace());
         }
 
+        if($this->checkDL()){
+            $cfg=array();
+            if(($IDs=$this->getCFGDef('documents',''))!=''){
+                $cfg['idType'] = "documents";
+            }else{
+                $cfg['idType'] = "parents";
+                if(($IDs=$this->getCFGDef('parents',''))==''){
+                    $cfg['parents']=$IDs=$this->modx->documentIdentifier;
+                }
+            }
+            $this->setConfig($cfg);
+            $this->setIDs($IDs);
+        }
+
+        $this->loadLang('core');
+        $this->setLocate();
+
         $this->loadExtender($this->getCFGDef("extender",""));
+
         if($this->checkExtender('request')){
             $this->extender['request']->init($this,$this->getCFGDef("requestActive",""));
         }
 	}
+    /*
+    *
+    */
+    public function checkDL(){
+        $flag=true;
+        $extenders=$this->getCFGDef('extender','');
+        $extenders=explode(",",$extenders);
+        try{
+            if(($this->getCFGDef('requestActive','')!='' || in_array('request',$extenders)) && !$this->_loadExtender('request')){  //OR request in extender's parameter
+                throw new Exception('Error load request extender');
+                $flag=false;
+            }
 
+            if(($this->getCFGDef('summary','')!=''  || in_array('summary',$extenders)) && !$this->_loadExtender('summary')){  //OR summary in extender's parameter
+                throw new Exception('Error load summary extender');
+                $flag=false;
+            }
+
+            if(
+                (int)$this->getCFGDef('display',0)>0 && (                        //OR paginate in extender's parameter
+                    in_array('paginate',$extenders) || $this->getCFGDef('paginate','')!='' ||
+                    $this->getCFGDef('TplPrevP','')!='' || $this->getCFGDef('TplPage','')!='' ||
+                    $this->getCFGDef('TplCurrentPage','')!='' || $this->getCFGDef('TplWrapPaginate','')!='' ||
+                    $this->getCFGDef('pageLimit','')!='' || $this->getCFGDef('pageAdjacents','')!='' ||
+                    $this->getCFGDef('PaginateClass','')!='' || $this->getCFGDef('TplNextP','')!=''
+                ) && !$this->_loadExtender('paginate')
+            ){
+                throw new Exception('Error load paginate extender');
+                $flag=false;
+            }else if((int)$this->getCFGDef('display',0)==0){
+                $extenders=$this->unsetArrayVal($extenders,'paginate');
+            }
+
+        }catch(Exception $e){
+            $this->ErrorLogger($e->getMessage(),$e->getCode(),$e->getFile(),$e->getLine(),$e->getTrace());
+        }
+
+        $this->setConfig('extender',implode(",",$extenders));
+        return $flag;
+    }
+
+    private function unsetArrayVal($data,$val){
+        $out=array();
+        if(is_array($data)){
+            foreach($data as $item){
+                if($item!=$val){
+                    $out[]=$item;
+                }else{
+                    continue;
+                }
+            }
+        }
+        return $out;
+    }
     /*
     * @TODO description DocLister::getUrl()
     */
@@ -98,8 +167,22 @@ abstract class DocLister {
     /*
     * @TODO description DocLister::render()
     */
-    abstract public function render($tpl='');
+    abstract public function _render($tpl='');
 
+    /*
+    * @TODO description DocLister::render()
+    */
+    public function render($tpl=''){
+        $out='';
+        if(1==$this->getCFGDef('tree','0')){
+            foreach($this->_tree as $item){
+                $out.=$this->renderTree($item);
+            }
+            return $this->parseChunk($this->getCFGDef("ownerTPL",""),array($this->getCFGDef("sysKey","dl").".wrap"=>$out));
+        }else{
+            return $this->_render($tpl);
+        }
+    }
     /*
      * CORE Block
      */
@@ -272,6 +355,20 @@ abstract class DocLister {
 		}
 		return $locale;
 	}
+
+    protected function renderTree($data){
+        $out='';
+        if(!empty($data['#childNodes'])){
+            foreach($data['#childNodes'] as $item){
+                $out .= $this->renderTree($item);
+            }
+        }
+
+        $data[$this->getCFGDef("sysKey","dl").".wrap"]=$this->parseChunk($this->getCFGDef("ownerTPL",""),array($this->getCFGDef("sysKey","dl").".wrap"=>$out));
+        $out=$this->parseChunk($this->getCFGDef('tpl',''),$data);
+        return $out;
+    }
+
     /*
      * refactor $modx->getChunk();
      *

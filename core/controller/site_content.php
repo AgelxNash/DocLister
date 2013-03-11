@@ -45,17 +45,20 @@ class site_contentDocLister extends DocLister{
 				$this->_docs[$docID]=array_merge($this->_docs[$docID],$TVitem);
 		    }
         }
+        if(1==$this->getCFGDef('tree','0')){
+            $this->treeBuild('id','parent');
+        }
         return $this->_docs;
 	}
 
-     /*
-     * @absctract
+
+    /*
      * @todo set correct active placeholder if you work with other table. Because $item['id'] can differ of $modx->documentIdentifier (for other controller)
      * @todo set author placeholder (author name). Get id from Createdby OR editedby AND get info from extender user
      * @todo set filter placeholder with string filtering for insert URL
      */
-	public function render($tpl=''){
-		$out='';
+        public function _render($tpl=''){
+            $out='';
 		if($tpl==''){
 			$tpl=$this->getCFGDef('tpl','');
 		}

@@ -1,3 +1,7 @@
+## 1.0.7 (2013-03-12)
+* add method DocLister::checkDL() for control main parameter
+* refactoring snippet DocLister
+
 ## 1.0.6 (2013-03-11)
 * add parameter pageAdjacents and pageLimit for paginate extender
 * try-catch in construct DocLister

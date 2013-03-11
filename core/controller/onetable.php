@@ -46,7 +46,7 @@ class onetableDocLister extends DocLister{
         return $this->_docs;
 	}
 
-	public function render($tpl=''){
+	public function _render($tpl=''){
 		$out='';
 		if($tpl==''){
 			$tpl=$this->getCFGDef('tpl','');

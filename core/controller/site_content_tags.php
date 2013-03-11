@@ -58,7 +58,7 @@ class site_content_tagsDocLister extends DocLister{
      * @todo set author placeholder (author name). Get id from Createdby OR editedby AND get info from extender user
      * @todo set filter placeholder with string filtering for insert URL
      */
-	public function render($tpl=''){
+	public function _render($tpl=''){
 		$out='';
 		if($tpl==''){
 			$tpl=$this->getCFGDef('tpl','');
