@@ -265,7 +265,7 @@ class site_content_tagsDocLister extends DocLister{
 		$sanitarInIDs = $this->sanitarIn($this->IDs);
 		$where   = "WHERE {$where} id IN ({$sanitarInIDs}) AND deleted=0 AND published=1";
 		$limit   = $this->LimitSQL($this->getCFGDef('queryLimit',0));
-		$rs=$this->modx->db->query("SELECT * FROM {$tbl_site_content} {$where} {$this->SortOrderSQL("pub_date")} {$limit}");
+		$rs=$this->modx->db->query("SELECT * FROM {$tbl_site_content} {$where} {$this->SortOrderSQL("if(pub_date=0,createdon,pub_date)")} {$limit}");
 		
 		$rows=$this->modx->db->makeArray($rs);
 		$out=array();
@@ -358,8 +358,8 @@ class site_content_tagsDocLister extends DocLister{
 				c.parent IN (".$this->sanitarIn($this->IDs).") 
 				AND c.deleted=0 
 				AND c.published=1 ".
-				(($this->getCFGDef('showParent','0')) ? "" : "AND c.id NOT IN(".$this->sanitarIn($this->IDs).")").
-			$this->SortOrderSQL('pub_date')." ".
+				(($this->getCFGDef('showParent','0')) ? "" : "AND c.id NOT IN(".$this->sanitarIn($this->IDs).") ").
+			$this->SortOrderSQL('if(pub_date=0,createdon,pub_date)')." ".
 			$this->LimitSQL($this->getCFGDef('queryLimit',0))
 		);
 		$rows=$this->modx->db->makeArray($sql);
