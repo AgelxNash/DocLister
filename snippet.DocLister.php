@@ -7,6 +7,8 @@
  * @date 12.03.2013
  * @version 1.0.7
  */
+ if(!defined('MODX_BASE_PATH')) {die('HACK???');}
+ 
 $dir = realpath(MODX_BASE_PATH. (isset($dir) ? $dir : 'assets/snippets/DocLister/'));
 
 require_once($dir . "/core/DocLister.class.php");
