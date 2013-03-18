@@ -343,15 +343,11 @@ abstract class DocLister {
     * @TODO description DocLister::setLocate()
     */
 	final public function setLocate($locale=''){
-		switch(true){
-			case (''==$locale):{
-				$locale = $this->getCFGDef('locale','');
-				//without break
-			}
-			case (''!=$locale):{
-				setlocale(LC_ALL, $locale);
-				break;
-			}
+		if(''==$locale){
+			$locale = $this->getCFGDef('locale','');
+		}
+		if(''!=$locale){
+			setlocale(LC_ALL, $locale);
 		}
 		return $locale;
 	}
