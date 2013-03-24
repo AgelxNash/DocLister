@@ -372,28 +372,30 @@ abstract class DocLister {
      * @return string html template with placeholders without data
      */
     private function _getChunk($name){
+        $name = trim($name);
         if($name!='' && !isset($this->modx->chunkCache[$name])){
-            $mode=substr($name,0,6);
-            switch($mode){
-                case '@FILE:':{ //tpl in file
-                    $tpl=trim(substr($name, 6));
-                    $real=realpath(MODX_BASE_PATH.'assets/templates');
-                    $path=realpath(MODX_BASE_PATH.'assets/templates/'. preg_replace(array('/\.*[\/|\\\]/i', '/[\/|\\\]+/i'), array('/', '/'), $tpl).'.html');
-                    $fname=explode(".",$path);
-                    if($real == substr($path,0, strlen($real)) && end($fname)=='html' && file_exists($path)){
-                        $tpl=file_get_contents($path);
-                    }else{
-                        $tpl='';
-                    }
-                    break;
-                }
-                case '@CODE:':{ //name is tpl
-                    $tpl=trim(substr($name, 6));
-                    break;
-                }
-                default:{  //not exist chunk
+            if('@FILE:' = substr($name,0,6)) { //tpl in file
+                $tpl=trim(substr($name, 6));
+                $real=realpath(MODX_BASE_PATH.'assets/templates');
+                $path=realpath(MODX_BASE_PATH.'assets/templates/'. preg_replace(array('/\.*[\/|\\\]/i', '/[\/|\\\]+/i'), array('/', '/'), $tpl).'.html');
+                $fname=explode(".",$path);
+                if($real == substr($path,0, strlen($real)) && end($fname)=='html' && file_exists($path)){
+                    $tpl=file_get_contents($path);
+                }else{
                     $tpl='';
                 }
+            } elseif('@CODE:' = substr($name,0,6)){ //name is tpl
+                $tpl=trim(substr($name, 6));
+            } elseif(substr($name,0,9) == '@DOCUMENT') {
+                $docid = trim(substr($name, 10));
+                if(!preg_match('@^[0-9]+$@',$docid))
+                    $tpl = 'missing template';
+                else
+                    $doc = $this->modx->getPageInfo($docid,0,'content');
+                    if($doc) $tpl = $doc['content'];
+                    else     $tpl = '';
+            } else{
+                $tpl='';
             }
             if($tpl!=''){
                 $this->modx->chunkCache[$name]=$tpl; //save tpl
