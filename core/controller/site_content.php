@@ -21,7 +21,10 @@ class site_contentDocLister extends DocLister{
 	public function getUrl($id=0){
         $id=$id>0?$id:$this->modx->documentIdentifier;
         $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : "";
-		return $this->modx->makeUrl($id, '', $link, 'full');
+        if($id==$this->modx->config['site_start'])
+             $url = $this->modx->config['site_url'];
+        else $url = $this->modx->makeUrl($id, '', $link, 'full');
+		return $url;
 	}
      /*
      * @absctract
