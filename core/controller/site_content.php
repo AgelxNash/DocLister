@@ -60,7 +60,7 @@ class site_contentDocLister extends DocLister{
         public function _render($tpl=''){
             $out='';
 		if($tpl==''){
-			$tpl=$this->getCFGDef('tpl','');
+			$tpl=$this->getCFGDef('tpl','@CODE:<a href="[+url+]">[+pagetitle+]</a><br />');
 		}
 		if($tpl!=''){
 			$date=$this->getCFGDef('dateSource','pub_date');

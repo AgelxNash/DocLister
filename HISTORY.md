@@ -1,3 +1,7 @@
+## 1.0.8 (2013-03-26)
+* New method for template on DocLister::_getChunk
+* New extender template for easy add new custom method for template
+
 ## 1.0.7 (2013-03-12)
 * add method DocLister::checkDL() for control main parameter
 * refactoring snippet DocLister

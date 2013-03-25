@@ -5,8 +5,8 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 11.03.2013
- * @version 1.0.6
+ * @date 26.03.2013
+ * @version 1.0.8
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
@@ -370,29 +370,82 @@ abstract class DocLister {
      *
      * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
      * @return string html template with placeholders without data
+     *
+     * @TODO debug mode for log error
      */
     private function _getChunk($name){
+        //without trim
         if($name!='' && !isset($this->modx->chunkCache[$name])){
-            $mode=substr($name,0,6);
+            $mode = (preg_match('/^((@[A-Z]+)[:]{0,1})(.*)/Asu',trim($name),$tmp) && isset($tmp[2],$tmp[3])) ? $tmp[2] : false;
+            $tpl='';
             switch($mode){
-                case '@FILE:':{ //tpl in file
-                    $tpl=trim(substr($name, 6));
-                    $real=realpath(MODX_BASE_PATH.'assets/templates');
-                    $path=realpath(MODX_BASE_PATH.'assets/templates/'. preg_replace(array('/\.*[\/|\\\]/i', '/[\/|\\\]+/i'), array('/', '/'), $tpl).'.html');
-                    $fname=explode(".",$path);
-                    if($real == substr($path,0, strlen($real)) && end($fname)=='html' && file_exists($path)){
-                        $tpl=file_get_contents($path);
-                    }else{
-                        $tpl='';
+                case '@FILE':{//tpl in file
+                    if($tmp[3]!=''){
+                        $real=realpath(MODX_BASE_PATH.'assets/templates');
+                        $path=realpath(MODX_BASE_PATH.'assets/templates/'. preg_replace(array('/\.*[\/|\\\]/i', '/[\/|\\\]+/i'), array('/', '/'), $tmp[3]).'.html');
+                        $fname=explode(".",$path);
+                        if($real == substr($path,0, strlen($real)) && end($fname)=='html' && file_exists($path)){
+                            $tpl=file_get_contents($path);
+                        }
                     }
                     break;
                 }
-                case '@CODE:':{ //name is tpl
-                    $tpl=trim(substr($name, 6));
+                case '@CHUNK':{
+                    if($tpl!=''){
+                        $tpl = $this->modx->getChunk($tmp[3]);
+                    }else{
+                        //error chunk name
+                    }
                     break;
                 }
-                default:{  //not exist chunk
-                    $tpl='';
+                case '@TPL':
+                case '@CODE':{
+                    $tpl = $tmp[3];
+                    break;
+                }
+                case '@DOCUMENT':
+                case '@DOC':{
+                    switch(true){
+                        case ((int)$tmp[3]>0):{
+                            $tpl = $this->modx->getPageInfo((int)$tmp[3],0,"content");
+                            $tpl = isset($tpl['content']) ? $tpl['content'] : '';
+                            break;
+                        }
+                        case ((int)$tmp[3]==0):{
+                            $tpl=$this->modx->documentObject['content'];
+                            break;
+                        }
+                        default:{
+                        //error docid
+                        }
+                    }
+                    break;
+                }
+                case '@PLH':
+                case '@PLACEHOLDER':{
+                    if($tpl!=''){
+                        $tpl = $this->modx->getPlaceholder($tmp[3]);
+                    }else{
+                        //error placeholder name
+                    }
+                    break;
+                }
+                case '@CFG':
+                case '@CONFIG':
+                case '@OPTIONS':{
+                    if($tpl!=''){
+                        $tpl = $this->modx->getConfig($tmp[3]);
+                    }else{
+                        //error config name
+                    }
+                    break;
+                }
+                default:{
+                    if($this->checkExtender('template')){
+                        $tpl = $this->extender['template']->init($this,array('full'=>$name,'mode'=>$mode,'tpl'=>$tmp[3]));
+                    }else{
+                        //error template
+                    }
                 }
             }
             if($tpl!=''){
