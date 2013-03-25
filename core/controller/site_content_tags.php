@@ -21,11 +21,12 @@ class site_content_tagsDocLister extends DocLister{
 	public function getUrl($id=0){
         $id=$id>0?$id:$this->modx->documentIdentifier;
         $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : "";
-		$tag=$this->checkTag();
-		if($tag!=false && is_array($tag) && $tag['mode']=='get'){
-			$link.="&tag=".urlencode($tag['tag']);
-		}
-		return $this->modx->makeUrl($id, '', $link, 'full');
+        $tag=$this->checkTag();
+        if($tag!=false && is_array($tag) && $tag['mode']=='get'){
+            $link.="&tag=".urlencode($tag['tag']);
+        }
+        $url = ($id==$this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link!='' ? "?{$link}" : "") : $this->modx->makeUrl($id, '', $link, 'full');
+        return $url;
 	}
      /*
      * @absctract
