@@ -179,3 +179,4 @@ class summary_DL_Extender extends extDocLister{
 			return $text . $endTags;
 		}
 }
+?>

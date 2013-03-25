@@ -487,13 +487,13 @@ abstract class DocLister {
         foreach($data as $num=>$doc){
 			foreach($doc as $name=>$value){
 				if(in_array($name,$fields) || array('1')==$fields){
-					$tmp[str_replace(".","_",$name)]=$value; //JSON element name without dot 
+					$tmp[str_replace(".","_",$name)]=$value; //JSON element name without dot
 				}
 			}
-			$out[$num]=$tmp; 
+			$out[$num]=$tmp;
         }
-		
-		// $out = prepareJsonData($out); 
+
+		// $out = prepareJsonData($out);
         return json_encode($out);
     }
     /*

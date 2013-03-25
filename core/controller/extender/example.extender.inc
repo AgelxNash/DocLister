@@ -15,3 +15,4 @@ class example_DL_Extender extends extDocLister{
         print_r($this->_cfg);
     }
 }
+?>

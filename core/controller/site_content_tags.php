@@ -374,3 +374,4 @@ class site_content_tagsDocLister extends DocLister{
 		return $out;
 	}
 }
+?>

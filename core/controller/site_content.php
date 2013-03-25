@@ -330,3 +330,4 @@ class site_contentDocLister extends DocLister{
 		return $out;
 	}
 }
+?>
