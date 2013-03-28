@@ -1,3 +1,7 @@
+## 1.0.9 (2013-03-28)
+* new method for template on Doclister::getChunkByParam
+* fix DocLister::_getChunk
+
 ## 1.0.8 (2013-03-26)
 * New method for template on DocLister::_getChunk
 * New extender template for easy add new custom method for template

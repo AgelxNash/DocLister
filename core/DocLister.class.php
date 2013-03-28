@@ -5,8 +5,8 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 26.03.2013
- * @version 1.0.8
+ * @date 28.03.2013
+ * @version 1.0.9
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
@@ -378,11 +378,12 @@ abstract class DocLister {
         if($name!='' && !isset($this->modx->chunkCache[$name])){
             $mode = (preg_match('/^((@[A-Z]+)[:]{0,1})(.*)/Asu',trim($name),$tmp) && isset($tmp[2],$tmp[3])) ? $tmp[2] : false;
             $tpl='';
+            if(isset($tmp[3])) $subTmp=trim($tmp[3]);
             switch($mode){
                 case '@FILE':{//tpl in file
-                    if($tmp[3]!=''){
+                    if($subTmp!=''){
                         $real=realpath(MODX_BASE_PATH.'assets/templates');
-                        $path=realpath(MODX_BASE_PATH.'assets/templates/'. preg_replace(array('/\.*[\/|\\\]/i', '/[\/|\\\]+/i'), array('/', '/'), $tmp[3]).'.html');
+                        $path=realpath(MODX_BASE_PATH.'assets/templates/'. preg_replace(array('/\.*[\/|\\\]/i', '/[\/|\\\]+/i'), array('/', '/'), $subTmp).'.html');
                         $fname=explode(".",$path);
                         if($real == substr($path,0, strlen($real)) && end($fname)=='html' && file_exists($path)){
                             $tpl=file_get_contents($path);
@@ -391,8 +392,8 @@ abstract class DocLister {
                     break;
                 }
                 case '@CHUNK':{
-                    if($tpl!=''){
-                        $tpl = $this->modx->getChunk($tmp[3]);
+                    if($subTmp!=''){
+                        $tpl = $this->modx->getChunk($subTmp);
                     }else{
                         //error chunk name
                     }
@@ -400,18 +401,18 @@ abstract class DocLister {
                 }
                 case '@TPL':
                 case '@CODE':{
-                    $tpl = $tmp[3];
+                    $tpl = $tmp[3]; //without trim
                     break;
                 }
                 case '@DOCUMENT':
                 case '@DOC':{
                     switch(true){
-                        case ((int)$tmp[3]>0):{
-                            $tpl = $this->modx->getPageInfo((int)$tmp[3],0,"content");
+                        case ((int)$subTmp>0):{
+                            $tpl = $this->modx->getPageInfo((int)$subTmp,0,"content");
                             $tpl = isset($tpl['content']) ? $tpl['content'] : '';
                             break;
                         }
-                        case ((int)$tmp[3]==0):{
+                        case ((int)$subTmp==0):{
                             $tpl=$this->modx->documentObject['content'];
                             break;
                         }
@@ -423,8 +424,8 @@ abstract class DocLister {
                 }
                 case '@PLH':
                 case '@PLACEHOLDER':{
-                    if($tpl!=''){
-                        $tpl = $this->modx->getPlaceholder($tmp[3]);
+                    if($subTmp!=''){
+                        $tpl = $this->modx->getPlaceholder($subTmp);
                     }else{
                         //error placeholder name
                     }
@@ -433,8 +434,8 @@ abstract class DocLister {
                 case '@CFG':
                 case '@CONFIG':
                 case '@OPTIONS':{
-                    if($tpl!=''){
-                        $tpl = $this->modx->getConfig($tmp[3]);
+                    if($subTmp!=''){
+                        $tpl = $this->modx->getConfig($subTmp);
                     }else{
                         //error config name
                     }
@@ -442,13 +443,13 @@ abstract class DocLister {
                 }
                 default:{
                     if($this->checkExtender('template')){
-                        $tpl = $this->extender['template']->init($this,array('full'=>$name,'mode'=>$mode,'tpl'=>$tmp[3]));
+                        $tpl = $this->extender['template']->init($this,array('full'=>$name,'mode'=>$mode,'tpl'=>$tmp[3])); //without trim
                     }else{
                         //error template
                     }
                 }
             }
-            if($tpl!=''){
+            if($tpl!='' && is_scalar($tpl)){
                 $this->modx->chunkCache[$name]=$tpl; //save tpl
             }
         }
@@ -471,6 +472,19 @@ abstract class DocLister {
         return $out;
     }
 
+    /*
+     * Get full template from parameter name
+     *
+     * @param string $name param name
+     * @param string $val default value
+     *
+     * @return string html template from parameter
+     */
+    public function getChunkByParam($name,$val=''){
+        $data=$this->getCFGDef($name,$val);
+        $data=$this->_getChunk($data);
+        return $data;
+    }
     /*
     * @TODO description DocLister::getJSON()
     */
