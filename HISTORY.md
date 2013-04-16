@@ -1,3 +1,6 @@
+## 1.0.10 (2013-04-16)
+* Delete synchronization DocLister::$_cfg['parents'] and DocLister::$IDs for check default parameters
+
 ## 1.0.9 (2013-03-28)
 * new method for template on Doclister::getChunkByParam
 * fix DocLister::_getChunk

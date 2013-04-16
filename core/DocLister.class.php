@@ -5,8 +5,8 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 28.03.2013
- * @version 1.0.9
+ * @date 16.04.2013
+ * @version 1.0.10
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
@@ -84,7 +84,7 @@ abstract class DocLister {
             }else{
                 $cfg['idType'] = "parents";
                 if(($IDs=$this->getCFGDef('parents',''))==''){
-                    $cfg['parents']=$IDs=$this->modx->documentIdentifier;
+                    $IDs=$this->modx->documentIdentifier;
                 }
             }
             $this->setConfig($cfg);
