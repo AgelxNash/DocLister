@@ -1,3 +1,7 @@
+## 1.0.11 (2013-04-28)
+* [Bug] Set default templates in pagination with @CODE
+* [Bug] parents parameter in cleanIDs with space
+
 ## 1.0.10 (2013-04-16)
 * Delete synchronization DocLister::$_cfg['parents'] and DocLister::$IDs for check default parameters
 

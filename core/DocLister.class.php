@@ -5,8 +5,8 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 16.04.2013
- * @version 1.0.10
+ * @date 28.04.2013
+ * @version 1.0.11
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
@@ -577,8 +577,9 @@ abstract class DocLister {
             $IDs=explode($sep,$IDs);
         }
         foreach($IDs as $item){
-            if((int)$item==$item){
-                $out[]=$item;
+            $item = trim($item);
+            if(is_numeric($item) && (int)$item>=0){ //Fix 0xfffffffff 
+                $out[]=(int)$item;
             }
         }
         $out = array_unique($out);
