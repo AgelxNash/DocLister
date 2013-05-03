@@ -1,3 +1,6 @@
+## 1.0.12 (2013-05-03)
+* [Bug] ignore api parameter
+
 ## 1.0.11 (2013-04-28)
 * [Bug] Set default templates in pagination with @CODE
 * [Bug] parents parameter in cleanIDs with space
