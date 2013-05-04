@@ -6,8 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 09.03.2013
- * @version 1.0.4
+ * @date 04.05.2013
+ * @version 1.0.13
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  */
@@ -136,7 +136,7 @@ class site_content_tagsDocLister extends DocLister{
 		return $this->toPlaceholders($out);
 	}
 	
-	public function getJSON($data,$fields){
+	public function getJSON($data,$fields,$array=array()){
         $out=array();
 		$fields = is_array($fields) ? $fields : explode(",",$fields);
 		$date=$this->getCFGDef('dateSource','pub_date');

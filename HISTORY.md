@@ -1,3 +1,6 @@
+## 1.0.13 (04.05.2013)
+* [Bug] Declaration getJSON() compability with DocLister::getJSON($data, $fields, $array = Array)
+ 
 ## 1.0.12 (2013-05-03)
 * [Bug] ignore api parameter
 

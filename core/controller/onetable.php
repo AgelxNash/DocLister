@@ -5,8 +5,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 08.03.2013
- * @version 1.0.0
+ * @date 04.05.2013
+ * @version 1.0.13
  *
  * @TODO add controller for construct tree from table
  * @TODO custom prepare field before parse chunk
@@ -125,7 +125,7 @@ class onetableDocLister extends DocLister{
 		return $this->toPlaceholders($out);
 	}
 	
-	public function getJSON($data,$fields){
+	public function getJSON($data,$fields,$array=array()){
         $out=array();
 		$fields = is_array($fields) ? $fields : explode(",",$fields);
 		$date=$this->getCFGDef('dateSource','pub_date');
