@@ -5,8 +5,8 @@
  * @category extender
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 28.04.2013
- * @version 1.0.10
+ * @date 08.05.2013
+ * @version 1.0.14
  */
 
 class paginate_DL_Extender extends extDocLister{
@@ -33,6 +33,7 @@ class paginate_DL_Extender extends extDocLister{
 				$this->DocLister->setConfig(array('start'=>$start*$this->DocLister->getCFGDef('display',0)));
 				$this->_pages['current']=$start+1;
                 $pages=$this->getListPages($paginate,'total');
+				$this->DocLister->toPlaceholders($this->_pages['current'],1,"current");
                 $this->DocLister->toPlaceholders($this->renderPages("pages"),1,"pages");
 				break;
 			}
