@@ -27,7 +27,6 @@ var $prevI = "&#171;"; //&#9668;
 
 var $numberT = ' <a href="[+link+]">[+num+]</a> ';
 var $currentT = ' <b>[+num+]</b> ';
-var $dotsT = ' <a href="[+link+]">...</a> ';
 
 var $mainTpl = '<div class="[+classname+]">[+wrap+]</div>';
 
@@ -173,21 +172,21 @@ function calculate(){
                                                                                         else
                                                                                                 $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($counter),str_replace('[+num+]',$counter,$this->numberT));
                                                                         }
-                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($counter),$this->dotsT);
-                                                                $this->pagination .= "<a href=\"".$this->get_pagenum_link($lpm1)."\">$lpm1</a>";
-                                                                $this->pagination .= "<a href=\"".$this->get_pagenum_link($lastpage)."\">$lastpage</a>";
+                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($counter),str_replace('[+num+]',"...",$this->numberT));
+                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($lpm1),str_replace('[+num+]',$lpm1,$this->numberT));
+                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($lastpage),str_replace('[+num+]',$lastpage,$this->numberT));
                                                         }
                                                 //in middle; hide some front and some back
                                                 elseif($lastpage - ($this->adjacents * 2) > $this->page && $this->page > ($this->adjacents * 2)){
                                                                 $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link(1),str_replace('[+num+]',1,$this->numberT));//     "<a href=\"".$this->get_pagenum_link(1)."\">1</a>";
                                                                 $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link(2),str_replace('[+num+]',2,$this->numberT));
-                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link(3),$this->dotsT);
+                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link(3),str_replace('[+num+]',"...",$this->numberT));
                                                                 for ($counter = $this->page - $this->adjacents; $counter <= $this->page + $this->adjacents; $counter++)
                                                                         if ($counter == $this->page)
                                                                                         $this->pagination .= str_replace('[+num+]',$counter,str_replace('[+link+]',$this->get_pagenum_link($prev),$this->currentT));
                                                                                 else
                                                                                         $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($counter),str_replace('[+num+]',$counter,$this->numberT)); //"<a href=\"".$this->get_pagenum_link($counter)."\">$counter</a>";
-                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($counter),$this->dotsT);
+                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($counter),str_replace('[+num+]',"...",$this->numberT));
                                                                 $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($lpm1),str_replace('[+num+]',$lpm1,$this->numberT)); // "<a href=\"".$this->get_pagenum_link($lpm1)."\">$lpm1</a>";
                                                                 $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link($lastpage),str_replace('[+num+]',$lastpage,$this->numberT)); //"<a href=\"".$this->get_pagenum_link($lastpage)."\">$lastpage</a>";
                                                         }
@@ -195,7 +194,7 @@ function calculate(){
                                                 else{
                                                                 $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link(1),str_replace('[+num+]',1,$this->numberT)); //"<a href=\"".$this->get_pagenum_link(1)."\">1</a>";
                                                                 $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link(2),str_replace('[+num+]',2,$this->numberT)); //"<a href=\"".$this->get_pagenum_link(2)."\">2</a>";
-                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link(3),$this->dotsT);
+                                                                $this->pagination .= str_replace('[+link+]',$this->get_pagenum_link(3),str_replace('[+num+]',"...",$this->numberT));
                                                                 for ($counter = $lastpage - (2 + ($this->adjacents * 2)); $counter <= $lastpage; $counter++)
                                                                         if ($counter == $this->page)
                                                                                         $this->pagination .= str_replace('[+num+]',$counter,str_replace('[+link+]',$this->get_pagenum_link($prev),$this->currentT));

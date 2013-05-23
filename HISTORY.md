@@ -1,3 +1,6 @@
+## 1.0.15 (24.05.2013)
+* Fix paginate template
+
 ## 1.0.14 (08.05.2013)
 * add current page placeholder into paginate extender
 
