@@ -114,7 +114,7 @@ class onetableDocLister extends DocLister{
 					$i++;
 				}
 			}
-            if($this->getCFGDef("noneWrapOuter","1")){
+            if(($this->getCFGDef("noneWrapOuter","1") && count($this->_docs)==0) || count($this->_docs)>0){
 				$ownerTPL=$this->getCFGDef("ownerTPL","");
 				// echo $this->modx->getChunk($ownerTPL);
 				if($ownerTPL!=''){
