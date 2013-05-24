@@ -6,8 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 04.05.2013
- * @version 1.0.13
+ * @date 24.05.2013
+ * @version 1.0.15
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  * @TODO st placeholder [+dl.title+] if menutitle not empty
@@ -124,11 +124,13 @@ class site_contentDocLister extends DocLister{
 					$i++;
 				}
 			}
-            $ownerTPL=$this->getCFGDef("ownerTPL","");
-            // echo $this->modx->getChunk($ownerTPL);
-            if($ownerTPL!=''){
-                $out=$this->parseChunk($ownerTPL,array($this->getCFGDef("sysKey","dl").".wrap"=>$out));
-            }
+            if($this->getCFGDef("noneWrapOuter","1")){
+				$ownerTPL=$this->getCFGDef("ownerTPL","");
+				// echo $this->modx->getChunk($ownerTPL);
+				if($ownerTPL!=''){
+					$out=$this->parseChunk($ownerTPL,array($this->getCFGDef("sysKey","dl").".wrap"=>$out));
+				}
+			}
 		}else{
 			$out='none TPL';
 		}
