@@ -105,9 +105,16 @@ class site_content_tagsDocLister extends DocLister{
 
                     $class=array();
                     $class[] = ($i%2==0) ? 'odd' : 'even';
-                    if($i==0) $class[]='first';
-                    if($i==count($this->_docs)) $class[]='last';
+                    if($i==0){
+						$tpl=$this->getCFGDef('tplFirst',$tpl);
+						$class[]='first';
+					}
+                    if($i==count($this->_docs)){
+						$tpl=$this->getCFGDef('tplLast',$tpl);
+						$class[]='last';
+					}
                     if($this->modx->documentIdentifier == $item['id']){
+						$tpl=$this->getCFGDef('tplCurrent',$tpl);
                         $item[$this->getCFGDef("sysKey","dl").'.active']=1;  //[+active+] - 1 if $modx->documentIdentifer equal ID this element
                         $class[]='current';
                     }else{

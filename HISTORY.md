@@ -1,3 +1,6 @@
+## 1.0.16 (11.06.2013)
+* add new parameters tplFirst, tplLast, tplCurrent
+
 ## 1.0.15 (24.05.2013)
 * Fix paginate template
 * Freezing get documents method
