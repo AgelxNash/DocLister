@@ -6,8 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 24.05.2013
- * @version 1.0.15
+ * @date 17.07.2013
+ * @version 1.0.17
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  */
@@ -346,7 +346,7 @@ class site_content_tagsDocLister extends DocLister{
 		if($tag!==false){
 			$join="RIGHT JOIN ".$this->modx->getFullTableName('site_content_tags')." as ct on ct.doc_id=c.id 
 					RIGHT JOIN ".$this->modx->getFullTableName('tags')." as t on t.id=ct.tag_id";
-			$where.= ($where!='' ? "" : " AND ")."t.`name`='".$this->modx->db->escape($tag['tag'])."'".
+			$where.= ($where=='' ? " " : " AND ")."t.`name`='".$this->modx->db->escape($tag['tag'])."'".
 					(($this->getCFGDef('tagsData','')>0) ? "AND ct.tv_id=".(int)$this->getCFGDef('tagsData','') : "")." AND ";
 		}
 		$out=array("where"=>$where,"join"=>$join);

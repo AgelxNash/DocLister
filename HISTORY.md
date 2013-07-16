@@ -1,3 +1,6 @@
+## 1.0.17 (17.07.2013)
+* fix whereTag method from site_content_tags controller
+
 ## 1.0.16 (11.06.2013)
 * add new parameters tplFirst, tplLast, tplCurrent
 
