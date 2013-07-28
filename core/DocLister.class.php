@@ -5,8 +5,8 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 24.05.2013
- * @version 1.0.15
+ * @date 28.07.2013
+ * @version 1.0.18
  *
  *	@TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  *	@TODO add controller for filter by TV values
@@ -19,6 +19,7 @@ if(!defined('MODX_BASE_PATH')){die('What are you doing? Get out of here!');}
 */
 
 abstract class DocLister {
+	const VERSION = '1.0.18';
     /*
     * @TODO description DocLister::$_docs;
     */
@@ -506,7 +507,18 @@ abstract class DocLister {
 			}
 			$out[$num]=$tmp;
         }
+		
+		if ('new'==$this->getCFGDef('JSONformat','old')) {
+            $return = array();
 
+            $return['rows'] = array();
+            foreach($out as $item){
+                $return['rows'][] = $item;
+            }
+            $return['total'] = $this->getChildrenCount();
+        }else{
+            $return = $out;
+        }
 		// $out = prepareJsonData($out);
         return json_encode($out);
     }
