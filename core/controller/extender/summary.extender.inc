@@ -51,7 +51,8 @@ class summary_DL_Extender extends extDocLister{
 		}
 
         $summary = $this->closeTags($summary);
-		$summary=$this->rTriming($summary);
+        // MOD disable removing dots etc. by PATRIOT
+		//$summary = $this->rTriming($summary);
 
         return $summary;
 	}
