@@ -4,7 +4,7 @@
  * 
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
- * @author PATRIOT <appetitikus@gmail.com>
+ * @author kabachello <appetitikus@gmail.com>
  * @date 06.05.2013
  * @version 1.0.0
  * 
@@ -375,7 +375,7 @@ class site_content_filtersDocLister extends DocLister{
 			if (strpos($filter_string, $op) === 0){
 				$logic_op_found = true;
 				$subfilters = substr($filter_string, strlen($op)+1, -1);
-				$subfilters = explode(';', $subfilters, 2);
+				$subfilters = explode(';', $subfilters);
 				foreach ($subfilters as $subfilter){
 					$subfilter = $this->getFilters(trim($subfilter));
 					if (!$subfilter) continue;
