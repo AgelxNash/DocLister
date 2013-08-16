@@ -1,64 +1,36 @@
 <?php
+require_once 'content.filter.php';
 /**
  * Filters DocLister results by value of a given MODx Template Variables (TVs).
- * Supported comparison operators:
- * - "="
- * - "IN"
- * - "LIKE" also "%LIKE" or "LIKE%"
- * @author aka
- * @param filter_tv tvname:operator:value
+ * @author kabachello
  *
  */
-class tv_DL_filter extends filterDocLister{
+class tv_DL_filter extends content_DL_filter{
 	private $tv_table_alias;
 	private $tv_id;
-	private $tv_name;
-	private $operator;
-	private $value;
 	
 	function parseFilter($filter) {
 		global $modx;
 		$return = false;
 		
-		// first parse the give filter string
-		$parsed = explode(':', $filter);
-		$this->tv_name = $parsed[1];
-		$this->operator = $parsed[2];
-		$this->value = $parsed[3];
-		// exit if something is wrong
-		if (empty($this->tv_name) || empty($this->operator) || empty($this->value)) return false;
+		// use the parsing mechanism of the content filter for the start
+		if (!parent::parseFilter($filter)) return false;
 		
+		// now add some variables specific to the TV-filter
 		// get the id of the TV
-		$tvid = $modx->db->select('id', $modx->getFullTableName('site_tmplvars'), 'name = "' . $this->tv_name . '"');
+		$tvid = $modx->db->select('id', $modx->getFullTableName('site_tmplvars'), 'name = "' . $this->field . '"');
 		$tvid = $modx->db->makeArray($tvid);
 		$this->tv_id = intval($tvid[0]['id']);
-		if (!$this->tv_id) $modx->logEvent(0, 2, 'DocLister filtering by template variable "' . $this->tv_name . '" failed. TV not found!');
+		if (!$this->tv_id) $modx->logEvent(0, 2, 'DocLister filtering by template variable "' . $this->field . '" failed. TV not found!');
 		
 		// create the alias for the join
-		$this->tv_table_alias = 'dltv_' . $this->tv_name;
+		// FIXME this only works if the TV is used in exactly one filter. Multiple Filters on one TV would need different table_aliases.
+		$this->tv_table_alias = 'dltv_' . $this->field;
 		return true;
 	}
 	
 	function get_where(){
-		$where = $this->tv_table_alias . '.value ';
-		switch ($this->operator){
-			case '=': case 'eq': $where .= ' = ' . $this->value; break;
-			case 'gt': $where .= ' > ' . $this->value; break;
-			case 'lt': $where .= ' < ' . $this->value; break;
-			case 'elt': $where .= ' <= ' . $this->value; break;
-			case 'egt': $where .= ' >= ' . $this->value; break;
-			case 'like': $where .= " LIKE '%" . $this->value . "%'"; break;
-			case 'is': $where .= " = '" . $this->value . "'"; break;
-			case 'containsOne' : 
-				$words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $this->value);
-				foreach ($words as $word){
-					$word_arr[] = $this->tv_table_alias . ".value LIKE '%" . trim($word) . "%'";
-				}
-				$where = '(' . implode(' OR ', $word_arr) . ')';
-				break; 
-			default: return '';
-		}
-		return $where;
+		return $this->build_sql_where($this->tv_table_alias, 'value', $this->operator, $this->value);
 	}
 	
 	function get_join(){

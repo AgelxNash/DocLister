@@ -4,9 +4,9 @@
  * 
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
- * @author kabachello <appetitikus@gmail.com>
- * @date 06.05.2013
- * @version 1.0.0
+ * @author kabachello <kabachnik@hotmail.com>
+ * @date 16.08.2013
+ * @version 1.1.0
  * 
  * Adds flexible filters to DocLister. Filter types can be easily added using filter extenders (see filter subfolder).
  * To use filtering via snippet call add the "filters" parameter to the DocLister call like " ... &filters=`tv:tags:like:your_tag`
@@ -19,7 +19,7 @@
  * <value> - value to compare with
  * 
  * Examples:
- * AND(content:template:eq:5, tv:tags:like:my tag) - fetch all documents with template id 5 and the words "my tag" in the TV named "tags"
+ * AND(content:template:eq:5; tv:tags:like:my tag) - fetch all documents with template id 5 and the words "my tag" in the TV named "tags"
  *
  */
 
@@ -258,11 +258,10 @@ class site_content_filtersDocLister extends DocLister{
 
     // @abstract
      public function getChildrenCount(){
-		$where=$this->getCFGDef('addWhereList','');
 		// add the parameter addWhereList
 		$where = $this->getCFGDef('addWhereList','');
 		// add the filters
-		$where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+		$where = ($where && $this->_filters['where'] ? $where . ' AND ' : '') . $this->_filters['where'];
 		
 		if($where!=''){
 			$where.=" AND ";
@@ -343,7 +342,7 @@ class site_content_filtersDocLister extends DocLister{
 		}
 		
 		$sql=$this->modx->db->query("
-			SELECT c.* FROM ".$this->modx->getFullTableName('site_content')." as c " . $this->_filters['join'] . "
+			SELECT DISTINCT c.* FROM ".$this->modx->getFullTableName('site_content')." as c " . $this->_filters['join'] . "
 			WHERE ".$where."
 				c.parent IN (".$this->sanitarIn($this->IDs).") 
 				AND c.deleted=0 
