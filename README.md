@@ -1,13 +1,20 @@
-DocLister for MODX Evolution
+### DocLister for MODX Evolution
 =========
 Сниппет для вывода информации из таблиц по предопределенным правилам.
 Если нет правил, то данные отображаются без дополнительной обработки и связи. Т.е. все поля и значения совпадают с базой данных.
 
 Правила для обработки информации описаны в контроллерах.
-Главный контроллер - site_content который определяет связь основных документов site_content с данными в TV-параметрах
+Главный контроллер - **site_content** который определяет связь основных документов site_content с данными в TV-параметрах
 
-Полезные ссылки
+### Полезные ссылки
 ---------
 * **Документация**: http://wiki.modx.im/evolution:snippets:doclister
 * **Презентация**: http://modx.im/blog/addons/527.html
 * **Пример работы**: http://doclister.agelnash.ru
+
+### Автор
+<table>
+  <tr>
+    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=60"></td><td valign="middle">Борисов Евгений<br>Agel Nash<br><a href="http://artdevue.com">http://agel-nash.ru</a></td>
+  </tr>
+</table>
