@@ -39,7 +39,7 @@ class onetableDocLister extends DocLister
     */
     public function getDocs($tvlist = '')
     {
-        $this->table = $this->modx->getFullTableName($this->getCFGDef('table', 'site_content'));
+        $this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
         $this->idField = $this->getCFGDef('idField', 'id');
 
         if ($this->checkExtender('paginate')) {

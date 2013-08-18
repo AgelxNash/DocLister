@@ -16,6 +16,13 @@ class site_content_tagsDocLister extends DocLister
 {
     private $tag = array();
 
+    function __construct($modx, $cfg = array()){
+        parent::__construct($modx,$cfg);
+        if(!$this->_loadExtender('tv')){
+            die('error');
+        }
+    }
+
     /*
      * @absctract
      * @todo link maybe include other GET parameter with use pagination. For example - filter
@@ -37,6 +44,8 @@ class site_content_tagsDocLister extends DocLister
     */
     public function getDocs($tvlist = '')
     {
+        $this->extender['tv']->getAllTV_Name();
+
         if ($this->checkExtender('paginate')) {
             $pages = $this->extender['paginate']->init($this);
         } else {
@@ -50,7 +59,7 @@ class site_content_tagsDocLister extends DocLister
         }
         if ($tvlist != '' && $this->checkIDs()) {
 
-            $tv = $this->getTVList(array_keys($this->_docs), $tvlist);
+            $tv = $this->extender['tv']->getTVList(array_keys($this->_docs),$tvlist);
             foreach ($tv as $docID => $TVitem) {
                 $this->_docs[$docID] = array_merge($this->_docs[$docID], $TVitem);
             }
@@ -176,91 +185,6 @@ class site_content_tagsDocLister extends DocLister
         return parent::getJSON($data, $fields, $out);
     }
 
-    protected function getTVList($IDs, $tvlist)
-    {
-        $tv = $this->getTVid($tvlist);
-        $tvId = array_keys($tv);
-        $tbl_site_tmplvar_contentvalues = $this->modx->getFullTableName('site_tmplvar_contentvalues');
-        $sanitarInIDs = $this->sanitarIn($IDs);
-        $implodeTvId = implode(',', $tvId);
-        $where = "contentid IN({$sanitarInIDs}) AND tmplvarid IN({$implodeTvId})";
-        $rs = $this->modx->db->select('tmplvarid,value,contentid', $tbl_site_tmplvar_contentvalues, $where);
-        $rows = $this->modx->db->makeArray($rs);
-        $out = array();
-        foreach ($rows as $item) {
-            $out[$item['contentid']]['tv.' . $tv[$item['tmplvarid']]] = $item['value'];
-        }
-
-        $renderTV = $this->getListRenderTV();
-        $tvDef = $this->loadTVDefault($tvId);
-        $TVkeys = array_keys($tvDef);
-        foreach ($out as $itemid => $item) {
-            foreach ($TVkeys as $name) {
-                if (!isset($out[$itemid][$name])) {
-                    $out[$itemid][$name] = $tvDef[$name]['value'];
-                }
-                if (in_array($name, $renderTV) || $renderTV == array("*")) {
-                    $out[$itemid][$name] = $this->renderTV($itemid, $name, $out[$itemid][$name], $tvDef[$name]);
-                }
-            }
-        }
-        return $out;
-    }
-
-    protected function getListRenderTV()
-    {
-        $tmp = $this->getCFGDef('renderTV', '');
-        if ($tmp != '' && $tmp != '*') {
-            $tmp = explode(",", $tmp);
-            if (in_array("*", $tmp)) {
-                $tmp = array("*");
-            } else {
-                $out = array_unique($tmp);
-                $tmp = array();
-                foreach ($out as $item) {
-                    $tmp[] = "tv." . $item;
-                }
-            }
-        } else {
-            $tmp = array($tmp);
-        }
-        return $tmp;
-    }
-
-    protected function renderTV($iddoc, $tvname, $tvval, $param)
-    {
-        include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
-        include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
-        return getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $iddoc, '');
-    }
-
-    protected function loadTVDefault($tvId)
-    {
-        $tbl_site_tmplvars = $this->modx->getFullTableName('site_tmplvars');
-        $fields = 'id,name,default_text as value,display,display_params,type';
-        $implodeTvId = implode(',', $tvId);
-        $rs = $this->modx->db->select($fields, $tbl_site_tmplvars, "id IN({$implodeTvId})");
-        $rows = $this->modx->db->makeArray($rs);
-        $out = array();
-        foreach ($rows as $item) {
-            $out['tv.' . $item['name']] = $item;
-        }
-        return $out;
-    }
-
-    protected function getTVid($tvlist)
-    {
-        $tbl_site_tmplvars = $this->modx->getFullTableName('site_tmplvars');
-        $sanitarInTvlist = $this->sanitarIn($tvlist);
-        $rs = $this->modx->db->select('id,name', $tbl_site_tmplvars, "name in ({$sanitarInTvlist})");
-        $rows = $this->modx->db->makeArray($rs);
-        $out = array();
-        foreach ($rows as $item) {
-            $out[$item['id']] = $item['name'];
-        }
-        return $out;
-    }
-
     /*
      * document
      */
@@ -273,7 +197,7 @@ class site_content_tagsDocLister extends DocLister
             $where .= " AND ";
         }
         $wheres = $this->whereTag($where);
-        $tbl_site_content = $this->modx->getFullTableName('site_content');
+        $tbl_site_content = $this->getTable('site_content');
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         $getCFGDef = $this->getCFGDef('showParent', '0') ? '' : "AND c.id NOT IN({$sanitarInIDs})";
         $fields = 'count(c.`id`) as `count`';
@@ -294,11 +218,22 @@ class site_content_tagsDocLister extends DocLister
             $where .= " AND ";
         }
 
-        $tbl_site_content = $this->modx->getFullTableName('site_content');
+        $tbl_site_content = $this->getTable('site_content');
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         $where = "WHERE {$where} id IN ({$sanitarInIDs}) AND deleted=0 AND published=1";
         $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-        $rs = $this->modx->db->query("SELECT * FROM {$tbl_site_content} {$where} {$this->SortOrderSQL("if(pub_date=0,createdon,pub_date)")} {$limit}");
+        $select = "c.*";
+        $sort = $this->SortOrderSQL("if(pub_date=0,createdon,pub_date)");
+        if (preg_match("/^ORDER BY (.*) /", $sort, $match)) {
+            $TVnames = $this->extender['tv']->getTVnames();
+            if (isset($TVnames[$match[1]])) {
+                $tbl_site_content .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues") . " as tv
+                    on tv.contentid=c.id AND tv.tmplvarid=" . $TVnames[$match[1]];
+                $sort = str_replace("ORDER BY " . $match[1], "ORDER BY tv.value", $sort);
+            }
+        }
+
+        $rs = $this->modx->db->query("SELECT {$select}  FROM {$tbl_site_content} {$where} GROUP BY c.id {$sort} {$limit}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
@@ -319,7 +254,7 @@ class site_content_tagsDocLister extends DocLister
             $where .= " AND ";
         }
 
-        $tbl_site_content = $this->modx->getFullTableName('site_content');
+        $tbl_site_content = $this->getTable('site_content');
         $sanitarInIDs = $this->sanitarIn($id);
         $where = "{$where} parent IN ({$sanitarInIDs}) AND deleted=0 AND published=1 AND isfolder=1";
         $rs = $this->modx->db->select('id', $tbl_site_content, $where);
@@ -373,9 +308,9 @@ class site_content_tagsDocLister extends DocLister
         $join = '';
         $tag = $this->checkTag(true);
         if ($tag !== false) {
-            $join = "RIGHT JOIN " . $this->modx->getFullTableName('site_content_tags') . " as ct on ct.doc_id=c.id
-					RIGHT JOIN " . $this->modx->getFullTableName('tags') . " as t on t.id=ct.tag_id";
-            $where .= ($where == '' ? " " : " AND ") . "t.`name`='" . $this->modx->db->escape($tag['tag']) . "'" .
+            $join = "RIGHT JOIN " . $this->getTable('site_content_tags') . " as ct on ct.doc_id=c.id
+					RIGHT JOIN " . $this->getTable('tags') . " as t on t.id=ct.tag_id";
+            $where .= "t.`name`='" . $this->modx->db->escape($tag['tag']) . "'" .
                 (($this->getCFGDef('tagsData', '') > 0) ? "AND ct.tv_id=" . (int)$this->getCFGDef('tagsData', '') : "") . " AND ";
         }
         $out = array("where" => $where, "join" => $join);
@@ -396,7 +331,7 @@ class site_content_tagsDocLister extends DocLister
         $where = $this->whereTag($where);
 
         $sql = $this->modx->db->query("
-			SELECT c.* FROM " . $this->modx->getFullTableName('site_content') . " as c " . $where['join'] . "
+			SELECT c.* FROM " . $this->getTable('site_content') . " as c " . $where['join'] . "
 			WHERE " . $where['where'] . "
 				c.parent IN (" . $this->sanitarIn($this->IDs) . ")
 				AND c.deleted=0 

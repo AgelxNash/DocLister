@@ -56,6 +56,8 @@ abstract class DocLister
     */
     private $_cfg = array();
 
+    private $_table = array();
+
     /*
     * @TODO description DocLister::__construct()
     */
@@ -106,6 +108,12 @@ abstract class DocLister
         }
     }
 
+    public function getTable($name){
+        if(!isset($this->_table[$name])){
+            $this->_table[$name] = $this->modx->getFullTableName($name);
+        }
+        return $this->_table[$name];
+    }
     /*
     *
     */
@@ -300,7 +308,7 @@ abstract class DocLister
     /*
     * @TODO description DocLister::sanitarIn()
     */
-    final protected function sanitarIn($data, $sep = ',')
+    final public function sanitarIn($data, $sep = ',')
     {
         if (!is_array($data)) {
             $data = explode($sep, $data);
@@ -575,7 +583,7 @@ abstract class DocLister
      * @param string $name name extender
      * @return boolean $flag status load extender
      */
-    final private function _loadExtender($name)
+    final protected function _loadExtender($name)
     {
         $flag = false;
 
@@ -589,7 +597,7 @@ abstract class DocLister
                 }
             }
             if (class_exists($classname, false) && $classname != '') {
-                $this->extender[$name] = new $classname;
+                $this->extender[$name] = new $classname($this);
                 $this->loadLang($name);
                 $flag = true;
             }
@@ -836,6 +844,12 @@ abstract class extDocLister
     */
     abstract protected function run();
 
+    public function __construct($DocLister){
+        if ($DocLister instanceof DocLister) {
+            $this->DocLister = $DocLister;
+            $this->modx = $this->DocLister->getMODX();
+        }
+    }
     /*
     * @TODO description extDocLister::init();
     */
