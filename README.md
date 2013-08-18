@@ -1,16 +1,13 @@
 DocLister for MODX Evolution
 =========
-Snippet to display the information of the tables by the description rules. If there are no rules, the data output without additional processing and communications. ie all the fields and values match with the database.
+Сниппет для вывода информации из таблиц по предопределенным правилам.
+Если нет правил, то данные отображаются без дополнительной обработки и связи. Т.е. все поля и значения совпадают с базой данных.
 
-All the rules for displaying information described in the controllers. Main controller - site_content which defines communication of key documents MODX with TV settings
+Правила для обработки информации описаны в контроллерах.
+Главный контроллер - site_content который определяет связь основных документов site_content с данными в TV-параметрах
 
-If you need to add a specific filter, you can make a copy of the controller and the pure PHP to write the desired logic in SQL queries. It is not considered bad style because the upgrade of the snippet will not change the logic of your filter.
-
-To work with any table without constraints all have a controller that requires mandatory additional parameter table indicates the table from which you will be working
-
-Documentation DocLister
+Полезные ссылки для ознакомления с DocLister
 ---------
-Russian: wiki http://wiki.modx.im/evolution:snippets:doclister
-
-
-*I'm sorry for my english*
+Документация: http://wiki.modx.im/evolution:snippets:doclister
+Презентация: http://modx.im/blog/addons/527.html
+Пример работы: http://doclister.agelnash.ru

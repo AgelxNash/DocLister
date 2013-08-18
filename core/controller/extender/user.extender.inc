@@ -12,73 +12,85 @@
  * @param $usertype get information about managers or web users
  *
  */
- 
-class user_DL_Extender extends extDocLister{
-    private $fields=array();
-    private $userinfo=array();
-    private $table=array();
 
-    protected function run(){
-        if(''!=$this->_cfg['fields']){
-            $this->table=$this->getTable();
-            $this->_cfg['fields']=explode(",",$this->_cfg['fields']);
-            $userid=array();
-            foreach($this->_cfg['fields'] as $item){
-               $this->fields[$item]=$this->DocLister->getOneField($item,true);
-               $userid=array_merge($this->fields[$item],$userid);
+class user_DL_Extender extends extDocLister
+{
+    private $fields = array();
+    private $userinfo = array();
+    private $table = array();
+
+    protected function run()
+    {
+        if ('' != $this->_cfg['fields']) {
+            $this->table = $this->getTable();
+            $this->_cfg['fields'] = explode(",", $this->_cfg['fields']);
+            $userid = array();
+            foreach ($this->_cfg['fields'] as $item) {
+                $this->fields[$item] = $this->DocLister->getOneField($item, true);
+                $userid = array_merge($this->fields[$item], $userid);
             }
-            $this->userinfo=$this->getInfo($userid);
+            $this->userinfo = $this->getInfo($userid);
             unset($userid);
         }
         return $this->userinfo;
     }
-    public function getUser($field,$user){
-        $out=array();
-        if(isset($this->fields[$field],$this->userinfo[$user])){
-            $out=$this->userinfo[$user];
+
+    public function getUser($field, $user)
+    {
+        $out = array();
+        if (isset($this->fields[$field], $this->userinfo[$user])) {
+            $out = $this->userinfo[$user];
         }
         return $out;
     }
-    public function setUserData($arr){
-        foreach($arr as $key=>$item){
-            $out=$this->DocLister->renameKeyArr($this->getUser($key,$item[$key]),'user',$key);
-            if(is_array($out) && count($out)>0){
-                $arr=array_merge($arr,$out);
+
+    public function setUserData($arr)
+    {
+        foreach ($arr as $key => $item) {
+            $out = $this->DocLister->renameKeyArr($this->getUser($key, $item[$key]), 'user', $key);
+            if (is_array($out) && count($out) > 0) {
+                $arr = array_merge($arr, $out);
             }
         }
         return $arr;
     }
+
     /*
      * get table name
      *
      * @global string $usertype type users (manager or web user). Default web
      */
-    private function getTable(){
-        $type=$this->DocLister->getCFGDef('usertype','web');
-        $table=array();
-        switch($type){
-            case 'manager':{
-                $table['users']=$this->modx->getFullTableName('manager_users');
-                $table['attributes']=$this->modx->getFullTableName('user_attributes');
+    private function getTable()
+    {
+        $type = $this->DocLister->getCFGDef('usertype', 'web');
+        $table = array();
+        switch ($type) {
+            case 'manager':
+            {
+                $table['users'] = $this->modx->getFullTableName('manager_users');
+                $table['attributes'] = $this->modx->getFullTableName('user_attributes');
                 break;
             }
             case 'web':
-            default:{
-                $table['users']=$this->modx->getFullTableName('web_users');
-                $table['attributes']=$this->modx->getFullTableName('web_user_attributes');
+            default:
+                {
+                $table['users'] = $this->modx->getFullTableName('web_users');
+                $table['attributes'] = $this->modx->getFullTableName('web_user_attributes');
                 break;
-            }
+                }
         }
         return $table;
     }
-    private function getInfo($user=array()){
-        if(!isset($this->table['users'],$this->table['attributes'])) $this->table=$this->getTable();
 
-        $out=array();
-        if(count($user)>0){
-            $user=implode(",",$this->DocLister->cleanIDs($user));
+    private function getInfo($user = array())
+    {
+        if (!isset($this->table['users'], $this->table['attributes'])) $this->table = $this->getTable();
+
+        $out = array();
+        if (count($user) > 0) {
+            $user = implode(",", $this->DocLister->cleanIDs($user));
             //without a.sessionid and u.password
-          $sql=$this->modx->db->query("
+            $sql = $this->modx->db->query("
                 SELECT
                     u.id,
                     u.username,
@@ -111,11 +123,12 @@ class user_DL_Extender extends extDocLister{
                 WHERE
                     u.id IN ({$user})
             ");
-            while($tmp=$this->modx->db->getRow($sql)){
-                $out[$tmp['id']]=$tmp;
+            while ($tmp = $this->modx->db->getRow($sql)) {
+                $out[$tmp['id']] = $tmp;
             }
         }
         return $out;
     }
 }
+
 ?>
