@@ -15,6 +15,6 @@
 ### Автор
 <table>
   <tr>
-    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=60"></td><td valign="middle">Борисов Евгений<br>Agel Nash<br><a href="http://artdevue.com">http://agel-nash.ru</a></td>
+    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=60"></td><td valign="middle">Борисов Евгений<br>Agel Nash<br><a href="http://agel-nash.ru">http://agel-nash.ru</a></td>
   </tr>
 </table>
