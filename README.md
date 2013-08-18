@@ -6,8 +6,8 @@ DocLister for MODX Evolution
 Правила для обработки информации описаны в контроллерах.
 Главный контроллер - site_content который определяет связь основных документов site_content с данными в TV-параметрах
 
-Полезные ссылки для ознакомления с DocLister
+Полезные ссылки
 ---------
-Документация: http://wiki.modx.im/evolution:snippets:doclister
-Презентация: http://modx.im/blog/addons/527.html
-Пример работы: http://doclister.agelnash.ru
+* **Документация**: http://wiki.modx.im/evolution:snippets:doclister
+* **Презентация**: http://modx.im/blog/addons/527.html
+* **Пример работы**: http://doclister.agelnash.ru
