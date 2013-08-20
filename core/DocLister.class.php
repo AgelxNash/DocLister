@@ -7,8 +7,8 @@ if (!defined('MODX_BASE_PATH')) {
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 18.08.2013
- * @version 1.0.19
+ * @date 20.08.2013
+ * @version 1.0.20
  *
  * @TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  * @TODO add controller for filter by TV values
@@ -22,7 +22,7 @@ if (!defined('MODX_BASE_PATH')) {
 
 abstract class DocLister
 {
-    const VERSION = '1.0.19';
+    const VERSION = '1.0.20';
     /*
     * @TODO description DocLister::$_docs;
     */
@@ -57,6 +57,8 @@ abstract class DocLister
     private $_cfg = array();
 
     private $_table = array();
+
+    protected $idField = 'id';
 
     /*
     * @TODO description DocLister::__construct()
@@ -108,11 +110,15 @@ abstract class DocLister
         }
     }
 
-    public function getTable($name){
+    public function getTable($name, $alias = ''){
         if(!isset($this->_table[$name])){
             $this->_table[$name] = $this->modx->getFullTableName($name);
         }
-        return $this->_table[$name];
+        $table = $this->_table[$name];
+        if(!empty($alias) && is_scalar($alias)){
+            $table .= " as ".$alias;
+        }
+        return $table;
     }
     /*
     *
@@ -308,7 +314,7 @@ abstract class DocLister
     /*
     * @TODO description DocLister::sanitarIn()
     */
-    final public function sanitarIn($data, $sep = ',')
+    final public function sanitarIn($data, $sep = ',', $quote=true)
     {
         if (!is_array($data)) {
             $data = explode($sep, $data);
@@ -317,7 +323,8 @@ abstract class DocLister
         foreach ($data as $item) {
             $out[] = $this->modx->db->escape($item);
         }
-        $out = "'" . implode("','", $out) . "'";
+        $q = $quote ? "'" : "";
+        $out = $q . implode($q.",".$q, $out) . $q;
         return $out;
     }
 
@@ -703,29 +710,46 @@ abstract class DocLister
      */
     final protected function SortOrderSQL($sortName, $orderDef = 'DESC')
     {
-        $out = array('orderBy' => '', 'order' => '', 'sortBy' => '');
-        if (($tmp = $this->getCFGDef('orderBy', '')) != '') {
-            $out['orderBy'] = $tmp;
-        } else {
-            switch (true) {
-                case ('' != ($tmp = $this->getCFGDef('sortDir', ''))):
-                { //higher priority than order
-                    $out['order'] = $tmp;
-                }
-                case ('' != ($tmp = $this->getCFGDef('order', ''))):
-                {
-                    $out['order'] = $tmp;
-                }
+        $sort = '';
+        switch($this->getCFGDef('sortType','')){
+            case 'none':{
+                break;
             }
-            if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
-                $out['order'] = $orderDef; //Default
+            case 'doclist':{
+                $idList = $this->sanitarIn($this->IDs,',', false);
+                $out['orderBy'] = "find_in_set({$this->getPK()}, '{$idList}')";
+                $this->setConfig($out); //reload config;
+                $sort = "ORDER BY ".$out['orderBy'];
+                break;
             }
+            default:{
+                $out = array('orderBy' => '', 'order' => '', 'sortBy' => '');
+                if (($tmp = $this->getCFGDef('orderBy', '')) != '') {
+                    $out['orderBy'] = $tmp;
+                } else {
+                    switch (true) {
+                        case ('' != ($tmp = $this->getCFGDef('sortDir', ''))):
+                        { //higher priority than order
+                            $out['order'] = $tmp;
+                        }
+                        case ('' != ($tmp = $this->getCFGDef('order', ''))):
+                        {
+                            $out['order'] = $tmp;
+                        }
+                    }
+                    if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
+                        $out['order'] = $orderDef; //Default
+                    }
 
-            $out['sortBy'] = (($tmp = $this->getCFGDef('sortBy', '')) != '') ? $tmp : $sortName;
-            $out['orderBy'] = $out['sortBy'] . " " . $out['order'];
+                    $out['sortBy'] = (($tmp = $this->getCFGDef('sortBy', '')) != '') ? $tmp : $sortName;
+                    $out['orderBy'] = $out['sortBy'] . " " . $out['order'];
+                }
+                $this->setConfig($out); //reload config;
+                $sort = "ORDER BY " . $out['orderBy'];
+                break;
+            }
         }
-        $this->setConfig($out); //reload config;
-        return "ORDER BY " . $out['orderBy'];
+        return $sort;
     }
 
     /*
@@ -813,8 +837,11 @@ abstract class DocLister
 
         return $this->_tree;
     }
-}
 
+    public function getPK(){
+        return isset($this->idField) ? $this->idField : 'id';
+    }
+}
 /**
  * DocLister abstract extender class
  *

@@ -6,8 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 18.08.2013
- * @version 1.0.16
+ * @date 20.08.2013
+ * @version 1.0.20
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  * @TODO st placeholder [+dl.title+] if menutitle not empty
@@ -198,7 +198,7 @@ class site_contentDocLister extends DocLister
         if ($where != '') {
             $where .= " AND ";
         }
-        $tbl_site_content = $this->getTable('site_content');
+        $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         $getCFGDef = $this->getCFGDef('showParent', '0') ? '' : "AND c.id NOT IN({$sanitarInIDs})";
         $fields = 'count(c.`id`) as `count`';
@@ -215,16 +215,16 @@ class site_contentDocLister extends DocLister
             $where .= " AND ";
         }
 
-        $tbl_site_content = $this->getTable('site_content');
-        $where = "WHERE {$where} deleted=0 AND published=1";
+        $tbl_site_content = $this->getTable('site_content','c');
+        $where = "WHERE {$where} c.deleted=0 AND c.published=1";
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''") {
-            $where .= " AND id IN ({$sanitarInIDs})";
+            $where .= " AND c.id IN ({$sanitarInIDs})";
         }
 
         $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
         $select = "c.*";
-        $sort = $this->SortOrderSQL("if(pub_date=0,createdon,pub_date)");
+        $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
         if (preg_match("/^ORDER BY (.*) /", $sort, $match)) {
             $TVnames = $this->extender['tv']->getTVnames();
             if (isset($TVnames[$match[1]])) {
@@ -254,9 +254,9 @@ class site_contentDocLister extends DocLister
             $where .= " AND ";
         }
 
-        $tbl_site_content = $this->getTable('site_content');
+        $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($id);
-        $where = "{$where} parent IN ({$sanitarInIDs}) AND deleted=0 AND published=1 AND isfolder=1";
+        $where = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 AND c.isfolder=1";
         $rs = $this->modx->db->select('id', $tbl_site_content, $where);
 
         $rows = $this->modx->db->makeArray($rs);
@@ -279,13 +279,13 @@ class site_contentDocLister extends DocLister
         }
 
         $sql = $this->modx->db->query("
-			SELECT c.* FROM " . $this->getTable('site_content') . " as c
+			SELECT c.* FROM " . $this->getTable('site_content','c') . "
 			WHERE " . $where . "
 				c.parent IN (" . $this->sanitarIn($this->IDs) . ")
 				AND c.deleted=0 
 				AND c.published=1 " .
                 (($this->getCFGDef('showParent', '0')) ? "" : "AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
-                $this->SortOrderSQL('if(pub_date=0,createdon,pub_date)') . " " .
+                $this->SortOrderSQL('if(c.pub_date=0,c.createdon,c.pub_date)') . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );
         $rows = $this->modx->db->makeArray($sql);

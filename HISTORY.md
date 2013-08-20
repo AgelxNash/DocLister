@@ -1,3 +1,11 @@
+## 1.0.20 (20.08.2013)
+* [Bug] Исправлен SQL запрос в методе getDocList() при выборке idType=documents
+* [Add] Добавленметод DocLister::getPK()
+* [Add] Новый сниппет DLcrumbs для замены сниппета Breadcrumbs
+* [Refactor] Новый параметр в методе DocLister::getTable() для задания псевдонима таблицы
+* [Refactor] Добавлены новые способы сортировок в методе DocLister::SortOrderSQL()
+* [Refactor] В классе пагинатора Digg оптимизировано выставление троеточия (by kabachello)
+
 ## 1.0.19 (18.08.2013)
 * [Add] Новый метод DocLister::getTable() на замету $this->modx->getFullTableName()
 * [Add] Новый экстендер tv для работы с TV параметрами

@@ -6,8 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 17.07.2013
- * @version 1.0.17
+ * @date 20.08.2013
+ * @version 1.0.20
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  */
@@ -197,11 +197,11 @@ class site_content_tagsDocLister extends DocLister
             $where .= " AND ";
         }
         $wheres = $this->whereTag($where);
-        $tbl_site_content = $this->getTable('site_content');
+        $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         $getCFGDef = $this->getCFGDef('showParent', '0') ? '' : "AND c.id NOT IN({$sanitarInIDs})";
         $fields = 'count(c.`id`) as `count`';
-        $from = "{$tbl_site_content} as c {$wheres['join']}";
+        $from = "{$tbl_site_content} {$wheres['join']}";
         $where = "{$wheres['where']} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 {$getCFGDef}";
         $rs = $this->modx->db->select($fields, $from, $where);
         return $this->modx->db->getValue($rs);
@@ -218,12 +218,12 @@ class site_content_tagsDocLister extends DocLister
             $where .= " AND ";
         }
 
-        $tbl_site_content = $this->getTable('site_content');
+        $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($this->IDs);
-        $where = "WHERE {$where} id IN ({$sanitarInIDs}) AND deleted=0 AND published=1";
+        $where = "WHERE {$where} c.id IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1";
         $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
         $select = "c.*";
-        $sort = $this->SortOrderSQL("if(pub_date=0,createdon,pub_date)");
+        $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
         if (preg_match("/^ORDER BY (.*) /", $sort, $match)) {
             $TVnames = $this->extender['tv']->getTVnames();
             if (isset($TVnames[$match[1]])) {
@@ -254,9 +254,9 @@ class site_content_tagsDocLister extends DocLister
             $where .= " AND ";
         }
 
-        $tbl_site_content = $this->getTable('site_content');
+        $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($id);
-        $where = "{$where} parent IN ({$sanitarInIDs}) AND deleted=0 AND published=1 AND isfolder=1";
+        $where = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 AND c.isfolder=1";
         $rs = $this->modx->db->select('id', $tbl_site_content, $where);
 
         $rows = $this->modx->db->makeArray($rs);
@@ -308,8 +308,8 @@ class site_content_tagsDocLister extends DocLister
         $join = '';
         $tag = $this->checkTag(true);
         if ($tag !== false) {
-            $join = "RIGHT JOIN " . $this->getTable('site_content_tags') . " as ct on ct.doc_id=c.id
-					RIGHT JOIN " . $this->getTable('tags') . " as t on t.id=ct.tag_id";
+            $join = "RIGHT JOIN " . $this->getTable('site_content_tags','ct') . " on ct.doc_id=c.id
+					RIGHT JOIN " . $this->getTable('tags','t') . " on t.id=ct.tag_id";
             $where .= "t.`name`='" . $this->modx->db->escape($tag['tag']) . "'" .
                 (($this->getCFGDef('tagsData', '') > 0) ? "AND ct.tv_id=" . (int)$this->getCFGDef('tagsData', '') : "") . " AND ";
         }
@@ -331,13 +331,13 @@ class site_content_tagsDocLister extends DocLister
         $where = $this->whereTag($where);
 
         $sql = $this->modx->db->query("
-			SELECT c.* FROM " . $this->getTable('site_content') . " as c " . $where['join'] . "
+			SELECT c.* FROM " . $this->getTable('site_content','c') . $where['join'] . "
 			WHERE " . $where['where'] . "
 				c.parent IN (" . $this->sanitarIn($this->IDs) . ")
 				AND c.deleted=0 
 				AND c.published=1 " .
                 (($this->getCFGDef('showParent', '0')) ? "" : "AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
-                $this->SortOrderSQL('if(pub_date=0,createdon,pub_date)') . " " .
+                $this->SortOrderSQL('if(c.pub_date=0,c.createdon,c.pub_date)') . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );
         $rows = $this->modx->db->makeArray($sql);

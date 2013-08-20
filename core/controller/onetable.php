@@ -5,21 +5,19 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 24.05.2013
- * @version 1.0.15
+ * @date 20.08.2013
+ * @version 1.0.20
  *
  * @TODO add controller for construct tree from table
  * @TODO custom prepare field before parse chunk
  * @param introField=`` //introtext
  * @param contentField=`description` //content
- * @param idField=`` //id
  * @param table=`` //table name
  */
 
 class onetableDocLister extends DocLister
 {
     protected $table = 'site_content';
-    protected $idField = 'id';
 
     /*
      * @absctract
@@ -173,12 +171,12 @@ class onetableDocLister extends DocLister
             $where = "WHERE " . $where;
         }
         $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-        $rs = $this->modx->db->query("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->idField)} {$limit}");
+        $rs = $this->modx->db->query("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
         foreach ($rows as $item) {
-            $out[$item[$this->idField]] = $item;
+            $out[$item[$this->getPK()]] = $item;
         }
         return $out;
     }
@@ -187,21 +185,20 @@ class onetableDocLister extends DocLister
     public function getChildrenCount()
     {
         $where = $this->getCFGDef('addWhereList', '');
-        $fields = "count(c.`{$this->idField}`) as `count`";
-        $from = "{$this->table} as c";
-        $rs = $this->modx->db->select($fields, $from, $where);
+        $fields = "count(`{$this->getPK()}`) as `count`";
+        $rs = $this->modx->db->select($fields, $this->table, $where);
         return $this->modx->db->getValue($rs);
     }
 
     public function getChildernFolder($id)
     {
         $where = $this->getCFGDef('addWhereFolder', '');
-        $rs = $this->modx->db->select($this->idField, $this->table, $where);
+        $rs = $this->modx->db->select($this->getPK(), $this->table, $where);
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
         foreach ($rows as $item) {
-            $out[] = $item[$this->idField];
+            $out[] = $item[$this->getPK()];
         }
         return $out;
     }
