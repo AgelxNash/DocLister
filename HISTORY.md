@@ -1,3 +1,6 @@
+## 1.0.21 (22.08.2013)
+* [Bug] Исправлен SQL запрос в методе getChildrenCount() контроллера site_content из-за нового метода DocLister::getTable()
+
 ## 1.0.20 (20.08.2013)
 * [Bug] Исправлен SQL запрос в методе getDocList() при выборке idType=documents
 * [Add] Добавленметод DocLister::getPK()

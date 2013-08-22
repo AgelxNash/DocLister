@@ -6,8 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 20.08.2013
- * @version 1.0.20
+ * @date 22.08.2013
+ * @version 1.0.21
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  * @TODO st placeholder [+dl.title+] if menutitle not empty
@@ -202,9 +202,8 @@ class site_contentDocLister extends DocLister
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         $getCFGDef = $this->getCFGDef('showParent', '0') ? '' : "AND c.id NOT IN({$sanitarInIDs})";
         $fields = 'count(c.`id`) as `count`';
-        $from = "{$tbl_site_content} as c";
         $where = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 {$getCFGDef}";
-        $rs = $this->modx->db->select($fields, $from, $where);
+        $rs = $this->modx->db->select($fields, $tbl_site_content, $where);
         return $this->modx->db->getValue($rs);
     }
 
