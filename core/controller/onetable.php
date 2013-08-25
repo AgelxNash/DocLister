@@ -5,8 +5,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 20.08.2013
- * @version 1.0.20
+ * @date 25.08.2013
+ * @version 1.0.22
  *
  * @TODO add controller for construct tree from table
  * @TODO custom prepare field before parse chunk
@@ -70,6 +70,7 @@ class onetableDocLister extends DocLister
                 }
 
                 foreach ($this->_docs as $item) {
+                    $subTpl = '';
                     if ($this->checkExtender('user')) {
                         $item = $this->extender['user']->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
@@ -100,24 +101,27 @@ class onetableDocLister extends DocLister
                     $class = array();
                     $class[] = ($i % 2 == 0) ? 'odd' : 'even';
                     if ($i == 0) {
-                        $tpl = $this->getCFGDef('tplFirst', $tpl);
+                        $subTpl = $this->getCFGDef('tplFirst', $tpl);
                         $class[] = 'first';
                     }
                     if ($i == count($this->_docs)) {
-                        $tpl = $this->getCFGDef('tplLast', $tpl);
+                        $subTpl = $this->getCFGDef('tplLast', $tpl);
                         $class[] = 'last';
                     }
                     if ($this->modx->documentIdentifier == $item['id']) {
-                        $tpl = $this->getCFGDef('tplCurrent', $tpl);
+                        $subTpl = $this->getCFGDef('tplCurrent', $tpl);
                         $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
                         $class[] = 'current';
                     } else {
                         $item['active'] = 0;
                     }
+                    if($subTpl==''){
+                        $subTpl = $tpl;
+                    }
                     $class = implode(" ", $class);
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 
-                    $tmp = $this->parseChunk($tpl, $item);
+                    $tmp = $this->parseChunk($subTpl, $item);
                     if ($this->getCFGDef('contentPlaceholder', 0) !== 0) {
                         $this->toPlaceholders($tmp, 1, "item[" . $i . "]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
                     }

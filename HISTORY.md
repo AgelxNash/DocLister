@@ -1,3 +1,6 @@
+## 1.0.22 (25.08.2013)
+* [Bug] Исправлен глюк с переопределением шаблона tpl шаблонами tplLast, tplCurrent и tplFirst
+
 ## 1.0.21 (22.08.2013)
 * [Bug] Исправлен SQL запрос в методе getChildrenCount() контроллера site_content из-за нового метода DocLister::getTable()
 
