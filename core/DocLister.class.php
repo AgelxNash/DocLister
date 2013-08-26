@@ -7,8 +7,8 @@ if (!defined('MODX_BASE_PATH')) {
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 20.08.2013
- * @version 1.0.20
+ * @date 26.08.2013
+ * @version 1.0.23
  *
  * @TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  * @TODO add controller for filter by TV values
@@ -154,6 +154,9 @@ abstract class DocLister
                 $extenders = $this->unsetArrayVal($extenders, 'paginate');
             }
 
+            if($this->getCFGDef('prepare', '')!=''){
+                $this->_loadExtender('prepare');
+            }
         } catch (Exception $e) {
             $this->ErrorLogger($e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine(), $e->getTrace());
         }
@@ -501,8 +504,9 @@ abstract class DocLister
             if ($tpl != '' && is_scalar($tpl)) {
                 $this->modx->chunkCache[$name] = $tpl; //save tpl
             }
+        }else{
+            $tpl = $this->modx->getChunk($name);
         }
-        $tpl = isset($this->modx->chunkCache[$name]) ? $this->modx->chunkCache[$name] : '';
         return $tpl;
     }
 

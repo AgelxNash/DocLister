@@ -5,11 +5,10 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 25.08.2013
- * @version 1.0.22
+ * @date 26.08.2013
+ * @version 1.0.23
  *
  * @TODO add controller for construct tree from table
- * @TODO custom prepare field before parse chunk
  * @param introField=`` //introtext
  * @param contentField=`description` //content
  * @param table=`` //table name
@@ -121,6 +120,9 @@ class onetableDocLister extends DocLister
                     $class = implode(" ", $class);
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 
+                    if($this->checkExtender('prepare')){
+                        $item = $this->extender['prepare']->init($this, $item);
+                    }
                     $tmp = $this->parseChunk($subTpl, $item);
                     if ($this->getCFGDef('contentPlaceholder', 0) !== 0) {
                         $this->toPlaceholders($tmp, 1, "item[" . $i . "]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
@@ -131,7 +133,6 @@ class onetableDocLister extends DocLister
             }
             if (($this->getCFGDef("noneWrapOuter", "1") && count($this->_docs) == 0) || count($this->_docs) > 0) {
                 $ownerTPL = $this->getCFGDef("ownerTPL", "");
-                // echo $this->modx->getChunk($ownerTPL);
                 if ($ownerTPL != '') {
                     $out = $this->parseChunk($ownerTPL, array($this->getCFGDef("sysKey", "dl") . ".wrap" => $out));
                 }

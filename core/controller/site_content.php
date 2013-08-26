@@ -6,8 +6,8 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 25.08.2013
- * @version 1.0.22
+ * @date 26.08.2013
+ * @version 1.0.23
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  * @TODO st placeholder [+dl.title+] if menutitle not empty
@@ -139,6 +139,9 @@ class site_contentDocLister extends DocLister
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
                     if($subTpl==''){
                         $subTpl = $tpl;
+                    }
+                    if($this->checkExtender('prepare')){
+                        $item = $this->extender['prepare']->init($this, $item);
                     }
                     $tmp = $this->parseChunk($subTpl, $item);
 
