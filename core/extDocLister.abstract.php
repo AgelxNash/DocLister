@@ -59,8 +59,7 @@ abstract class extDocLister
         if ($DocLister instanceof DocLister) {
             $this->DocLister = $DocLister;
             $this->modx = $this->DocLister->getMODX();
-            $this->checkParam(func_get_args());
-            $flag = $this->run();
+            $flag = $this->checkParam(func_get_args())->run();
         }
         return $flag;
     }
@@ -69,12 +68,14 @@ abstract class extDocLister
      * Установка первоначального конфига экстендера
      *
      * @param array $args конфиг экстендера c массивом параметров
+     * @return $this
      */
     final protected function checkParam($args)
     {
         if (isset($args[1])) {
             $this->_cfg = $args[1];
         }
+        return $this;
     }
 
     /**
