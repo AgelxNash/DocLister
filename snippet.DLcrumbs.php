@@ -25,4 +25,3 @@ $_options = array(
 
 $_options = array_merge($_options, $modx->event->params);
 return $modx->runSnippet("DocLister",$_options);
-?>

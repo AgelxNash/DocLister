@@ -31,4 +31,3 @@ if (class_exists($classname, false) && $classname != 'DocLister') {
     $data = $DocLister->getDocs();
     return isset($modx->Event->params['api']) ? $DocLister->getJSON($data, $modx->Event->params['api']) : $DocLister->render();
 }
-?>

@@ -988,5 +988,3 @@ abstract class DocLister
 }
 
 include_once(dirname(__FILE__)."/extDocLister.abstract.php");
-
-?>

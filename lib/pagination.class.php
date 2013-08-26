@@ -269,5 +269,3 @@ class pagination
         return true;
     }
 }
-
-?>
