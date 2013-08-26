@@ -23,7 +23,7 @@ class site_content_tagsDocLister extends DocLister
         }
     }
 
-    /*
+    /**
      * @absctract
      * @todo link maybe include other GET parameter with use pagination. For example - filter
      */
@@ -39,7 +39,7 @@ class site_content_tagsDocLister extends DocLister
         return $url;
     }
 
-    /*
+    /**
     * @absctract
     */
     public function getDocs($tvlist = '')
@@ -67,7 +67,7 @@ class site_content_tagsDocLister extends DocLister
         return $this->_docs;
     }
 
-    /*
+    /**
     * @absctract
     * @todo set correct active placeholder if you work with other table. Because $item['id'] can differ of $modx->documentIdentifier (for other controller)
     * @todo set author placeholder (author name). Get id from Createdby OR editedby AND get info from extender user
@@ -191,7 +191,7 @@ class site_content_tagsDocLister extends DocLister
         return parent::getJSON($data, $fields, $out);
     }
 
-    /*
+    /**
      * document
      */
 
@@ -215,7 +215,7 @@ class site_content_tagsDocLister extends DocLister
 
     protected function getDocList()
     {
-        /*
+        /**
         * @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
         * @TODO: 5) Добавить фильтрацию по основным параметрам документа
         */
@@ -251,7 +251,7 @@ class site_content_tagsDocLister extends DocLister
 
     public function getChildernFolder($id)
     {
-        /*
+        /**
         * @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
         * @TODO: 5) Добавить фильтрацию по основным параметрам документа
         */
@@ -323,7 +323,7 @@ class site_content_tagsDocLister extends DocLister
         return $out;
     }
 
-    /*
+    /**
 	* @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
 	* @TODO: 5) Добавить фильтрацию по основным параметрам документа
 	*/

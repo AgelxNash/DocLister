@@ -102,7 +102,7 @@ class request_DL_Extender extends extDocLister
         $out = false;
         if (preg_match("/^\((.*)\)$/iu", $data, $data) && isset($data[1]) && $data[1] != '') {
             if ($data[1] == "*") { //Юзать если нужны массивы в суппер-глабальных массивах
-                /*
+                /**
                  * Но в таком случае в $this->param попадут все!!! элементы массива, которые были переданы
                  *
                  * Для примера order:g:*

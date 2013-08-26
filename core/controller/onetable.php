@@ -18,7 +18,7 @@ class onetableDocLister extends DocLister
 {
     protected $table = 'site_content';
 
-    /*
+    /**
      * @absctract
 	 * @todo link maybe include other GET parameter with use pagination. For example - filter
      */
@@ -31,7 +31,7 @@ class onetableDocLister extends DocLister
         return $url;
     }
 
-    /*
+    /**
     * @absctract
     */
     public function getDocs($tvlist = '')

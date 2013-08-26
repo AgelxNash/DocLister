@@ -22,81 +22,81 @@ if (!defined('MODX_BASE_PATH')) {
 
 abstract class DocLister
 {
-    /*
+    /**
      * Текущая версия ядра DocLister
      */
     const VERSION = '1.0.23';
 
-    /*
+    /**
      * Массив документов полученный в результате выборки из базы
      * @var array
      * @access protected
      */
     protected $_docs = array();
 
-    /*
+    /**
      * Массив документов self::$_docs собранный в виде дерева
      * @var array
      * @access protected
      */
     protected $_tree = array();
 
-    /*
+    /**
      * @var
      * @access protected
      */
     protected $IDs = 0;
 
-    /*
+    /**
      * Объект DocumentParser - основной класс MODX'а
      * @var DocumentParser
      * @access protected
      */
     protected $modx = null;
 
-    /*
+    /**
      * Массив загруженных экстендеров
      * @var array
      * @access protected
      */
     protected $extender = array();
 
-    /*
+    /**
      * Массив плейсхолдеров доступных в шаблоне
      * @var array
      * @access protected
      */
     protected $_plh = array();
 
-    /*
+    /**
      * Языковой пакет
      * @var array
      * @access protected
      */
     protected $_lang = array();
 
-    /*
+    /**
      * Массив настроек переданный через параметры сниппету
      * @var array
      * @access private
      */
     private $_cfg = array();
 
-    /*
+    /**
      * Список таблиц уже с префиксами MODX
      * @var array
      * @access private
      */
     private $_table = array();
 
-    /*
+    /**
      * PrimaryKey основной таблицы
      * @var string
      * @access protected
      */
     protected $idField = 'id';
 
-    /*
+    /**
     * @TODO description DocLister::__construct()
     */
     function __construct($modx, $cfg = array())
@@ -156,7 +156,7 @@ abstract class DocLister
         }
         return $table;
     }
-    /*
+    /**
     *
     */
     public function checkDL()
@@ -216,22 +216,22 @@ abstract class DocLister
         return $out;
     }
 
-    /*
+    /**
     * @TODO description DocLister::getUrl()
     */
     abstract public function getUrl($id = 0);
 
-    /*
+    /**
     * @TODO description DocLister::getDocs()
     */
     abstract public function getDocs($tvlist = '');
 
-    /*
+    /**
     * @TODO description DocLister::render()
     */
     abstract public function _render($tpl = '');
 
-    /*
+    /**
     * @TODO description DocLister::render()
     */
     public function render($tpl = '')
@@ -247,11 +247,11 @@ abstract class DocLister
         }
     }
 
-    /*
+    /**
      * CORE Block
      */
 
-    /*
+    /**
      * Display and save error information
      *
      * @param string $message error message
@@ -275,7 +275,7 @@ abstract class DocLister
         die($message);
     }
 
-    /*
+    /**
     * @TODO description DocLister::getMODX()
     */
     final public function getMODX()
@@ -283,7 +283,7 @@ abstract class DocLister
         return $this->modx;
     }
 
-    /*
+    /**
      * load extenders
      *
      * @param string $ext name extender separated by ,
@@ -309,7 +309,7 @@ abstract class DocLister
         return $out;
     }
 
-    /*
+    /**
     * save config array
     * @TODO description DocLister::setConfig()
     */
@@ -324,7 +324,7 @@ abstract class DocLister
         return $ret;
     }
 
-    /*
+    /**
     * @TODO description DocLister::getCFGDef()
     */
     final public function getCFGDef($name, $def)
@@ -332,7 +332,7 @@ abstract class DocLister
         return isset($this->_cfg[$name]) ? $this->_cfg[$name] : $def;
     }
 
-    /*
+    /**
     * @TODO description DocLister::toPlaceholders()
     */
     final public function toPlaceholders($data, $set = 0, $key = 'contentPlaceholder')
@@ -350,7 +350,7 @@ abstract class DocLister
         }
     }
 
-    /*
+    /**
     * @TODO description DocLister::sanitarIn()
     */
     final public function sanitarIn($data, $sep = ',', $quote=true)
@@ -367,7 +367,7 @@ abstract class DocLister
         return $out;
     }
 
-    /*
+    /**
     * @TODO description DocLister::loadLang()
     */
     final protected function loadLang($name = 'core', $lang = '')
@@ -384,7 +384,7 @@ abstract class DocLister
         return $this->_lang;
     }
 
-    /*
+    /**
     * @TODO description DocLister::getMsg()
     */
     final public function getMsg($name, $def = '')
@@ -392,7 +392,7 @@ abstract class DocLister
         return (isset($this->_lang[$name])) ? $this->_lang[$name] : $def;
     }
 
-    /*
+    /**
     * @TODO description DocLister::renameKeyArr()
     */
     final public function renameKeyArr($data, $prefix = '', $suffix = '', $sep = '.')
@@ -414,7 +414,7 @@ abstract class DocLister
         return $out;
     }
 
-    /*
+    /**
     * @TODO description DocLister::setLocate()
     */
     final public function setLocate($locale = '')
@@ -442,7 +442,7 @@ abstract class DocLister
         return $out;
     }
 
-    /*
+    /**
      * refactor $modx->getChunk();
      *
      * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
@@ -546,7 +546,7 @@ abstract class DocLister
         return $tpl;
     }
 
-    /*
+    /**
      * refactor $modx->parseChunk();
      *
      * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
@@ -562,7 +562,7 @@ abstract class DocLister
         return $out;
     }
 
-    /*
+    /**
      * Get full template from parameter name
      *
      * @param string $name param name
@@ -577,7 +577,7 @@ abstract class DocLister
         return $data;
     }
 
-    /*
+    /**
     * @TODO description DocLister::getJSON()
     */
     public function getJSON($data, $fields, $array = array())
@@ -615,7 +615,7 @@ abstract class DocLister
         return json_encode($return);
     }
 
-    /*
+    /**
      * @param string $name extender name
      * @return boolean status extender load
      */
@@ -624,7 +624,7 @@ abstract class DocLister
         return (isset($this->extender[$name]) && $this->extender[$name] instanceof $name . "_DL_Extender");
     }
 
-    /*
+    /**
      * load extender
      *
      * @param string $name name extender
@@ -652,11 +652,11 @@ abstract class DocLister
         return $flag;
     }
 
-    /*
-     * IDs BLOCK
-     */
+    /*************************************************
+     ****************** IDs BLOCK ********************
+     ************************************************/
 
-    /*
+    /**
     * @TODO description DocLister::setIDs()
     */
     final public function setIDs($IDs)
@@ -676,7 +676,7 @@ abstract class DocLister
         return ($this->IDs = $IDs);
     }
 
-    /*
+    /**
     * @TODO description DocLister::cleanIDs()
     */
     final public function cleanIDs($IDs, $sep = ',')
@@ -695,7 +695,7 @@ abstract class DocLister
         return $out;
     }
 
-    /*
+    /**
     * @TODO description DocLister::checkIDs()
     */
     final protected function checkIDs()
@@ -703,7 +703,7 @@ abstract class DocLister
         return (is_array($this->IDs) && count($this->IDs) > 0) ? true : false;
     }
 
-    /*
+    /**
      * Get all field values from array documents
      *
      * @param string $userField field name
@@ -722,21 +722,21 @@ abstract class DocLister
         return $out;
     }
 
-    /*
-     * SQL BLOCK
-     */
+    /**********************************************************
+     ********************** SQL BLOCK *************************
+     *********************************************************/
 
-    /*
+    /**
     * @TODO description DocLister::getChildrenCount()
     */
     abstract public function getChildrenCount();
 
-    /*
+    /**
     * @TODO description DocLister::getChildernFolder()
     */
     abstract public function getChildernFolder($id);
 
-    /*
+    /**
      *    Sorting method in SQL queries
      *
      *    @global string $order
@@ -792,7 +792,7 @@ abstract class DocLister
         return $sort;
     }
 
-    /*
+    /**
      * @TODO description DocLister::LimitSQL()
      */
     final protected function LimitSQL($limit = 0, $offset = 0)
@@ -824,7 +824,7 @@ abstract class DocLister
         return $ret;
     }
 
-    /*
+    /**
      * Clean up the modx and html tags
      *
      * @param string $data String for cleaning
@@ -835,7 +835,7 @@ abstract class DocLister
         return is_scalar($data) ? str_replace(array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D'), array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;'), htmlspecialchars($data)) : '';
     }
 
-    /*
+    /**
      * run tree build
      *
      * @param string $idField default name id field
@@ -846,7 +846,7 @@ abstract class DocLister
         return $this->_treeBuild($this->_docs, $this->getCFGDef('idField', $idField), $this->getCFGDef('parentField', $parentField));
     }
 
-    /*
+    /**
 	* @see: https://github.com/DmitryKoterov/DbSimple/blob/master/lib/DbSimple/Generic.php#L986
      *
      * @param array $data Associative data array

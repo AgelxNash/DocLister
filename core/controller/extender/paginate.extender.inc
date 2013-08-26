@@ -13,7 +13,7 @@ class paginate_DL_Extender extends extDocLister
 {
     private $_pages = array();
 
-    /*
+    /**
      * Call method
      *
      * @return int total pages
@@ -63,7 +63,7 @@ class paginate_DL_Extender extends extDocLister
         return $pages;
     }
 
-    /*
+    /**
      * Get information about pagination (current, total or all in array)
      *
      * @param string $paginate Mode paginate. Empty string if no paginate
@@ -86,7 +86,7 @@ class paginate_DL_Extender extends extDocLister
         return ($name != '' && isset($this->_pages[$name])) ? $this->_pages[$name] : $this->_pages;
     }
 
-    /*
+    /**
      *
      * @todo template list pages
      * @todo add parameter of count pages to display
@@ -107,7 +107,7 @@ class paginate_DL_Extender extends extDocLister
             }
             default:
                 {
-                /*
+                /**
                 * @see http://mis-algoritmos.com/2007/05/27/digg-style-pagination-class
                 */
                 $out = '';

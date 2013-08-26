@@ -55,7 +55,7 @@ class user_DL_Extender extends extDocLister
         return $arr;
     }
 
-    /*
+    /**
      * get table name
      *
      * @global string $usertype type users (manager or web user). Default web

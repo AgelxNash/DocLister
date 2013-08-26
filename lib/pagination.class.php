@@ -1,7 +1,7 @@
 <?php
 class pagination
 {
-    /*
+    /**
     Script Name: *Digg Style Paginator Class
     Script URI: http://www.mis-algoritmos.com/2007/05/27/digg-style-pagination-class/
     Description: Class in PHP that allows to use a pagination like a digg or sabrosus style.
@@ -9,7 +9,7 @@ class pagination
     Author: Victor De la Rocha
     Author URI: http://www.mis-algoritmos.com
     */
-    /*Default values*/
+    /**Default values*/
     var $total_pages = -1; //items
     var $limit = null;
     var $target = "";
@@ -20,7 +20,7 @@ class pagination
     var $parameterName = "page";
     var $urlF = false; //urlFriendly
 
-    /*Buttons next and previous*/
+    /**Buttons next and previous*/
     var $nextT = ' <a href="[+link+]">Next</a> ';
     var $nextI = "&#187;"; //&#9658;
     var $prevT = ' <a href="[+link+]">Previous</a> ';
