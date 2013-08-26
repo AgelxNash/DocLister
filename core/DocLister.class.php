@@ -22,42 +22,78 @@ if (!defined('MODX_BASE_PATH')) {
 
 abstract class DocLister
 {
+    /*
+     * Текущая версия ядра DocLister
+     */
     const VERSION = '1.0.23';
+
     /*
-    * @TODO description DocLister::$_docs;
-    */
+     * Массив документов полученный в результате выборки из базы
+     * @var array
+     * @access protected
+     */
     protected $_docs = array();
+
     /*
-    * @TODO description DocLister::$_tree;
-    */
+     * Массив документов self::$_docs собранный в виде дерева
+     * @var array
+     * @access protected
+     */
     protected $_tree = array();
+
     /*
-    * @TODO description DocLister::$IDs;
-    */
+     * @var
+     * @access protected
+     */
     protected $IDs = 0;
+
     /*
-    * @TODO description DocLister::$modx;
-    */
+     * Объект DocumentParser - основной класс MODX'а
+     * @var DocumentParser
+     * @access protected
+     */
     protected $modx = null;
+
     /*
-    * @TODO description DocLister::$extender;
-    */
-    protected $extender = '';
+     * Массив загруженных экстендеров
+     * @var array
+     * @access protected
+     */
+    protected $extender = array();
+
     /*
-    * @TODO description DocLister::$_plh;
-    */
+     * Массив плейсхолдеров доступных в шаблоне
+     * @var array
+     * @access protected
+     */
     protected $_plh = array();
+
     /*
-    * @TODO description DocLister::$_lang;
-    */
+     * Языковой пакет
+     * @var array
+     * @access protected
+     */
     protected $_lang = array();
+
     /*
-    * @TODO description DocLister::$_cfg;
-    */
+     * Массив настроек переданный через параметры сниппету
+     * @var array
+     * @access private
+     */
     private $_cfg = array();
 
+    /*
+     * Список таблиц уже с префиксами MODX
+     * @var array
+     * @access private
+     */
     private $_table = array();
 
+    /*
+     * PrimaryKey основной таблицы
+     * @var string
+     * @access protected
+     */
     protected $idField = 'id';
 
     /*
