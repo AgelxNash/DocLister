@@ -894,16 +894,24 @@ abstract class DocLister
 abstract class extDocLister
 {
     /*
-    * @TODO description extDocLister::$DocLister;
-    */
+     * Объект унаследованный от абстрактоного класса DocLister
+     * @var DocLister
+     * @access protected
+     */
     protected $DocLister;
+
     /*
-    * @TODO description extDocLister::$modx;
-    */
+     * Объект DocumentParser - основной класс MODX
+     * @var DocumentParser
+     * @access protected
+     */
     protected $modx;
+
     /*
-    * @TODO description extDocLister::$_cfg;
-    */
+     * Массив параметров экстендера полученных при инициализации класса
+     * @var array
+     * @access protected
+     */
     protected $_cfg = array();
 
     /*
