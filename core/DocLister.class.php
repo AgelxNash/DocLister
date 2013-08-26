@@ -22,7 +22,7 @@ if (!defined('MODX_BASE_PATH')) {
 
 abstract class DocLister
 {
-    const VERSION = '1.0.20';
+    const VERSION = '1.0.23';
     /*
     * @TODO description DocLister::$_docs;
     */
