@@ -13,7 +13,7 @@ if (!defined('MODX_BASE_PATH')) {
 
 $dir = realpath(MODX_BASE_PATH . (isset($dir) ? $dir : 'assets/snippets/DocLister/'));
 
-require_once($dir . "/core/DocLister.class.php");
+require_once($dir . "/core/DocLister.abstract.php");
 
 if (isset($controller)) {
     preg_match('/^(\w+)$/iu', $controller, $controller);
