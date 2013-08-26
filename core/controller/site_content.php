@@ -279,12 +279,13 @@ class site_contentDocLister extends DocLister
     protected function getChildrenList()
     {
         $where = $this->getCFGDef('addWhereList', '');
+        $where =($where ? $where . ' AND ' : '') . $this->_filters['where'];
         if ($where != '') {
             $where .= " AND ";
         }
 
         $sql = $this->modx->db->query("
-			SELECT c.* FROM " . $this->getTable('site_content','c') . "
+			SELECT DISTINCT c.* FROM " . $this->getTable('site_content','c') . " ". $this->_filters['join'] . "
 			WHERE " . $where . "
 				c.parent IN (" . $this->sanitarIn($this->IDs) . ")
 				AND c.deleted=0 
