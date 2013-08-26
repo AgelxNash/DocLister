@@ -4,47 +4,55 @@
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 09.03.2012
- * @version 1.0.1
  *
  */
 abstract class extDocLister
 {
-    /*
+    /**
      * Объект унаследованный от абстрактоного класса DocLister
      * @var DocLister
      * @access protected
      */
     protected $DocLister;
 
-    /*
+    /**
      * Объект DocumentParser - основной класс MODX
      * @var DocumentParser
      * @access protected
      */
     protected $modx;
 
-    /*
+    /**
      * Массив параметров экстендера полученных при инициализации класса
      * @var array
      * @access protected
      */
     protected $_cfg = array();
 
-    /*
-    * @TODO description extDocLister::run();
-    */
+    /**
+     * Запуск экстендера.
+     * Метод определяющий действия экстендера при инициализации
+     */
     abstract protected function run();
 
+    /**
+     * Конструктор экстендеров DocLister
+     *
+     * @param DocLister $DocLister объект класса DocLister
+     */
     public function __construct($DocLister){
         if ($DocLister instanceof DocLister) {
             $this->DocLister = $DocLister;
             $this->modx = $this->DocLister->getMODX();
         }
     }
-    /*
-    * @TODO description extDocLister::init();
-    */
+    /**
+     * Вызов экстенедара с параметрами полученными в этой функции
+     *
+     * @param DocLister $DocLister объект класса DocLister
+     * @param mixed $config, ... неограниченное число параметров (используются для конфигурации экстендера)
+     * @return mixed ответ от экстендера (как правило это string)
+     */
     final public function init($DocLister)
     {
         $flag = false;
@@ -57,9 +65,11 @@ abstract class extDocLister
         return $flag;
     }
 
-    /*
-    * @TODO description extDocLister::checkParam();
-    */
+    /**
+     * Установка первоначального конфига экстендера
+     *
+     * @param array $args конфиг экстендера c массивом параметров
+     */
     final protected function checkParam($args)
     {
         if (isset($args[1])) {
@@ -67,9 +77,13 @@ abstract class extDocLister
         }
     }
 
-    /*
-    * @TODO description extDocLister::getCFGDef();
-    */
+    /**
+     * Получение информации из конфига экстендера
+     *
+     * @param string $name имя параметра в конфиге экстендера
+     * @param mixed $def значение по умолчанию, если в конфиге нет искомого параметра
+     * @return mixed значение из конфига экстендера
+     */
     final protected function getCFGDef($name, $def)
     {
         return isset($this->_cfg[$name]) ? $this->_cfg[$name] : $def;
