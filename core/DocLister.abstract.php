@@ -97,8 +97,11 @@ abstract class DocLister
     protected $idField = 'id';
 
     /**
-    * @TODO description DocLister::__construct()
-    */
+     * Конструктор контроллеров DocLister
+     *
+     * @param DocumentParser $modx объект DocumentParser - основной класс MODX
+     * @param array $cfg массив параметров сниппета
+     */
     function __construct($modx, $cfg = array())
     {
         try {
@@ -146,6 +149,13 @@ abstract class DocLister
         }
     }
 
+    /**
+     * Генерация имени таблицы с префиксом и алиасом
+     *
+     * @param string $name имя таблицы
+     * @param string $alias желаемый алиас таблицы
+     * @return string имя таблицы с префиксом и алиасом
+     */
     public function getTable($name, $alias = ''){
         if(!isset($this->_table[$name])){
             $this->_table[$name] = $this->modx->getFullTableName($name);
@@ -156,9 +166,11 @@ abstract class DocLister
         }
         return $table;
     }
+
     /**
-    *
-    */
+     * Проверка параметров и загрузка необходимых экстендеров
+     * return boolean статус загрузки
+     */
     public function checkDL()
     {
         $flag = true;
@@ -201,6 +213,13 @@ abstract class DocLister
         return $flag;
     }
 
+    /**
+     * Удаление определенных данных из массива
+     *
+     * @param array $data массив с данными
+     * @param mixed $val значение которые необходимо удалить из массива
+     * @return array отчищеный массив с данными
+     */
     private function unsetArrayVal($data, $val)
     {
         $out = array();
@@ -217,22 +236,33 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::getUrl()
-    */
+     * Генерация URL страницы
+     *
+     * @param int $id уникальный идентификатор страницы
+     * @return string URL страницы
+     */
     abstract public function getUrl($id = 0);
 
     /**
-    * @TODO description DocLister::getDocs()
-    */
+     * Получение массива документов из базы
+     * @param mixed $tvlist дополнительные параметры выборки
+     * @return array Массив документов выбранных из базы
+     */
     abstract public function getDocs($tvlist = '');
 
     /**
-    * @TODO description DocLister::render()
-    */
+     * Подготовка результатов к отображению.
+     *
+     * @param string $tpl шаблон
+     * @return mixed подготовленный к отображению результат выборки
+     */
     abstract public function _render($tpl = '');
 
     /**
-    * @TODO description DocLister::render()
+     * Подготовка результатов к отображению в соответствии с настройками
+     *
+     * @param string $tpl шаблон
+     * @return string
     */
     public function render($tpl = '')
     {
@@ -247,9 +277,11 @@ abstract class DocLister
         }
     }
 
-    /**
-     * CORE Block
-     */
+
+
+    /***************************************************
+     ****************** CORE Block *********************
+     ***************************************************/
 
     /**
      * Display and save error information
@@ -276,8 +308,10 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::getMODX()
-    */
+     * Получение объекта DocumentParser
+     *
+     * @return self::$modx
+     */
     final public function getMODX()
     {
         return $this->modx;
@@ -310,9 +344,10 @@ abstract class DocLister
     }
 
     /**
-    * save config array
-    * @TODO description DocLister::setConfig()
-    */
+     * Сохранение настроек вызова сниппета
+     * @param array $cfg массив настроек
+     * @return boolean результат сохранения настроек
+     */
     final public function setConfig($cfg)
     {
         if (is_array($cfg)) {
@@ -325,18 +360,28 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::getCFGDef()
-    */
+     * Получение информации из конфига
+     *
+     * @param string $name имя параметра в конфиге
+     * @param mixed $def значение по умолчанию, если в конфиге нет искомого параметра
+     * @return mixed значение из конфига
+     */
     final public function getCFGDef($name, $def)
     {
         return isset($this->_cfg[$name]) ? $this->_cfg[$name] : $def;
     }
 
     /**
-    * @TODO description DocLister::toPlaceholders()
-    */
+     * Сохранение данных в массив плейсхолдеров
+     *
+     * @param mixed $data данные
+     * @param int $set устанавливать ли глобальнй плейсхолдер MODX
+     * @param string $key ключ локального плейсхолдера
+     * @return string
+     */
     final public function toPlaceholders($data, $set = 0, $key = 'contentPlaceholder')
     {
+        $out = '';
         $this->_plh[$key] = $data;
         if ($set == 0) {
             $set = $this->getCFGDef('contentPlaceholder', 0);
@@ -346,13 +391,21 @@ abstract class DocLister
             if ($id != '') $id .= ".";
             $this->modx->toPlaceholder($key, $data, $id);
         } else {
-            return $data;
+            $out = $data;
         }
+        return $out;
     }
 
     /**
-    * @TODO description DocLister::sanitarIn()
-    */
+     * Предварительная обработка данных перед вставкой в SQL запрос вида IN
+     * Если данные в виде строки, то происходит попытка сформировать массив из этой строки по разделителю $sep
+     * Точно по тому, по которому потом данные будут собраны обратно
+     *
+     * @param mixed $data данные для обработки
+     * @param string $sep разделитель
+     * @param boolean $quote заключать ли данные на выходе в кавычки
+     * @return string обработанная строка
+     */
     final public function sanitarIn($data, $sep = ',', $quote=true)
     {
         if (!is_array($data)) {
@@ -368,8 +421,12 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::loadLang()
-    */
+     * Загрузка языкового пакета
+     *
+     * @param string $name ключ языкового пакета
+     * @param string $lang имя языкового пакета
+     * @return array массив с лексиконом
+     */
     final protected function loadLang($name = 'core', $lang = '')
     {
         if ($lang == '') {
@@ -385,16 +442,26 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::getMsg()
-    */
+     * Получение строки из языкового пакета
+     *
+     * @param $name имя записи в языковом пакете
+     * @param string $def Строка по умолчанию, если запись в языковом пакете не будет обнаружена
+     * @return string строка в соответствии с текущими языковыми настройками
+     */
     final public function getMsg($name, $def = '')
     {
         return (isset($this->_lang[$name])) ? $this->_lang[$name] : $def;
     }
 
     /**
-    * @TODO description DocLister::renameKeyArr()
-    */
+     * Переменовывание элементов массива
+     *
+     * @param $data массив с данными
+     * @param string $prefix префикс ключей
+     * @param string $suffix суффикс ключей
+     * @param string $sep разделитель суффиксов, префиксов и ключей массива
+     * @return array массив с переименованными ключами
+     */
     final public function renameKeyArr($data, $prefix = '', $suffix = '', $sep = '.')
     {
         $out = array();
@@ -415,8 +482,11 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::setLocate()
-    */
+     * Установка локали
+     *
+     * @param string $locale локаль
+     * @return string имя установленной локали
+     */
     final public function setLocate($locale = '')
     {
         if ('' == $locale) {
@@ -428,6 +498,13 @@ abstract class DocLister
         return $locale;
     }
 
+    /**
+     * Шаблонизация дерева.
+     * Перевод из массива в HTML в соответствии с указанным шаблоном
+     *
+     * @param array $data массив сформированный как дерево
+     * @return string строка для отображения пользователю
+     */
     protected function renderTree($data)
     {
         $out = '';
@@ -578,8 +655,13 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::getJSON()
-    */
+     * Формирование JSON ответа
+     *
+     * @param array $data массив данных которые подготавливаются к выводу в JSON
+     * @param mixed $fields список полей учавствующих в JSON ответе. может быть либо массив, либо строка с разделителем , (запятая)
+     * @param array $array данные которые необходимо примешать к ответу на каждой записи $data
+     * @return string JSON строка
+     */
     public function getJSON($data, $fields, $array = array())
     {
         $out = array();
@@ -657,8 +739,11 @@ abstract class DocLister
      ************************************************/
 
     /**
-    * @TODO description DocLister::setIDs()
-    */
+     * Очистка массива $IDs по которому потом будет производиться выборка документов
+     *
+     * @param mixed $IDs список id документов по которым необходима выборка
+     * @return array очищенный массив
+     */
     final public function setIDs($IDs)
     {
         $IDs = $this->cleanIDs($IDs);
@@ -677,8 +762,12 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::cleanIDs()
-    */
+     * Очистка данных и уникализация списка цифр.
+     * Если был $IDs был передан как строка, то эта строка будет преобразована в массив по разделителю $sep
+     * @param mixed $IDs данные для обработки
+     * @param string $sep разделитель
+     * @return array очищенный массив с данными
+     */
     final public function cleanIDs($IDs, $sep = ',')
     {
         $out = array();
@@ -696,8 +785,9 @@ abstract class DocLister
     }
 
     /**
-    * @TODO description DocLister::checkIDs()
-    */
+     * Проверка массива с id-шниками документов для выборки
+     * @return boolean пригодны ли данные для дальнейшего использования
+     */
     final protected function checkIDs()
     {
         return (is_array($this->IDs) && count($this->IDs) > 0) ? true : false;
@@ -727,13 +817,19 @@ abstract class DocLister
      *********************************************************/
 
     /**
-    * @TODO description DocLister::getChildrenCount()
-    */
+     * Подсчет документов удовлетворящиюх выборке
+     *
+     * @return int Число дочерних документов
+     */
     abstract public function getChildrenCount();
 
     /**
-    * @TODO description DocLister::getChildernFolder()
-    */
+     * Выборка документов которые являются дочерними относительно $id документа и в тоже время
+     * являются родителями для каких-нибудь других документов
+     *
+     * @param string $id значение PrimaryKey родителя
+     * @return array массив документов
+     */
     abstract public function getChildernFolder($id);
 
     /**
@@ -793,7 +889,9 @@ abstract class DocLister
     }
 
     /**
-     * @TODO description DocLister::LimitSQL()
+     * Получение LIMIT вставки в SQL запрос
+     *
+     * @return string LIMIT вставка в SQL запрос
      */
     final protected function LimitSQL($limit = 0, $offset = 0)
     {
@@ -814,10 +912,10 @@ abstract class DocLister
             $ret = "LIMIT " . (int)$offset . "," . (int)$limit;
         } else {
             if ($offset != 0) {
-                /*
-                * To retrieve all rows from a certain offset up to the end of the result set, you can use some large number for the second parameter
-                * @see http://dev.mysql.com/doc/refman/5.0/en/select.html
-                */
+                /**
+                 * To retrieve all rows from a certain offset up to the end of the result set, you can use some large number for the second parameter
+                 * @see http://dev.mysql.com/doc/refman/5.0/en/select.html
+                 */
                 $ret = "LIMIT " . (int)$offset . ",18446744073709551615";
             }
         }
@@ -878,10 +976,17 @@ abstract class DocLister
         return $this->_tree;
     }
 
+    /**
+     * Получение PrimaryKey основной таблицы.
+     * По умолчанию это id. Переопределить можно в контроллере присвоив другое значение переменной idField
+     *
+     * @return string PrimaryKey основной таблицы
+     */
     public function getPK(){
         return isset($this->idField) ? $this->idField : 'id';
     }
 }
 
 include_once(dirname(__FILE__)."/extDocLister.abstract.php");
+
 ?>
