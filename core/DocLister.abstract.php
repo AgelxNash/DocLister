@@ -694,6 +694,7 @@ abstract class DocLister
         }
 
         foreach ($data as $num => $doc) {
+            $tmp = array();
             foreach ($doc as $name => $value) {
                 if (in_array($name, $fields) || (isset($fields[0]) && $fields[0] == '1')) {
                     $tmp[str_replace(".", "_", $name)] = $value; //JSON element name without dot
