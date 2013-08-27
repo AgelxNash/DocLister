@@ -109,6 +109,12 @@ abstract class DocLister
     protected $_logic_ops = array('AND'=>' AND ', 'OR' => ' OR '); // logic operators currently supported
 
     /**
+     * Режим отладки
+     * @var bool
+     * @access private
+     */
+    private $_debug = false;
+    /**
      * Конструктор контроллеров DocLister
      *
      * @param DocumentParser $modx объект DocumentParser - основной класс MODX

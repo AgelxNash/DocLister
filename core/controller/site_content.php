@@ -53,8 +53,7 @@ class site_contentDocLister extends DocLister
         if ($tvlist == '') {
             $tvlist = $this->getCFGDef('tvList', '');
         }
-        if ($tvlist != '' && $this->checkIDs()) {
-
+        if ($tvlist != '' && count($this->_docs)>0) {
             $tv = $this->extender['tv']->getTVList(array_keys($this->_docs),$tvlist);
 
             foreach ($tv as $docID => $TVitem) {
