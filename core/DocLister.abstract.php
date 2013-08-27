@@ -96,6 +96,9 @@ abstract class DocLister
      */
     protected $idField = 'id';
 
+    protected $_filters = array('where'=>'', 'join'=>'');
+    protected $_logic_ops = array('AND'=>' AND ', 'OR' => ' OR '); // logic operators currently supported
+
     /**
      * Конструктор контроллеров DocLister
      *
@@ -147,6 +150,7 @@ abstract class DocLister
         if ($this->checkExtender('request')) {
             $this->extender['request']->init($this, $this->getCFGDef("requestActive", ""));
         }
+        $this->_filters = $this->getFilters($this->getCFGDef('filters', ''));
     }
 
     /**
@@ -721,8 +725,8 @@ abstract class DocLister
             $flag = true;
         } else {
             if (!class_exists($classname, false) && $classname != '') {
-                if (file_exists(dirname(__FILE__) . "/controller/extender/" . $name . ".extender.inc")) {
-                    include_once(dirname(__FILE__) . "/controller/extender/" . $name . ".extender.inc");
+                if (file_exists(dirname(__FILE__) . "/extender/" . $name . ".extender.inc")) {
+                    include_once(dirname(__FILE__) . "/extender/" . $name . ".extender.inc");
                 }
             }
             if (class_exists($classname, false) && $classname != '') {
@@ -985,6 +989,62 @@ abstract class DocLister
     public function getPK(){
         return isset($this->idField) ? $this->idField : 'id';
     }
+
+
+
+    /**
+     * OR(AND(filter:field:operator:value;filter2:field:oerpator:value);(...)), etc.
+     * @param string $filter_string
+     */
+    protected function getFilters($filter_string){
+        // the filter parameter tells us, which filters can be used in this query
+        $filter_string = trim($filter_string);
+        if (!$filter_string) return;
+		$output = array('join' => '', 'where'=>'');
+        $logic_op_found = false;
+        foreach ($this->_logic_ops as $op => $sql){
+            if (strpos($filter_string, $op) === 0){
+                $logic_op_found = true;
+                $subfilters = substr($filter_string, strlen($op)+1, -1);
+                $subfilters = explode(';', $subfilters);
+                foreach ($subfilters as $subfilter){
+                    $subfilter = $this->getFilters(trim($subfilter));
+                    if (!$subfilter) continue;
+                    if ($subfilter['join']) $joins[] = $subfilter['join'];
+                    if ($subfilter['where']) $wheres[] = $subfilter['where'];
+                }
+                $output['join'] = !empty($joins) ? implode(' ', $joins) : '';
+                $output['where'] = !empty($wheres) ? '(' . implode($sql, $wheres) . ')' : '';
+            }
+        }
+		
+        if (!$logic_op_found) {
+            $filter = $this->loadFilter($filter_string);
+            if (!$filter) {
+                $this->modx->logEvent(0, 2, 'Error while loading DocLister filter "' . $filter_string . '": check syntax!');
+                return;
+            }
+            $output['join'] = $filter->get_join();
+            $output['where'] = $filter->get_where();
+        }
+        return $output;
+    }
+
+    protected function loadFilter($filter){
+        $out = false;
+        $fltr_params = explode(':', $filter);
+        $fltr = $fltr_params[0];
+        // check if the filter is implemented
+        if (file_exists(dirname(__FILE__) . '/filter/' . $fltr . '.filter.php')){
+            require_once dirname(__FILE__) . '/filter/' . $fltr . '.filter.php';
+            $fltr_class = $fltr . '_DL_filter';
+            $fltr_obj = new $fltr_class();
+            $fltr_obj->init($this, $filter);
+            $out = $fltr_obj;
+        }
+        return $out;
+    }
 }
 
 include_once(dirname(__FILE__)."/extDocLister.abstract.php");
+include_once(dirname(__FILE__)."/filterDocLister.abstract.php");

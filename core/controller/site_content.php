@@ -5,7 +5,7 @@
  *
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
- * @author Agel_Nash <Agel_Nash@xaker.ru>
+ * @author Agel_Nash <Agel_Nash@xaker.ru>, kabachello <kabachnik@hotmail.com>
  * @date 26.08.2013
  * @version 1.0.23
  *
@@ -201,22 +201,27 @@ class site_contentDocLister extends DocLister
     public function getChildrenCount()
     {
         $where = $this->getCFGDef('addWhereList', '');
-        if ($where != '') {
+        $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+        if ($where != '' && $this->_filters['where'] != '') {
             $where .= " AND ";
         }
+
         $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         $getCFGDef = $this->getCFGDef('showParent', '0') ? '' : "AND c.id NOT IN({$sanitarInIDs})";
         $fields = 'count(c.`id`) as `count`';
+        $from = $tbl_site_content . " " . $this->_filters['join'];
         $where = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 {$getCFGDef}";
-        $rs = $this->modx->db->select($fields, $tbl_site_content, $where);
+
+        $rs = $this->modx->db->select($fields, $from, $where);
         return $this->modx->db->getValue($rs);
     }
 
     protected function getDocList()
     {
         $where = $this->getCFGDef('addWhereList', '');
-        if ($where != '') {
+        $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+        if ($where != '' && $this->_filters['where'] != '') {
             $where .= " AND ";
         }
 
@@ -238,7 +243,7 @@ class site_contentDocLister extends DocLister
                 $sort = str_replace("ORDER BY " . $match[1], "ORDER BY tv.value", $sort);
             }
         }
-        $rs = $this->modx->db->query("SELECT {$select} FROM {$tbl_site_content} {$where} GROUP BY c.id {$sort} {$limit}");
+        $rs = $this->modx->db->query("SELECT {$select} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
@@ -279,8 +284,8 @@ class site_contentDocLister extends DocLister
     protected function getChildrenList()
     {
         $where = $this->getCFGDef('addWhereList', '');
-        $where =($where ? $where . ' AND ' : '') . $this->_filters['where'];
-        if ($where != '') {
+        $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+        if ($where != ''  && $this->_filters['where'] != '') {
             $where .= " AND ";
         }
 

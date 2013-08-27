@@ -14,7 +14,7 @@ class tv_DL_filter extends content_DL_filter{
 		if (parent::parseFilter($filter)){
             // now add some variables specific to the TV-filter
             // get the id of the TV
-            $tvid = $this->modx->db->query("SELECT id FROM ".$this->DocLister->getTable('site_tmplvars')." WHERE 'name = '".$this->modx->db->escape($this->field)."'");
+            $tvid = $this->modx->db->query("SELECT id FROM ".$this->DocLister->getTable('site_tmplvars')." WHERE `name` = '".$this->modx->db->escape($this->field)."'");
             $this->tv_id = intval($this->modx->db->getValue($tvid));
             if (!$this->tv_id){
                 $this->modx->logEvent(0, 2, 'DocLister filtering by template variable "' . $this->field . '" failed. TV not found!');

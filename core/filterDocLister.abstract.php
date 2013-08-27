@@ -38,9 +38,7 @@ abstract class filterDocLister{
         $this->operator = $parsed[2];
         $this->value = $parsed[3];
         // exit if something is wrong
-        if (empty($this->field) || empty($this->operator) || is_null($this->value)) return false;
-
-        return true;
+        return !(empty($this->field) || empty($this->operator) || is_null($this->value));
     }
 
     public function setTableAlias($value){
