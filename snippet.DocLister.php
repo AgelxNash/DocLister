@@ -27,5 +27,9 @@ if ($classname != 'DocLister' && file_exists($dir . "/core/controller/" . $contr
 if (class_exists($classname, false) && $classname != 'DocLister') {
     $DocLister = new $classname($modx, $modx->Event->params);
     $data = $DocLister->getDocs();
-    return isset($modx->Event->params['api']) ? $DocLister->getJSON($data, $modx->Event->params['api']) : $DocLister->render();
+    $out = isset($modx->Event->params['api']) ? $DocLister->getJSON($data, $modx->Event->params['api']) : $DocLister->render();
+    if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
+        echo $DocLister->showLog();
+    }
+    return $out;
 }

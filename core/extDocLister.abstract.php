@@ -32,6 +32,7 @@ abstract class extDocLister
      */
     protected $_cfg = array();
 
+    protected $lang = false;
     /**
      * Запуск экстендера.
      * Метод определяющий действия экстендера при инициализации
@@ -43,10 +44,13 @@ abstract class extDocLister
      *
      * @param DocLister $DocLister объект класса DocLister
      */
-    public function __construct($DocLister){
+    public function __construct($DocLister,$name){
         if ($DocLister instanceof DocLister) {
             $this->DocLister = $DocLister;
             $this->modx = $this->DocLister->getMODX();
+        }
+        if($this->lang){
+            $this->DocLister->loadLang($name);
         }
     }
     /**
@@ -58,12 +62,14 @@ abstract class extDocLister
      */
     final public function init($DocLister)
     {
+        $this->DocLister->setLog('Run extender '.__CLASS__, 'runExtender', 2);
         $flag = false;
         if ($DocLister instanceof DocLister) {
             $this->DocLister = $DocLister;
             $this->modx = $this->DocLister->getMODX();
             $flag = $this->checkParam(func_get_args())->run();
         }
+        $this->DocLister->endLog('runExtender');
         return $flag;
     }
 

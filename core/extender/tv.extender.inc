@@ -27,7 +27,8 @@ class tv_DL_Extender extends extDocLister{
     }
     public function getAllTV_Name()
     {
-        $rs = $this->modx->db->select('id,name', $this->DocLister->getTable('site_tmplvars'));
+        $from = $this->DocLister->getTable('site_tmplvars');
+        $rs = $this->DocLister->dbQuery("SELECT id,name FROM {$from}");
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
         foreach ($rows as $item) {
@@ -44,7 +45,7 @@ class tv_DL_Extender extends extDocLister{
         $sanitarInIDs = $this->DocLister->sanitarIn($IDs);
         $implodeTvId = implode(',', $tvId);
         $where = "contentid IN({$sanitarInIDs}) AND tmplvarid IN({$implodeTvId})";
-        $rs = $this->modx->db->select('tmplvarid,value,contentid', $tbl_site_tmplvar_contentvalues, $where);
+        $rs = $this->DocLister->dbQuery("SELECT tmplvarid,value,contentid FROM {$tbl_site_tmplvar_contentvalues} WHERE {$where}");
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
         foreach ($rows as $item) {
@@ -114,7 +115,7 @@ class tv_DL_Extender extends extDocLister{
         $tbl_site_tmplvars = $this->DocLister->getTable('site_tmplvars');
         $fields = 'id,name,default_text as value,display,display_params,type';
         $implodeTvId = implode(',', $tvId);
-        $rs = $this->modx->db->select($fields, $tbl_site_tmplvars, "id IN({$implodeTvId})");
+        $rs = $this->DocLister->dbQuery("SELECT {$fields} FROM {$tbl_site_tmplvars} WHERE id IN({$implodeTvId})");
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
         foreach ($rows as $item) {

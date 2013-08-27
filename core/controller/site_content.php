@@ -214,7 +214,10 @@ class site_contentDocLister extends DocLister
         $from = $tbl_site_content . " " . $this->_filters['join'];
         $where = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 {$getCFGDef}";
 
-        $rs = $this->modx->db->select($fields, $from, $where);
+        if(!empty($where)){
+            $where = "WHERE ".$where;
+        }
+        $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where}");
         return $this->modx->db->getValue($rs);
     }
 
@@ -244,7 +247,7 @@ class site_contentDocLister extends DocLister
                 $sort = str_replace("ORDER BY " . $match[1], "ORDER BY tv.value", $sort);
             }
         }
-        $rs = $this->modx->db->query("SELECT {$select} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
+        $rs = $this->dbQuery("SELECT {$select} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
@@ -268,7 +271,10 @@ class site_contentDocLister extends DocLister
         $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($id);
         $where = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 AND c.isfolder=1";
-        $rs = $this->modx->db->select('id', $tbl_site_content, $where);
+        if(!empty($where)){
+            $where = "WHERE ".$where;
+        }
+        $rs = $this->dbQuery("SELECT id FROM {$tbl_site_content} {$where}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
@@ -290,7 +296,7 @@ class site_contentDocLister extends DocLister
             $where .= " AND ";
         }
 
-        $sql = $this->modx->db->query("
+        $sql = $this->dbQuery("
 			SELECT DISTINCT c.* FROM " . $this->getTable('site_content','c') . " ". $this->_filters['join'] . "
 			WHERE " . $where . "
 				c.parent IN (" . $this->sanitarIn($this->IDs) . ")

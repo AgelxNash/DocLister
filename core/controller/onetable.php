@@ -178,7 +178,7 @@ class onetableDocLister extends DocLister
             $where = "WHERE " . $where;
         }
         $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-        $rs = $this->modx->db->query("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
+        $rs = $this->dbQuery("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
@@ -193,14 +193,20 @@ class onetableDocLister extends DocLister
     {
         $where = $this->getCFGDef('addWhereList', '');
         $fields = "count(`{$this->getPK()}`) as `count`";
-        $rs = $this->modx->db->select($fields, $this->table, $where);
+        if(!empty($where)){
+            $where = "WHERE ".$where;
+        }
+        $rs = $this->dbQuery("SELECT {$fields} FROM {$this->table} {$where}");
         return $this->modx->db->getValue($rs);
     }
 
     public function getChildernFolder($id)
     {
         $where = $this->getCFGDef('addWhereFolder', '');
-        $rs = $this->modx->db->select($this->getPK(), $this->table, $where);
+        if(!empty($where)){
+            $where = "WHERE ".$where;
+        }
+        $rs = $this->dbQuery("SELECT {$this->getPK()} FROM {$this->table} {$where}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();

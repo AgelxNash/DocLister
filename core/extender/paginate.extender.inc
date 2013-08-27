@@ -13,6 +13,8 @@ if (!defined('MODX_BASE_PATH')) {
 
 class paginate_DL_Extender extends extDocLister
 {
+    protected $lang = true;
+
     private $_pages = array();
 
     /**

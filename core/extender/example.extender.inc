@@ -2,7 +2,6 @@
 if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
-
 /**
  * Example extender for DocLister
  *
