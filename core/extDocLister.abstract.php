@@ -6,6 +6,9 @@
  * @author Agel_Nash <Agel_Nash@xaker.ru>
  *
  */
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
 abstract class extDocLister
 {
     /**

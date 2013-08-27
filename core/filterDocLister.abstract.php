@@ -2,22 +2,61 @@
 /**
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author kabachello <kabachnik@hotmail.com>
- * @date 16.08.2013
- * @version 1.1.0
  */
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
 abstract class filterDocLister{
     /**
+     * Объект унаследованный от абстрактоного класса DocLister
      * @var DocLister $DocLister
      * @access protected
      */
     protected $DocLister;
+
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var DocumentParser
+     * @access protected
+     */
     protected $modx;
+
+    /**
+     * Алиас таблицы которая подключается для фильтрации
+     * @var string
+     * @access protected
+     */
     protected $tableAlias = null;
 
-    protected $field;
-    protected $operator;
-    protected $value;
+    /**
+     * Поле по которому происходит фильтрация
+     * @var string
+     * @access protected
+     */
+    protected $field = '';
 
+    /**
+     * Вид сопоставления поля со значением
+     * @var string
+     * @access protected
+     */
+    protected $operator = '';
+
+    /**
+     * Значение которое учавствует в фильтрации
+     * @var string
+     * @access protected
+     */
+    protected $value = '';
+
+    /**
+     * Запуск фильтра
+     *
+     * @param $DocLister экземпляр класса DocLister
+     * @param $filter строка с условиями фильтрации
+     * @return bool
+     */
     final public function init($DocLister, $filter){
         $flag=false;
         if($DocLister instanceof DocLister){
@@ -28,9 +67,26 @@ abstract class filterDocLister{
         return $flag;
     }
 
+    /**
+     * Получение строки для подстановки в секцию WHERE SQL запроса
+     *
+     * @return string
+     */
     abstract public function get_where();
+
+    /**
+     * Получение строки для подстановки в SQL запрос после подключения основной таблицы
+     *
+     * @return string
+     */
     abstract public function get_join();
 
+    /**
+     * Разбор строки фильтрации
+     *
+     * @param $filter строка фильтрации
+     * @return bool результат разбора фильтра
+     */
     protected function parseFilter($filter){
         // first parse the give filter string
         $parsed = explode(':', $filter);
@@ -41,10 +97,23 @@ abstract class filterDocLister{
         return !(empty($this->field) || empty($this->operator) || is_null($this->value));
     }
 
+    /**
+     * Установка алиаса таблицы
+     * @param string $value алиас
+     */
     public function setTableAlias($value){
         $this->tableAlias = $value;
     }
 
+    /**
+     * Конструктор условий для WHERE секции
+     *
+     * @param $table_alias алиас таблицы
+     * @param $field поле для фильтрации
+     * @param $operator оператор сопоставления
+     * @param $value искомое значение
+     * @return string
+     */
     protected function build_sql_where($table_alias, $field, $operator, $value){
         $output = $table_alias . '.' . $field . ' ';
         switch ($operator){
@@ -70,6 +139,10 @@ abstract class filterDocLister{
         return $output;
     }
 
+    /**
+     * Получение алиаса таблицы по которой идет выборка
+     * @return string
+     */
     public function getTableAlias(){
         return $this->tableAlias;
     }

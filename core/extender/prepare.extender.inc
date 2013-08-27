@@ -1,12 +1,14 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
 /**
  * Prepare extender for DocLister
  *
  * @category extender
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 25.08.2012
- * @version 1.0.22
  */
 
 class prepare_DL_Extender extends extDocLister

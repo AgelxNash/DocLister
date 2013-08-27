@@ -1,4 +1,19 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
+/**
+ * tv extender for DocLister
+ *
+ * @category extender
+ * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
+ * @author Agel_Nash <Agel_Nash@xaker.ru>
+ *
+ * Предзагрузка данных о TV параметрах
+ * Обработка TV параметров перед выводом
+ *
+ */
 class tv_DL_Extender extends extDocLister{
 
     protected $_TVnames = array();

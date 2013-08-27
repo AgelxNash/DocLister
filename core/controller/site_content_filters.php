@@ -1,12 +1,14 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
 /**
  * site_content_filters controller for DocLister
  *
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author kabachello <kabachnik@hotmail.com>
- * @date 16.08.2013
- * @version 1.1.0
  *
  * Adds flexible filters to DocLister. Filter types can be easily added using filter extenders (see filter subfolder).
  * To use filtering via snippet call add the "filters" parameter to the DocLister call like " ... &filters=`tv:tags:like:your_tag`

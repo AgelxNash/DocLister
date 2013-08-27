@@ -1,12 +1,14 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
 /**
  * user extender for DocLister
  *
  * @category extender
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 10.03.2012
- * @version 1.0.1
  *
  * @param $userFields fields with user id
  * @param $usertype get information about managers or web users

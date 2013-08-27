@@ -1,4 +1,7 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
 class pagination
 {
     /**

@@ -1,11 +1,15 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
 /**
  * Filters DocLister results by value of a given MODx Template Variables (TVs).
  * Supported comparison operators:
  * - "="
  * - "IN"
  * - "LIKE" also "%LIKE" or "LIKE%"
- * @author aka
+ * @author kabachello <kabachnik@hotmail.com>
  * @param filter_tv tvname:operator:value
  *
  */

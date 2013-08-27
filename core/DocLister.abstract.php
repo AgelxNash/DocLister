@@ -1,14 +1,12 @@
 <?php
 if (!defined('MODX_BASE_PATH')) {
-    die('What are you doing? Get out of here!');
+    die('HACK???');
 }
 /**
  * DocLister class
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 26.08.2013
- * @version 1.0.23
  *
  * @TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
  * @TODO add controller for filter by TV values
@@ -25,7 +23,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.0.23';
+    const VERSION = '1.1.0';
 
     /**
      * Массив документов полученный в результате выборки из базы
@@ -96,7 +94,18 @@ abstract class DocLister
      */
     protected $idField = 'id';
 
+    /**
+     * Дополнительные условия для SQL запросов
+     * @var array
+     * @access protected
+     */
     protected $_filters = array('where'=>'', 'join'=>'');
+
+    /**
+     * Список доступных логических операторов для фильтрации
+     * @var array
+     * @access protected
+     */
     protected $_logic_ops = array('AND'=>' AND ', 'OR' => ' OR '); // logic operators currently supported
 
     /**
@@ -990,11 +999,12 @@ abstract class DocLister
         return isset($this->idField) ? $this->idField : 'id';
     }
 
-
-
     /**
+     * Разбор фильтров
      * OR(AND(filter:field:operator:value;filter2:field:oerpator:value);(...)), etc.
-     * @param string $filter_string
+     *
+     * @param string $filter_string строка со всеми фильтрами
+     * @return mixed результат разбора фильтров
      */
     protected function getFilters($filter_string){
         // the filter parameter tells us, which filters can be used in this query
@@ -1030,6 +1040,11 @@ abstract class DocLister
         return $output;
     }
 
+    /**
+     * Загрузка фильтра
+     * @param string $filter срока с параметрами фильтрации
+     * @return bool
+     */
     protected function loadFilter($filter){
         $out = false;
         $fltr_params = explode(':', $filter);

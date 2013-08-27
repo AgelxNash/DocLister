@@ -1,4 +1,8 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
 /**
  * site_content_tags controller with TagSaver plugin
  * @see http://modx.im/blog/addons/374.html
@@ -6,8 +10,6 @@
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- * @date 26.08.2013
- * @version 1.0.23
  *
  * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  */
