@@ -62,14 +62,14 @@ abstract class extDocLister
      */
     final public function init($DocLister)
     {
-        $this->DocLister->setLog('Run extender '.__CLASS__, 'runExtender', 2);
+        $this->DocLister->debug->debug('Run extender '.__CLASS__, 'runExtender', 2);
         $flag = false;
         if ($DocLister instanceof DocLister) {
             $this->DocLister = $DocLister;
             $this->modx = $this->DocLister->getMODX();
             $flag = $this->checkParam(func_get_args())->run();
         }
-        $this->DocLister->endLog('runExtender');
+        $this->DocLister->debug->debugEnd('runExtender');
         return $flag;
     }
 

@@ -115,7 +115,7 @@ abstract class filterDocLister{
      * @return string
      */
     protected function build_sql_where($table_alias, $field, $operator, $value){
-        $this->DocLister->setLog('Build SQL query for filters', 'buildQuery', 2);
+        $this->DocLister->debug->debug('Build SQL query for filters', 'buildQuery', 2);
         $output = $table_alias . '.' . $field . ' ';
         switch ($operator){
             case '=': case 'eq': $output .= ' = ' . floatval($value); break;
@@ -137,7 +137,7 @@ abstract class filterDocLister{
                 break;
             default: $output = '';
         }
-        $this->DocLister->endLog("buildQuery");
+        $this->DocLister->debug->debugEnd("buildQuery");
         return $output;
     }
 
