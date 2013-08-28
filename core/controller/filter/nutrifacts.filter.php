@@ -1,7 +1,7 @@
 <?php
 require_once 'content.filter.php';
 /**
- * Filters DocLister results by value of a specified field in the xrecipe_nutrition_products table.
+ * Filters DocLister results by value of a specified field in the xrecipe_nutrition_products custom table.
  * This is a good example, of how a simple filter over a custom table can be created.
  * @author kabachello
  *

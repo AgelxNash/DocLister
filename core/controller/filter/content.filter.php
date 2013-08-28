@@ -1,12 +1,9 @@
 <?php
 /**
- * Filters DocLister results by value of a given MODx Template Variables (TVs).
- * Supported comparison operators:
- * - "="
- * - "IN"
- * - "LIKE" also "%LIKE" or "LIKE%"
- * @author aka
- * @param filter_tv tvname:operator:value
+ * Basic filter using only the site_content table.
+ * It is a good Idea to derive other filters, that join other tables to site_content from this
+ * filter. This way a common parseFilter() an build_sql_where() methods can be used.
+ * @author kabachello
  *
  */
 class content_DL_filter extends filterDocLister{

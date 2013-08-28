@@ -1,12 +1,7 @@
 <?php
 /**
- * Filters DocLister results by value of a given MODx Template Variables (TVs).
- * Supported comparison operators:
- * - "="
- * - "IN"
- * - "LIKE" also "%LIKE" or "LIKE%"
- * @author aka
- * @param filter_tv tvname:operator:value
+ * Filters DocLister results using a custom filter implementation of the xrecipe plugin
+ * @author kabachello
  *
  */
 class xrecipe_DL_filter extends filterDocLister{

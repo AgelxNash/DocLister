@@ -1,7 +1,7 @@
 <?php
 /**
  * Dummy filter. Some day might be used to replace the built-in parents parameter and thus make it optional.
- * @author aka
+ * @author kabachello
  */
 class doc_children_DL_filter extends filterDocLister{
 	
