@@ -1,4 +1,8 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
 require_once 'content.filter.php';
 /**
  * Filters DocLister results by value of a specified field in the xrecipe_nutrition_products custom table.
@@ -13,7 +17,7 @@ class nutrifacts_DL_filter extends content_DL_filter{
 	}
 	
 	function get_join(){
-		return 'LEFT JOIN xrecipe_nutrition_products xnp ON ' . $this->main_table_alias . '.id = xnp.document_id';
+		return 'LEFT JOIN xrecipe_nutrition_products xnp ON ' . content_DL_filter::TableAlias . '.id = xnp.document_id';
 	}
 }
 ?>

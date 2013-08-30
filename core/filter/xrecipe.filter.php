@@ -1,10 +1,15 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
+
+require_once 'content.filter.php';
 /**
  * Filters DocLister results using a custom filter implementation of the xrecipe plugin
  * @author kabachello
  *
  */
-class xrecipe_DL_filter extends filterDocLister{
+class xrecipe_DL_filter extends content_DL_filter{
 	
 	function parseFilter($filter) {
 		global $xrecipe;
@@ -43,7 +48,7 @@ class xrecipe_DL_filter extends filterDocLister{
 		global $xrecipe;
 		if (!$this->filters) return '';
 		foreach ($xrecipe->searcher->get_filters() as $join => $fields){
-			$joins[] = 'LEFT JOIN xrecipe_' . $join . ' ' . $join . ' ON ' . $this->main_table_alias . '.id = ' . $join . '.document_id';
+			$joins[] = 'LEFT JOIN xrecipe_' . $join . ' ' . $join . ' ON ' . content_DL_filter::TableAlias . '.id = ' . $join . '.document_id';
 		}
 		
 		if (!empty($joins)){
