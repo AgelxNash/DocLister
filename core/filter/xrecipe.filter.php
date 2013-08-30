@@ -24,19 +24,7 @@ class xrecipe_DL_filter extends content_DL_filter{
 			foreach ($fields as $field => $values){
 				foreach ($values as $op => $values){
 					foreach ($values as $val){
-						$where = $join . '.' . $field;
-						switch ($op){
-							case '=': case 'eq': $where .= ' = ' . $val; break;
-							case 'gt': $where .= ' > ' . $val; break;
-							case 'lt': $where .= ' < ' . $val; break;
-							case 'elt': $where .= ' <= ' . $val; break;
-							case 'egt': $where .= ' >= ' . $val; break;
-							case 'like': $where .= " LIKE '%" . $val . "%'"; break;
-							case 'notlike': $where .= " NOT LIKE '%" . $val . "%'"; break;
-							case 'is': $where .= " = '" . $val . "'"; break;
-							default: continue;
-						}
-						$wheres[] = $where;
+						$wheres[] = $this->build_sql_where($join, $field, $op, $val);
 					}
 				}
 			}
