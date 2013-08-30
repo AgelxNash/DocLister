@@ -123,13 +123,13 @@ abstract class filterDocLister{
             case 'lt': $output .= ' < ' . $value; break;
             case 'elt': $output .= ' <= ' . $value; break;
             case 'egt': $output .= ' >= ' . $value; break;
-            case 'like': $output .= " LIKE '%" . $value . "%'"; break;
-            case 'is': $output .= " = '" . $value . "'"; break;
+            case 'like': $output .= " LIKE '%" . $this->escapeString($value) . "%'"; break;
+            case 'is': $output .= " = '" . $this->escapeString($value) . "'"; break;
             case 'containsOne' :
                 $words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $value);
                 $word_arr = array();
                 foreach ($words as $word){
-                    $word_arr[] = $table_alias . '.' . $field . "  LIKE '%" . trim($word) . "%'";
+                    $word_arr[] = $table_alias . '.' . $field . "  LIKE '%" . $this->escapeString(trim($word)) . "%'";
                 }
                 if(!empty($word_arr)){
                     $output = '(' . implode(' OR ', $word_arr) . ')';
@@ -147,5 +147,15 @@ abstract class filterDocLister{
      */
     public function getTableAlias(){
         return $this->tableAlias;
+    }
+    
+    /**
+     * Экранирует строку перед передачей в SQL.
+     * TODO добавить проверки на инжекшены
+     * @param string $string
+     * @return string
+     */
+    public function escapeString($string){
+    	return str_replace("'", "\'", $string);
     }
 }
