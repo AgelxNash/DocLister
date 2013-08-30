@@ -118,18 +118,23 @@ abstract class filterDocLister{
         $this->DocLister->debug->debug('Build SQL query for filters', 'buildQuery', 2);
         $output = $table_alias . '.' . $field . ' ';
         switch ($operator){
-            case '=': case 'eq': $output .= ' = ' . floatval($value); break;
-            case 'gt': $output .= ' > ' . $value; break;
-            case 'lt': $output .= ' < ' . $value; break;
-            case 'elt': $output .= ' <= ' . $value; break;
-            case 'egt': $output .= ' >= ' . $value; break;
-            case 'like': $output .= " LIKE '%" . $value . "%'"; break;
-            case 'is': $output .= " = '" . $value . "'"; break;
+            case '=': case 'eq': case 'is': $output .= " = '" . $this->modx->db->escape($value) ."'"; break;
+            case 'gt': $output .= ' > ' . floatval($value); break;
+            case 'lt': $output .= ' < ' . floatval($value); break;
+            case 'elt': $output .= ' <= ' . floatval($value); break;
+            case 'egt': $output .= ' >= ' . floatval($value); break;
+            case 'like': $output = $this->DocLister->LikeEscape($output,$value); break;
             case 'containsOne' :
                 $words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $value);
                 $word_arr = array();
                 foreach ($words as $word){
-                    $word_arr[] = $table_alias . '.' . $field . "  LIKE '%" . trim($word) . "%'";
+                    /**
+                     * $word оставляю без trim, т.к. мало ли, вдруг важно найти не просто слово, а именно его начало
+                     * Т.е. хочется найти не слово содержащее $word, а начинающееся с $word. Для примера:
+                     * искомый $word = " когда". С trim найдем "...мне некогда..." и "...тут когда-то...";
+                     * Без trim будт обнаружено только "...тут когда-то..."
+                     */
+                    $word_arr[] = $this->DocLister->LikeEscape($table_alias.'.'.$field, $word);
                 }
                 if(!empty($word_arr)){
                     $output = '(' . implode(' OR ', $word_arr) . ')';

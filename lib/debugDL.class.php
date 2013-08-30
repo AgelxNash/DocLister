@@ -110,7 +110,7 @@ class debugDL{
         return $out;
     }
 
-    protected function dumpData($data){
+    public function dumpData($data){
         return $this->DocLister->sanitarData(print_r($data,1));
     }
 

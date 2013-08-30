@@ -24,7 +24,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.1.0';
+    const VERSION = '1.1.1';
 
     /**
      * Массив документов полученный в результате выборки из базы
@@ -1190,4 +1190,33 @@ abstract class DocLister
         $this->debug->debugEnd("query");
         return $out;
     }
+
+    /**
+     * Экранирование строки в SQL запросе LIKE
+     * @see: http://stackoverflow.com/a/3683868/2323306
+     *
+     * @param string $field поле по которому осуществляется поиск
+     * @param string $value искомое значение
+     * @param string $escape экранирующий символ
+     * @param string $tpl шаблон подстановки значения в SQL запрос
+     * @return string строка для подстановки в SQL запрос
+     */
+    public function LikeEscape($field, $value, $escape='=', $tpl='%[+value+]%'){
+        $str = '';
+        if(!empty($field) && is_string($field) && is_scalar($value) && $value!==''){
+            if(is_scalar($escape) && !empty($escape) && !in_array($escape,array("_", "%", "'"))){
+                $str = str_replace(array($escape, '_', '%'), array($escape.$escape, $escape.'_', $escape.'%'), $value);
+                $str = $this->modx->db->escape($str);
+                $str = str_replace('[+value+]', $str, $tpl);
+                $str = "{$field} LIKE '{$str}' ESCAPE '{$escape}'";
+            }else{
+                $this->debug->error("Error LikeEscape escaping: '{$this->debug->dumpData($escape)}'");
+            }
+        }else{
+            $this->debug->error("Error LikeEscape parameters. Field: '{$this->debug->dumpData($field)}' or value: '{$this->debug->dumpData($value)}'");
+        }
+        return $str;
+    }
+
+
 }
