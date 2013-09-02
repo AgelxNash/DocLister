@@ -89,10 +89,10 @@ abstract class filterDocLister{
      */
     protected function parseFilter($filter){
         // first parse the give filter string
-        $parsed = explode(':', $filter);
-        $this->field = $parsed[1];
-        $this->operator = $parsed[2];
-        $this->value = $parsed[3];
+        $parsed = explode(':', $filter, 4);
+        $this->field = isset($parsed[1]) ? $parsed[1] : null;
+        $this->operator = isset($parsed[2]) ? $parsed[2] : null;
+        $this->value = isset($parsed[3]) ? $parsed[3] : null;
         // exit if something is wrong
         return !(empty($this->field) || empty($this->operator) || is_null($this->value));
     }
@@ -115,7 +115,7 @@ abstract class filterDocLister{
      * @return string
      */
     protected function build_sql_where($table_alias, $field, $operator, $value){
-        $this->DocLister->debug->debug('Build SQL query for filters', 'buildQuery', 2);
+        $this->DocLister->debug->debug('Build SQL query for filters: '.$this->DocLister->debug->dumpData(func_get_args()), 'buildQuery', 2);
         $output = $table_alias . '.' . $field . ' ';
         switch ($operator){
             case '=': case 'eq': case 'is': $output .= " = '" . $this->modx->db->escape($value) ."'"; break;

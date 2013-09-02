@@ -21,7 +21,7 @@ class tv_DL_filter extends content_DL_filter{
             $tvid = $this->modx->db->query("SELECT id FROM ".$this->DocLister->getTable('site_tmplvars')." WHERE `name` = '".$this->modx->db->escape($this->field)."'");
             $this->tv_id = intval($this->modx->db->getValue($tvid));
             if (!$this->tv_id){
-                $this->modx->logEvent(0, 2, 'DocLister filtering by template variable "' . $this->field . '" failed. TV not found!');
+                $this->DocLister->debug->warning('DocLister filtering by template variable "' . $this->DocLister->debug->dumpData($this->field) . '" failed. TV not found!');
             }else{
                 // create the alias for the join
                 // FIXME this only works if the TV is used in exactly one filter. Multiple Filters on one TV would need different table_aliases.

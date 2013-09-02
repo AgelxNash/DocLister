@@ -354,7 +354,7 @@ abstract class DocLister
     */
     public function render($tpl = '')
     {
-        $this->debug->debug('Render data with template '.print_r($tpl,1), 'render', 2);
+        $this->debug->debug('Render data with template '.$this->debug->dumpData($tpl), 'render', 2);
         $out = '';
         if (1 == $this->getCFGDef('tree', '0')) {
             foreach ($this->_tree as $item) {
@@ -481,13 +481,13 @@ abstract class DocLister
             $this->modx->toPlaceholder($key, $data, $id);
             $this->debug->debugEnd(
                 "toPlaceholders",
-                "Save ".print_r($key,1)." placeholder: ".print_r($data,1)
+                "Save ".$this->debug->dumpData($key)." placeholder: ".$this->debug->dumpData($data)
             );
         } else {
             $out = $data;
             $this->debug->debugEnd(
                 "toPlaceholders",
-                "Show ".print_r($key,1)." placeholder: ".print_r($data,1)
+                "Show ".$this->debug->dumpData($key)." placeholder: ".$this->debug->dumpData($data)
             );
         }
         return $out;
@@ -530,7 +530,7 @@ abstract class DocLister
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
         }
 
-        $this->debug->debug('Load language '.print_r($name,1).".".print_r($lang,1), 'loadlang', 2);
+        $this->debug->debug('Load language '.$this->debug->dumpData($name).".".$this->debug->dumpData($lang), 'loadlang', 2);
 
         if (file_exists(dirname(__FILE__) . "/lang/" . $lang . "/" . $name . ".inc.php")) {
             $tmp = include_once(dirname(__FILE__) . "/lang/" . $lang . "/" . $name . ".inc.php");
@@ -630,7 +630,7 @@ abstract class DocLister
      */
     private function _getChunk($name)
     {
-        $this->debug->debug('Get chunk by name "'.print_r($name,1).'"',"getChunk",2);
+        $this->debug->debug('Get chunk by name "'.$this->debug->dumpData($name).'"',"getChunk",2);
         //without trim
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
             $mode = (preg_match('/^((@[A-Z]+)[:]{0,1})(.*)/Asu', trim($name), $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
@@ -712,7 +712,7 @@ abstract class DocLister
                     if ($this->checkExtender('template')) {
                         $tpl = $this->extender['template']->init($this, array('full' => $name, 'mode' => $mode, 'tpl' => $tmp[3])); //without trim
                     } else {
-                        //error template
+                        $tpl = $this->modx->getChunk($name);
                     }
                     }
             }
@@ -738,7 +738,7 @@ abstract class DocLister
     public function parseChunk($name, $data)
     {
         $this->debug->debug(
-            "parseChunk ".print_r($name,1)." ".print_r($data,1),
+            "parseChunk ".$this->debug->dumpData($name)." ".$this->debug->dumpData($data),
             "parseChunk",
             2
         );
@@ -746,7 +746,7 @@ abstract class DocLister
             $data = $this->renameKeyArr($data, '[', ']', '+');
             $out = str_replace(array_keys($data), array_values($data), $out);
         }else{
-            $this->debug->debug("Empty chunk: ".print_r($name,1), '', 2);
+            $this->debug->debug("Empty chunk: ".$this->debug->dumpData($name), '', 2);
         }
         $this->debug->debugEnd("parseChunk");
         return $out;
@@ -829,7 +829,7 @@ abstract class DocLister
      */
     final protected function _loadExtender($name)
     {
-        $this->debug->debug('Load Extender '.print_r($name, 1), 'LoadExtender', 2);
+        $this->debug->debug('Load Extender '.$this->debug->dumpData($name), 'LoadExtender', 2);
         $flag = false;
 
         $classname = ($name != '') ? $name . "_DL_Extender" : "";
@@ -847,7 +847,7 @@ abstract class DocLister
             }
         }
         if(!$flag){
-            $this->debug->debug("Error load Extender ".print_r($name,1));
+            $this->debug->debug("Error load Extender ".$this->debug->dumpData($name));
         }
         $this->debug->debugEnd('LoadExtender');
         return $flag;
@@ -865,7 +865,7 @@ abstract class DocLister
      */
     final public function setIDs($IDs)
     {
-        $this->debug->debug('set ID list '.print_r($IDs,1), 'setIDs', 2);
+        $this->debug->debug('set ID list '.$this->debug->dumpData($IDs), 'setIDs', 2);
         $IDs = $this->cleanIDs($IDs);
         $type = $this->getCFGDef('idType', 'parents');
         $depth = $this->getCFGDef('depth', '1');
@@ -891,7 +891,7 @@ abstract class DocLister
      */
     final public function cleanIDs($IDs, $sep = ',')
     {
-        $this->debug->debug('clean IDs '.print_r($IDs,1).' with separator '.print_r($sep,1), 'cleanIDs', 2);
+        $this->debug->debug('clean IDs '.$this->debug->dumpData($IDs).' with separator '.$this->debug->dumpData($sep), 'cleanIDs', 2);
         $out = array();
         if (!is_array($IDs)) {
             $IDs = explode($sep, $IDs);
@@ -1010,7 +1010,7 @@ abstract class DocLister
                 break;
             }
         }
-        $this->debug->debugEnd("sortORDER",'Get sort order for SQL: '.print_r($sort,1));
+        $this->debug->debugEnd("sortORDER",'Get sort order for SQL: '.$this->debug->dumpData($sort));
         return $sort;
     }
 
@@ -1046,7 +1046,7 @@ abstract class DocLister
                 $ret = "LIMIT " . (int)$offset . ",18446744073709551615";
             }
         }
-        $this->debug->debugEnd("limitSQL","Get limit for SQL: ".print_r($ret,1));
+        $this->debug->debugEnd("limitSQL","Get limit for SQL: ".$this->debug->dumpData($ret));
         return $ret;
     }
 
@@ -1122,7 +1122,7 @@ abstract class DocLister
      * @return mixed результат разбора фильтров
      */
     protected function getFilters($filter_string){
-        $this->debug->debug("getFilters: ".print_r($filter_string,1),'getFilter',1);
+        $this->debug->debug("getFilters: ".$this->debug->dumpData($filter_string),'getFilter',1);
         // the filter parameter tells us, which filters can be used in this query
         $filter_string = trim($filter_string);
         if (!$filter_string) return;
@@ -1147,7 +1147,7 @@ abstract class DocLister
         if (!$logic_op_found) {
             $filter = $this->loadFilter($filter_string);
             if (!$filter) {
-                $this->modx->logEvent(0, 2, 'Error while loading DocLister filter "' . $filter_string . '": check syntax!');
+                $this->debug->warning('Error while loading DocLister filter "' . $this->debug->dumpData($filter_string) . '": check syntax!');
                 $output = false;
             }else{
                 $output['join'] = $filter->get_join();
@@ -1164,17 +1164,25 @@ abstract class DocLister
      * @return bool
      */
     protected function loadFilter($filter){
-        $this->debug->debug('Load filter '.print_r($filter,1) , 'loadFilter', 2);
+        $this->debug->debug('Load filter '.$this->debug->dumpData($filter) , 'loadFilter', 2);
         $out = false;
-        $fltr_params = explode(':', $filter);
-        $fltr = $fltr_params[0];
+        $fltr_params = explode(':', $filter, 2);
+        $fltr = isset($fltr_params[0]) ? $fltr_params[0] : null;
         // check if the filter is implemented
-        if (file_exists(dirname(__FILE__) . '/filter/' . $fltr . '.filter.php')){
+        if (!is_null($fltr) && file_exists(dirname(__FILE__) . '/filter/' . $fltr . '.filter.php')){
             require_once dirname(__FILE__) . '/filter/' . $fltr . '.filter.php';
+            /**
+             * @var tv_DL_filter|content_DL_filter $fltr_class
+             */
             $fltr_class = $fltr . '_DL_filter';
             $fltr_obj = new $fltr_class();
-            $fltr_obj->init($this, $filter);
-            $out = $fltr_obj;
+            if($fltr_obj->init($this, $filter)){
+                $out = $fltr_obj;
+            }else{
+                $this->debug->error("Wrong filter parameter: '{$this->debug->dumpData($filter)}'");
+            }
+        }else{
+            $this->debug->error("Error load Filter: '{$this->debug->dumpData($filter)}'");
         }
         $this->debug->debugEnd("loadFilter");
         return $out;
@@ -1185,7 +1193,7 @@ abstract class DocLister
      * @param string $q SQL запрос
      */
     public function dbQuery($q){
-        $this->debug->debug(print_r($q,1), "query", 1);
+        $this->debug->debug($this->debug->dumpData($q), "query", 1);
         $out = $this->modx->db->query($q);
         $this->debug->debugEnd("query");
         return $out;
