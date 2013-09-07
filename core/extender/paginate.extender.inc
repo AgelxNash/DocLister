@@ -120,8 +120,8 @@ class paginate_DL_Extender extends extDocLister
                     include_once($dir . "/lib/pagination.class.php");
                     if (class_exists("pagination", false) && $this->_pages['total'] > 1) {
                         $p = new pagination;
-                        $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE: <a href="[+link+]">' . $this->DocLister->getMsg('paginate.next', 'Next') . ' ></a>');
-                        $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< ' . $this->DocLister->getMsg('paginate.prev', 'Prev') . '</a>');
+                        $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE: <a href="[+link+]">[%paginate.next%] ></a>');
+                        $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
                         $p->numberT = $this->DocLister->getChunkByParam('TplPage', '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
                         $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
                         $p->prevI = '';

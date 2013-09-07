@@ -635,11 +635,11 @@ abstract class DocLister
     private function _getChunk($name)
     {
         $this->debug->debug('Get chunk by name "'.$this->debug->dumpData($name).'"',"getChunk",2);
+        $tpl = '';
         //without trim
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
             $mode = (preg_match('/^((@[A-Z]+)[:]{0,1})(.*)/Asu', trim($name), $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
-            $tpl = '';
-            if (isset($tmp[3])) $subTmp = trim($tmp[3]);
+            $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
             switch ($mode) {
                 case '@FILE':
                 { //tpl in file
@@ -720,18 +720,45 @@ abstract class DocLister
                     }
                     }
             }
-            if ($tpl != '' && is_scalar($tpl)) {
-                $this->modx->chunkCache[$name] = $tpl; //save tpl
-            }
+
+            $tpl = $this->modx->chunkCache[$name] = $this->parseLang($tpl);
         }else{
             if($name!=''){
                 $tpl = $this->modx->getChunk($name);
+                $tpl = $this->parseLang($tpl);
             }
         }
+
         $this->debug->debugEnd("getChunk");
         return $tpl;
     }
 
+    /**
+     * Замена в шаблоне фраз из лексикона
+     *
+     * @param string $tpl HTML шаблон
+     * @return string
+     */
+    public function parseLang($tpl){
+        $this->debug->debug(
+            "parseLang ".$this->debug->dumpData($tpl),
+            "parseLang",
+            2
+        );
+        if(is_scalar($tpl) && !empty($tpl)){
+            if(preg_match_all("/\[\%([a-zA-Z0-9\.\_\-]+)\%\]/", $tpl, $match)){
+                $langVal = array();
+                foreach($match[1] as $item){
+                    $langVal[] = $this->getMsg($item);
+                }
+                $tpl = str_replace($match[0], $langVal, $tpl);
+            }
+        }else{
+            $tpl = '';
+        }
+        $this->debug->debugEnd("parseLang");
+        return $tpl;
+    }
     /**
      * refactor $modx->parseChunk();
      *
@@ -747,8 +774,12 @@ abstract class DocLister
             2
         );
         if (is_array($data) && ($out = $this->_getChunk($name)) != '') {
-            $data = $this->renameKeyArr($data, '[', ']', '+');
-            $out = str_replace(array_keys($data), array_values($data), $out);
+            if(preg_match("/\[\+[a-zA-Z0-9\.\_\-]+\+\]/",$out)){
+                $data = $this->renameKeyArr($data, '[', ']', '+');
+                $out = str_replace(array_keys($data), array_values($data), $out);
+            }else{
+                $this->debug->debug("No placeholders in chunk: ".$this->debug->dumpData($name), '', 2);
+            }
         }else{
             $this->debug->debug("Empty chunk: ".$this->debug->dumpData($name), '', 2);
         }
