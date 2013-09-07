@@ -206,17 +206,28 @@ class site_contentDocLister extends DocLister
         if ($where != '' && $this->_filters['where'] != '') {
             $where .= " AND ";
         }
+        $where = "WHERE {$where} c.deleted=0 AND c.published=1";
 
         $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($this->IDs);
-        $getCFGDef = $this->getCFGDef('showParent', '0') ? '' : "AND c.id NOT IN({$sanitarInIDs})";
+        if ($sanitarInIDs != "''"){
+            switch($this->getCFGDef('idType', 'parents')){
+                case 'parents':{
+                    if(!$this->getCFGDef('showParent', '0')) {
+                        $where .= " AND c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
+                    }
+                    break;
+                }
+                case 'documents':{
+                    $where .= " AND c.id IN({$sanitarInIDs})";
+                    break;
+                }
+            }
+        }
+
         $fields = 'count(c.`id`) as `count`';
         $from = $tbl_site_content . " " . $this->_filters['join'];
-        $where = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 {$getCFGDef}";
 
-        if(!empty($where)){
-            $where = "WHERE ".$where;
-        }
         $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where}");
         return $this->modx->db->getValue($rs);
     }

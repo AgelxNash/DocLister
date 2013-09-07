@@ -29,14 +29,14 @@ class paginate_DL_Extender extends extDocLister
         if (($paginate = $this->DocLister->getCFGDef('paginate', '')) == '') {
             $this->DocLister->setConfig(array('start' => 0));
         }
-        $this->DocLister->toPlaceholders(10, 1, "count", $this->DocLister->getCFGDef('dittoID', ''));
+        $id = $this->DocLister->getCFGDef('id', '');
         $pages = 0;
 
         switch ($paginate) {
             case 'pages':
             {
-                if ($this->DocLister->getCFGDef('id', '') != '') {
-                    $DLid = $this->DocLister->getCFGDef('id', '') . "_";
+                if ($id != '') {
+                    $DLid = $id . "_";
                 }
                 $start = (isset($_GET[$DLid . 'page']) && intval($_GET[$DLid . 'page']) > 1) ? (intval($_GET[$DLid . 'page']) - 1) : 0;
                 $this->DocLister->setConfig(array('start' => $start * $this->DocLister->getCFGDef('display', 0)));
