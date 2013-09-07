@@ -30,7 +30,7 @@ class site_contentDocLister extends DocLister
     public function getUrl($id = 0)
     {
         $id = $id > 0 ? $id : $this->modx->documentIdentifier;
-        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : "";
+        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $_SERVER['QUERY_STRING'];
         $url = ($id == $this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "") : $this->modx->makeUrl($id, '', $link, 'full');
         return $url;
     }
@@ -111,7 +111,7 @@ class site_contentDocLister extends DocLister
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
 
-                    $item['url'] = ($item['type'] == 'reference') ? $item['content'] : $this->getUrl($item['id']);
+                    $item['url'] = ($item['type'] == 'reference') ? $item['content'] : $this->makeUrl($item['id']);
 
                     $item['date'] = (isset($item[$date]) && $date != 'createdon' && $item[$date] != 0 && $item[$date] == (int)$item[$date]) ? $item[$date] : $item['createdon'];
                     $item['date'] = $item['date'] + $this->modx->config['server_offset_time'];
