@@ -24,7 +24,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.1.1';
+    const VERSION = '1.1.3';
 
     /**
      * Массив документов полученный в результате выборки из базы

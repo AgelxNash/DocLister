@@ -22,7 +22,6 @@ class onetableDocLister extends DocLister
 
     /**
      * @absctract
-	 * @todo link maybe include other GET parameter with use pagination. For example - filter
      */
 
     public function getUrl($id = 0)

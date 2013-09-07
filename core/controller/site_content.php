@@ -25,7 +25,6 @@ class site_contentDocLister extends DocLister
     }
     /**
      * @absctract
-	 * @todo link maybe include other GET parameter with use pagination. For example - filter
      */
     public function getUrl($id = 0)
     {
@@ -111,7 +110,7 @@ class site_contentDocLister extends DocLister
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
 
-                    $item['url'] = ($item['type'] == 'reference') ? $item['content'] : $this->makeUrl($item['id']);
+                    $item['url'] = ($item['type'] == 'reference') ? $item['content'] : $this->modx->makeUrl($item['id']);
 
                     $item['date'] = (isset($item[$date]) && $date != 'createdon' && $item[$date] != 0 && $item[$date] == (int)$item[$date]) ? $item[$date] : $item['createdon'];
                     $item['date'] = $item['date'] + $this->modx->config['server_offset_time'];
