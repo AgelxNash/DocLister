@@ -6,7 +6,7 @@ if (!defined('MODX_BASE_PATH')) {
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 
 $_lang = array();
-$_lang['paginate.next'] = 'Next';
-$_lang['paginate.prev'] = 'Prev';
+$_lang['next'] = 'Next';
+$_lang['prev'] = 'Prev';
 
 return $_lang;

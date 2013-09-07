@@ -535,6 +535,10 @@ abstract class DocLister
         if (file_exists(dirname(__FILE__) . "/lang/" . $lang . "/" . $name . ".inc.php")) {
             $tmp = include_once(dirname(__FILE__) . "/lang/" . $lang . "/" . $name . ".inc.php");
             if (is_array($tmp)) {
+                /**
+                 * Переименовыываем элементы массива из array('test'=>'data') в array('name.test'=>'data')
+                 */
+                $tmp = $this->renameKeyArr($tmp, $name, '', '.');
                 $this->_lang = array_merge($this->_lang, $tmp);
             }
         }

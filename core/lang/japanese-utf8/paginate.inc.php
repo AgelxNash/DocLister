@@ -6,7 +6,7 @@ if (!defined('MODX_BASE_PATH')) {
 setlocale(LC_ALL, 'ja_JP.UTF-8');
 
 $_lang = array();
-$_lang['paginate.next'] = '次へ';
-$_lang['paginate.prev'] = '戻る';
+$_lang['next'] = '次へ';
+$_lang['prev'] = '戻る';
 
 return $_lang;
