@@ -1275,6 +1275,4 @@ abstract class DocLister
         }
         return $str;
     }
-
-
 }

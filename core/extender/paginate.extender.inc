@@ -29,16 +29,13 @@ class paginate_DL_Extender extends extDocLister
         if (($paginate = $this->DocLister->getCFGDef('paginate', '')) == '') {
             $this->DocLister->setConfig(array('start' => 0));
         }
-        $id = $this->DocLister->getCFGDef('id', '');
         $pages = 0;
 
         switch ($paginate) {
             case 'pages':
             {
-                if ($id != '') {
-                    $DLid = $id . "_";
-                }
-                $start = (isset($_GET[$DLid . 'page']) && intval($_GET[$DLid . 'page']) > 1) ? (intval($_GET[$DLid . 'page']) - 1) : 0;
+                $requestName = $this->getRequestName('page');
+                $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? (intval($_GET[$requestName]) - 1) : 0;
                 $this->DocLister->setConfig(array('start' => $start * $this->DocLister->getCFGDef('display', 0)));
                 $this->_pages['current'] = $start + 1;
                 $pages = $this->getListPages($paginate, 'total');
@@ -100,9 +97,6 @@ class paginate_DL_Extender extends extDocLister
     private function renderPages($mode = '')
     {
         $out = '';
-
-        $key = ($this->DocLister->getCFGDef('id', '') != '') ? ($this->DocLister->getCFGDef('id', '') . "_") : "";
-
         switch ($mode) {
             case 'ditto':
             {
@@ -129,9 +123,9 @@ class paginate_DL_Extender extends extDocLister
                         $p->Items($this->_pages['total']);
                         $p->limit($this->DocLister->getCFGDef("pageLimit", 1)); //show page count
                         $p->adjacents($this->DocLister->getCFGDef("pageAdjacents", 4));
-                        $p->target($this->DocLister->getUrl()); //getUrlPage
+                        $p->target($this->getUrl());
                         $p->currentPage($this->_pages['current']);
-                        $p->parameterName($key . "page");
+                        $p->parameterName($this->getRequestName('page'));
                         $p->changeClass($this->DocLister->getCFGDef("PaginateClass", "paginate"));
                         $out = $p->getOutput();
                     }
@@ -139,5 +133,44 @@ class paginate_DL_Extender extends extDocLister
                 }
         }
         return $out;
+    }
+    public function getUrl($requestName=''){
+        $url = $this->DocLister->getUrl();
+        $params = parse_url($url, PHP_URL_QUERY);
+        parse_str(html_entity_decode($params), $params);
+        if($requestName==''){
+            switch ($this->DocLister->getCFGDef('paginate', '')) {
+                case 'pages':{
+                    $requestName = 'page';
+                    break;
+                }
+                case 'ditto':{
+                    $requestName = 'start';
+                    break;
+                }
+                default:{
+
+                }
+            }
+        }
+        if($requestName!='' && is_array($params)){
+            $q = http_build_query(array_merge($params, array($this->getRequestName($requestName)=>null)));
+            $url = explode("?", $url, 2);
+            $url = $url[0];
+            if(!empty($q)){
+                $url .= "?".$q;
+            }
+        }
+        return $url;
+    }
+    /**
+     * Имя REQUEST переменной в пагинаторе
+     *
+     * @param $name основное имя REQUEST переменной в пагинаторе
+     * @return string
+     */
+    public function getRequestName($name){
+        $id = $this->DocLister->getCFGDef('id', '');
+        return (($id != '') ? ($id . "_") : "") . $name;
     }
 }
