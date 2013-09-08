@@ -51,6 +51,13 @@ abstract class filterDocLister{
     protected $value = '';
 
     /**
+     * Номер фильтра в общем списке фильтров
+     * @var int
+     * @access protected
+     */
+    protected $totalFilters = 0;
+
+    /**
      * Запуск фильтра
      *
      * @param $DocLister экземпляр класса DocLister
@@ -62,6 +69,7 @@ abstract class filterDocLister{
         if($DocLister instanceof DocLister){
             $this->DocLister=$DocLister;
             $this->modx = $this->DocLister->getMODX();
+            $this->totalFilters = $this->DocLister->getCountFilters();
             $flag = $this->parseFilter($filter);
         }
         return $flag;

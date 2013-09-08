@@ -11,7 +11,7 @@ require_once 'content.filter.php';
  */
 class tv_DL_filter extends content_DL_filter{
 	private $tv_id;
-	
+
 	protected function parseFilter($filter) {
         $return = false;
 		// use the parsing mechanism of the content filter for the start
@@ -24,8 +24,11 @@ class tv_DL_filter extends content_DL_filter{
                 $this->DocLister->debug->warning('DocLister filtering by template variable "' . $this->DocLister->debug->dumpData($this->field) . '" failed. TV not found!');
             }else{
                 // create the alias for the join
-                // FIXME this only works if the TV is used in exactly one filter. Multiple Filters on one TV would need different table_aliases.
-                $this->setTableAlias('dltv_' . $this->field);
+                $alias = 'dltv_' . $this->field;
+                if($this->totalFilters>0){
+                    $alias .= '_'.$this->totalFilters;
+                }
+                $this->setTableAlias($alias);
                 $this->field = 'value';
                 $return = true;
             }

@@ -131,6 +131,13 @@ abstract class DocLister
     private $_timeStart = 0;
 
     /**
+     * Номер фильтра в общем списке фильтров
+     * @var int
+     * @access protected
+     */
+    protected $totalFilters = 0;
+
+    /**
      * Конструктор контроллеров DocLister
      *
      * @param DocumentParser $modx объект DocumentParser - основной класс MODX
@@ -1210,6 +1217,7 @@ abstract class DocLister
              * @var tv_DL_filter|content_DL_filter $fltr_class
              */
             $fltr_class = $fltr . '_DL_filter';
+            $this->totalFilters++;
             $fltr_obj = new $fltr_class();
             if($fltr_obj->init($this, $filter)){
                 $out = $fltr_obj;
@@ -1223,6 +1231,13 @@ abstract class DocLister
         return $out;
     }
 
+    /**
+     * Общее число фильтров
+     * @return int
+     */
+    public function getCountFilters(){
+        return (int)$this->totalFilters;
+    }
     /**
      * Выполнить SQL запрос
      * @param string $q SQL запрос
