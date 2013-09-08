@@ -11,7 +11,7 @@
 
 ### Полезные ссылки
 ---------
-* **Документация**: http://wiki.modx.im/evolution:snippets:doclister
+* **Документация**: http://blog.agel-nash.ru/addon/doclister.html
 * **Презентация**: http://modx.im/blog/addons/527.html
 * **Пример работы**: http://doclister.agelnash.ru
 
