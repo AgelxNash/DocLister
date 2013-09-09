@@ -202,16 +202,18 @@ class site_contentDocLister extends DocLister
     // @abstract
     public function getChildrenCount()
     {
-        $where = $this->getCFGDef('addWhereList', '');
-        $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
-        if ($where != '' && $this->_filters['where'] != '') {
-            $where .= " AND ";
-        }
-        $where = "WHERE {$where} c.deleted=0 AND c.published=1";
-
-        $tbl_site_content = $this->getTable('site_content','c');
+        $out = 0;
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''"){
+            $where = $this->getCFGDef('addWhereList', '');
+            $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+            if ($where != '' && $this->_filters['where'] != '') {
+                $where .= " AND ";
+            }
+            $where = "WHERE {$where} c.deleted=0 AND c.published=1";
+
+            $tbl_site_content = $this->getTable('site_content','c');
+
             switch($this->getCFGDef('idType', 'parents')){
                 case 'parents':{
                     if(!$this->getCFGDef('showParent', '0')) {
@@ -224,47 +226,47 @@ class site_contentDocLister extends DocLister
                     break;
                 }
             }
+            $fields = 'count(c.`id`) as `count`';
+            $from = $tbl_site_content . " " . $this->_filters['join'];
+
+            $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where}");
+            $out = $this->modx->db->getValue($rs);
         }
-
-        $fields = 'count(c.`id`) as `count`';
-        $from = $tbl_site_content . " " . $this->_filters['join'];
-
-        $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where}");
-        return $this->modx->db->getValue($rs);
+        return $out;
     }
 
     protected function getDocList()
     {
-        $where = $this->getCFGDef('addWhereList', '');
-        $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
-        if ($where != '' && $this->_filters['where'] != '') {
-            $where .= " AND ";
-        }
-
-        $tbl_site_content = $this->getTable('site_content','c');
-        $where = "WHERE {$where} c.deleted=0 AND c.published=1";
+        $out = array();
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''") {
-            $where .= " AND c.id IN ({$sanitarInIDs})";
-        }
-
-        $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-        $select = "c.*";
-        $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
-        if (preg_match("/^ORDER BY (.*) /", $sort, $match)) {
-            $TVnames = $this->extender['tv']->getTVnames();
-            if (isset($TVnames[$match[1]])) {
-                $tbl_site_content .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues") . " as tv
-                    on tv.contentid=c.id AND tv.tmplvarid=" . $TVnames[$match[1]];
-                $sort = str_replace("ORDER BY " . $match[1], "ORDER BY tv.value", $sort);
+            $where = $this->getCFGDef('addWhereList', '');
+            $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+            if ($where != '' && $this->_filters['where'] != '') {
+                $where .= " AND ";
             }
-        }
-        $rs = $this->dbQuery("SELECT {$select} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
 
-        $rows = $this->modx->db->makeArray($rs);
-        $out = array();
-        foreach ($rows as $item) {
-            $out[$item['id']] = $item;
+            $tbl_site_content = $this->getTable('site_content','c');
+            $where = "WHERE {$where} c.deleted=0 AND c.published=1 AND c.id IN ({$sanitarInIDs})";
+
+            $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
+            $select = "c.*";
+            $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
+            if (preg_match("/^ORDER BY (.*) /", $sort, $match)) {
+                $TVnames = $this->extender['tv']->getTVnames();
+                if (isset($TVnames[$match[1]])) {
+                    $tbl_site_content .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues") . " as tv
+                    on tv.contentid=c.id AND tv.tmplvarid=" . $TVnames[$match[1]];
+                    $sort = str_replace("ORDER BY " . $match[1], "ORDER BY tv.value", $sort);
+                }
+            }
+            $rs = $this->dbQuery("SELECT {$select} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
+
+            $rows = $this->modx->db->makeArray($rs);
+
+            foreach ($rows as $item) {
+                $out[$item['id']] = $item;
+            }
         }
         return $out;
     }
