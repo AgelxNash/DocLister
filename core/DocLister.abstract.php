@@ -27,6 +27,10 @@ abstract class DocLister
     const VERSION = '1.1.3';
 
     /**
+     * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
+     */
+    const AliasRequest = 'q';
+    /**
      * Массив документов полученный в результате выборки из базы
      * @var array
      * @access protected
@@ -1274,5 +1278,15 @@ abstract class DocLister
             $this->debug->error("Error LikeEscape parameters. Field: '{$this->debug->dumpData($field)}' or value: '{$this->debug->dumpData($value)}'");
         }
         return $str;
+    }
+
+    /**
+     * Получение REQUEST_URI без GET-ключа с
+     * @return string
+     */
+    final public function getRequest(){
+        $URL = null;
+        parse_str(parse_url(MODX_SITE_URL.$_SERVER['REQUEST_URI'], PHP_URL_QUERY), $URL);
+        return http_build_query(array_merge($URL, array(DocLister::AliasRequest => null)));
     }
 }

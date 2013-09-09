@@ -27,7 +27,7 @@ class onetableDocLister extends DocLister
     public function getUrl($id = 0)
     {
         $id = $id > 0 ? $id : $this->modx->documentIdentifier;
-        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $_SERVER['QUERY_STRING'];
+        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();
         $url = ($id == $this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "") : $this->modx->makeUrl($id, '', $link, 'full');
         return $url;
     }
