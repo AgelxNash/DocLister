@@ -39,7 +39,7 @@ class paginate_DL_Extender extends extDocLister
                 $this->DocLister->setConfig(array('start' => $start * $this->DocLister->getCFGDef('display', 0)));
                 $this->_pages['current'] = $start + 1;
                 $pages = $this->getListPages($paginate, 'total');
-                $this->DocLister->toPlaceholders($this->_pages['current'], 1, "current");
+                $this->DocLister->toPlaceholders($this->currentPage(), 1, "current");
                 $this->DocLister->toPlaceholders($this->renderPages("pages"), 1, "pages");
                 break;
             }
@@ -58,8 +58,8 @@ class paginate_DL_Extender extends extDocLister
                 }
         }
 
-        $this->DocLister->toPlaceholders(($this->_pages['current'] == 1 ? 1 : 0), 1, "isstart"); //[+isstart+] – is start page
-        $this->DocLister->toPlaceholders(($this->_pages['current'] == $pages ? 1 : 0), 1, "isstop"); //[+isstop+] – is end page
+        $this->DocLister->toPlaceholders(($this->currentPage() == 1 ? 1 : 0), 1, "isstart"); //[+isstart+] – is start page
+        $this->DocLister->toPlaceholders(($this->currentPage() == $pages ? 1 : 0), 1, "isstop"); //[+isstop+] – is end page
         $this->DocLister->toPlaceholders($pages, 1, "totalPages"); // [+totalPages+] - total page.
         return $pages;
     }
@@ -75,7 +75,7 @@ class paginate_DL_Extender extends extDocLister
      */
     protected function getListPages($paginate, $name = '')
     {
-        $this->_pages['current'] = isset($this->_pages['current']) ? $this->_pages['current'] : 1;
+        $this->_pages['current'] = $this->currentPage();
         if ($paginate == '') {
             $this->_pages['total'] = 1;
         } else {
@@ -87,6 +87,21 @@ class paginate_DL_Extender extends extDocLister
         return ($name != '' && isset($this->_pages[$name])) ? $this->_pages[$name] : $this->_pages;
     }
 
+    /**
+     * Номер текущей страницы
+     * @return int
+     */
+    public function currentPage(){
+        return isset($this->_pages['current']) ? (int)$this->_pages['current'] : 1;
+    }
+
+    /**
+     * Общее число страниц
+     * @return int
+     */
+    public function totalPage(){
+        return isset($this->_pages['total']) ? (int)$this->_pages['total'] : 1;
+    }
     /**
      *
      * @todo template list pages
@@ -112,7 +127,7 @@ class paginate_DL_Extender extends extDocLister
                 $dir = dirname(dirname(dirname(__FILE__)));
                 if (file_exists($dir . "/lib/pagination.class.php")) {
                     include_once($dir . "/lib/pagination.class.php");
-                    if (class_exists("pagination", false) && $this->_pages['total'] > 1) {
+                    if (class_exists("pagination", false) && $this->totalPage() > 1) {
                         $p = new pagination;
                         $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE: <a href="[+link+]">[%paginate.next%] ></a>');
                         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
@@ -120,11 +135,11 @@ class paginate_DL_Extender extends extDocLister
                         $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
                         $p->prevI = '';
                         $p->mainTpl = $this->DocLister->getChunkByParam('TplWrapPaginate', '@CODE: <div class="[+class+]">[+wrap+]</div>');
-                        $p->Items($this->_pages['total']);
+                        $p->Items($this->totalPage());
                         $p->limit($this->DocLister->getCFGDef("pageLimit", 1)); //show page count
                         $p->adjacents($this->DocLister->getCFGDef("pageAdjacents", 4));
                         $p->target($this->getUrl());
-                        $p->currentPage($this->_pages['current']);
+                        $p->currentPage($this->currentPage());
                         $p->parameterName($this->getRequestName('page'));
                         $p->changeClass($this->DocLister->getCFGDef("PaginateClass", "paginate"));
                         $out = $p->getOutput();

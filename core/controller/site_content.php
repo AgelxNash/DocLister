@@ -108,7 +108,9 @@ class site_contentDocLister extends DocLister
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
+
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
+                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->checkExtender('paginate')) ? ($i + $this->getCFGDef('display', 0) * ($this->extender['paginate']->currentPage()-1)) : $i;
 
                     $item['url'] = ($item['type'] == 'reference') ? $item['content'] : $this->modx->makeUrl($item['id']);
 
@@ -133,7 +135,7 @@ class site_contentDocLister extends DocLister
                         $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
                         $class[] = 'current';
                     } else {
-                        $item['active'] = 0;
+                        $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
                     }
                     $class = implode(" ", $class);
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;

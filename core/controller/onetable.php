@@ -113,8 +113,11 @@ class onetableDocLister extends DocLister
                         $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
                         $class[] = 'current';
                     } else {
-                        $item['active'] = 0;
+                        $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
                     }
+                    $item[$this->getCFGDef("sysKey", "dl") . '.iteration'] = $i; //[+iteration+] - Number element. Starting from zero
+                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->checkExtender('paginate')) ? ($i + $this->getCFGDef('display', 0) * ($this->extender['paginate']->currentPage()-1)) : $i;
+
                     if($subTpl==''){
                         $subTpl = $tpl;
                     }
