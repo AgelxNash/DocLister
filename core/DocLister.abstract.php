@@ -83,6 +83,12 @@ abstract class DocLister
     protected $_lang = array();
 
     /**
+     * Пользовательский языковой пакет
+     * @var array
+     * @access protected
+     */
+    protected $_customLang = array();
+    /**
      * Массив настроек переданный через параметры сниппету
      * @var array
      * @access private
@@ -196,6 +202,9 @@ abstract class DocLister
 
         $this->setLocate();
 
+        if($this->getCFGDef("customLang")){
+            $this->getCustomLang();
+        }
         $this->loadExtender($this->getCFGDef("extender", ""));
 
         if ($this->checkExtender('request')) {
@@ -600,13 +609,36 @@ abstract class DocLister
     }
 
     /**
+     * Загрузка кастомного лексикона
+     *
+     * В файле с кастомным лексиконом ключи в массиве дожны быть полные
+     * Например:
+     *      - core.bla-bla
+     *      - paginate.next
+     *
+     * @param string $lang имя языкового пакета
+     * @return array
+     */
+    final public function getCustomLang($lang = ''){
+        if (empty($lang)) {
+            $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
+        }
+        if (file_exists(dirname(dirname(__FILE__)) . "/lang/" . $lang . ".php")) {
+            $tmp = include_once(dirname(__FILE__) . "/lang/" . $lang . ".php");
+            $this->_customLang = is_array($tmp) ? $tmp : array();
+        }
+        return $this->_customLang;
+    }
+
+    /**
      * Загрузка языкового пакета
      *
      * @param string $name ключ языкового пакета
      * @param string $lang имя языкового пакета
+     * @param boolean $rename Переименовывать ли элементы массива
      * @return array массив с лексиконом
      */
-    final public function loadLang($name = 'core', $lang = '')
+    final public function loadLang($name = 'core', $lang = '', $rename=true)
     {
         if (empty($lang)) {
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
@@ -623,7 +655,9 @@ abstract class DocLister
                     /**
                      * Переименовыываем элементы массива из array('test'=>'data') в array('name.test'=>'data')
                      */
-                    $tmp = $this->renameKeyArr($tmp, $n, '', '.');
+                    if($rename){
+                        $tmp = $this->renameKeyArr($tmp, $n, '', '.');
+                    }
                     $this->_lang = array_merge($this->_lang, $tmp);
                 }
             }
@@ -641,7 +675,12 @@ abstract class DocLister
      */
     final public function getMsg($name, $def = '')
     {
-        return (isset($this->_lang[$name])) ? $this->_lang[$name] : $def;
+        if(isset($this->_customLang[$name])){
+            $say = $this->_customLang[$name];
+        }else{
+            $say = isset($this->_lang[$name]) ? $this->_lang[$name] : $def;
+        }
+        return $say;
     }
 
     /**
