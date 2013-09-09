@@ -20,14 +20,17 @@ if(isset($showCurrent) && (int)$showCurrent>0){
 }
 
 if(!empty($_parents)){
-    $_options = array_merge(array(
-        'tpl'=>'@CODE:<li><a href="[+url+]" title="[+title+]">[+title+]</a></li>',
-        'tplCurrent'=>'@CODE:<li><span>[+title+]</span></li>',
-        'ownerTPL'=>'@CODE:<nav class="breadcrumbs"><ul>[+crumbs.wrap+]</ul></nav>',
-        'sortType' => 'doclist',
-        'sysKey'=>'crumbs',
-        'documents'=>implode(",",$_parents)
-    ), !empty($modx->event->params) ? $modx->event->params : array());
+    $_options = array_merge(
+        array(
+            'config' => 'crumbs:core'
+        ),
+        !empty($modx->event->params) ? $modx->event->params : array(),
+        array(
+            'idType' => 'documents',
+            'sortType' => 'doclist',
+            'documents' => implode(",",$_parents)
+        )
+    );
 
     $_out = $modx->runSnippet("DocLister", $_options);
 }

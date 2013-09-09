@@ -65,22 +65,23 @@ class debugDL{
     }
 
 
-    public function critical($message){
+    public function critical($message, $title=''){
         //@TODO: dump $_SERVER/$_POST/$_GET/$_COOKIE
     }
-    public function info($message){
-        $this->_sendLogEvent(1,$message);
+    public function info($message, $title=''){
+        $this->_sendLogEvent(1,$message, $title);
     }
 
-    public function warning($message){
-        $this->_sendLogEvent(2,$message);
+    public function warning($message, $title=''){
+        $this->_sendLogEvent(2,$message, $title);
     }
-    public function error($message){
-       $this->_sendLogEvent(3,$message);
+    public function error($message, $title=''){
+       $this->_sendLogEvent(3,$message, $title);
     }
 
-    private function _sendLogEvent($type, $message){
-        $this->modx->logEvent(0, $type, $message, "DocLister");
+    private function _sendLogEvent($type, $message, $title=''){
+        $title = "DocLister" . (!empty($title) ? ' - '.$title : '');
+        $this->modx->logEvent(0, $type, $message, $title);
     }
 
     public function showLog(){
@@ -110,8 +111,12 @@ class debugDL{
         return $out;
     }
 
-    public function dumpData($data){
-        return $this->DocLister->sanitarData(print_r($data,1));
+    public function dumpData($data, $wrap=''){
+        $out = $this->DocLister->sanitarData(print_r($data,1));
+        if(!empty($wrap) && is_string($wrap)){
+            $out = "<{$wrap}>{$out}</{$wrap}>";
+        }
+        return $out;
     }
 
 

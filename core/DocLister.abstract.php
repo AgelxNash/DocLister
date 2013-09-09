@@ -2,7 +2,8 @@
 if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
-
+error_reporting(E_ALL);
+ini_set('display_errors','On');
 /**
  * DocLister class
  *
@@ -18,6 +19,9 @@ if (!defined('MODX_BASE_PATH')) {
  * @TODO depending on the parameters
  * @TODO prepare value before return final data (maybe callback function OR extender)
  */
+
+require_once(dirname(dirname(__FILE__))."/lib/jsonHelper.class.php");
+require_once(dirname(dirname(__FILE__)). "/lib/xnop.class.php");
 
 abstract class DocLister
 {
@@ -158,11 +162,16 @@ abstract class DocLister
 
             if ($modx instanceof DocumentParser) {
                 $this->modx = $modx;
+                $this->setDebug(1);
+                $this->loadLang(array('core','json'));
+
                 if (!is_array($cfg) || empty($cfg)) $cfg = $this->modx->Event->params;
             } else {
                 throw new Exception('MODX var is not instaceof DocumentParser');
             }
-
+            if(isset($cfg['config'])){
+                $cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
+            }
             if (!$this->setConfig($cfg)) {
                 throw new Exception('no parameters to run DocLister');
             }
@@ -185,7 +194,6 @@ abstract class DocLister
             $this->setIDs($IDs);
         }
 
-        $this->loadLang('core');
         $this->setLocate();
 
         $this->loadExtender($this->getCFGDef("extender", ""));
@@ -212,30 +220,33 @@ abstract class DocLister
     public function getTimeStart(){
         return $this->_timeStart;
     }
+
     /**
      * Установка режима отладки
      * @param int $flag режим отладки
      */
     public function setDebug($flag=0){
-        $this->_debugMode = (int)$flag;
-        $this->debug = null;
-        if($this->_debugMode>0){
-            if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
-                error_reporting(E_ALL);
-                ini_set('display_errors','On');
-            }
-            $dir = dirname(dirname(__FILE__));
-            if (file_exists($dir . "/lib/debugDL.class.php")) {
-                include_once($dir . "/lib/debugDL.class.php");
-                if (class_exists("debugDL", false)) {
-                    $this->debug = new debugDL($this);
+        if($this->_debugMode!=(int)$flag){
+            $this->_debugMode = (int)$flag;
+            $this->debug = null;
+            if($this->_debugMode>0){
+                if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
+                    error_reporting(E_ALL);
+                    ini_set('display_errors','On');
+                }
+                $dir = dirname(dirname(__FILE__));
+                if (file_exists($dir . "/lib/debugDL.class.php")) {
+                    include_once($dir . "/lib/debugDL.class.php");
+                    if (class_exists("debugDL", false)) {
+                        $this->debug = new debugDL($this);
+                    }
                 }
             }
-        }
 
-        if(is_null($this->debug)){
-            $this->debug = new xNop();
-            $this->_debugMode = 0;
+            if(is_null($this->debug)){
+                $this->debug = new xNop();
+                $this->_debugMode = 0;
+            }
         }
     }
 
@@ -264,6 +275,66 @@ abstract class DocLister
         return $table;
     }
 
+    /**
+     * Загрузка конфигов из файла
+     *
+     * @param $name string имя конфига
+     * @return array массив с настройками
+     */
+    public function loadConfig($name){
+        $this->debug->debug('Load json config: '.$this->debug->dumpData($name), 'loadconfig', 2);
+        if(!is_scalar($name)){
+            $name = '';
+        }
+        $config = array();
+        $name = explode(";", $name);
+        foreach($name as $cfgName){
+            $cfgName = explode(":", $cfgName, 2);
+            if(empty($cfgName[1])){
+                $cfgName[1] = 'custom';
+            }
+            $configFile = dirname(dirname(__FILE__))."/config/{$cfgName[1]}/{$cfgName[0]}.json";
+            if(file_exists($configFile) && is_readable($configFile)){
+                $json = file_get_contents($configFile);
+                $config = array_merge($config, $this->jsonDecode($json, array('assoc'=>true), true));
+            }
+        }
+
+        $this->debug->debugEnd("loadconfig");
+        return $config;
+    }
+
+    /**
+     * Разбор JSON строки при помощи json_decode
+     *
+     * @param $json string строка c JSON
+     * @param array $config ассоциативный массив с настройками для json_decode
+     * @param bool $nop создавать ли пустой объект запрашиваемого типа
+     * @return array|mixed|xNop
+     */
+    public function jsonDecode($json, $config = array(), $nop = false){
+        $this->debug->debug('Decode JSON: '.$this->debug->dumpData($json, 'code').' with config: '.$this->debug->dumpData($config), 'jsonDecode', 2);
+        $config = jsonHelper::jsonDecode($json, $config, $nop);
+        $this->isErrorJSON($json);
+        $this->debug->debugEnd("jsonDecode");
+        return $config;
+    }
+
+    /**
+     * Были ли ошибки во время работы с JSON
+     *
+     * @param $json string строка с JSON для записи в лог при отладке
+     * @return bool|string
+     */
+    public function isErrorJSON($json){
+        $error = false;
+        $error = jsonHelper::json_last_error_msg();
+        if(!in_array($error, array('error_none','other'))){
+            $this->debug->error($this->getMsg('json.'.$error).": ".$this->debug->dumpData($json, 'code'), 'JSON');
+            $error = true;
+        }
+        return $error;
+    }
     /**
      * Проверка параметров и загрузка необходимых экстендеров
      * return boolean статус загрузки
@@ -465,7 +536,7 @@ abstract class DocLister
      * @param mixed $def значение по умолчанию, если в конфиге нет искомого параметра
      * @return mixed значение из конфига
      */
-    final public function getCFGDef($name, $def)
+    final public function getCFGDef($name, $def = null)
     {
         return isset($this->_cfg[$name]) ? $this->_cfg[$name] : $def;
     }
@@ -537,20 +608,24 @@ abstract class DocLister
      */
     final public function loadLang($name = 'core', $lang = '')
     {
-        if ($lang == '') {
+        if (empty($lang)) {
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
         }
 
         $this->debug->debug('Load language '.$this->debug->dumpData($name).".".$this->debug->dumpData($lang), 'loadlang', 2);
-
-        if (file_exists(dirname(__FILE__) . "/lang/" . $lang . "/" . $name . ".inc.php")) {
-            $tmp = include_once(dirname(__FILE__) . "/lang/" . $lang . "/" . $name . ".inc.php");
-            if (is_array($tmp)) {
-                /**
-                 * Переименовыываем элементы массива из array('test'=>'data') в array('name.test'=>'data')
-                 */
-                $tmp = $this->renameKeyArr($tmp, $name, '', '.');
-                $this->_lang = array_merge($this->_lang, $tmp);
+        if(is_scalar($name)){
+            $name = array($name);
+        }
+        foreach($name as $n){
+            if (file_exists(dirname(__FILE__) . "/lang/" . $lang . "/" . $n . ".inc.php")) {
+                $tmp = include_once(dirname(__FILE__) . "/lang/" . $lang . "/" . $n . ".inc.php");
+                if (is_array($tmp)) {
+                    /**
+                     * Переименовыываем элементы массива из array('test'=>'data') в array('name.test'=>'data')
+                     */
+                    $tmp = $this->renameKeyArr($tmp, $n, '', '.');
+                    $this->_lang = array_merge($this->_lang, $tmp);
+                }
             }
         }
         $this->debug->debugEnd("loadlang");
@@ -854,8 +929,9 @@ abstract class DocLister
         } else {
             $return = $out;
         }
-
-        return json_encode($return);
+        $out = json_encode($return);
+        $this->isErrorJSON($return);
+        return $out;
     }
 
     /**
@@ -1226,10 +1302,10 @@ abstract class DocLister
             if($fltr_obj->init($this, $filter)){
                 $out = $fltr_obj;
             }else{
-                $this->debug->error("Wrong filter parameter: '{$this->debug->dumpData($filter)}'");
+                $this->debug->error("Wrong filter parameter: '{$this->debug->dumpData($filter)}'", 'Filter');
             }
         }else{
-            $this->debug->error("Error load Filter: '{$this->debug->dumpData($filter)}'");
+            $this->debug->error("Error load Filter: '{$this->debug->dumpData($filter)}'", 'Filter');
         }
         $this->debug->debugEnd("loadFilter");
         return $out;
@@ -1272,10 +1348,10 @@ abstract class DocLister
                 $str = str_replace('[+value+]', $str, $tpl);
                 $str = "{$field} LIKE '{$str}' ESCAPE '{$escape}'";
             }else{
-                $this->debug->error("Error LikeEscape escaping: '{$this->debug->dumpData($escape)}'");
+                $this->debug->error("Error LikeEscape escaping: '{$this->debug->dumpData($escape)}'", 'LikeEscape');
             }
         }else{
-            $this->debug->error("Error LikeEscape parameters. Field: '{$this->debug->dumpData($field)}' or value: '{$this->debug->dumpData($value)}'");
+            $this->debug->error("Error LikeEscape parameters. Field: '{$this->debug->dumpData($field)}' or value: '{$this->debug->dumpData($value)}'", 'LikeEscape');
         }
         return $str;
     }

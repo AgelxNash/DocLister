@@ -14,7 +14,6 @@ $dir = realpath(MODX_BASE_PATH . (isset($dir) ? $dir : 'assets/snippets/DocListe
 require_once($dir . "/core/DocLister.abstract.php");
 require_once($dir . "/core/extDocLister.abstract.php");
 require_once($dir . "/core/filterDocLister.abstract.php");
-require_once($dir . "/lib/xnop.class.php");
 
 if (isset($controller)) {
     preg_match('/^(\w+)$/iu', $controller, $controller);
