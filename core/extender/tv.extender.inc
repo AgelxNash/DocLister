@@ -25,16 +25,19 @@ class tv_DL_Extender extends extDocLister{
     public function getTVnames(){
         return $this->_TVnames;
     }
-    public function getAllTV_Name()
+    public function getAllTV_Name($reload = false)
     {
-        $from = $this->DocLister->getTable('site_tmplvars');
-        $rs = $this->DocLister->dbQuery("SELECT id,name FROM {$from}");
-        $rows = $this->modx->db->makeArray($rs);
-        $out = array();
-        foreach ($rows as $item) {
-            $out[$item['name']] = $item['id'];
+        if(empty($this->_TVnames) || $reload){
+            $from = $this->DocLister->getTable('site_tmplvars');
+            $rs = $this->DocLister->dbQuery("SELECT id, name FROM {$from}");
+            $rows = $this->modx->db->makeArray($rs);
+            $out = array();
+            foreach ($rows as $item) {
+                $out[$item['name']] = $item['id'];
+            }
+            $this->_TVnames = $out;
         }
-        return $this->_TVnames = $out;
+        return $this->_TVnames;
     }
 
     public function getTVList($IDs, $tvlist)
@@ -68,7 +71,7 @@ class tv_DL_Extender extends extDocLister{
         return $out;
     }
 
-    protected function getListRenderTV()
+    public function getListRenderTV()
     {
         $tmp = $this->DocLister->getCFGDef('renderTV', '');
         if ($tmp != '' && $tmp != '*') {
@@ -88,7 +91,7 @@ class tv_DL_Extender extends extDocLister{
         return $tmp;
     }
 
-    protected function renderTV($iddoc, $tvname, $tvval, $param)
+    public function renderTV($iddoc, $tvname, $tvval, $param)
     {
         include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
         include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
@@ -96,7 +99,7 @@ class tv_DL_Extender extends extDocLister{
     }
 
     //@TODO: _TVnames
-    protected function getTVid($tvlist)
+    public function getTVid($tvlist)
     {
         if (!empty($tvlist) && is_scalar($tvlist)) {
             $tvlist = explode(",", $tvlist);
@@ -110,7 +113,7 @@ class tv_DL_Extender extends extDocLister{
         return $out;
     }
 
-    protected function loadTVDefault($tvId)
+    public function loadTVDefault($tvId)
     {
         $tbl_site_tmplvars = $this->DocLister->getTable('site_tmplvars');
         $fields = 'id,name,default_text as value,display,display_params,type';

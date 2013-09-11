@@ -124,7 +124,7 @@ abstract class filterDocLister{
      */
     protected function build_sql_where($table_alias, $field, $operator, $value){
         $this->DocLister->debug->debug('Build SQL query for filters: '.$this->DocLister->debug->dumpData(func_get_args()), 'buildQuery', 2);
-        $output = $table_alias . '.' . $field . ' ';
+        $output = '`'.$table_alias . '`.`' . $field . '` ';
         switch ($operator){
             case '=': case 'eq': case 'is': $output .= " = '" . $this->modx->db->escape($value) ."'"; break;
             case 'gt': $output .= ' > ' . floatval($value); break;

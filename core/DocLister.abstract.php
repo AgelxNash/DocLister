@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.1.4';
+    const VERSION = '1.1.5';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -312,6 +312,7 @@ abstract class DocLister
         $this->debug->debugEnd("loadconfig");
         return $config;
     }
+
 
     /**
      * Разбор JSON строки при помощи json_decode
@@ -977,9 +978,28 @@ abstract class DocLister
      * @param string $name extender name
      * @return boolean status extender load
      */
-    final protected function checkExtender($name)
+    final public function checkExtender($name)
     {
         return (isset($this->extender[$name]) && $this->extender[$name] instanceof $name . "_DL_Extender");
+    }
+
+    /**
+     * Вытащить экземпляр класса экстендера из общего массива экстендеров
+     *
+     * @param $name имя экстендера
+     * @param bool $autoload Если экстендер не загружен, то пытаться ли его загрузить
+     * @param bool $nop если экстендер не загружен, то загружать ли xNop
+     * @return null|xNop
+     */
+    public function getExtender($name, $autoload = false, $nop = false){
+        $out = null;
+        if((is_scalar($name) && $this->checkExtender($name)) || ($autoload && $this->_loadExtender($name))){
+            $out = $this->extender[$name];
+        }
+        if($nop){
+            $out = new xNop();
+        }
+        return $out;
     }
 
     /**

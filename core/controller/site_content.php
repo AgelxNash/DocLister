@@ -17,10 +17,25 @@ if (!defined('MODX_BASE_PATH')) {
 
 class site_contentDocLister extends DocLister
 {
+    /**
+     * Экземпляр экстендера TV
+     *
+     * @var null|xNop|tv_DL_Extender
+     */
+    protected $extTV = null;
+
+    /**
+     * Экземпляр экстендера пагинации
+     * @var null|paginate_DL_Extender
+     */
+
+    protected $extPaginate = null;
+
     function __construct($modx, $cfg = array()){
         parent::__construct($modx,$cfg);
-        if(!$this->_loadExtender('tv')){
-            die('error');
+        $this->extTV = $this->getExtender('tv', true);
+        if(!$this->extTV){
+            die('Error');
         }
     }
     /**
@@ -29,7 +44,13 @@ class site_contentDocLister extends DocLister
     public function getUrl($id = 0)
     {
         $id = $id > 0 ? $id : $this->modx->documentIdentifier;
-        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();
+        /**
+         * Экземпляр экстендера REQUEST
+         *
+         * @var $request null|request_DL_Extender
+         */
+        $request = $this->getExtender('request');
+        $link = $request ? $request : $this->getRequest();
         $url = ($id == $this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "") : $this->modx->makeUrl($id, '', $link, 'full');
         return $url;
     }
@@ -39,22 +60,22 @@ class site_contentDocLister extends DocLister
     */
     public function getDocs($tvlist = '')
     {
-        $this->extender['tv']->getAllTV_Name();
+        if ($tvlist == '') {
+            $tvlist = $this->getCFGDef('tvList', '');
+        }
 
-        if ($this->checkExtender('paginate')) {
-            $this->extender['paginate']->init($this);
+        $this->extTV->getAllTV_Name();
+
+        if ($this->extPaginate = $this->getExtender('paginate')) {
+            $this->extPaginate->init($this);
         } else {
             $this->setConfig(array('start' => 0));
         }
         $type = $this->getCFGDef('idType', 'parents');
         $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
 
-        if ($tvlist == '') {
-            $tvlist = $this->getCFGDef('tvList', '');
-        }
         if ($tvlist != '' && count($this->_docs)>0) {
-            $tv = $this->extender['tv']->getTVList(array_keys($this->_docs),$tvlist);
-
+            $tv = ($this->extTV) ? $this->extTV->getTVList(array_keys($this->_docs),$tvlist) : array();
             foreach ($tv as $docID => $TVitem) {
                 if (isset($this->_docs[$docID]) && is_array($this->_docs[$docID])) {
                     $this->_docs[$docID] = array_merge($this->_docs[$docID], $TVitem);
@@ -89,20 +110,34 @@ class site_contentDocLister extends DocLister
             $i = 1;
             $sysPlh = $this->renameKeyArr($this->_plh, $this->getCFGDef("sysKey", "dl"));
             if (count($this->_docs) > 0) {
-                if ($this->checkExtender('user')) {
-                    $this->extender['user']->init($this, array('fields' => $this->getCFGDef("userFields", "")));
+                /**
+                 * @var $extUser user_DL_Extender
+                 */
+                if ($extUser = $this->getExtender('user')) {
+                    $extUser->init($this, array('fields' => $this->getCFGDef("userFields", "")));
                 }
+
+                /**
+                 * @var $extSummary summary_DL_Extender
+                 */
+                $extSummary = $this->getExtender('summary');
+
+                /**
+                 * @var $extPrepare prepare_DL_Extender
+                 */
+                $extPrepare = $this->getExtender('prepare');
+
                 foreach ($this->_docs as $item) {
                     $subTpl = '';
-                    if ($this->checkExtender('user')) {
-                        $item = $this->extender['user']->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
+                    if ($extUser){
+                        $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
-                    if ($this->checkExtender('summary')) {
+                    if ($extSummary) {
                         if (mb_strlen($item['introtext'], 'UTF-8') > 0) {
                             $item['summary'] = $item['introtext'];
                         } else {
-                            $item['summary'] = $this->extender['summary']->init($this, array("content" => $item['content'], "summary" => $this->getCFGDef("summary", "")));
+                            $item['summary'] = $extSummary->init($this, array("content" => $item['content'], "summary" => $this->getCFGDef("summary", "")));
                         }
                     }
 
@@ -110,7 +145,7 @@ class site_contentDocLister extends DocLister
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
 
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
-                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->checkExtender('paginate')) ? ($i + $this->getCFGDef('display', 0) * ($this->extender['paginate']->currentPage()-1)) : $i;
+                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage()-1)) : $i;
 
                     $item['url'] = ($item['type'] == 'reference') ? $item['content'] : $this->modx->makeUrl($item['id']);
 
@@ -142,8 +177,8 @@ class site_contentDocLister extends DocLister
                     if($subTpl==''){
                         $subTpl = $tpl;
                     }
-                    if($this->checkExtender('prepare')){
-                        $item = $this->extender['prepare']->init($this, $item);
+                    if($extPrepare){
+                        $item = $extPrepare->init($this, $item);
                     }
                     $tmp = $this->parseChunk($subTpl, $item);
 
@@ -176,11 +211,16 @@ class site_contentDocLister extends DocLister
         $fields = is_array($fields) ? $fields : explode(",", $fields);
         $date = $this->getCFGDef('dateSource', 'pub_date');
 
+        /**
+         * @var $extSummary summary_DL_Extender
+         */
+        $extSummary = $this->getExtender('summary');
+
         foreach ($data as $num => $item) {
             switch (true) {
-                case ((array('1') == $fields || in_array('summary', $fields)) && $this->checkExtender('summary')):
+                case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
                 {
-                    $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $this->extender['summary']->init($this, array("content" => $this->_docs[$num]['content'], "summary" => $this->getCFGDef("summary", "")));
+                    $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $extSummary->init($this, array("content" => $this->_docs[$num]['content'], "summary" => $this->getCFGDef("summary", "")));
                     //without break
                 }
                 case (array('1') == $fields || in_array('date', $fields)):
@@ -253,7 +293,7 @@ class site_contentDocLister extends DocLister
             $select = "c.*";
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
             if (preg_match("/^ORDER BY (.*) /", $sort, $match)) {
-                $TVnames = $this->extender['tv']->getTVnames();
+                $TVnames = $this->extTV ? $this->extTV->getTVnames() : array();
                 if (isset($TVnames[$match[1]])) {
                     $tbl_site_content .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues") . " as tv
                     on tv.contentid=c.id AND tv.tmplvarid=" . $TVnames[$match[1]];
