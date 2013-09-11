@@ -11,8 +11,8 @@
 
 ### Полезные ссылки
 ---------
+* **Обзор**: http://blog.agel-nash.ru/2013/9/doclister.html
 * **Документация**: http://blog.agel-nash.ru/addon/doclister.html
-* **Презентация**: http://modx.im/blog/addons/527.html
 * **Пример работы**: http://doclister.agelnash.ru
 
 ### Автор
