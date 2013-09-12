@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.1.5';
+    const VERSION = '1.1.6';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -192,7 +192,7 @@ abstract class DocLister
                 $cfg['idType'] = "documents";
             } else {
                 $cfg['idType'] = "parents";
-                if (($IDs = $this->getCFGDef('parents', '')) == '') {
+                if (($IDs = $this->getCFGDef('parents')) === null) {
                     $IDs = $this->modx->documentIdentifier;
                 }
             }
