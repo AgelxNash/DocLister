@@ -26,6 +26,7 @@ class prepare_DL_Extender extends extDocLister
         if (($prepare = $this->DocLister->getCFGDef('prepare', '')) != '') {
             $out = array(
                 '_extDocLister' => $this,
+                '_DocLister' => $this->DocLister,
                 'data' => $out,
                 'modx' => $this->modx
             );

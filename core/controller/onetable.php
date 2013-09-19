@@ -175,17 +175,23 @@ class onetableDocLister extends DocLister
 
     protected function getDocList()
     {
-        $where = $this->getCFGDef('addWhereList', '');
-        if ($where != '') {
-            $where = "WHERE " . $where;
-        }
-        $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-        $rs = $this->dbQuery("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
-
-        $rows = $this->modx->db->makeArray($rs);
         $out = array();
-        foreach ($rows as $item) {
-            $out[$item[$this->getPK()]] = $item;
+        $sanitarInIDs = $this->sanitarIn($this->IDs);
+        if ($sanitarInIDs != "''") {
+            $where = $this->getCFGDef('addWhereList', '');
+            if ($where != '') {
+                $where .= " AND ";
+            }
+            $where = "WHERE {$where} {$this->getPK()} IN ({$sanitarInIDs})";
+
+            $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
+            $rs = $this->dbQuery("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
+
+            $rows = $this->modx->db->makeArray($rs);
+            $out = array();
+            foreach ($rows as $item) {
+                $out[$item[$this->getPK()]] = $item;
+            }
         }
         return $out;
     }

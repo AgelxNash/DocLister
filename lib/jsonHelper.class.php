@@ -27,7 +27,7 @@ class jsonHelper {
             $assoc = false;
         }
 
-        if(isset($config['assoc']) && (int)$config['depth']>0){
+        if(isset($config['depth']) && (int)$config['depth']>0){
             $depth = (int)$config['depth'];
         }else{
             $depth = 512;
