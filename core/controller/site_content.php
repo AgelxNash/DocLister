@@ -290,7 +290,7 @@ class site_contentDocLister extends DocLister
 
             $tbl_site_content = $this->getTable('site_content','c');
             if($sanitarInIDs != "''"){
-                $where .= 'c.id IN ({$sanitarInIDs}) AND';
+                $where .= "c.id IN ({$sanitarInIDs}) AND";
             }
             $where = "WHERE {$where} c.deleted=0 AND c.published=1";
 
