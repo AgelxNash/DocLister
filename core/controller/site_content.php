@@ -244,7 +244,7 @@ class site_contentDocLister extends DocLister
     {
         $out = 0;
         $sanitarInIDs = $this->sanitarIn($this->IDs);
-        if ($sanitarInIDs != "''"){
+        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')){
             $where = $this->getCFGDef('addWhereList', '');
             $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             if ($where != '' && $this->_filters['where'] != '') {
@@ -254,16 +254,18 @@ class site_contentDocLister extends DocLister
 
             $tbl_site_content = $this->getTable('site_content','c');
 
-            switch($this->getCFGDef('idType', 'parents')){
-                case 'parents':{
-                    if(!$this->getCFGDef('showParent', '0')) {
-                        $where .= " AND c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
+            if($sanitarInIDs != "''"){
+                switch($this->getCFGDef('idType', 'parents')){
+                    case 'parents':{
+                        if(!$this->getCFGDef('showParent', '0')) {
+                            $where .= " AND c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
+                        }
+                        break;
                     }
-                    break;
-                }
-                case 'documents':{
-                    $where .= " AND c.id IN({$sanitarInIDs})";
-                    break;
+                    case 'documents':{
+                        $where .= " AND c.id IN({$sanitarInIDs})";
+                        break;
+                    }
                 }
             }
             $fields = 'count(c.`id`) as `count`';
@@ -279,7 +281,7 @@ class site_contentDocLister extends DocLister
     {
         $out = array();
         $sanitarInIDs = $this->sanitarIn($this->IDs);
-        if ($sanitarInIDs != "''") {
+        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
             $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             if ($where != '' && $this->_filters['where'] != '') {
@@ -287,7 +289,10 @@ class site_contentDocLister extends DocLister
             }
 
             $tbl_site_content = $this->getTable('site_content','c');
-            $where = "WHERE {$where} c.deleted=0 AND c.published=1 AND c.id IN ({$sanitarInIDs})";
+            if($sanitarInIDs != "''"){
+                $where .= 'c.id IN ({$sanitarInIDs}) AND';
+            }
+            $where = "WHERE {$where} c.deleted=0 AND c.published=1";
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
             $select = "c.*";

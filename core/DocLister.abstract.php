@@ -266,7 +266,7 @@ abstract class DocLister
         return $this->_debugMode;
     }
 
-   /**
+    /**
      * Генерация имени таблицы с префиксом и алиасом
      *
      * @param string $name имя таблицы
@@ -443,7 +443,7 @@ abstract class DocLister
      *
      * @param string $tpl шаблон
      * @return string
-    */
+     */
     public function render($tpl = '')
     {
         $this->debug->debug('Render data with template '.$this->debug->dumpData($tpl), 'render', 2);
@@ -1165,30 +1165,30 @@ abstract class DocLister
                 break;
             }
             default:{
-                $out = array('orderBy' => '', 'order' => '', 'sortBy' => '');
-                if (($tmp = $this->getCFGDef('orderBy', '')) != '') {
-                    $out['orderBy'] = $tmp;
-                } else {
-                    switch (true) {
-                        case ('' != ($tmp = $this->getCFGDef('sortDir', ''))):
-                        { //higher priority than order
-                            $out['order'] = $tmp;
-                        }
-                        case ('' != ($tmp = $this->getCFGDef('order', ''))):
-                        {
-                            $out['order'] = $tmp;
-                        }
+            $out = array('orderBy' => '', 'order' => '', 'sortBy' => '');
+            if (($tmp = $this->getCFGDef('orderBy', '')) != '') {
+                $out['orderBy'] = $tmp;
+            } else {
+                switch (true) {
+                    case ('' != ($tmp = $this->getCFGDef('sortDir', ''))):
+                    { //higher priority than order
+                        $out['order'] = $tmp;
                     }
-                    if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
-                        $out['order'] = $orderDef; //Default
+                    case ('' != ($tmp = $this->getCFGDef('order', ''))):
+                    {
+                        $out['order'] = $tmp;
                     }
-
-                    $out['sortBy'] = (($tmp = $this->getCFGDef('sortBy', '')) != '') ? $tmp : $sortName;
-                    $out['orderBy'] = $out['sortBy'] . " " . $out['order'];
                 }
-                $this->setConfig($out); //reload config;
-                $sort = "ORDER BY " . $out['orderBy'];
-                break;
+                if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
+                    $out['order'] = $orderDef; //Default
+                }
+
+                $out['sortBy'] = (($tmp = $this->getCFGDef('sortBy', '')) != '') ? $tmp : $sortName;
+                $out['orderBy'] = $out['sortBy'] . " " . $out['order'];
+            }
+            $this->setConfig($out); //reload config;
+            $sort = "ORDER BY " . $out['orderBy'];
+            break;
             }
         }
         $this->debug->debugEnd("sortORDER",'Get sort order for SQL: '.$this->debug->dumpData($sort));
@@ -1254,12 +1254,12 @@ abstract class DocLister
     }
 
     /**
-	* @see: https://github.com/DmitryKoterov/DbSimple/blob/master/lib/DbSimple/Generic.php#L986
+     * @see: https://github.com/DmitryKoterov/DbSimple/blob/master/lib/DbSimple/Generic.php#L986
      *
      * @param array $data Associative data array
      * @param string $idName name ID field in associative data array
      * @param string $pidName name parent field in associative data array
-	*/
+     */
     final private function _treeBuild($data, $idName, $pidName)
     {
         $children = array(); // children of each ID
@@ -1307,7 +1307,7 @@ abstract class DocLister
         // the filter parameter tells us, which filters can be used in this query
         $filter_string = trim($filter_string);
         if (!$filter_string) return;
-		$output = array('join' => '', 'where'=>'');
+        $output = array('join' => '', 'where'=>'');
         $logic_op_found = false;
         foreach ($this->_logic_ops as $op => $sql){
             if (strpos($filter_string, $op) === 0){
@@ -1324,7 +1324,7 @@ abstract class DocLister
                 $output['where'] = !empty($wheres) ? '(' . implode($sql, $wheres) . ')' : '';
             }
         }
-		
+
         if (!$logic_op_found) {
             $filter = $this->loadFilter($filter_string);
             if (!$filter) {

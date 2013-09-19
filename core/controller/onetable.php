@@ -177,12 +177,18 @@ class onetableDocLister extends DocLister
     {
         $out = array();
         $sanitarInIDs = $this->sanitarIn($this->IDs);
-        if ($sanitarInIDs != "''") {
+        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
             if ($where != '') {
-                $where .= " AND ";
+                $where = array($where);
             }
-            $where = "WHERE {$where} {$this->getPK()} IN ({$sanitarInIDs})";
+            if($sanitarInIDs != "''"){
+                $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
+            }
+
+            if(!empty($where)){
+                $where = "WHERE ".implode(" AND ",$where);
+            }
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
             $rs = $this->dbQuery("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
