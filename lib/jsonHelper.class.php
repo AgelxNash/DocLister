@@ -51,6 +51,6 @@ class jsonHelper {
      */
     public static function json_last_error_msg(){
         $error = json_last_error();
-        return isset(static::$_error[$error]) ? static::$_error[$error] : 'other';
+        return isset(self::$_error[$error]) ? self::$_error[$error] : 'other';
     }
 }
