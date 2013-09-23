@@ -132,6 +132,14 @@ abstract class filterDocLister{
             case 'elt': $output .= ' <= ' . floatval($value); break;
             case 'egt': $output .= ' >= ' . floatval($value); break;
             case 'like': $output = $this->DocLister->LikeEscape($output,$value); break;
+            case 'against':{ /** content:pagetitle,description,content,introtext:against:искомая строка */
+                if(trim($value)!=''){
+                    $field = explode(",", $this->field);
+                    $field = implode(",", $this->DocLister->renameKeyArr($field, $this->getTableAlias()));
+                    $output = "MATCH ({$field}) AGAINST ('{$this->modx->db->escape($value)}*')";
+                }
+                break;
+            }
             case 'containsOne' :
                 $words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $value);
                 $word_arr = array();
