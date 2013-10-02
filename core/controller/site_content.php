@@ -132,7 +132,11 @@ class site_contentDocLister extends DocLister
                 $extJotCount = $this->getCFGdef('jotcount',0) ? $this->getExtender('jotcount',true) : NULL;
 
 				if ($extJotCount) {
-					$comments = $extJotCount->countComments($this->_docs);
+					$ids = array();
+					foreach ($this->_docs as $item) {
+					$ids[] = $item['id'];
+					}
+					$comments = $extJotCount->countComments($ids);
 				};
 				
                 foreach ($this->_docs as $item) {
