@@ -1277,7 +1277,7 @@ abstract class DocLister
         $this->_tree = array();
         foreach ($data as $i => $r) {
             $row =& $data[$i];
-            if (!isset($ids[$row[$pidName]])) {
+            if (!isset($ids[$row[$pidName]])&&(($row['hidemenu']==0&&$this->getCFGDef('checkHideMenu', '1')==1))) {
                 $this->_tree[$row[$idName]] = $row;
             }
         }
