@@ -30,7 +30,7 @@ class site_contentDocLister extends DocLister
      */
 
     protected $extPaginate = null;
-
+    
     function __construct($modx, $cfg = array()){
         parent::__construct($modx,$cfg);
         $this->extTV = $this->getExtender('tv', true);
@@ -73,7 +73,6 @@ class site_contentDocLister extends DocLister
         }
         $type = $this->getCFGDef('idType', 'parents');
         $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
-
         if ($tvlist != '' && count($this->_docs)>0) {
             $tv = ($this->extTV) ? $this->extTV->getTVList(array_keys($this->_docs),$tvlist) : array();
             foreach ($tv as $docID => $TVitem) {
@@ -127,6 +126,15 @@ class site_contentDocLister extends DocLister
                  */
                 $extPrepare = $this->getExtender('prepare');
 
+                /**
+                 * @var $extJotCount jotcount_DL_Extender
+                 */
+                $extJotCount = $this->getCFGdef('jotcount',0) ? $this->getExtender('jotcount',true) : NULL;
+
+				if ($extJotCount) {
+					$comments = $extJotCount->countComments($this->_docs);
+				};
+				
                 foreach ($this->_docs as $item) {
                     $subTpl = '';
                     if ($extUser){
@@ -140,6 +148,10 @@ class site_contentDocLister extends DocLister
                             $item['summary'] = $extSummary->init($this, array("content" => $item['content'], "summary" => $this->getCFGDef("summary", "")));
                         }
                     }
+                    if ($extJotCount) {
+						$item['jotcount'] = isset($comments[$item['id']]) ? $comments[$item['id']] : 0;
+                    }
+
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
