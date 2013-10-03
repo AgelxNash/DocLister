@@ -19,7 +19,7 @@
 ---------
 <table>
   <tr>
-    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=200"></td>
+    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=220"></td>
 	<td valign="top">
 		<h4>Борисов Евгений
 			<br />
@@ -47,20 +47,20 @@
 <table>
 <tr>
 <td valign="top">
-<h4>За помощь в разработке</h4>
+<h4>За помощь в разработке<br /><br /></h4>
 <ul>
 <li><a href="https://github.com/kabachello">@kabachello</a> - фильтрация по TV-параметрам</li>
 <li><a href="https://github.com/Pathologic">@Pathologic</a> - экстендер jotcount</li>
 </ul>
 </td>
 <td valign="top">
-<h4>За донат</h4>
+<h4>За донат<br /><br /></h4>
 <ul>
 <li><a href="https://github.com/Pathologic">@Pathologic</a></li>
 </ul>
 </td>
 <td valign="top">
-<h4>За тестирование, багрепорты и идеи</h4>
+<h4>За тестирование,<br />багрепорты и идеи</h4>
 <ul>
 <li><a href="https://github.com/webber12">@webber12</a></li>
 </ul>
