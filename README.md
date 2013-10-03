@@ -19,7 +19,7 @@
 ---------
 <table>
   <tr>
-    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=160"></td>
+    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=200"></td>
 	<td valign="top">
 		<h4>Борисов Евгений
 			<br />
