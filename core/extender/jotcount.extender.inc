@@ -20,11 +20,14 @@ class jotcount_DL_Extender extends extDocLister
 	public function countComments($docs)
 	{
 		$comments = array();
-		$from = $this->DocLister->getTable('jot_content');
-		$in = (count($ids)) ? 'uparent IN ('.implode(',',$docs).') AND' : '';
-        $rs = $this->DocLister->dbQuery("SELECT uparent, COUNT(*) FROM {$from} WHERE {$in} published=1 AND deleted=0 GROUP BY uparent");
-        $counts = $this->modx->db->makeArray($rs);
-		if ($counts) foreach($counts as $k=>$v) $comments[$v['uparent']] = $v['COUNT(*)'];
+		if(count($docs)){
+			$from = $this->DocLister->getTable('jot_content');
+			$rs = $this->DocLister->dbQuery("SELECT uparent, COUNT(*) as total FROM {$from} WHERE uparent IN (".implode(',',$docs).") AND published=1 AND deleted=0 GROUP BY uparent");
+			$counts = $this->modx->db->makeArray($rs);
+			foreach($counts as $v) {
+				$comments[$v['uparent']] = $v['total'];
+			}
+		}
         return $comments;
 	}
 }
