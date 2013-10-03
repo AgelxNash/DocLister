@@ -24,4 +24,5 @@
 </table>
 
 ### Thanks
-* @kabachello
+* @[kabachello](https://github.com/kabachello)
+* @[Pathologic](https://github.com/Pathologic)
