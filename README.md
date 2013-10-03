@@ -19,10 +19,51 @@
 ---------
 <table>
   <tr>
-    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=60"></td><td valign="middle">Борисов Евгений<br>Agel Nash<br><a href="http://artdevue.com">http://agel-nash.ru</a></td>
+    <td><img src="http://www.gravatar.com/avatar/bf12d44182c98288015f65c9861903aa?s=160"></td>
+	<td valign="top">
+		<h4>Борисов Евгений
+			<br />
+			Agel Nash
+		</h4>
+		<a href="http://artdevue.com">http://agel-nash.ru</a><br />
+		<br />
+		<strong>ICQ</strong>: 8608196<br />
+		<strong>Skype</strong>: agel.nash<br />
+		<strong>Email</strong>: agel_nash@xaker.ru
+	</td>
+	<td valign="top">
+		<h4>Реквизиты для доната<br /><br /></h4>
+		<br />
+		<strong>WMZ</strong>: Z762708026453<br />
+		<strong>WMR</strong>: R203864025267<br />
+		<strong>ЯД</strong>: 41001299480137<br />
+		<strong>PayPal</strong>: agel_nash@xaker.ru<br />
+	</td>
   </tr>
 </table>
 
-### Thanks
-* @[kabachello](https://github.com/kabachello)
-* @[Pathologic](https://github.com/Pathologic)
+### Отдельное спасибо
+---------
+<table>
+<tr>
+<td valign="top">
+<h4>За помощь в разработке</h4>
+<ul>
+<li><a href="https://github.com/kabachello">@kabachello</a> - фильтрация по TV-параметрам</li>
+<li><a href="https://github.com/Pathologic">@Pathologic</a> - экстендер jotcount</li>
+</ul>
+</td>
+<td valign="top">
+<h4>За донат</h4>
+<ul>
+<li><a href="https://github.com/Pathologic">@Pathologic</a></li>
+</ul>
+</td>
+<td valign="top">
+<h4>За тестирование, багрепорты и идеи</h4>
+<ul>
+<li><a href="https://github.com/webber12">@webber12</a></li>
+</ul>
+</td>
+</tr>
+</table>
