@@ -20,10 +20,13 @@ class quid_DL_filter extends content_DL_filter{
 	}
 	
 	public function get_where(){
-		// just using this for making addWhereList
+		// just using this for making additional conditions to addWhereList
 		$QFTable=$this->DocLister->getCFGDef('QFTable','');
 		if($QFTable!=''){
-		    $addWhereList=substr($this->DocLister->getCFGDef('addWhereList',''),0,-1);//чтобы убрать закрывающую скобку для всех условий, кроме последнего
+		    $addWhereList=$this->DocLister->getCFGDef('addWhereList','');
+			if(strpos($addWhereList,$QFTable)!==false){
+		        $addWhereList=substr($addWhereList,0,-1);//чтобы убрать закрывающую скобку для всех условий, кроме последнего
+			}
 		    $addWhereList.=($this->totalFilters==1?($addWhereList==''?'':' AND ').'c.id IN (SELECT '.$QFTable.'.cid FROM '.$QFTable.' WHERE c.id='.$QFTable.'.cid AND ':'');
 		    $addWhereList.=($this->totalFilters==1?'':' AND ').$this->build_sql_where($QFTable, $this->field, $this->operator, $this->value).')';
 		    $this->DocLister->setConfig(array('addWhereList'=>$addWhereList));
