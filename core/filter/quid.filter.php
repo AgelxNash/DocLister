@@ -25,7 +25,7 @@ class quid_DL_filter extends content_DL_filter{
 		if($QFTable!=''){
 		    $addWhereList=$this->DocLister->getCFGDef('addWhereList','');
 			if(strpos($addWhereList,$QFTable)!==false){
-		        $addWhereList=substr($addWhereList,0,-1);//÷òîáû óáðàòü çàêðûâàþùóþ ñêîáêó äëÿ âñåõ óñëîâèé, êðîìå ïîñëåäíåãî
+		        $addWhereList=substr($addWhereList,0,-1);//Ñ‡Ñ‚Ð¾Ð±Ñ‹ ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ Ð·Ð°ÐºÑ€Ñ‹Ð²Ð°ÑŽÑ‰ÑƒÑŽ ÑÐºÐ¾Ð±ÐºÑƒ Ð´Ð»Ñ Ð²ÑÐµÑ… ÑƒÑÐ»Ð¾Ð²Ð¸Ð¹, ÐºÑ€Ð¾Ð¼Ðµ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾
 			}
 		    $addWhereList.=($this->totalFilters==1?($addWhereList==''?'':' AND ').'c.id IN (SELECT '.$QFTable.'.cid FROM '.$QFTable.' WHERE c.id='.$QFTable.'.cid AND ':'');
 		    $addWhereList.=($this->totalFilters==1?'':' AND ').$this->build_sql_where($QFTable, $this->field, $this->operator, $this->value).')';
