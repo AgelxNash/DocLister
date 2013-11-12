@@ -373,7 +373,7 @@ class site_contentDocLister extends DocLister
                 }
                 $item = implode(" ", $item);
             }
-            $sort = "ORDER BY ".implode(", ", $matches);
+            $sort = "ORDER BY ".implode(",", $matches);
         }
         return array($table, $sort);
     }

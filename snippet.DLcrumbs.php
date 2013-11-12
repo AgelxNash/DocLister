@@ -12,8 +12,13 @@ if (!defined('MODX_BASE_PATH')) {
 }
 $_out = '';
 
-$_parents=$modx->getParentIds($modx->documentObject['id']);
-$_parents=array_reverse(array_values($_parents));
+$_parents = array();
+if(!isset($hideMain) || (int)$hideMain==0){
+    $_parents[] = $modx->config['site_start'];
+}
+
+$tmp=$modx->getParentIds($modx->documentObject['id']);
+$_parents=array_merge($_parents, array_reverse(array_values($tmp)));
 
 if(isset($showCurrent) && (int)$showCurrent>0){
     $_parents[] = $modx->documentObject['id'];
