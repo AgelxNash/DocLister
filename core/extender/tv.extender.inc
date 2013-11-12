@@ -54,7 +54,12 @@ class tv_DL_Extender extends extDocLister{
         foreach ($rows as $item) {
             $out[$item['contentid']]['tv.' . $tv[$item['tmplvarid']]] = $item['value'];
         }
-
+        $tmp = explode(",", $this->DocLister->sanitarIn($IDs, ',', false));
+        foreach($tmp as $item){
+            if(!isset($out[$item])){
+                $out[$item] = array();
+            };
+        }
         $renderTV = $this->getListRenderTV();
         $tvDef = $this->loadTVDefault($tvId);
         $TVkeys = array_keys($tvDef);
