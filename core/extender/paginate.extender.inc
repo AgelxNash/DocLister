@@ -134,6 +134,11 @@ class paginate_DL_Extender extends extDocLister
                         $p->numberT = $this->DocLister->getChunkByParam('TplPage', '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
                         $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
                         $p->prevI = '';
+                        $p->nextI = '';
+                        if($this->DocLister->getCFGDef("PrevNextAlwaysShow", 0)=='1'){
+                            $p->nextI = $this->DocLister->getChunkByParam('TplNextI', '@CODE: [%paginate.next%] >');
+                            $p->prevI = $this->DocLister->getChunkByParam('TplPrevI', '@CODE: < [%paginate.prev%]');
+                        }
                         $p->mainTpl = $this->DocLister->getChunkByParam('TplWrapPaginate', '@CODE: <div class="[+class+]">[+wrap+]</div>');
                         $p->Items($this->totalPage());
                         $p->limit($this->DocLister->getCFGDef("pageLimit", 1)); //show page count

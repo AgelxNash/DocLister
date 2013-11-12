@@ -215,7 +215,7 @@ class pagination
                 if ($this->page > 1) {
                     $this->pagination .= $this->prevT ? str_replace('[+link+]', $this->get_pagenum_link($prev), $this->prevT) : ''; // "<a href=\"".$this->get_pagenum_link($prev)."\" class=\"prev\">$p</a>";
                 } else
-                    $this->pagination .= '';
+                    $this->pagination .= $this->prevI ? str_replace('[+link+]', $this->get_pagenum_link($prev), $this->prevI) : '';
                 //"<span class=\"disabled\">$p</span>";
 
             }
@@ -269,7 +269,7 @@ class pagination
                 if ($this->page < $counter - 1)
                     $this->pagination .= $this->nextT ? str_replace('[+link+]', $this->get_pagenum_link($next), $this->nextT) : ''; //"<a href=\"".$this->get_pagenum_link($next)."\" class=\"next\">$n</a>";
                 else
-                    $this->pagination .= "";
+                    $this->pagination .= $this->nextI ? str_replace('[+link+]', $this->get_pagenum_link($next), $this->nextI) : '';
                 if ($this->showCounter) $this->pagination .= "<div class=\"pagination_data\">($this->total_pages Pages)</div>";
             }
         }
