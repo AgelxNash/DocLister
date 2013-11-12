@@ -111,6 +111,7 @@ class tv_DL_Extender extends extDocLister{
         }
         $out = array();
         foreach ($tvlist as $tv) {
+            $tv = trim($tv);
             if (isset($this->_TVnames[$tv])) {
                 $out[$this->_TVnames[$tv]] = $tv;
             }
