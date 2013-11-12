@@ -355,13 +355,21 @@ class site_contentDocLister extends DocLister
             $TVnames = $this->extTV ? $this->extTV->getTVnames() : array();
             $matches = explode(",", $match[1]);
             $sortType = explode(",", $this->getCFGDef('tvSortType'));
+            $withDefault = explode(",", $this->getCFGDef('tvSortWithDefault'));
+
             foreach($matches as $i => &$item){
                 $item = explode(" ", trim($item), 2);
                 if (isset($TVnames[$item[0]])) {
                     $prefix = 'tv'.$i;
-                    $table .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues") . " as ".$prefix."
+                    $table .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues", $prefix) . "
                         on ".$prefix.".contentid=c.id AND ".$prefix.".tmplvarid=" . $TVnames[$item[0]];
-                    $item[0] = $this->changeSortType($prefix.'.value', isset($sortType[$i]) ? $sortType[$i] : null);
+                    if(in_array($item[0], $withDefault)){
+                        $table .= " LEFT JOIN ".$this->getTable("site_tmplvars", 'd'.$prefix)." on d".$prefix.".id = " . $TVnames[$item[0]];
+                        $field = "IFNULL(`{$prefix}`.`value`, `d{$prefix}`.`default_text`)";
+                    }else{
+                        $field = "`{$prefix}`.`value";
+                    }
+                    $item[0] = $this->changeSortType($field, isset($sortType[$i]) ? $sortType[$i] : null);
                 }
                 $item = implode(" ", $item);
             }
