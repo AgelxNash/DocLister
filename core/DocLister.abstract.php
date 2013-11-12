@@ -1340,6 +1340,40 @@ abstract class DocLister
     }
 
     /**
+     * Приведение типа поля
+     *
+     * @param $field string имя поля
+     * @param $type string тип фильтрации
+     * @return string имя поля с учетом приведения типа
+     */
+    public function changeSortType($field, $type){
+        $type = trim($type);
+        switch(strtoupper($type)){
+            case 'DECIMAL':{
+                $field = 'CAST('.$field.' as DECIMAL(10,2))';
+                break;
+            }
+            case 'UNSIGNED':{
+                $field = 'CAST('.$field.' as UNSIGNED)';
+                break;
+            }
+            case 'BINARY':{
+                $field = 'CAST('.$field.' as BINARY)';
+                break;
+            }
+            case 'DATETIME':{
+                $field = 'CAST('.$field.' as DATETIME)';
+                break;
+            }
+            case 'SIGNED':{
+                $field = 'CAST('.$field.' as SIGNED)';
+                break;
+            }
+        }
+        return $field;
+    }
+
+    /**
      * Загрузка фильтра
      * @param string $filter срока с параметрами фильтрации
      * @return bool

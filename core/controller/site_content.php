@@ -308,15 +308,10 @@ class site_contentDocLister extends DocLister
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
             $select = "c.*";
+
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
-            if (preg_match("/^ORDER BY (.*) /", $sort, $match)) {
-                $TVnames = $this->extTV ? $this->extTV->getTVnames() : array();
-                if (isset($TVnames[$match[1]])) {
-                    $tbl_site_content .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues") . " as tv
-                    on tv.contentid=c.id AND tv.tmplvarid=" . $TVnames[$match[1]];
-                    $sort = str_replace("ORDER BY " . $match[1], "ORDER BY tv.value", $sort);
-                }
-            }
+            list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
+
             $rs = $this->dbQuery("SELECT {$select} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
 
             $rows = $this->modx->db->makeArray($rs);
@@ -355,6 +350,26 @@ class site_contentDocLister extends DocLister
         return $out;
     }
 
+    protected function injectSortByTV($table, $sort){
+        if (preg_match("/^ORDER BY (.*)/", $sort, $match)) {
+            $TVnames = $this->extTV ? $this->extTV->getTVnames() : array();
+            $matches = explode(",", $match[1]);
+            $sortType = explode(",", $this->getCFGDef('tvSortType'));
+            foreach($matches as $i => &$item){
+                $item = explode(" ", trim($item), 2);
+                if (isset($TVnames[$item[0]])) {
+                    $prefix = 'tv'.$i;
+                    $table .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues") . " as ".$prefix."
+                        on ".$prefix.".contentid=c.id AND ".$prefix.".tmplvarid=" . $TVnames[$item[0]];
+                    $item[0] = $this->changeSortType($prefix.'.value', isset($sortType[$i]) ? $sortType[$i] : null);
+                }
+                $item = implode(" ", $item);
+            }
+            $sort = "ORDER BY ".implode(", ", $matches);
+        }
+        return array($table, $sort);
+    }
+
     /**
     * @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
     * @TODO: 5) Добавить фильтрацию по основным параметрам документа
@@ -367,14 +382,19 @@ class site_contentDocLister extends DocLister
             $where .= " AND ";
         }
 
+        $tbl_site_content = $this->getTable('site_content','c');
+
+        $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
+        list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
+
         $sql = $this->dbQuery("
-			SELECT DISTINCT c.* FROM " . $this->getTable('site_content','c') . " ". $this->_filters['join'] . "
+			SELECT DISTINCT c.* FROM " . $tbl_site_content . " ". $this->_filters['join'] . "
 			WHERE " . $where . "
 				c.parent IN (" . $this->sanitarIn($this->IDs) . ")
 				AND c.deleted=0 
 				AND c.published=1 " .
                 (($this->getCFGDef('showParent', '0')) ? "" : "AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
-                $this->SortOrderSQL('if(c.pub_date=0,c.createdon,c.pub_date)') . " " .
+                $sort . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );
         $rows = $this->modx->db->makeArray($sql);
