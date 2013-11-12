@@ -367,7 +367,7 @@ class site_contentDocLister extends DocLister
                         $table .= " LEFT JOIN ".$this->getTable("site_tmplvars", 'd'.$prefix)." on d".$prefix.".id = " . $TVnames[$item[0]];
                         $field = "IFNULL(`{$prefix}`.`value`, `d{$prefix}`.`default_text`)";
                     }else{
-                        $field = "`{$prefix}`.`value";
+                        $field = "`{$prefix}`.`value`";
                     }
                     $item[0] = $this->changeSortType($field, isset($sortType[$i]) ? $sortType[$i] : null);
                 }
