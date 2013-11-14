@@ -262,7 +262,11 @@ class site_contentDocLister extends DocLister
             if ($where != '' && $this->_filters['where'] != '') {
                 $where .= " AND ";
             }
-            $where = "WHERE {$where} c.deleted=0 AND c.published=1";
+            $where = "WHERE {$where}";
+            $whereArr = array();
+            if(!$this->getCFGDef('showNoPublish', 0)){
+                $whereArr[]="c.deleted=0 AND c.published=1";
+            }
 
             $tbl_site_content = $this->getTable('site_content','c');
 
@@ -270,12 +274,12 @@ class site_contentDocLister extends DocLister
                 switch($this->getCFGDef('idType', 'parents')){
                     case 'parents':{
                         if(!$this->getCFGDef('showParent', '0')) {
-                            $where .= " AND c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
+                            $whereArr[]="c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
                         }
                         break;
                     }
                     case 'documents':{
-                        $where .= " AND c.id IN({$sanitarInIDs})";
+                        $whereArr[]="c.id IN({$sanitarInIDs})";
                         break;
                     }
                 }
@@ -283,6 +287,11 @@ class site_contentDocLister extends DocLister
             $fields = 'count(c.`id`) as `count`';
             $from = $tbl_site_content . " " . $this->_filters['join'];
 
+            $where .= implode(" AND ", $whereArr);
+            $where = rtrim($where, " AND "); /** for addWhereList list*/
+            if(trim($where)=='WHERE'){
+                $where = '';
+            }
             $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where}");
             $out = $this->modx->db->getValue($rs);
         }
@@ -296,21 +305,36 @@ class site_contentDocLister extends DocLister
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
             $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
-            if ($where != '' && $this->_filters['where'] != '') {
-                $where .= " AND ";
-            }
+            $where = rtrim($where, " AND ");
 
             $tbl_site_content = $this->getTable('site_content','c');
             if($sanitarInIDs != "''"){
                 $where .= "c.id IN ({$sanitarInIDs}) AND";
             }
-            $where = "WHERE {$where} c.deleted=0 AND c.published=1";
+            $where = rtrim($where, " AND ");
 
-            $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
+            if($this->getCFGDef('showNoPublish', 0)){
+                if($where!=''){
+                    $where = "WHERE {$where}";
+                }else{
+                    $where = '';
+                }
+            }else{
+                if($where!=''){
+                    $where = "WHERE {$where} AND ";
+                }else{
+                    $where = "WHERE {$where} ";
+                }
+                $where .= "c.deleted=0 AND c.published=1";
+            }
+
+
             $select = "c.*";
 
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
             list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
+
+            $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
 
             $rs = $this->dbQuery("SELECT {$select} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
 
@@ -336,10 +360,12 @@ class site_contentDocLister extends DocLister
 
         $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($id);
-        $where = "{$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 AND c.isfolder=1";
-        if(!empty($where)){
-            $where = "WHERE ".$where;
+        if($this->getCFGDef('showNoPublish', 0)){
+            $where = "WHERE {$where} c.parent IN ({$sanitarInIDs}) AND c.isfolder=1";
+        }else{
+            $where = "WHERE {$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 AND c.isfolder=1";
         }
+
         $rs = $this->dbQuery("SELECT id FROM {$tbl_site_content} {$where}");
 
         $rows = $this->modx->db->makeArray($rs);
@@ -395,12 +421,11 @@ class site_contentDocLister extends DocLister
         $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
         list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
 
-        $sql = $this->dbQuery("
-			SELECT DISTINCT c.* FROM " . $tbl_site_content . " ". $this->_filters['join'] . "
-			WHERE " . $where . "
-				c.parent IN (" . $this->sanitarIn($this->IDs) . ")
-				AND c.deleted=0 
-				AND c.published=1 " .
+        $where = "WHERE {$where} c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
+        if(!$this->getCFGDef('showNoPublish', 0)){
+            $where .= " AND c.deleted=0 AND c.published=1";
+        }
+        $sql = $this->dbQuery("SELECT DISTINCT c.* FROM ".$tbl_site_content." ".$this->_filters['join']." ".$where." ".
                 (($this->getCFGDef('showParent', '0')) ? "" : "AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
                 $sort . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))

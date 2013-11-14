@@ -161,7 +161,7 @@ class onetableDocLister extends DocLister
                     $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $this->extender['summary']->init($this, array("content" => $this->_docs[$num]['content'], "summary" => $this->getCFGDef("summary", "")));
                     //without break
                 }
-                case (array('1') == $fields || in_array('date', $fields)):
+                case ((array('1') == $fields || in_array('date', $fields)) && $date != 'date'):
                 {
                     $tmp = (isset($this->_docs[$num][$date]) && $date != 'createdon' && $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
                     $out[$num]['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
@@ -189,7 +189,6 @@ class onetableDocLister extends DocLister
             if(!empty($where)){
                 $where = "WHERE ".implode(" AND ",$where);
             }
-
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
             $rs = $this->dbQuery("SELECT * FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
 
