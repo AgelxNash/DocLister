@@ -57,6 +57,7 @@
 <h4>За донат<br /><br /></h4>
 <ul>
 <li><a href="https://github.com/Pathologic">@Pathologic</a></li>
+<li><a href="http://modx.im/profile/Shin/">Shin</a></li>
 </ul>
 </td>
 <td valign="top">
