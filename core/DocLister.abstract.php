@@ -2,8 +2,6 @@
 if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
-error_reporting(E_ALL);
-ini_set('display_errors','On');
 /**
  * DocLister class
  *
@@ -241,7 +239,7 @@ abstract class DocLister
             if($this->_debugMode>0){
                 if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
                     error_reporting(E_ALL);
-                    ini_set('display_errors','On');
+                    ini_set('display_errors', 1);
                 }
                 $dir = dirname(dirname(__FILE__));
                 if (file_exists($dir . "/lib/debugDL.class.php")) {
@@ -255,6 +253,8 @@ abstract class DocLister
             if(is_null($this->debug)){
                 $this->debug = new xNop();
                 $this->_debugMode = 0;
+				error_reporting(0);
+                ini_set('display_errors',0);
             }
         }
     }

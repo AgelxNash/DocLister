@@ -36,3 +36,4 @@ if (class_exists($classname, false) && $classname != 'DocLister') {
     }
     return $out;
 }
+?>
