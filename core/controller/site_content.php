@@ -361,9 +361,9 @@ class site_contentDocLister extends DocLister
         $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($id);
         if($this->getCFGDef('showNoPublish', 0)){
-            $where = "WHERE {$where} c.parent IN ({$sanitarInIDs}) AND c.isfolder=1";
+            $where = "WHERE {$where} c.parent IN ({$sanitarInIDs})";
         }else{
-            $where = "WHERE {$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1 AND c.isfolder=1";
+            $where = "WHERE {$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1";
         }
 
         $rs = $this->dbQuery("SELECT id FROM {$tbl_site_content} {$where}");
