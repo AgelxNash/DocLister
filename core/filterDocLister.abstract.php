@@ -127,6 +127,7 @@ abstract class filterDocLister{
         $output = '`'.$table_alias . '`.`' . $field . '` ';
         switch ($operator){
             case '=': case 'eq': case 'is': $output .= " = '" . $this->modx->db->escape($value) ."'"; break;
+			case '!=': case 'no': case 'isnot': $output .= " != '" . $this->modx->db->escape($value) ."'"; break;
             case 'gt': $output .= ' > ' . floatval($value); break;
             case 'lt': $output .= ' < ' . floatval($value); break;
             case 'elt': $output .= ' <= ' . floatval($value); break;
