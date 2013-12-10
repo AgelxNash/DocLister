@@ -26,7 +26,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.1.11';
+    const VERSION = '1.1.14';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -1049,15 +1049,15 @@ abstract class DocLister
         $this->debug->debug('set ID list '.$this->debug->dumpData($IDs), 'setIDs', 2);
         $IDs = $this->cleanIDs($IDs);
         $type = $this->getCFGDef('idType', 'parents');
-        $depth = $this->getCFGDef('depth', '1');
-        if ($type == 'parents' && $depth > 1) {
+        $depth = $this->getCFGDef('depth', '');
+        if ($type == 'parents' && $depth > 0) {
             $tmp = $IDs;
             do {
                 if (count($tmp) > 0) {
                     $tmp = $this->getChildernFolder($tmp);
                     $IDs = array_merge($IDs, $tmp);
                 }
-            } while ((--$depth) > 1);
+            } while ((--$depth) > 0);
         }
         $this->debug->debugEnd("setIDs");
         return ($this->IDs = $IDs);
