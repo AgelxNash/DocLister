@@ -100,7 +100,7 @@ class onetableDocLister extends DocLister
 
                     $class = array();
                     $class[] = ($i % 2 == 0) ? 'odd' : 'even';
-                    if ($i == 0) {
+                    if ($i == 1) {
                         $subTpl = $this->getCFGDef('tplFirst', $tpl);
                         $class[] = 'first';
                     }
