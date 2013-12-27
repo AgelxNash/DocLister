@@ -1385,7 +1385,7 @@ abstract class DocLister
      * @return bool
      */
     protected function loadFilter($filter){
-        $this->debug->debug('Load filter '.$this->debug->dumpData($filter) , 'loadFilter', 1);
+        $this->debug->debug('Load filter '.$this->debug->dumpData($filter) , 'loadFilter', 2);
         $out = false;
         $fltr_params = explode(':', $filter, 2);
         $fltr = isset($fltr_params[0]) ? $fltr_params[0] : null;
