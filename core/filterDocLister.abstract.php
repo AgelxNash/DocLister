@@ -123,8 +123,9 @@ abstract class filterDocLister{
      * @return string
      */
     protected function build_sql_where($table_alias, $field, $operator, $value){
+
         $this->DocLister->debug->debug('Build SQL query for filters: '.$this->DocLister->debug->dumpData(func_get_args()), 'buildQuery', 2);
-        $output = '`'.$table_alias . '`.`' . $field . '` ';
+        $output = sqlHelper::tildeField($table_alias.".".$field);
         switch ($operator){
             case '=': case 'eq': case 'is': $output .= " = '" . $this->modx->db->escape($value) ."'"; break;
 			case '!=': case 'no': case 'isnot': $output .= " != '" . $this->modx->db->escape($value) ."'"; break;
@@ -133,6 +134,9 @@ abstract class filterDocLister{
             case 'elt': $output .= ' <= ' . floatval($value); break;
             case 'egt': $output .= ' >= ' . floatval($value); break;
             case 'like': $output = $this->DocLister->LikeEscape($output,$value); break;
+            case 'like-r': $output = $this->DocLister->LikeEscape($output, $value,'=', '[+value+]%'); break;
+            case 'like-l': $output = $this->DocLister->LikeEscape($output, $value,'=', '%[+value+]'); break;
+            case 'regexp': $output .= " REGEXP '".$this->modx->db->escape($value)."'"; break;
             case 'against':{ /** content:pagetitle,description,content,introtext:against:искомая строка */
                 if(trim($value)!=''){
                     $field = explode(",", $this->field);
