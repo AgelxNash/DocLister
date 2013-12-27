@@ -291,9 +291,10 @@ class site_contentDocLister extends DocLister
             $from = $tbl_site_content . " " . $this->_filters['join'];
             $where = self::trimLogicalOp($where);
 
-            if(!empty($where)){
+            if(trim($where) != 'WHERE'){
                 $where .=" AND ";
             }
+            
             $where .= implode(" AND ", $whereArr);
             $where = self::trimLogicalOp($where);
 
