@@ -258,10 +258,13 @@ class site_contentDocLister extends DocLister
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')){
             $where = $this->getCFGDef('addWhereList', '');
+			$where = self::trimLogicalOp($where);
             $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             if ($where != '' && $this->_filters['where'] != '') {
                 $where .= " AND ";
             }
+			$where = self::trimLogicalOp($where);
+			
             $where = "WHERE {$where}";
             $whereArr = array();
             if(!$this->getCFGDef('showNoPublish', 0)){
@@ -288,7 +291,7 @@ class site_contentDocLister extends DocLister
             $from = $tbl_site_content . " " . $this->_filters['join'];
 
             $where .= implode(" AND ", $whereArr);
-            $where = rtrim($where, " AND "); /** for addWhereList list*/
+            $where = self::trimLogicalOp($where);
             if(trim($where)=='WHERE'){
                 $where = '';
             }
@@ -304,14 +307,16 @@ class site_contentDocLister extends DocLister
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
-            $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
-            $where = rtrim($where, " AND ");
+			$where = self::trimLogicalOp($where);
+            
+			$where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+            $where = self::trimLogicalOp($where);
 
             $tbl_site_content = $this->getTable('site_content','c');
             if($sanitarInIDs != "''"){
                 $where .= "c.id IN ({$sanitarInIDs}) AND";
             }
-            $where = rtrim($where, " AND ");
+            $where = self::trimLogicalOp($where);
 
             if($this->getCFGDef('showNoPublish', 0)){
                 if($where!=''){
@@ -354,10 +359,11 @@ class site_contentDocLister extends DocLister
         * @TODO: 5) Добавить фильтрацию по основным параметрам документа
         */
         $where = $this->getCFGDef('addWhereFolder', '');
+		$where = self::trimLogicalOp($where);
         if ($where != '') {
             $where .= " AND ";
         }
-
+		
         $tbl_site_content = $this->getTable('site_content','c');
         $sanitarInIDs = $this->sanitarIn($id);
         if($this->getCFGDef('showNoPublish', 0)){
@@ -411,8 +417,12 @@ class site_contentDocLister extends DocLister
     protected function getChildrenList()
     {
         $where = $this->getCFGDef('addWhereList', '');
+		$where = self::trimLogicalOp($where);
+		
         $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
-        if ($where != ''  && $this->_filters['where'] != '') {
+		$where = self::trimLogicalOp($where);
+		
+        if ($where != '') {
             $where .= " AND ";
         }
 

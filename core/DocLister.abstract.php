@@ -26,7 +26,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.1.15';
+    const VERSION = '1.1.16';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -1062,7 +1062,7 @@ abstract class DocLister
         $this->debug->debugEnd("setIDs");
         return ($this->IDs = $IDs);
     }
-
+	
     /**
      * Очистка данных и уникализация списка цифр.
      * Если был $IDs был передан как строка, то эта строка будет преобразована в массив по разделителю $sep
@@ -1194,7 +1194,25 @@ abstract class DocLister
         $this->debug->debugEnd("sortORDER",'Get sort order for SQL: '.$this->debug->dumpData($sort));
         return $sort;
     }
-
+	final static public function trimLogicalOp($string, $mode=''){
+		$regex = 'AND|and|OR|or|\&\&|\|\||NOT|not|\!';
+		switch($mode){
+			case 'right':{
+				$regex= '\s+('.$regex.')\s*$';
+				break;
+			}
+			case 'left':{
+				$regex = '^\s*('.$regex.')\s+';
+				break;
+			}
+			default:{
+				$regex = '(^\s*('.$regex.')\s+)|(\s+('.$regex.')\s*$)';
+				break;
+			}
+		}
+		return preg_replace("/{$regex}/", "", $string);
+	}
+	
     /**
      * Получение LIMIT вставки в SQL запрос
      *
