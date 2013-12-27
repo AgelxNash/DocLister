@@ -289,9 +289,14 @@ class site_contentDocLister extends DocLister
             }
             $fields = 'count(c.`id`) as `count`';
             $from = $tbl_site_content . " " . $this->_filters['join'];
+            $where = self::trimLogicalOp($where);
 
+            if(!empty($where)){
+                $where .=" AND ";
+            }
             $where .= implode(" AND ", $whereArr);
             $where = self::trimLogicalOp($where);
+
             if(trim($where)=='WHERE'){
                 $where = '';
             }
