@@ -314,8 +314,8 @@ class site_contentDocLister extends DocLister
 
             $tbl_site_content = $this->getTable('site_content','c');
             if($sanitarInIDs != "''"){
-                $where .= "c.id IN ({$sanitarInIDs}) AND";
-            }
+				$where .= ($where ? " AND " : "") . "c.id IN ({$sanitarInIDs}) AND";
+			}
             $where = self::trimLogicalOp($where);
 
             if($this->getCFGDef('showNoPublish', 0)){
