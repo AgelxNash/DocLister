@@ -27,7 +27,7 @@
 			<br />
 			Agel Nash
 		</h4>
-		<a href="http://artdevue.com">http://agel-nash.ru</a><br />
+		<a href="http://agel-nash.ru">http://agel-nash.ru</a><br />
 		<br />
 		<strong>ICQ</strong>: 8608196<br />
 		<strong>Skype</strong>: agel.nash<br />
