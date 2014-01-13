@@ -14,24 +14,55 @@ if (!defined('MODX_BASE_PATH')) {
 class prepare_DL_Extender extends extDocLister
 {
     private $_store = array();
+	
     public function setStore($name,$val){
         $this->_store[$name] = $val;
     }
+	
     public function getStore($name){
         return isset($this->_store[$name]) ? $this->_store[$name] : null;
     }
+	
     protected function run()
     {
         $out = $this->_cfg;
         if (($prepare = $this->DocLister->getCFGDef('prepare', '')) != '') {
-            $out = array(
-                '_extDocLister' => $this,
-                '_DocLister' => $this->DocLister,
-                'data' => $out,
-                'modx' => $this->modx
-            );
-            $out = unserialize($this->modx->runSnippet($prepare, $out));
+            $params = $this->getParams($out);
+            if(is_scalar($prepare)){
+                $names = explode(",", $prepare);
+                foreach($names as $item){
+                    $params['data'] = $this->callPrepare($item, $params);
+                }
+            }else{
+                $params['data'] = $this->callPrepare($prepare, $params);
+            }
+            $out = $params['data'];
         }
         return $out;
+    }
+
+    public function getParams(array $data = array()){
+        return array(
+            '_extDocLister' => $this,
+            '_DocLister' => $this->DocLister,
+            'data' => $data,
+            'modx' => $this->modx
+        );
+    }
+	
+    public function callPrepare($name, array $params){
+        $out = null;
+        if((is_object($name) && ($name instanceof Closure)) || is_callable($name)){
+            $data = call_user_func($name, $params['data'], $params['modx'], $params['_DocLister'], $params['_extDocLister']);
+        }else{
+            $data = $this->modx->runSnippet($name, $params);
+        }
+
+        if(is_array($data)){
+            $out = $data;
+        }else{
+            $out = unserialize($data);
+        }
+        return !empty($out) ? $out : $params['data'];
     }
 }
