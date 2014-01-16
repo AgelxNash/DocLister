@@ -211,7 +211,7 @@ abstract class DocLister
         }
         $this->_filters = $this->getFilters($this->getCFGDef('filters', ''));
     }
-
+	
     /**
      * Установить время запуска сниппета
      * @param float|null $time
@@ -1065,6 +1065,9 @@ abstract class DocLister
         return ($this->IDs = $IDs);
     }
 	
+	final public function getIDs(){
+		return $this->IDs;
+	}
     /**
      * Очистка данных и уникализация списка цифр.
      * Если был $IDs был передан как строка, то эта строка будет преобразована в массив по разделителю $sep
@@ -1345,6 +1348,13 @@ abstract class DocLister
         return $output;
     }
 
+	public function filtersWhere(){
+		return isset($this->_filters['where']) ? $this->_filters['where'] : '';
+	}
+	
+	public function filtersJoin(){
+		return isset($this->_filters['join']) ? $this->_filters['join'] : '';
+	}
     /**
      * Приведение типа поля
      *
