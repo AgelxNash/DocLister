@@ -287,7 +287,7 @@ class site_contentDocLister extends DocLister
                     }
                 }
             }
-            $fields = 'count(c.`id`) as `count`';
+            $fields = $this->getCFGDef('selectFields', 'c.*');
             $from = $tbl_site_content . " " . $this->_filters['join'];
             $where = sqlHelper::trimLogicalOp($where);
 
@@ -301,7 +301,14 @@ class site_contentDocLister extends DocLister
             if(trim($where)=='WHERE'){
                 $where = '';
             }
-            $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where}");
+            $fields = $this->getCFGDef('selectFields', 'c.*');
+
+            $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
+            list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
+
+            $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
+            $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$from} {$where} GROUP BY c.id {$sort} {$limit}");
+			$rs = $this->dbQuery("SELECT FOUND_ROWS();");
             $out = $this->modx->db->getValue($rs);
         }
         return $out;
@@ -340,14 +347,14 @@ class site_contentDocLister extends DocLister
             }
 
 
-            $select = "c.*";
+            $fields = $this->getCFGDef('selectFields', 'c.*');
 
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
             list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
 
-            $rs = $this->dbQuery("SELECT {$select} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
+            $rs = $this->dbQuery("SELECT {$fields} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
 
             $rows = $this->modx->db->makeArray($rs);
 
