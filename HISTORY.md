@@ -1,5 +1,6 @@
 ## 1.2.3 (25.01.2013)
 * [Add] Добавлен новый параметр groupBy
+* [Refactor] Рефакторинг метода jsonHelper::json_last_error_msg() под PHP < 5.3
 
 ## 1.2.2 (24.01.2014)
 * [Add] Добавлен новый параметр selectFields
