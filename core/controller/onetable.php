@@ -191,7 +191,8 @@ class onetableDocLister extends DocLister
             }
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
 			$fields = $this->getCFGDef('selectFields', '*');
-            $rs = $this->dbQuery("SELECT {$fields} FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
+			$group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
+            $rs = $this->dbQuery("SELECT {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
 
             $rows = $this->modx->db->makeArray($rs);
             $out = array();
@@ -206,12 +207,20 @@ class onetableDocLister extends DocLister
     public function getChildrenCount()
     {
         $where = $this->getCFGDef('addWhereList', '');
+        if ($where != '') {
+            $where = array($where);
+        }
+		$sanitarInIDs = $this->sanitarIn($this->IDs);
+        if($sanitarInIDs != "''"){
+            $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
+        }
         if(!empty($where)){
-            $where = "WHERE ".$where;
+            $where = "WHERE ".implode(" AND ",$where);
         }
         $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
 		$fields = $this->getCFGDef('selectFields', '*');
-        $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$this->table} {$where} {$this->SortOrderSQL($this->getPK())} {$limit}");
+		$group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
+        $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
 		$rs = $this->dbQuery("SELECT FOUND_ROWS();");
         return $this->modx->db->getValue($rs);
     }

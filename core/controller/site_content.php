@@ -302,12 +302,12 @@ class site_contentDocLister extends DocLister
                 $where = '';
             }
             $fields = $this->getCFGDef('selectFields', 'c.*');
-
+			$group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
             list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-            $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$from} {$where} GROUP BY c.id {$sort} {$limit}");
+            $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$from} {$where} {$group} {$sort} {$limit}");
 			$rs = $this->dbQuery("SELECT FOUND_ROWS();");
             $out = $this->modx->db->getValue($rs);
         }
@@ -348,13 +348,13 @@ class site_contentDocLister extends DocLister
 
 
             $fields = $this->getCFGDef('selectFields', 'c.*');
-
+            $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
             list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
 
-            $rs = $this->dbQuery("SELECT {$fields} FROM {$tbl_site_content} {$this->_filters['join']} {$where} GROUP BY c.id {$sort} {$limit}");
+            $rs = $this->dbQuery("SELECT {$fields} FROM {$tbl_site_content} {$this->_filters['join']} {$where} {$group} {$sort} {$limit}");
 
             $rows = $this->modx->db->makeArray($rs);
 

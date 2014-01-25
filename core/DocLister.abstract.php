@@ -1141,6 +1141,13 @@ abstract class DocLister
      */
     abstract public function getChildernFolder($id);
 
+	protected function getGroupSQL($group = ''){
+		$out = '';
+		if($group!=''){
+			$out = 'GROUP BY '.$group;
+		}
+		return $out;
+	}
     /**
      *    Sorting method in SQL queries
      *
