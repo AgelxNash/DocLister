@@ -239,7 +239,7 @@ abstract class DocLister
             $this->debug = null;
             if($this->_debugMode>0){
                 if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
-                    error_reporting(E_ALL);
+                    error_reporting(E_ALL ^ E_NOTICE);
                     ini_set('display_errors', 1);
                 }
                 $dir = dirname(dirname(__FILE__));
