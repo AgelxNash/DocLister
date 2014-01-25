@@ -206,23 +206,27 @@ class onetableDocLister extends DocLister
     // @abstract
     public function getChildrenCount()
     {
-        $where = $this->getCFGDef('addWhereList', '');
-        if ($where != '') {
-            $where = array($where);
+        $out = 0;
+        $sanitarInIDs = $this->sanitarIn($this->IDs);
+        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+            $where = $this->getCFGDef('addWhereList', '');
+            if ($where != '') {
+                $where = array($where);
+            }
+            if($sanitarInIDs != "''"){
+                $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
+            }
+            if(!empty($where)){
+                $where = "WHERE ".implode(" AND ",$where);
+            }
+            $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
+            $fields = $this->getCFGDef('selectFields', '*');
+            $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
+            $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
+            $rs = $this->dbQuery("SELECT FOUND_ROWS();");
+            $out = $this->modx->db->getValue($rs);
         }
-		$sanitarInIDs = $this->sanitarIn($this->IDs);
-        if($sanitarInIDs != "''"){
-            $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
-        }
-        if(!empty($where)){
-            $where = "WHERE ".implode(" AND ",$where);
-        }
-        $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-		$fields = $this->getCFGDef('selectFields', '*');
-		$group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
-        $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
-		$rs = $this->dbQuery("SELECT FOUND_ROWS();");
-        return $this->modx->db->getValue($rs);
+        return $out;
     }
 
     public function getChildernFolder($id)
