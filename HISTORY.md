@@ -1,4 +1,7 @@
-## 1.2.3 (25.01.2013)
+## 1.2.4 (31.01.2014)
+* [Refactor] Убрано повторное преобразование символов функцией htmlspecialchars() в методе DocLister::sanitarData()
+
+## 1.2.3 (25.01.2014)
 * [Add] Добавлен новый параметр groupBy
 * [Refactor] Рефакторинг метода jsonHelper::json_last_error_msg() под PHP < 5.3
 * [Refactor] Добавлено игнорирование Notice ошибок в режиме отладки

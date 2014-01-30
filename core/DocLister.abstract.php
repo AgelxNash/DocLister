@@ -1252,7 +1252,11 @@ abstract class DocLister
      */
     final public function sanitarData($data)
     {
-        return is_scalar($data) ? str_replace(array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D'), array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;'), htmlspecialchars($data)) : '';
+        return is_scalar($data) ? str_replace(
+									array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D'), 
+									array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;'), 
+									htmlspecialchars($data, ENT_COMPAT, 'UTF-8', false)
+								) : '';
     }
 
     /**
