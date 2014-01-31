@@ -133,6 +133,7 @@ class paginate_DL_Extender extends extDocLister
                         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
                         $p->numberT = $this->DocLister->getChunkByParam('TplPage', '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
                         $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
+						$p->dotsT = $this->DocLister->getChunkByParam('TplDotsPage', '@CODE: ...');
                         $p->prevI = '';
                         $p->nextI = '';
                         if($this->DocLister->getCFGDef("PrevNextAlwaysShow", 0)=='1'){
