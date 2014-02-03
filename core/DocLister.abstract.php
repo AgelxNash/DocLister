@@ -280,7 +280,7 @@ abstract class DocLister
         }
         $table = $this->_table[$name];
         if(!empty($alias) && is_scalar($alias)){
-            $table .= " as ".$alias;
+            $table .= " as `".$alias."`";
         }
         return $table;
     }
