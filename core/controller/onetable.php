@@ -99,17 +99,24 @@ class onetableDocLister extends DocLister
                     }
 
                     $class = array();
-                    $class[] = ($i % 2 == 0) ? 'odd' : 'even';
+					
+					$subTpl = $this->getCFGDef('tplId'.$i, $tpl);
+					
+                    $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
+					$class[] = strtolower($iterationName);
+					
+					$subTpl = $this->getCFGDef('tpl'.$iterationName, $subTpl);
+					
                     if ($i == 1) {
-                        $subTpl = $this->getCFGDef('tplFirst', $tpl);
+                        $subTpl = $this->getCFGDef('tplFirst', $subTpl);
                         $class[] = 'first';
                     }
                     if ($i == count($this->_docs)) {
-                        $subTpl = $this->getCFGDef('tplLast', $tpl);
+                        $subTpl = $this->getCFGDef('tplLast', $subTpl);
                         $class[] = 'last';
                     }
                     if ($this->modx->documentIdentifier == $item['id']) {
-                        $subTpl = $this->getCFGDef('tplCurrent', $tpl);
+                        $subTpl = $this->getCFGDef('tplCurrent', $subTpl);
                         $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
                         $class[] = 'current';
                     } else {
