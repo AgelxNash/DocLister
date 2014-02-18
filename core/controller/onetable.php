@@ -226,11 +226,10 @@ class onetableDocLister extends DocLister
             if(!empty($where)){
                 $where = "WHERE ".implode(" AND ",$where);
             }
-            $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-            $fields = $this->getCFGDef('selectFields', '*');
-            $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
-            $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
-            $rs = $this->dbQuery("SELECT FOUND_ROWS();");
+            
+			$group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
+            $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group}) as `tmp`");
+			
             $out = $this->modx->db->getValue($rs);
         }
         return $out;

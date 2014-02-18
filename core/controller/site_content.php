@@ -308,14 +308,11 @@ class site_contentDocLister extends DocLister
             if(trim($where)=='WHERE'){
                 $where = '';
             }
-            $fields = $this->getCFGDef('selectFields', 'c.*');
-			$group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
+            $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
-            list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
+            list($from, $sort) = $this->injectSortByTV($from, $sort);
 
-            $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-            $this->dbQuery("SELECT SQL_CALC_FOUND_ROWS {$fields} FROM {$from} {$where} {$group} {$sort} {$limit}");
-			$rs = $this->dbQuery("SELECT FOUND_ROWS();");
+            $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
             $out = $this->modx->db->getValue($rs);
         }
         return $out;
