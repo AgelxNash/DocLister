@@ -159,7 +159,7 @@ class site_contentDocLister extends DocLister
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
                     $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage()-1)) : $i;
 
-                    $item['url'] = ($item['type'] == 'reference') ? $item['content'] : $this->modx->makeUrl($item['id']);
+                    $item['url'] = ($item['type'] == 'reference') ? (is_numeric($item['content']) ? $this->modx->makeUrl($item['content']) : $item['content']) : $this->modx->makeUrl($item['id']);
 
                     $item['date'] = (isset($item[$date]) && $date != 'createdon' && $item[$date] != 0 && $item[$date] == (int)$item[$date]) ? $item[$date] : $item['createdon'];
                     $item['date'] = $item['date'] + $this->modx->config['server_offset_time'];
