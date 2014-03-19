@@ -283,7 +283,9 @@ class site_contentDocLister extends DocLister
             if($sanitarInIDs != "''"){
                 switch($this->getCFGDef('idType', 'parents')){
                     case 'parents':{
-                        if(!$this->getCFGDef('showParent', '0')) {
+                        if($this->getCFGDef('showParent', '0')) {
+                            $whereArr[]="(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
+                        }else{
                             $whereArr[]="c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
                         }
                         break;
