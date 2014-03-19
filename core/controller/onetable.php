@@ -190,7 +190,7 @@ class onetableDocLister extends DocLister
                 $where = array($where);
             }
             if($sanitarInIDs != "''"){
-                $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
+                $where[] = "`{$this->getPK()}` IN ({$sanitarInIDs})";
             }
 
             if(!empty($where)){
@@ -221,13 +221,13 @@ class onetableDocLister extends DocLister
                 $where = array($where);
             }
             if($sanitarInIDs != "''"){
-                $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
+                $where[] = "`{$this->getPK()}` IN ({$sanitarInIDs})";
             }
             if(!empty($where)){
                 $where = "WHERE ".implode(" AND ",$where);
             }
             
-			$group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
+			$group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group}) as `tmp`");
 			
             $out = $this->modx->db->getValue($rs);
@@ -241,7 +241,7 @@ class onetableDocLister extends DocLister
         if(!empty($where)){
             $where = "WHERE ".$where;
         }
-        $rs = $this->dbQuery("SELECT {$this->getPK()} FROM {$this->table} {$where}");
+        $rs = $this->dbQuery("SELECT `{$this->getPK()}` FROM {$this->table} {$where}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
