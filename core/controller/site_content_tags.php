@@ -20,8 +20,8 @@ class site_content_tagsDocLister extends site_contentDocLister
 {
     private $tag = array();
 
-    function __construct($modx, $cfg = array()){
-        parent::__construct($modx,$cfg);
+    function __construct($modx, $cfg = array(), $startTime = null){
+        parent::__construct($modx,$cfg, $startTime);
         $this->whereTag();
     }
 

@@ -7,14 +7,24 @@
  */
 
 class sqlHelper {
-    static public function tildeField($field){
+    static public function tildeField($field, $table=''){
         $out = '';
         if(!empty($field) && is_scalar($field)){
-            $field = explode(".", $field);
-            foreach($field as &$f){
-                $f = "`".str_replace("`", "", $f)."`";
+            if(!empty($table) && is_scalar($table) && $tmp = strpos($field, $table)){
+                $tmp = substr($field, $tmp + strlen($table), 1);
+                if($tmp != '.' && $tmp != '`'){
+                    $field = $table.".".$field;
+                }else{
+                    $out = $field;
+                }
             }
-            $out = implode(".", $field);
+            if(empty($out)){
+                $field = explode(".", $field);
+                foreach($field as &$f){
+                    $f = "`".str_replace("`", "", $f)."`";
+                }
+                $out = implode(".", $field);
+            }
         }
         return $out;
     }

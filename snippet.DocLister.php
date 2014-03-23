@@ -8,7 +8,7 @@
 if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
-$time = $modx->getMicroTime();
+$_time = microtime(true);
 $dir = realpath(MODX_BASE_PATH . (isset($dir) ? $dir : 'assets/snippets/DocLister/'));
 
 require_once($dir . "/core/DocLister.abstract.php");
@@ -27,13 +27,16 @@ if ($classname != 'DocLister' && file_exists($dir . "/core/controller/" . $contr
 }
 
 if (class_exists($classname, false) && $classname != 'DocLister') {
-    $DocLister = new $classname($modx, $modx->Event->params);
-    $DocLister->setTimeStart($time);
+    $DocLister = new $classname($modx, $modx->Event->params, $_time);
     $data = $DocLister->getDocs();
     $out = isset($modx->Event->params['api']) ? $DocLister->getJSON($data, $modx->Event->params['api']) : $DocLister->render();
     if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
-        echo $DocLister->debug->showLog();
+        $debug = $DocLister->debug->showLog();
+    }else{
+        $debug = '';
+    }
+    if(!empty($modx->Event->params['debug'])){
+        $out = ($modx->Event->params['debug']>0) ? $debug.$out : $out.$debug;
     }
     return $out;
 }
-?>

@@ -20,6 +20,7 @@ if (!defined('MODX_BASE_PATH')) {
 
 require_once(dirname(dirname(__FILE__))."/lib/jsonHelper.class.php");
 require_once(dirname(dirname(__FILE__))."/lib/sqlHelper.class.php");
+require_once(dirname(dirname(__FILE__))."/lib/templateDL.class.php");
 require_once(dirname(dirname(__FILE__)). "/lib/xnop.class.php");
 
 abstract class DocLister
@@ -27,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.2.8';
+    const VERSION = '1.3.0';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -155,9 +156,11 @@ abstract class DocLister
      *
      * @param DocumentParser $modx объект DocumentParser - основной класс MODX
      * @param array $cfg массив параметров сниппета
+     * @param int $startTime время запуска сниппета
      */
-    function __construct($modx, $cfg = array())
+    function __construct($modx, $cfg = array(), $startTime = null)
     {
+        $this->setTimeStart($startTime);
         try {
             if (extension_loaded('mbstring')) {
                 mb_internal_encoding("UTF-8");
@@ -211,7 +214,6 @@ abstract class DocLister
         }
         $this->_filters = $this->getFilters($this->getCFGDef('filters', ''));
     }
-	
     /**
      * Установить время запуска сниппета
      * @param float|null $time
@@ -234,8 +236,9 @@ abstract class DocLister
      * @param int $flag режим отладки
      */
     public function setDebug($flag=0){
-        if($this->_debugMode!=(int)$flag){
-            $this->_debugMode = (int)$flag;
+        $flag = abs( (int)$flag );
+        if($this->_debugMode!=$flag){
+            $this->_debugMode = $flag;
             $this->debug = null;
             if($this->_debugMode>0){
                 if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
@@ -324,7 +327,7 @@ abstract class DocLister
      * @return array|mixed|xNop
      */
     public function jsonDecode($json, $config = array(), $nop = false){
-        $this->debug->debug('Decode JSON: '.$this->debug->dumpData($json, 'code').' with config: '.$this->debug->dumpData($config), 'jsonDecode', 2);
+        $this->debug->debug('Decode JSON: '.$this->debug->dumpData($json)."\r\nwith config: ".$this->debug->dumpData($config), 'jsonDecode', 2);
         $config = jsonHelper::jsonDecode($json, $config, $nop);
         $this->isErrorJSON($json);
         $this->debug->debugEnd("jsonDecode");
@@ -478,7 +481,7 @@ abstract class DocLister
      */
     final public function ErrorLogger($message, $code, $file, $line, $trace)
     {
-        if ($this->getCFGDef('debug', '0') == '1') {
+        if (abs ($this->getCFGDef('debug', '0')) == '1') {
             echo "CODE #" . $code . "<br />";
             echo "on file: " . $file . ":" . $line . "<br />";
             echo "<pre>";
@@ -563,26 +566,17 @@ abstract class DocLister
     final public function toPlaceholders($data, $set = 0, $key = 'contentPlaceholder')
     {
         $this->debug->debug(null,'toPlaceholders',2);
-        $out = '';
-        $this->_plh[$key] = $data;
         if ($set == 0) {
             $set = $this->getCFGDef('contentPlaceholder', 0);
         }
-        if ($set != 0) {
-            $id = $this->getCFGDef('id', '');
-            if ($id != '') $id .= ".";
-            $this->modx->toPlaceholder($key, $data, $id);
-            $this->debug->debugEnd(
-                "toPlaceholders",
-                "Save ".$this->debug->dumpData($key)." placeholder: ".$this->debug->dumpData($data)
-            );
-        } else {
-            $out = $data;
-            $this->debug->debugEnd(
-                "toPlaceholders",
-                "Show ".$this->debug->dumpData($key)." placeholder: ".$this->debug->dumpData($data)
-            );
-        }
+        $this->_plh[$key] = $data;
+        $id = $this->getCFGDef('id', '');
+        if ($id != '') $id .= ".";
+        $out = templateDL::getInstance($this->getMODX())->toPlaceholders($data, $set, $key, $id);
+
+        $this->debug->debugEnd(
+            "toPlaceholders", $this->debug->dumpData($key)." placeholder: ".$this->debug->dumpData($data)
+        );
         return $out;
     }
 
@@ -696,21 +690,7 @@ abstract class DocLister
      */
     final public function renameKeyArr($data, $prefix = '', $suffix = '', $sep = '.')
     {
-        $out = array();
-        if ($prefix == '' && $suffix == '') {
-            $out = $data;
-        } else {
-            if ($prefix != '') {
-                $prefix = $prefix . $sep;
-            }
-            if ($suffix != '') {
-                $suffix = $sep . $suffix;
-            }
-            foreach ($data as $key => $item) {
-                $out[$prefix . $key . $suffix] = $item;
-            }
-        }
-        return $out;
+        return templateDL::getInstance($this->getMODX())->renameKeyArr($data, $prefix, $suffix, $sep);
     }
 
     /**
@@ -762,99 +742,9 @@ abstract class DocLister
     private function _getChunk($name)
     {
         $this->debug->debug('Get chunk by name "'.$this->debug->dumpData($name).'"',"getChunk",2);
-        $tpl = '';
         //without trim
-        if ($name != '' && !isset($this->modx->chunkCache[$name])) {
-            $mode = (preg_match('/^((@[A-Z]+)[:]{0,1})(.*)/Asu', trim($name), $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
-            $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
-            switch ($mode) {
-                case '@FILE':
-                { //tpl in file
-                    if ($subTmp != '') {
-                        $real = realpath(MODX_BASE_PATH . 'assets/templates');
-                        $path = realpath(MODX_BASE_PATH . 'assets/templates/' . preg_replace(array('/\.*[\/|\\\]/i', '/[\/|\\\]+/i'), array('/', '/'), $subTmp) . '.html');
-                        $fname = explode(".", $path);
-                        if ($real == substr($path, 0, strlen($real)) && end($fname) == 'html' && file_exists($path)) {
-                            $tpl = file_get_contents($path);
-                        }
-                    }
-                    break;
-                }
-                case '@CHUNK':
-                {
-                    if ($subTmp != '') {
-                        $tpl = $this->modx->getChunk($subTmp);
-                    } else {
-                        //error chunk name
-                    }
-                    break;
-                }
-                case '@TPL':
-                case '@CODE':
-                {
-                    $tpl = $tmp[3]; //without trim
-                    break;
-                }
-                case '@DOCUMENT':
-                case '@DOC':
-                {
-                    switch (true) {
-                        case ((int)$subTmp > 0):
-                        {
-                            $tpl = $this->modx->getPageInfo((int)$subTmp, 0, "content");
-                            $tpl = isset($tpl['content']) ? $tpl['content'] : '';
-                            break;
-                        }
-                        case ((int)$subTmp == 0):
-                        {
-                            $tpl = $this->modx->documentObject['content'];
-                            break;
-                        }
-                        default:
-                            {
-                            //error docid
-                            }
-                    }
-                    break;
-                }
-                case '@PLH':
-                case '@PLACEHOLDER':
-                {
-                    if ($subTmp != '') {
-                        $tpl = $this->modx->getPlaceholder($subTmp);
-                    } else {
-                        //error placeholder name
-                    }
-                    break;
-                }
-                case '@CFG':
-                case '@CONFIG':
-                case '@OPTIONS':
-                {
-                    if ($subTmp != '') {
-                        $tpl = $this->modx->getConfig($subTmp);
-                    } else {
-                        //error config name
-                    }
-                    break;
-                }
-                default:
-                    {
-                    if ($this->checkExtender('template')) {
-                        $tpl = $this->extender['template']->init($this, array('full' => $name, 'mode' => $mode, 'tpl' => $tmp[3])); //without trim
-                    } else {
-                        $tpl = $this->modx->getChunk($name);
-                    }
-                    }
-            }
-
-            $tpl = $this->modx->chunkCache[$name] = $this->parseLang($tpl);
-        }else{
-            if($name!=''){
-                $tpl = $this->modx->getChunk($name);
-                $tpl = $this->parseLang($tpl);
-            }
-        }
+        $tpl = templateDL::getInstance($this->getMODX())->getChunk($name);
+        $tpl = $this->parseLang($tpl);
 
         $this->debug->debugEnd("getChunk");
         return $tpl;
@@ -901,14 +791,8 @@ abstract class DocLister
             "parseChunk",
             2
         );
-        if (is_array($data) && ($out = $this->_getChunk($name)) != '') {
-            if(preg_match("/\[\+[a-zA-Z0-9\.\_\-]+\+\]/",$out)){
-                $data = $this->renameKeyArr($data, '[', ']', '+');
-                $out = str_replace(array_keys($data), array_values($data), $out);
-            }else{
-                $this->debug->debug("No placeholders in chunk: ".$this->debug->dumpData($name), '', 2);
-            }
-        }else{
+        $out = templateDL::getInstance($this->getMODX())->parseChunk($name, $data);
+        if (empty($out)) {
             $this->debug->debug("Empty chunk: ".$this->debug->dumpData($name), '', 2);
         }
         $this->debug->debugEnd("parseChunk");
@@ -998,7 +882,7 @@ abstract class DocLister
         if((is_scalar($name) && $this->checkExtender($name)) || ($autoload && $this->_loadExtender($name))){
             $out = $this->extender[$name];
         }
-        if($nop){
+        if($nop && is_null($out)){
             $out = new xNop();
         }
         return $out;

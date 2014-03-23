@@ -61,7 +61,11 @@ class prepare_DL_Extender extends extDocLister
         if(is_array($data)){
             $out = $data;
         }else{
-            $out = unserialize($data);
+            if($data[0] == '[' || $data[0] == '{'){
+                $out = $this->DocLister->jsonDecode($data, array('assoc' => true), true);
+            }else{
+                $out = unserialize($data);
+            }
         }
         return !empty($out) ? $out : $params['data'];
     }

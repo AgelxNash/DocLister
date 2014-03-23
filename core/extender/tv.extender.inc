@@ -15,13 +15,17 @@ if (!defined('MODX_BASE_PATH')) {
  *
  */
 class tv_DL_Extender extends extDocLister{
-
     protected $_TVnames = array();
+    /**
+     * Массив подключаемых таблиц для TV
+     * @var array
+     */
+    protected $_TVTable=array();
+
 
     protected function run(){
         return true;
     }
-
     public function getTVnames(){
         return $this->_TVnames;
     }
@@ -39,7 +43,6 @@ class tv_DL_Extender extends extDocLister{
         }
         return $this->_TVnames;
     }
-
     public function getTVList($IDs, $tvlist)
     {
         $tv = $this->getTVid($tvlist);
@@ -75,7 +78,6 @@ class tv_DL_Extender extends extDocLister{
         }
         return $out;
     }
-
     public function getListRenderTV()
     {
         $tmp = $this->DocLister->getCFGDef('renderTV', '');
@@ -95,15 +97,12 @@ class tv_DL_Extender extends extDocLister{
         }
         return $tmp;
     }
-
     public function renderTV($iddoc, $tvname, $tvval, $param)
     {
         include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
         include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
         return getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $iddoc, '');
     }
-
-    //@TODO: _TVnames
     public function getTVid($tvlist)
     {
         if (!empty($tvlist) && is_scalar($tvlist)) {
@@ -118,7 +117,6 @@ class tv_DL_Extender extends extDocLister{
         }
         return $out;
     }
-
     public function loadTVDefault($tvId)
     {
         $tbl_site_tmplvars = $this->DocLister->getTable('site_tmplvars');
@@ -132,4 +130,16 @@ class tv_DL_Extender extends extDocLister{
         }
         return $out;
     }
+
+    public function TableAlias($name, $table, $alias){
+        if(!isset($this->_TVTable[$table][$name])){
+            $this->_TVTable[$table][$name] = $alias;
+        }
+        return $this->_TVTable[$table][$name];
+    }
+
+    public function checkTableAlias($name, $table){
+        return isset($this->_TVTable[$table][$name]);
+    }
+
 }

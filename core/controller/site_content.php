@@ -31,12 +31,9 @@ class site_contentDocLister extends DocLister
 
     protected $extPaginate = null;
     
-    function __construct($modx, $cfg = array()){
-        parent::__construct($modx,$cfg);
-        $this->extTV = $this->getExtender('tv', true);
-        if(!$this->extTV){
-            die('Error');
-        }
+    function __construct($modx, $cfg = array(), $startTime = null){
+        parent::__construct($modx,$cfg, $startTime);
+        $this->extTV = $this->getExtender('tv', true, true);
     }
     /**
      * @absctract
@@ -74,7 +71,10 @@ class site_contentDocLister extends DocLister
         $type = $this->getCFGDef('idType', 'parents');
         $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
         if ($tvlist != '' && count($this->_docs)>0) {
-            $tv = ($this->extTV) ? $this->extTV->getTVList(array_keys($this->_docs),$tvlist) : array();
+            $tv = $this->extTV->getTVList(array_keys($this->_docs),$tvlist);
+            if(!is_array($tv)){
+                $tv = array();
+            }
             foreach ($tv as $docID => $TVitem) {
                 if (isset($this->_docs[$docID]) && is_array($this->_docs[$docID])) {
                     $this->_docs[$docID] = array_merge($this->_docs[$docID], $TVitem);
@@ -403,7 +403,10 @@ class site_contentDocLister extends DocLister
 
     protected function injectSortByTV($table, $sort){
         if (preg_match("/^ORDER BY (.*)/", $sort, $match)) {
-            $TVnames = $this->extTV ? $this->extTV->getTVnames() : array();
+            $TVnames = $this->extTV->getTVnames();
+            if(!is_array($TVnames)){
+                $TVnames = array();
+            }
             $matches = explode(",", $match[1]);
             $sortType = explode(",", $this->getCFGDef('tvSortType'));
             $withDefault = explode(",", $this->getCFGDef('tvSortWithDefault'));
@@ -411,12 +414,19 @@ class site_contentDocLister extends DocLister
             foreach($matches as $i => &$item){
                 $item = explode(" ", trim($item), 2);
                 if (isset($TVnames[$item[0]])) {
-                    $prefix = 'tv'.$i;
-                    $table .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues", $prefix) . "
+                    $exists = $this->extTV->checkTableAlias($item[0], "site_tmplvar_contentvalues");
+                    $prefix = $this->extTV->TableAlias($item[0], "site_tmplvar_contentvalues", 'dltv_'.$item[0].'_'.$i);
+                    if(!$exists){
+                        $table .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues", $prefix) . "
                         on ".$prefix.".contentid=c.id AND ".$prefix.".tmplvarid=" . $TVnames[$item[0]];
+                    }
                     if(in_array($item[0], $withDefault)){
-                        $table .= " LEFT JOIN ".$this->getTable("site_tmplvars", 'd'.$prefix)." on d".$prefix.".id = " . $TVnames[$item[0]];
-                        $field = "IFNULL(`{$prefix}`.`value`, `d{$prefix}`.`default_text`)";
+                        $exists = $this->extTV->checkTableAlias($item[0], "site_tmplvars");
+                        $dPrefix = $this->extTV->TableAlias($item[0], "site_tmplvars", 'd_'.$prefix);
+                        if(!$exists){
+                            $table .= " LEFT JOIN ".$this->getTable("site_tmplvars", $dPrefix)." on ".$dPrefix.".id = " . $TVnames[$item[0]];
+                        }
+                        $field = "IFNULL(`{$prefix}`.`value`, `{$dPrefix}`.`default_text`)";
                     }else{
                         $field = "`{$prefix}`.`value`";
                     }

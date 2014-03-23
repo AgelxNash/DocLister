@@ -10,23 +10,30 @@ require_once 'content.filter.php';
  *
  */
 class tv_DL_filter extends content_DL_filter{
-	private $tv_id;
+	protected $tv_id;
+    protected $tvName = null;
+    /**
+     * @var tv_DL_Extender
+     */
+    protected $extTV = null;
+
+    public function init(DocLister $DocLister, $filter){
+        $this->extTV = $DocLister->getExtender('tv', true, true);
+        return parent::init($DocLister, $filter);
+    }
 
 	protected function parseFilter($filter) {
         $return = false;
         // use the parsing mechanism of the content filter for the start
         if (parent::parseFilter($filter)){
-            // now add some variables specific to the TV-filter
-            // get the id of the TV
-            /**
-             * @var $ext tv_DL_Extender
-             */
-            if($ext = $this->DocLister->getExtender('tv',true)){
-                $ext->getAllTV_Name();
-                $tmp = array_keys($ext->getTVid($this->field));
-                if(count($tmp)==1){
-                    $this->tv_id = $tmp[0];
-                }
+            $this->extTV->getAllTV_Name();
+            $tmp = $this->extTV->getTVid($this->field);
+            if(!is_array($tmp)){
+                $tmp = array();
+            }
+            $tmp = array_keys($tmp);
+            if(count($tmp)==1){
+                $this->tv_id = $tmp[0];
             }
             if(!$this->tv_id){
                 $tvid = $this->modx->db->query("SELECT id FROM ".$this->DocLister->getTable('site_tmplvars')." WHERE `name` = '".$this->modx->db->escape($this->field)."'");
@@ -42,6 +49,7 @@ class tv_DL_filter extends content_DL_filter{
                     $alias .= '_'.$this->totalFilters;
                 }
                 $this->setTableAlias($alias);
+                $this->tvName = $this->field;
                 $this->field = 'value';
                 $return = true;
             }
@@ -51,9 +59,12 @@ class tv_DL_filter extends content_DL_filter{
 	}
 
 	public function get_join(){
-        $alias = $this->getTableAlias();
-        $join = 'LEFT JOIN '.$this->DocLister->getTable('site_tmplvar_contentvalues',$alias).' ON `'.$alias.'`.`contentid`=`'.content_DL_filter::TableAlias.'`.`id` AND `'.$alias.'`.`tmplvarid`='.$this->tv_id;
+        $join = '';
+        $exists = $this->extTV->checkTableAlias($this->tvName, "site_tmplvar_contentvalues");
+        $alias = $this->extTV->TableAlias($this->tvName, "site_tmplvar_contentvalues", $this->getTableAlias());
+        if(!$exists){
+            $join = 'LEFT JOIN '.$this->DocLister->getTable('site_tmplvar_contentvalues',$alias).' ON `'.$alias.'`.`contentid`=`'.content_DL_filter::TableAlias.'`.`id` AND `'.$alias.'`.`tmplvarid`='.$this->tv_id;
+        }
         return $join;
 	}
 }
-?>

@@ -42,10 +42,10 @@ class debugDL{
         if($mode>0 && $this->DocLister->getDebug() >= $mode){
             $data = array(
                 'msg'=> $message,
-                'start' => $this->modx->getMicroTime() - $this->DocLister->getTimeStart()
+                'start' => microtime(true) - $this->DocLister->getTimeStart()
             );
             if(is_scalar($key) && $key!=''){
-                $data['time'] = $this->modx->getMicroTime();
+                $data['time'] = microtime(true);
                 $this->_calcLog[$key] = $data;
             }else{
                 $this->_log[count($this->_log)] = $data;
@@ -58,7 +58,7 @@ class debugDL{
             $this->_log[count($this->_log)] = array(
                 'msg' => isset($msg) ? $msg : $this->_calcLog[$key]['msg'],
                 'start'=>$this->_calcLog[$key]['start'],
-                'time' => $this->modx->getMicroTime() - $this->_calcLog[$key]['time']
+                'time' => microtime(true) - $this->_calcLog[$key]['time']
             );
             unset($this->_calcLog[$key]['time']);
         }
@@ -69,14 +69,14 @@ class debugDL{
         //@TODO: dump $_SERVER/$_POST/$_GET/$_COOKIE
     }
     public function info($message, $title=''){
-        $this->_sendLogEvent(1,$message, $title);
+        $this->_sendLogEvent(1, $message, $title);
     }
 
     public function warning($message, $title=''){
-        $this->_sendLogEvent(2,$message, $title);
+        $this->_sendLogEvent(2, $message, $title);
     }
     public function error($message, $title=''){
-       $this->_sendLogEvent(3,$message, $title);
+        $this->_sendLogEvent(3, $message, $title);
     }
 
     private function _sendLogEvent($type, $message, $title=''){
@@ -88,9 +88,8 @@ class debugDL{
         $out = "";
         if($this->DocLister->getDebug()>0 && is_array($this->_log)){
             foreach($this->_log as $item){
-                if(!isset($item['time'])){
-                    $item['time'] = 0;
-                }
+                $item['time'] = isset($item['time']) ? round(floatval($item['time']), 5) : 0;
+                $item['start'] = isset($item['start']) ? round(floatval($item['start']), 5) : 0;
 
                 if(isset($item['msg'])){
                     $item['msg']= $this->dumpData($item['msg']);
@@ -98,14 +97,50 @@ class debugDL{
                     $item['msg'] = '';
                 }
 
-                $tpl = '<strong>action time</strong>: <em>[+time+]</em><br />
-                    <strong>total time</strong>: <em>[+start+]</em><br />
-                    <code>[+msg+]</code>
-                    <hr />';
+                $tpl = '<li>
+                            <strong>action time</strong>: <em>[+time+]</em> &middot; <strong>total time</strong>: <em>[+start+]</em><br />
+                            <blockquote>[+msg+]</blockquote>
+                    </li>';
                 $out .= $this->DocLister->parseChunk("@CODE: ".$tpl, $item);
             }
             if(!empty($out)){
-                $out = $this->DocLister->parseChunk("@CODE: <pre id='dlDebug'>[+wrap+]</pre>", array('wrap'=>$out));
+                $out = $this->DocLister->parseChunk("@CODE:
+                <style>.dlDebug{
+                    background: #eee !important;
+                    padding:0 !important;
+                    margin: 0 !important;
+                    text-align:left;
+                    font-size:14px !important;
+                    width:100%;
+                    z-index:999;
+                }
+                .dlDebug > ul{
+                    list-style:none !important;
+                    padding: 3px !important;
+                    margin: 0 !important;
+                    border: 2px solid #000;
+                }
+                .dlDebug > ul > li{
+                    border-top: 1px solid #000 !important;
+                }
+                .dlDebug > ul > li:first-child {
+                    border-top: 0 !important;
+                }
+                .dlDebug > ul > li > blockquote{
+                    border-left: 4px solid #aaa !important;
+                    font-family: monospace !important;
+                    margin: 5px 0 !important;
+                    padding:5px !important;
+
+                    word-wrap: break-word !important;
+                    white-space: pre-wrap !important;
+                    white-space: -moz-pre-wrap !important;
+                    white-space: -pre-wrap !important;
+                    white-space: -o-pre-wrap !important;
+                    word-break: break-all !important;
+                }
+                </style>
+                <div class=\"dlDebug\"><ul>[+wrap+]</ul></div>", array('wrap'=>$out));
             }
         }
         return $out;
