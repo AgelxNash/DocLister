@@ -1,5 +1,5 @@
 <?php
-class templateDL{
+class DLTemplate{
     protected $modx = null;
 
     /**

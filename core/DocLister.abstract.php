@@ -20,7 +20,7 @@ if (!defined('MODX_BASE_PATH')) {
 
 require_once(dirname(dirname(__FILE__))."/lib/jsonHelper.class.php");
 require_once(dirname(dirname(__FILE__))."/lib/sqlHelper.class.php");
-require_once(dirname(dirname(__FILE__))."/lib/templateDL.class.php");
+require_once(dirname(dirname(__FILE__))."/lib/DLTemplate.class.php");
 require_once(dirname(dirname(__FILE__)). "/lib/xnop.class.php");
 
 abstract class DocLister
@@ -572,7 +572,7 @@ abstract class DocLister
         $this->_plh[$key] = $data;
         $id = $this->getCFGDef('id', '');
         if ($id != '') $id .= ".";
-        $out = templateDL::getInstance($this->getMODX())->toPlaceholders($data, $set, $key, $id);
+        $out = DLTemplate::getInstance($this->getMODX())->toPlaceholders($data, $set, $key, $id);
 
         $this->debug->debugEnd(
             "toPlaceholders", $this->debug->dumpData($key)." placeholder: ".$this->debug->dumpData($data)
@@ -690,7 +690,7 @@ abstract class DocLister
      */
     final public function renameKeyArr($data, $prefix = '', $suffix = '', $sep = '.')
     {
-        return templateDL::getInstance($this->getMODX())->renameKeyArr($data, $prefix, $suffix, $sep);
+        return DLTemplate::getInstance($this->getMODX())->renameKeyArr($data, $prefix, $suffix, $sep);
     }
 
     /**
@@ -743,7 +743,7 @@ abstract class DocLister
     {
         $this->debug->debug('Get chunk by name "'.$this->debug->dumpData($name).'"',"getChunk",2);
         //without trim
-        $tpl = templateDL::getInstance($this->getMODX())->getChunk($name);
+        $tpl = DLTemplate::getInstance($this->getMODX())->getChunk($name);
         $tpl = $this->parseLang($tpl);
 
         $this->debug->debugEnd("getChunk");
@@ -791,7 +791,7 @@ abstract class DocLister
             "parseChunk",
             2
         );
-        $out = templateDL::getInstance($this->getMODX())->parseChunk($name, $data);
+        $out = DLTemplate::getInstance($this->getMODX())->parseChunk($name, $data);
         if (empty($out)) {
             $this->debug->debug("Empty chunk: ".$this->debug->dumpData($name), '', 2);
         }
