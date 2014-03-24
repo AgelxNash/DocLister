@@ -402,41 +402,11 @@ class site_contentDocLister extends DocLister
     }
 
     protected function injectSortByTV($table, $sort){
-        if (preg_match("/^ORDER BY (.*)/", $sort, $match)) {
-            $TVnames = $this->extTV->getTVnames();
-            if(!is_array($TVnames)){
-                $TVnames = array();
-            }
-            $matches = explode(",", $match[1]);
-            $sortType = explode(",", $this->getCFGDef('tvSortType'));
-            $withDefault = explode(",", $this->getCFGDef('tvSortWithDefault'));
-
-            foreach($matches as $i => &$item){
-                $item = explode(" ", trim($item), 2);
-                if (isset($TVnames[$item[0]])) {
-                    $exists = $this->extTV->checkTableAlias($item[0], "site_tmplvar_contentvalues");
-                    $prefix = $this->extTV->TableAlias($item[0], "site_tmplvar_contentvalues", 'dltv_'.$item[0].'_'.$i);
-                    if(!$exists){
-                        $table .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues", $prefix) . "
-                        on `".$prefix."`.`contentid`=`c`.`id` AND `".$prefix."`.`tmplvarid`=" . $TVnames[$item[0]];
-                    }
-                    if(in_array($item[0], $withDefault)){
-                        $exists = $this->extTV->checkTableAlias($item[0], "site_tmplvars");
-                        $dPrefix = $this->extTV->TableAlias($item[0], "site_tmplvars", 'd_'.$prefix);
-                        if(!$exists){
-                            $table .= " LEFT JOIN ".$this->getTable("site_tmplvars", $dPrefix)." on `".$dPrefix."`.`id` = " . $TVnames[$item[0]];
-                        }
-                        $field = "IFNULL(`{$prefix}`.`value`, `{$dPrefix}`.`default_text`)";
-                    }else{
-                        $field = "`{$prefix}`.`value`";
-                    }
-                    $item[0] = $this->changeSortType($field, isset($sortType[$i]) ? $sortType[$i] : null);
-                }
-                $item = implode(" ", $item);
-            }
-            $sort = "ORDER BY ".implode(",", $matches);
+        $out = $this->extTV->injectSortByTV($table, $sort);
+        if(!is_array($out) || empty($out)){
+            $out = array($table, $sort);
         }
-        return array($table, $sort);
+        return $out;
     }
 
     /**

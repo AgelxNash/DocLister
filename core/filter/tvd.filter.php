@@ -19,6 +19,8 @@ class tvd_DL_filter extends tv_DL_filter{
         if(!$exists){
             $join .= " LEFT JOIN ".$this->DocLister->getTable("site_tmplvars", $dPrefix)." on ".$dPrefix.".id = " . $this->tv_id;
             $this->field = "IFNULL(`{$alias}`.`value`, `{$dPrefix}`.`default_text`)";
+
+            $this->extTV->addTVSortWithDefault($this->tvName);
         }
         return $join;
 	}
