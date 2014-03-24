@@ -11,7 +11,7 @@ class sqlHelper {
         $out = '';
         if(!empty($field) && is_scalar($field)){
             if(!empty($table) && is_scalar($table) && $tmp = strpos($field, $table)){
-                $tmp = substr($field, $tmp + strlen($table), 1);
+               $tmp = substr($field, $tmp + strlen($table), 1);
                 if($tmp != '.' && $tmp != '`'){
                     $field = $table.".".$field;
                 }else{

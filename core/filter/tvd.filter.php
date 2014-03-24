@@ -16,10 +16,10 @@ class tvd_DL_filter extends tv_DL_filter{
         $alias = $this->extTV->TableAlias($this->tvName, "site_tmplvar_contentvalues", $this->getTableAlias());
         $exists = $this->extTV->checkTableAlias($this->tvName, "site_tmplvars");
         $dPrefix = $this->extTV->TableAlias($this->tvName, "site_tmplvars", 'd_'.$this->getTableAlias());
+        $this->field = "IFNULL(`{$alias}`.`value`, `{$dPrefix}`.`default_text`)";
+
         if(!$exists){
             $join .= " LEFT JOIN ".$this->DocLister->getTable("site_tmplvars", $dPrefix)." on ".$dPrefix.".id = " . $this->tv_id;
-            $this->field = "IFNULL(`{$alias}`.`value`, `{$dPrefix}`.`default_text`)";
-
             $this->extTV->addTVSortWithDefault($this->tvName);
         }
         return $join;

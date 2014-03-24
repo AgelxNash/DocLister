@@ -65,6 +65,8 @@ class tv_DL_filter extends content_DL_filter{
         $this->field = $alias.".value";
         if(!$exists){
             $join = 'LEFT JOIN '.$this->DocLister->getTable('site_tmplvar_contentvalues',$alias).' ON `'.$alias.'`.`contentid`=`'.content_DL_filter::TableAlias.'`.`id` AND `'.$alias.'`.`tmplvarid`='.$this->tv_id;
+        }else{
+            $this->setTableAlias($alias);
         }
         return $join;
 	}
