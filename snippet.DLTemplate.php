@@ -9,4 +9,4 @@ if(isset($modx->Event->params['tpl'])){
     unset($modx->Event->params['tpl']);
 }
 
-return DLTemplate::getInstance($modx)->parseChunk($tpl, $modx->Event->params);
+return empty($tpl) ? '' : DLTemplate::getInstance($modx)->parseChunk($tpl, $modx->Event->params);
