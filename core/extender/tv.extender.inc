@@ -20,7 +20,7 @@ class tv_DL_Extender extends extDocLister{
      * Массив подключаемых таблиц для TV
      * @var array
      */
-    protected $_TVTable=array();
+    public $_TVTable=array();
 
 
     protected function run(){

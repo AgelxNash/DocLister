@@ -356,11 +356,11 @@ class site_contentDocLister extends DocLister
             $fields = $this->getCFGDef('selectFields', 'c.*');
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
-            list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
+            list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
 
-            $rs = $this->dbQuery("SELECT {$fields} FROM {$tbl_site_content} {$this->_filters['join']} {$where} {$group} {$sort} {$limit}");
+            $rs = $this->dbQuery("SELECT {$fields} FROM {$tbl_site_content} {$where} {$group} {$sort} {$limit}");
 
             $rows = $this->modx->db->makeArray($rs);
 
@@ -418,13 +418,13 @@ class site_contentDocLister extends DocLister
                     $prefix = $this->extTV->TableAlias($item[0], "site_tmplvar_contentvalues", 'dltv_'.$item[0].'_'.$i);
                     if(!$exists){
                         $table .= " LEFT JOIN " . $this->getTable("site_tmplvar_contentvalues", $prefix) . "
-                        on ".$prefix.".contentid=c.id AND ".$prefix.".tmplvarid=" . $TVnames[$item[0]];
+                        on `".$prefix."`.`contentid`=`c`.`id` AND `".$prefix."`.`tmplvarid`=" . $TVnames[$item[0]];
                     }
                     if(in_array($item[0], $withDefault)){
                         $exists = $this->extTV->checkTableAlias($item[0], "site_tmplvars");
                         $dPrefix = $this->extTV->TableAlias($item[0], "site_tmplvars", 'd_'.$prefix);
                         if(!$exists){
-                            $table .= " LEFT JOIN ".$this->getTable("site_tmplvars", $dPrefix)." on ".$dPrefix.".id = " . $TVnames[$item[0]];
+                            $table .= " LEFT JOIN ".$this->getTable("site_tmplvars", $dPrefix)." on `".$dPrefix."`.`id` = " . $TVnames[$item[0]];
                         }
                         $field = "IFNULL(`{$prefix}`.`value`, `{$dPrefix}`.`default_text`)";
                     }else{
@@ -458,13 +458,13 @@ class site_contentDocLister extends DocLister
         $tbl_site_content = $this->getTable('site_content','c');
 
         $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
-        list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content, $sort);
+        list($from, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
 
         $where = "WHERE {$where} c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
         if(!$this->getCFGDef('showNoPublish', 0)){
             $where .= " AND c.deleted=0 AND c.published=1";
         }
-        $sql = $this->dbQuery("SELECT DISTINCT c.* FROM ".$tbl_site_content." ".$this->_filters['join']." ".$where." ".
+        $sql = $this->dbQuery("SELECT DISTINCT c.* FROM ".$from." ".$where." ".
                 (($this->getCFGDef('showParent', '0')) ? "" : "AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
                 $sort . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
