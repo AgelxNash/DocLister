@@ -139,6 +139,12 @@ abstract class DocLister
     public $debug = null;
 
     /**
+     * Массив дополнительно подключаемых таблиц с псевдонимами
+     * @var array
+     */
+    public $AddTable=array();
+
+    /**
      * Время запуска сниппета
      * @var int
      */
@@ -286,6 +292,18 @@ abstract class DocLister
             $table .= " as `".$alias."`";
         }
         return $table;
+    }
+
+
+    public function TableAlias($name, $table, $alias){
+        if(!$this->checkTableAlias($name, $table)){
+            $this->AddTable[$table][$name] = $alias;
+        }
+        return $this->AddTable[$table][$name];
+    }
+
+    public function checkTableAlias($name, $table){
+        return isset($this->AddTable[$table][$name]);
     }
 
     /**
@@ -869,6 +887,9 @@ abstract class DocLister
         return (isset($this->extender[$name]) && $this->extender[$name] instanceof $name . "_DL_Extender");
     }
 
+    public function setExtender($name, $obj){
+        $this->extender[$name] = $obj;
+    }
     /**
      * Вытащить экземпляр класса экстендера из общего массива экстендеров
      *

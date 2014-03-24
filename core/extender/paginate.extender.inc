@@ -79,8 +79,10 @@ class paginate_DL_Extender extends extDocLister
         if ($paginate == '') {
             $this->_pages['total'] = 1;
         } else {
-            $DL = clone $this->DocLister;
-            $tmp = $DL->getChildrenCount();
+            $addTables = $this->DocLister->AddTable;
+            $tmp = $this->DocLister->getChildrenCount();
+            $this->DocLister->AddTable = $addTables;
+
             $this->DocLister->toPlaceholders($tmp, 1, "count");
             $display = $this->DocLister->getCFGDef('display', 0);
             $this->_pages['total'] = ceil($tmp / $display);

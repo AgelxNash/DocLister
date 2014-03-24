@@ -13,9 +13,9 @@ class tvd_DL_filter extends tv_DL_filter{
 	public function get_join(){
         $join = parent::get_join();
 
-        $alias = $this->extTV->TableAlias($this->tvName, "site_tmplvar_contentvalues", $this->getTableAlias());
-        $exists = $this->extTV->checkTableAlias($this->tvName, "site_tmplvars");
-        $dPrefix = $this->extTV->TableAlias($this->tvName, "site_tmplvars", 'd_'.$this->getTableAlias());
+        $alias = $this->DocLister->TableAlias($this->tvName, "site_tmplvar_contentvalues", $this->getTableAlias());
+        $exists = $this->DocLister->checkTableAlias($this->tvName, "site_tmplvars");
+        $dPrefix = $this->DocLister->TableAlias($this->tvName, "site_tmplvars", 'd_'.$this->getTableAlias());
         $this->field = "IFNULL(`{$alias}`.`value`, `{$dPrefix}`.`default_text`)";
 
         if(!$exists){

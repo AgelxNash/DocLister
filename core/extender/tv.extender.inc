@@ -16,12 +16,6 @@ if (!defined('MODX_BASE_PATH')) {
  */
 class tv_DL_Extender extends extDocLister{
     protected $_TVnames = array();
-    /**
-     * Массив подключаемых таблиц для TV
-     * @var array
-     */
-    public $_TVTable=array();
-
 
     protected function run(){
         return true;
@@ -131,16 +125,6 @@ class tv_DL_Extender extends extDocLister{
         return $out;
     }
 
-    public function TableAlias($name, $table, $alias){
-        if(!isset($this->_TVTable[$table][$name])){
-            $this->_TVTable[$table][$name] = $alias;
-        }
-        return $this->_TVTable[$table][$name];
-    }
-
-    public function checkTableAlias($name, $table){
-        return isset($this->_TVTable[$table][$name]);
-    }
     public function addTVSortWithDefault($name){
         $dTV = explode(',', $this->DocLister->getCFGDef('tvSortWithDefault', ''));
         $dTV[] = $name;
@@ -158,19 +142,18 @@ class tv_DL_Extender extends extDocLister{
             $matches = explode(",", $match[1]);
             $sortType = explode(",", $this->DocLister->getCFGDef('tvSortType'));
             $withDefault = explode(",", $this->DocLister->getCFGDef('tvSortWithDefault'));
-
-            foreach($matches as $i => &$item){
+             foreach($matches as $i => &$item){
                 $item = explode(" ", trim($item), 2);
                 if (isset($TVnames[$item[0]])) {
-                    $exists = $this->checkTableAlias($item[0], "site_tmplvar_contentvalues");
-                    $prefix = $this->TableAlias($item[0], "site_tmplvar_contentvalues", 'dltv_'.$item[0].'_'.$i);
+                    $exists = $this->DocLister->checkTableAlias($item[0], "site_tmplvar_contentvalues");
+                    $prefix = $this->DocLister->TableAlias($item[0], "site_tmplvar_contentvalues", 'dltv_'.$item[0].'_'.($i+1));
                     if(!$exists){
                         $table .= " LEFT JOIN " . $this->DocLister->getTable("site_tmplvar_contentvalues", $prefix) . "
                         on `".$prefix."`.`contentid`=`c`.`id` AND `".$prefix."`.`tmplvarid`=" . $TVnames[$item[0]];
                     }
                     if(in_array($item[0], $withDefault)){
-                        $exists = $this->checkTableAlias($item[0], "site_tmplvars");
-                        $dPrefix = $this->TableAlias($item[0], "site_tmplvars", 'd_'.$prefix);
+                        $exists = $this->DocLister->checkTableAlias($item[0], "site_tmplvars");
+                        $dPrefix = $this->DocLister->TableAlias($item[0], "site_tmplvars", 'd_'.$prefix);
                         if(!$exists){
                             $table .= " LEFT JOIN ".$this->DocLister->getTable("site_tmplvars", $dPrefix)." on `".$dPrefix."`.`id` = " . $TVnames[$item[0]];
                         }

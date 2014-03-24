@@ -402,7 +402,7 @@ class site_contentDocLister extends DocLister
     }
 
     protected function injectSortByTV($table, $sort){
-        $out = $this->extTV->injectSortByTV($table, $sort);
+        $out = $this->getExtender('tv', true, true)->injectSortByTV($table, $sort);
         if(!is_array($out) || empty($out)){
             $out = array($table, $sort);
         }
@@ -445,5 +445,19 @@ class site_contentDocLister extends DocLister
             $out[$item['id']] = $item;
         }
         return $out;
+    }
+
+    public function changeSortType($field, $type){
+        $type = trim($type);
+        switch(strtoupper($type)){
+            case 'TVDATETIME':{
+                $field = "STR_TO_DATE(".$field.",'%d-%m-%Y %H:%i:%s')";
+                break;
+            }
+            default:{
+                $field = parent::changeSortType($field, $type);
+            }
+        }
+        return $field;
     }
 }
