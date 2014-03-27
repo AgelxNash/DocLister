@@ -173,7 +173,7 @@ class shopkeeperDocLister extends site_contentDocLister
             $where = "WHERE {$where}";
             $whereArr = array();
             if(!$this->getCFGDef('showNoPublish', 0)){
-                $whereArr[]="s.published=1";
+                $whereArr[]="c.published=1";
             }
 
             $tbl_site_content = $this->getTable('catalog','c');
@@ -182,19 +182,19 @@ class shopkeeperDocLister extends site_contentDocLister
                 switch($this->getCFGDef('idType', 'parents')){
                     case 'parents':{
                         if($this->getCFGDef('showParent', '0')) {
-                            $whereArr[]="(s.parent IN ({$sanitarInIDs}) OR s.id IN({$sanitarInIDs}))";
+                            $whereArr[]="(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
                         }else{
-                            $whereArr[]="s.parent IN ({$sanitarInIDs}) AND s.id NOT IN({$sanitarInIDs})";
+                            $whereArr[]="c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
                         }
                         break;
                     }
                     case 'documents':{
-                        $whereArr[]="s.id IN({$sanitarInIDs})";
+                        $whereArr[]="c.id IN({$sanitarInIDs})";
                         break;
                     }
                 }
             }
-            $fields = $this->getCFGDef('selectFields', 's.*');
+            $fields = $this->getCFGDef('selectFields', 'c.*');
             $from = $tbl_site_content . " " . $this->_filters['join'];
             $where = sqlHelper::trimLogicalOp($where);
 
@@ -208,8 +208,8 @@ class shopkeeperDocLister extends site_contentDocLister
             if(trim($where)=='WHERE'){
                 $where = '';
             }
-            $group = $this->getGroupSQL($this->getCFGDef('groupBy', 's.id'));
-            $sort = $this->SortOrderSQL("s.createdon");
+            $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
+            $sort = $this->SortOrderSQL("c.createdon");
             list($from, $sort) = $this->injectSortByTV($from, $sort);
 
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
@@ -229,9 +229,9 @@ class shopkeeperDocLister extends site_contentDocLister
 			$where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             $where = sqlHelper::trimLogicalOp($where);
 
-            $tbl_site_content = $this->getTable('catalog','s');
+            $tbl_site_content = $this->getTable('catalog','c');
             if($sanitarInIDs != "''"){
-				$where .= ($where ? " AND " : "") . "s.id IN ({$sanitarInIDs}) AND";
+				$where .= ($where ? " AND " : "") . "c.id IN ({$sanitarInIDs}) AND";
 			}
             $where = sqlHelper::trimLogicalOp($where);
 
@@ -247,13 +247,13 @@ class shopkeeperDocLister extends site_contentDocLister
                 }else{
                     $where = "WHERE {$where} ";
                 }
-                $where .= "s.published=1";
+                $where .= "c.published=1";
             }
 
 
-            $fields = $this->getCFGDef('selectFields', 's.*');
-            $group = $this->getGroupSQL($this->getCFGDef('groupBy', 's.id'));
-            $sort = $this->SortOrderSQL("s.createdon");
+            $fields = $this->getCFGDef('selectFields', 'c.*');
+            $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
+            $sort = $this->SortOrderSQL("c.createdon");
             list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
@@ -307,17 +307,17 @@ class shopkeeperDocLister extends site_contentDocLister
             $where .= " AND ";
         }
 
-        $tbl_site_content = $this->getTable('catalog','s');
+        $tbl_site_content = $this->getTable('catalog','c');
 
-        $sort = $this->SortOrderSQL("s.createdon");
+        $sort = $this->SortOrderSQL("c.createdon");
         list($from, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
 
-        $where = "WHERE {$where} s.parent IN (" . $this->sanitarIn($this->IDs) . ")";
+        $where = "WHERE {$where} c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
         if(!$this->getCFGDef('showNoPublish', 0)){
-            $where .= " AND s.published=1";
+            $where .= " AND c.published=1";
         }
-        $sql = $this->dbQuery("SELECT DISTINCT s.* FROM ".$from." ".$where." ".
-                (($this->getCFGDef('showParent', '0')) ? "" : "AND s.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
+        $sql = $this->dbQuery("SELECT DISTINCT c.* FROM ".$from." ".$where." ".
+                (($this->getCFGDef('showParent', '0')) ? "" : "AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
                 $sort . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );
