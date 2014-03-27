@@ -173,7 +173,7 @@ class shopkeeperDocLister extends site_contentDocLister
             $where = "WHERE {$where}";
             $whereArr = array();
             if(!$this->getCFGDef('showNoPublish', 0)){
-                $whereArr[]="c.published=1";
+                $whereArr[]="s.published=1";
             }
 
             $tbl_site_content = $this->getTable('catalog','c');
@@ -253,7 +253,7 @@ class shopkeeperDocLister extends site_contentDocLister
 
             $fields = $this->getCFGDef('selectFields', 's.*');
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 's.id'));
-            $sort = $this->SortOrderSQL("c.createdon");
+            $sort = $this->SortOrderSQL("s.createdon");
             list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
