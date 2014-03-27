@@ -16,9 +16,18 @@ if (!defined('MODX_BASE_PATH')) {
  */
 class tv_DL_Extender extends extDocLister{
     protected $_TVnames = array();
+    protected $tvValuesTable = 'site_tmplvar_contentvalues';
+
+    public function __construct($DocLister,$name){
+        parent::__construct($DocLister, $name);
+        $this->tvValuesTable = $this->DocLister->getCFGDef('tvValuesTable', $this->tvValuesTable());
+    }
 
     protected function run(){
         return true;
+    }
+    public function tvValuesTable(){
+        return $this->tvValuesTable;
     }
     public function getTVnames(){
         return $this->_TVnames;
@@ -41,7 +50,7 @@ class tv_DL_Extender extends extDocLister{
     {
         $tv = $this->getTVid($tvlist);
         $tvId = array_keys($tv);
-        $tbl_site_tmplvar_contentvalues = $this->DocLister->getTable('site_tmplvar_contentvalues');
+        $tbl_site_tmplvar_contentvalues = $this->DocLister->getTable($this->tvValuesTable());
         $sanitarInIDs = $this->DocLister->sanitarIn($IDs);
         $implodeTvId = implode(',', $tvId);
         $where = "contentid IN({$sanitarInIDs}) AND tmplvarid IN({$implodeTvId})";
@@ -145,10 +154,10 @@ class tv_DL_Extender extends extDocLister{
              foreach($matches as $i => &$item){
                 $item = explode(" ", trim($item), 2);
                 if (isset($TVnames[$item[0]])) {
-                    $exists = $this->DocLister->checkTableAlias($item[0], "site_tmplvar_contentvalues");
-                    $prefix = $this->DocLister->TableAlias($item[0], "site_tmplvar_contentvalues", 'dltv_'.$item[0].'_'.($i+1));
+                    $exists = $this->DocLister->checkTableAlias($item[0], $this->tvValuesTable());
+                    $prefix = $this->DocLister->TableAlias($item[0], $this->tvValuesTable(), 'dltv_'.$item[0].'_'.($i+1));
                     if(!$exists){
-                        $table .= " LEFT JOIN " . $this->DocLister->getTable("site_tmplvar_contentvalues", $prefix) . "
+                        $table .= " LEFT JOIN " . $this->DocLister->getTable($this->tvValuesTable(), $prefix) . "
                         on `".$prefix."`.`contentid`=`c`.`id` AND `".$prefix."`.`tmplvarid`=" . $TVnames[$item[0]];
                     }
                     if(in_array($item[0], $withDefault)){

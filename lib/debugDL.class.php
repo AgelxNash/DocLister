@@ -122,6 +122,9 @@ class debugDL{
                 }
                 .dlDebug > ul > li{
                     border-top: 1px solid #000 !important;
+                    background: none;
+                    margin: 0;
+                    padding: 0;
                 }
                 .dlDebug > ul > li:first-child {
                     border-top: 0 !important;
