@@ -9,6 +9,7 @@ if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
 $_time = microtime(true);
+$out = null;
 $DLDir = 'assets/snippets/DocLister/';
 $DLDir = realpath(MODX_BASE_PATH . $DLDir);
 
@@ -37,8 +38,8 @@ if (class_exists($classname, false) && $classname != 'DocLister') {
     }else{
         $debug = '';
     }
-    if(!empty($modx->Event->params['debug'])){
-        $out = ($modx->Event->params['debug']>0) ? $debug.$out : $out.$debug;
+    if($DocLister->getCFGDef('debug', 0)){
+        $out = ($DocLister->getCFGDef('debug')>0) ? $debug.$out : $out.$debug;
     }
-    return $out;
 }
+return $out;
