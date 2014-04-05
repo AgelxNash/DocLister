@@ -7,6 +7,8 @@ class DLTemplate{
      */
     protected static $instance;
 
+	public $phx = null;
+	
     /**
      * gets the instance via lazy initialization (created on first usage)
      *
@@ -176,14 +178,59 @@ class DLTemplate{
     {
         $out = null;
         if (is_array($data) && ($out = $this->getChunk($name)) != '') {
-            if(preg_match("/\[\+[a-zA-Z0-9\.\_\-]+\+\]/",$out)){
-                $data = $this->renameKeyArr($data, '[', ']', '+');
-                $out = str_replace(array_keys($data), array_values($data), $out);
+            if(preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is",$out)){
+                $item = $this->renameKeyArr($data, '[', ']', '+');
+                $out = str_replace(array_keys($item), array_values($item), $out);
             }
+			if(preg_match("/:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?/is",$out)){
+				if( ! $this->pxh){
+					$this->phx = $this->createPHx(0, 1000);
+				}
+				$this->phx->placeholders = array();
+				$this->setPHxPlaceholders($data);
+				$out = $this->phx->Parse($out);
+				$out = $this->cleanPHx($out);
+			}
         }
         return $out;
     }
-
+	/**
+     *
+     * @param string $value
+     * @param string $key
+     * @param string $path
+     */
+    public function setPHxPlaceholders($value = '', $key = '', $path = ''){
+        $keypath = !empty($path) ? $path . "." . $key : $key;
+        $this->phx->curPass = 0;
+        if(is_array($value)){
+            foreach ($value as $subkey => $subval) {
+                $this->setPHxPlaceholders($subval, $subkey, $keypath);
+            }
+        }else{
+            $this->phx->setPHxVariable($keypath, $value);
+        }
+    }
+	
+	/**
+     *
+     * @param string $string
+     * @return string
+     */
+    public function cleanPHx($string){
+        preg_match_all('~\[(\+|\*|\()([^:\+\[\]]+)([^\[\]]*?)(\1|\))\]~s', $string, $matches);
+        if ($matches[0]){
+            $string = str_replace($matches[0], '', $string);
+        }
+        return $string;
+    }
+	
+	public function createPHx($debug=0, $maxpass=50){
+		if(!class_exists('PHxParser', false)){
+			include_once(dirname(__FILE__).'/phx.parser.class.inc.php');
+		}
+		return new PHxParser($debug, $maxpass);
+	}
     /**
      * Переменовывание элементов массива
      *

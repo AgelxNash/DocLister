@@ -57,8 +57,12 @@ class tv_DL_Extender extends extDocLister{
         $rs = $this->DocLister->dbQuery("SELECT tmplvarid,value,contentid FROM {$tbl_site_tmplvar_contentvalues} WHERE {$where}");
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
+		$tvPrefix = $this->DocLister->getCFGDef('tvPrefix', 'tv');
+		if(!empty($tvPrefix)){
+			$tvPrefix .= '.';
+		}
         foreach ($rows as $item) {
-            $out[$item['contentid']]['tv.' . $tv[$item['tmplvarid']]] = $item['value'];
+            $out[$item['contentid']][$tvPrefix . $tv[$item['tmplvarid']]] = $item['value'];
         }
         $tmp = explode(",", $this->DocLister->sanitarIn($IDs, ',', false));
         foreach($tmp as $item){
