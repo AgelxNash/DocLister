@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.3.3';
+    const VERSION = '1.4.0';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -133,7 +133,7 @@ abstract class DocLister
     /**
      * Отладчик
      *
-     * @var debugDl|xNop
+     * @var DLdebug|xNop
      * @access public
      */
     public $debug = null;
@@ -252,10 +252,10 @@ abstract class DocLister
                     ini_set('display_errors', 1);
                 }
                 $dir = dirname(dirname(__FILE__));
-                if (file_exists($dir . "/lib/debugDL.class.php")) {
-                    include_once($dir . "/lib/debugDL.class.php");
-                    if (class_exists("debugDL", false)) {
-                        $this->debug = new debugDL($this);
+                if (file_exists($dir . "/lib/DLdebug.class.php")) {
+                    include_once($dir . "/lib/DLdebug.class.php");
+                    if (class_exists("DLdebug", false)) {
+                        $this->debug = new DLdebug($this);
                     }
                 }
             }

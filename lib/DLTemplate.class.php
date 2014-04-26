@@ -17,10 +17,10 @@ class DLTemplate{
     public static function getInstance(DocumentParser $modx)
     {
 
-        if (null === static::$instance) {
-            static::$instance = new static($modx);
+        if (null === self::$instance) {
+            self::$instance = new self($modx);
         }
-        return static::$instance;
+        return self::$instance;
     }
 
     /**
@@ -226,10 +226,10 @@ class DLTemplate{
     }
 	
 	public function createPHx($debug=0, $maxpass=50){
-		if(!class_exists('PHxParser', false)){
-			include_once(dirname(__FILE__).'/phx.parser.class.inc.php');
+		if(!class_exists('DLphx', false)){
+			include_once(dirname(__FILE__).'/DLphx.class.php');
 		}
-		return new PHxParser($debug, $maxpass);
+		return new DLphx($debug, $maxpass);
 	}
     /**
      * Переменовывание элементов массива

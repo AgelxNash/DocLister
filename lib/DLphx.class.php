@@ -11,10 +11,10 @@
 #
 ####*/
 
-class PHxParser {
+class DLphx {
 	var $placeholders = array();
 	
-	function PHxParser($debug=0,$maxpass=50) {
+	public function __construct($debug=0,$maxpass=50) {
 		global $modx;
 		$this->name = "PHx";
 		$this->version = "2.2.0";

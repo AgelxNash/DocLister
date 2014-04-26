@@ -33,7 +33,12 @@ class jsonHelper {
             $depth = 512;
         }
 
-        $out = json_decode($json, $assoc, $depth);
+        if (version_compare(phpversion(), '5.3.0', '<')) {
+            $out = json_decode($json, $assoc);
+        }else{
+            $out = json_decode($json, $assoc, $depth);
+        }
+
         if($nop && is_null($out)){
             if($assoc){
                 $out = array();

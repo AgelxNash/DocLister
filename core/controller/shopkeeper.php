@@ -316,11 +316,14 @@ class shopkeeperDocLister extends site_contentDocLister
         if(!$this->getCFGDef('showNoPublish', 0)){
             $where .= " AND c.published=1";
         }
-        $sql = $this->dbQuery("SELECT DISTINCT c.* FROM ".$from." ".$where." ".
+        $fields = $this->getCFGDef('selectFields', 'c.*');
+		
+        $sql = $this->dbQuery("SELECT DISTINCT ".$fields." FROM ".$from." ".$where." ".
                 (($this->getCFGDef('showParent', '0')) ? "" : "AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
                 $sort . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );
+		
         $rows = $this->modx->db->makeArray($sql);
         $out = array();
         foreach ($rows as $item) {

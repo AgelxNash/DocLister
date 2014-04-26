@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Agel_Nash
- * Date: 28.12.13
- * Time: 1:22
- */
-
 class sqlHelper {
     static public function tildeField($field, $table=''){
         $out = '';
@@ -17,7 +10,9 @@ class sqlHelper {
                 }else{
                     $out = $field;
                 }
-            }
+            }elseif(empty($table) && strpos($field, "`")){
+				$out = $field;
+			}
             if(empty($out)){
                 $field = explode(".", $field);
                 foreach($field as &$f){
