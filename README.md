@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/agelxnash/doclister.png?label=ready&title=Ready)](https://waffle.io/agelxnash/doclister)
 ### DocLister for MODX Evolution
 Класс для вывода информации из таблиц по предопределенным правилам.
 Если нет правил, то данные отображаются без дополнительной обработки и связи. Т.е. все поля и значения совпадают с базой данных.
