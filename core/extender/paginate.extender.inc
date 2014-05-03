@@ -128,10 +128,10 @@ class paginate_DL_Extender extends extDocLister
                 */
                 $out = '';
                 $dir = dirname(dirname(dirname(__FILE__)));
-                if (file_exists($dir . "/lib/pagination.class.php")) {
-                    include_once($dir . "/lib/pagination.class.php");
-                    if (class_exists("pagination", false) && $this->totalPage() > 1) {
-                        $p = new pagination;
+                if (file_exists($dir . "/lib/DLpaginate.class.php")) {
+                    include_once($dir . "/lib/DLpaginate.class.php");
+                    if (class_exists("DLpaginate", false) && $this->totalPage() > 1) {
+                        $p = new DLpaginate;
                         $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE: <a href="[+link+]">[%paginate.next%] ></a>');
                         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
                         $p->numberT = $this->DocLister->getChunkByParam('TplPage', '@CODE: <a href="[+link+]" class="page">[+num+]</a>');

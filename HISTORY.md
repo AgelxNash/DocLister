@@ -1,3 +1,6 @@
+## 1.4.1 (03.05.2014)
+* [Bug] Переименовывание класса paginate в DLpaginate
+
 ## 1.4.0 (26.04.2014)
 * [Bug] Ошибка в SQL запросе при фильтре containsOne
 * [Bug] Игнорирование параметра selectFields в режиме idType=parents
