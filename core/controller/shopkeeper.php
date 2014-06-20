@@ -79,7 +79,7 @@ class shopkeeperDocLister extends site_contentDocLister
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
-                    $item['summary'] = $extSummary ? $this->getSummary($item, $extSummary) : '';
+                    $item['summary'] = $extSummary ? $this->getSummary($item, $extSummary, '', 'content') : '';
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
 

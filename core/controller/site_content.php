@@ -141,7 +141,7 @@ class site_contentDocLister extends DocLister
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
-					$item['summary'] = $extSummary ? $this->getSummary($item, $extSummary) : '';
+					$item['summary'] = $extSummary ? $this->getSummary($item, $extSummary, 'introtext', 'content') : '';
 					
                     if ($extJotCount) {
 						$item['jotcount'] = isset($comments[$item['id']]) ? $comments[$item['id']] : 0;

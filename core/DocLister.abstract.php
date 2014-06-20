@@ -882,7 +882,7 @@ abstract class DocLister
         return $out;
     }
 
-	protected function getSummary(array $item = array(), $extSummary = null){
+	protected function getSummary(array $item = array(), $extSummary = null, $introField = '', $contentField = ''){
 		$out = '';
 	
 		if(is_null($extSummary)){
@@ -891,8 +891,8 @@ abstract class DocLister
 			*/
             $extSummary = $this->getExtender('summary');
 		}
-		$introField = $this->getCFGDef("introField", "");
-		$contentField = $this->getCFGDef("contentField", "");
+		$introField = $this->getCFGDef("introField", $introField);
+		$contentField = $this->getCFGDef("contentField", $contentField);
 		
 		if (!empty($introField) && !empty($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0) {
 			$out = $item[$introField];
