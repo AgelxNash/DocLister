@@ -290,6 +290,7 @@ class DLphx {
 						$filter = str_replace("?",$output,$filter);
 						$output = eval("return ".$filter.";");
 						break;
+					case "isnotempty": if (!empty($output)) $output = $modifier_value[$i]; break;
 					case "ifempty": if (empty($output)) $output = $modifier_value[$i]; break;
 				  	case "nl2br": $output = nl2br($output); break;
 					case "date": $output = strftime($modifier_value[$i],0+$output); break;
