@@ -1,6 +1,7 @@
 ## 1.4.2 (03.05.2014)
 * [Add] В клаcc DLTemplate добавлен новый метод parseDocumentSource который делает замену MODX плейсхолдеров в документе
 * [Refactor] Результатирующий ответ от DocLister пропускается через DLTemplate::parseDocumentSource
+* [Refactor] Единая работа с summary во всех контроллерах + возможность включить игнорирование introtext или переопределить introtext/content поля (Issue #46)
 
 ## 1.4.1 (03.05.2014)
 * [Bug] Переименовывание класса paginate в DLpaginate

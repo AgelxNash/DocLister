@@ -65,29 +65,30 @@ class onetableDocLister extends DocLister
             if (count($this->_docs) == 0 && $noneTPL != '') {
                 $out = $this->parseChunk($noneTPL, $sysPlh);
             } else {
-                if ($this->checkExtender('user')) {
-                    $this->extender['user']->init($this, array('fields' => $this->getCFGDef("userFields", "")));
+				/**
+                 * @var $extUser user_DL_Extender
+                 */
+                if ($extUser = $this->getExtender('user')) {
+                    $extUser->init($this, array('fields' => $this->getCFGDef("userFields", "")));
                 }
 
+				/**
+                 * @var $extSummary summary_DL_Extender
+                 */
+                $extSummary = $this->getExtender('summary');
+				
+				/**
+                 * @var $extPrepare prepare_DL_Extender
+                 */
+                $extPrepare = $this->getExtender('prepare');
+				
                 foreach ($this->_docs as $item) {
                     $subTpl = '';
-                    if ($this->checkExtender('user')) {
-                        $item = $this->extender['user']->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
+                    if ($extUser){
+                        $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
-                    if ($this->checkExtender('summary')) {
-                        $introField = $this->getCFGDef("introField", "");
-                        if (isset($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0) {
-                            $item[$this->getCFGDef("sysKey", "dl") . '.summary'] = $item[$introField];
-                        } else {
-                            $contentField = $this->getCFGDef("contentField", "");
-                            if (isset($item[$contentField])) {
-                                $item[$this->getCFGDef("sysKey", "dl") . '.summary'] = $this->extender['summary']->init($this, array("content" => $item[$contentField], "summary" => $this->getCFGDef("summary", "")));
-                            } else {
-                                $item[$this->getCFGDef("sysKey", "dl") . '.summary'] = '';
-                            }
-                        }
-                    }
+                    $item[$this->getCFGDef("sysKey", "dl") . '.summary'] = $extSummary ? $this->getSummary($item, $extSummary) : '';
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
                     $item[$this->getCFGDef("sysKey", "dl") . '.iteration'] = $i; //[+iteration+] - Number element. Starting from zero
@@ -131,8 +132,8 @@ class onetableDocLister extends DocLister
                     $class = implode(" ", $class);
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 
-                    if($this->checkExtender('prepare')){
-                        $item = $this->extender['prepare']->init($this, $item);
+                    if($extPrepare){
+                        $item = $extPrepare->init($this, $item);
                     }
                     $tmp = $this->parseChunk($subTpl, $item);
                     if ($this->getCFGDef('contentPlaceholder', 0) !== 0) {

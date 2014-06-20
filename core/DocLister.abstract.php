@@ -882,6 +882,28 @@ abstract class DocLister
         return $out;
     }
 
+	protected function getSummary(array $item = array(), $extSummary = null){
+		$out = '';
+	
+		if(is_null($extSummary)){
+			/**
+			* @var $extSummary summary_DL_Extender
+			*/
+            $extSummary = $this->getExtender('summary');
+		}
+		$introField = $this->getCFGDef("introField", "");
+		$contentField = $this->getCFGDef("contentField", "");
+		
+		if (!empty($introField) && !empty($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0) {
+			$out = $item[$introField];
+        } else {
+			if(!empty($contentField) && !empty($item[$contentField]) && mb_strlen($item[$contentField], 'UTF-8') > 0){
+				$out = $extSummary->init($this, array("content" => $item[$contentField], "summary" => $this->getCFGDef("summary", "")));
+			}
+        }
+		return $out;
+	}
+	
     /**
      * @param string $name extender name
      * @return boolean status extender load

@@ -141,13 +141,8 @@ class site_contentDocLister extends DocLister
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
-                    if ($extSummary) {
-                        if (mb_strlen($item['introtext'], 'UTF-8') > 0) {
-                            $item['summary'] = $item['introtext'];
-                        } else {
-                            $item['summary'] = $extSummary->init($this, array("content" => $item['content'], "summary" => $this->getCFGDef("summary", "")));
-                        }
-                    }
+					$item['summary'] = $extSummary ? $this->getSummary($item, $extSummary) : '';
+					
                     if ($extJotCount) {
 						$item['jotcount'] = isset($comments[$item['id']]) ? $comments[$item['id']] : 0;
                     }
@@ -223,7 +218,7 @@ class site_contentDocLister extends DocLister
 
         return $this->toPlaceholders($out);
     }
-
+	
     public function getJSON($data, $fields, $array = array())
     {
         $out = array();
