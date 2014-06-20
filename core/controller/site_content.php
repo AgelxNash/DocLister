@@ -237,7 +237,7 @@ class site_contentDocLister extends DocLister
 
         foreach ($data as $num => $item) {
             switch (true) {
-                case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
+				case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
                 {
                     $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $extSummary->init($this, array("content" => $this->_docs[$num]['content'], "summary" => $this->getCFGDef("summary", "")));
                     //without break

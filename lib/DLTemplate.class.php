@@ -172,9 +172,10 @@ class DLTemplate{
      *
      * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
      * @param array $data paceholder
+     * @param bool $parseDocumentSource render html template via DocumentParser::parseDocumentSource()
      * @return string html template with data without placeholders
      */
-    public function parseChunk($name, $data)
+    public function parseChunk($name, $data, $parseDocumentSource = false)
     {
         $out = null;
         if (is_array($data) && ($out = $this->getChunk($name)) != '') {
@@ -191,6 +192,9 @@ class DLTemplate{
 				$out = $this->phx->Parse($out);
 				$out = $this->cleanPHx($out);
 			}
+        }
+        if($parseDocumentSource){
+            $out = $this->parseDocumentSource($out);
         }
         return $out;
     }
@@ -256,6 +260,15 @@ class DLTemplate{
                 $out[$prefix . $key . $suffix] = $item;
             }
         }
+        return $out;
+    }
+	
+	public function parseDocumentSource($out){
+        $site_status = $this->modx->getConfig('site_status');
+        $this->modx->config['site_status'] = 0;
+        $out = $this->modx->parseDocumentSource($out);
+        $out = $this->modx->rewriteUrls($out);
+        $this->modx->config['site_status'] = $site_status;
         return $out;
     }
 }

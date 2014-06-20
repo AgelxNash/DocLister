@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '1.4.0';
+    const VERSION = '1.4.2';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -478,6 +478,9 @@ abstract class DocLister
         } else {
             $out = $this->_render($tpl);
         }
+		
+		$out = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
+		
         $this->debug->debugEnd('render');
         return $out;
     }
@@ -799,9 +802,10 @@ abstract class DocLister
      *
      * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
      * @param array $data paceholder
+     * @param bool $parseDocumentSource render html template via DocumentParser::parseDocumentSource()
      * @return string html template with data without placeholders
      */
-    public function parseChunk($name, $data)
+    public function parseChunk($name, $data, $parseDocumentSource = false)
     {
         $out = null;
         $this->debug->debug(
@@ -809,7 +813,7 @@ abstract class DocLister
             "parseChunk",
             2
         );
-        $out = DLTemplate::getInstance($this->getMODX())->parseChunk($name, $data);
+        $out = DLTemplate::getInstance($this->getMODX())->parseChunk($name, $data, $parseDocumentSource);
         if (empty($out)) {
             $this->debug->debug("Empty chunk: ".$this->debug->dumpData($name), '', 2);
         }
