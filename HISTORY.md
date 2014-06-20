@@ -1,4 +1,4 @@
-## 1.4.2 (03.05.2014)
+## 1.4.2 (21.06.2014)
 * [Add] В клаcc DLTemplate добавлен новый метод parseDocumentSource который делает замену MODX плейсхолдеров в документе
 * [Add] Добавлен PHX модификатор isnotempty (Issue #47)
 * [Refactor] Результатирующий ответ от DocLister пропускается через DLTemplate::parseDocumentSource
