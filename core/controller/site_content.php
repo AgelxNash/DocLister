@@ -143,7 +143,7 @@ class site_contentDocLister extends DocLister
 
                     if ($extSummary) {
                         if (mb_strlen($item['introtext'], 'UTF-8') > 0) {
-                            $item['summary'] = $item['introtext'];
+                            $item['summary'] = $extSummary->init($this, array("content" => $item['introtext'], "summary" => $this->getCFGDef("summary", "")));
                         } else {
                             $item['summary'] = $extSummary->init($this, array("content" => $item['content'], "summary" => $this->getCFGDef("summary", "")));
                         }
@@ -239,7 +239,7 @@ class site_contentDocLister extends DocLister
             switch (true) {
 				case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
                 {
-                    $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $extSummary->init($this, array("content" => $this->_docs[$num]['content'], "summary" => $this->getCFGDef("summary", "")));
+                    $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $extSummary->init($this, array("content" => $this->_docs[$num]['introtext'], "summary" => $this->getCFGDef("summary", ""))) : $extSummary->init($this, array("content" => $this->_docs[$num]['content'], "summary" => $this->getCFGDef("summary", "")));
                     //without break
                 }
                 case (array('1') == $fields || in_array('date', $fields)):
