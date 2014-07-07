@@ -156,7 +156,10 @@ abstract class filterDocLister{
                     $output = '(' . implode(' OR ', $word_arr) . ')';
                 }
                 break;
-            default: $output = '';
+            case 'in':
+                $output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', false) . ')';
+                break;
+            default: $output = '';break;
         }
         $this->DocLister->debug->debugEnd("buildQuery");
         return $output;
