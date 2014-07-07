@@ -159,6 +159,9 @@ abstract class filterDocLister{
 					$output = '';
 				}
                 break;
+            case 'in': 
+            	$output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', false) . ')'; 
+            	break;
             default: $output = '';
         }
         $this->DocLister->debug->debugEnd("buildQuery");
