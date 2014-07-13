@@ -83,13 +83,18 @@ class paginate_DL_Extender extends extDocLister
             $tmp = $this->DocLister->getChildrenCount();
             $this->DocLister->AddTable = $addTables;
 
-            $this->DocLister->toPlaceholders($tmp, 1, "count");
             $display = $this->DocLister->getCFGDef('display', 0);
-            $from = ($this->currentPage() - 1) * $display + 1;
-            $this->DocLister->toPlaceholders($from,1,"from");
-            $to = $from - 1 + $display;
-            $this->DocLister->toPlaceholders($to,1,"to");
             $this->_pages['total'] = ceil($tmp / $display);
+            if ($this->_pages['current'] <= $this->_pages['total']) {
+                $this->DocLister->toPlaceholders($tmp, 1, "count");
+                $from = ($this->_pages['current'] - 1) * $display + 1;
+                $this->DocLister->toPlaceholders($from,1,"from");
+                $to = ($this->_pages['current'] == $this->_pages['total']) ? $from - 1 + $tmp - ($this->_pages['current'] - 1) * $display : $from - 1 + $display;
+                $this->DocLister->toPlaceholders($to,1,"to");
+            }
+            else {
+                $this->modx->sendRedirect($this->getUrl($this->getRequestName()));
+            }
         }
         return ($name != '' && isset($this->_pages[$name])) ? $this->_pages[$name] : $this->_pages;
     }
@@ -140,7 +145,7 @@ class paginate_DL_Extender extends extDocLister
                         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
                         $p->numberT = $this->DocLister->getChunkByParam('TplPage', '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
                         $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
-						$p->dotsT = $this->DocLister->getChunkByParam('TplDotsPage', '@CODE: ...');
+                        $p->dotsT = $this->DocLister->getChunkByParam('TplDotsPage', '@CODE: ...');
                         $p->prevI = '';
                         $p->nextI = '';
                         if($this->DocLister->getCFGDef("PrevNextAlwaysShow", 0)=='1'){
