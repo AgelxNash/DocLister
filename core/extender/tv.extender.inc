@@ -17,10 +17,12 @@ if (!defined('MODX_BASE_PATH')) {
 class tv_DL_Extender extends extDocLister{
     protected $_TVnames = array();
     protected $tvValuesTable = 'site_tmplvar_contentvalues';
+    protected $_TVprefix = null;
 
     public function __construct($DocLister,$name){
         parent::__construct($DocLister, $name);
         $this->tvValuesTable = $this->DocLister->getCFGDef('tvValuesTable', $this->tvValuesTable());
+        $this->_TVprefix = $this->getTVprefix();
     }
 
     protected function run(){
@@ -57,10 +59,8 @@ class tv_DL_Extender extends extDocLister{
         $rs = $this->DocLister->dbQuery("SELECT tmplvarid,value,contentid FROM {$tbl_site_tmplvar_contentvalues} WHERE {$where}");
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
-		$tvPrefix = $this->DocLister->getCFGDef('tvPrefix', 'tv');
-		if(!empty($tvPrefix)){
-			$tvPrefix .= '.';
-		}
+		$tvPrefix = $this->_TVprefix;
+
         foreach ($rows as $item) {
             $out[$item['contentid']][$tvPrefix . $tv[$item['tmplvarid']]] = $item['value'];
         }
@@ -85,6 +85,13 @@ class tv_DL_Extender extends extDocLister{
         }
         return $out;
     }
+    public function getTVprefix(){
+        $tvPrefix = $this->DocLister->getCFGDef('tvPrefix', 'tv');
+        if(!empty($tvPrefix)){
+            $tvPrefix .= '.';
+        }
+        return $tvPrefix;
+    }
     public function getListRenderTV()
     {
         $tmp = $this->DocLister->getCFGDef('renderTV', '');
@@ -96,7 +103,7 @@ class tv_DL_Extender extends extDocLister{
                 $out = array_unique($tmp);
                 $tmp = array();
                 foreach ($out as $item) {
-                    $tmp[] = "tv." . $item;
+                    $tmp[] = $this->_TVprefix . $item;
                 }
             }
         } else {
@@ -133,7 +140,7 @@ class tv_DL_Extender extends extDocLister{
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
         foreach ($rows as $item) {
-            $out['tv.' . $item['name']] = $item;
+            $out[$this->_TVprefix . $item['name']] = $item;
         }
         return $out;
     }
