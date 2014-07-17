@@ -38,8 +38,12 @@ if (class_exists($classname, false) && $classname != 'DocLister') {
     }else{
         $debug = '';
     }
-    if($DocLister->getCFGDef('debug', 0) && !isset($modx->Event->params['api'])){
-        $out = ($DocLister->getCFGDef('debug')>0) ? $debug.$out : $out.$debug;
+    if($DocLister->getCFGDef('debug', 0)){
+		if(isset($modx->Event->params['api'])){
+			$modx->setPlaceholder($DocLister->getCFGDef("sysKey", "dl").".debug", $debug);
+		}else{
+			$out = ($DocLister->getCFGDef('debug')>0) ? $debug.$out : $out.$debug;
+		}
     }
 }
 return $out;

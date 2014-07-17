@@ -150,7 +150,8 @@ class site_contentDocLister extends DocLister
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
-
+					$item['e.title'] = htmlentities($item['title'], ENT_COMPAT, 'UTF-8', false);
+					
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
                     $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage()-1)) : $i;
 
@@ -279,10 +280,17 @@ class site_contentDocLister extends DocLister
                 switch($this->getCFGDef('idType', 'parents')){
                     case 'parents':{
                         if($this->getCFGDef('showParent', '0')) {
-                            $whereArr[]="(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
+                            $tmpWhere="(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
                         }else{
-                            $whereArr[]="c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
+                            $tmpWhere="c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
                         }
+                        if(($addDocs = $this->getCFGDef('documents', '')) != ''){
+                            $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
+                            $whereArr[] = "(".$tmpWhere." OR c.id IN({$addDocs}))";
+                        }else{
+                            $whereArr[] = $tmpWhere;
+                        }
+
                         break;
                     }
                     case 'documents':{
@@ -425,7 +433,13 @@ class site_contentDocLister extends DocLister
         $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
         list($from, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
 
-        $where = "WHERE {$where} c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
+        $tmpWhere = "c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
+        if(($addDocs = $this->getCFGDef('documents', '')) != ''){
+            $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
+            $tmpWhere = "(".$tmpWhere." OR c.id IN({$addDocs}))";
+        }
+        $where = "WHERE {$where} {$tmpWhere}";
+
         if(!$this->getCFGDef('showNoPublish', 0)){
             $where .= " AND c.deleted=0 AND c.published=1";
         }
