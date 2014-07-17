@@ -286,7 +286,7 @@ class site_contentDocLister extends DocLister
                         }
                         if(($addDocs = $this->getCFGDef('documents', '')) != ''){
                             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-                            $whereArr[] = "(".$tmpWhere." OR c.id IN({$addDocs}))";
+                            $whereArr[] = "((".$tmpWhere.") OR c.id IN({$addDocs}))";
                         }else{
                             $whereArr[] = $tmpWhere;
                         }
@@ -434,18 +434,19 @@ class site_contentDocLister extends DocLister
         list($from, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
 
         $tmpWhere = "c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
+        $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ")");
+
         if(($addDocs = $this->getCFGDef('documents', '')) != ''){
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-            $tmpWhere = "(".$tmpWhere." OR c.id IN({$addDocs}))";
+            $tmpWhere = "((".$tmpWhere.") OR c.id IN({$addDocs}))";
         }
         $where = "WHERE {$where} {$tmpWhere}";
-
         if(!$this->getCFGDef('showNoPublish', 0)){
             $where .= " AND c.deleted=0 AND c.published=1";
         }
+
         $fields = $this->getCFGDef('selectFields', 'c.*');
         $sql = $this->dbQuery("SELECT DISTINCT {$fields} FROM ".$from." ".$where." ".
-                (($this->getCFGDef('showParent', '0')) ? "" : "AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ") ") .
                 $sort . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );
