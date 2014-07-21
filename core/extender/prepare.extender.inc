@@ -57,16 +57,23 @@ class prepare_DL_Extender extends extDocLister
         }else{
             $data = $this->modx->runSnippet($name, $params);
         }
-
-        if(is_array($data)){
-            $out = $data;
-        }else{
-            if($data[0] == '[' || $data[0] == '{'){
-                $out = $this->DocLister->jsonDecode($data, array('assoc' => true), true);
-            }else{
-                $out = unserialize($data);
+        switch(true){
+            case is_array($data):{
+                $out = $data;
+                break;
+            }
+            case ($data==='' || (is_bool($data) && $data===false)):{
+                $out = false;
+                break;
+            }
+            case is_string($data):{
+                if($data[0] == '[' || $data[0] == '{'){
+                    $out = $this->DocLister->jsonDecode($data, array('assoc' => true), true);
+                }else{
+                    $out = unserialize($data);
+                }
             }
         }
-        return !empty($out) ? $out : $params['data'];
+        return is_null($out) ? $params['data'] : $out;
     }
 }
