@@ -124,6 +124,9 @@ class shopkeeperDocLister extends site_contentDocLister
                     }
                     if($extPrepare){
                         $item = $extPrepare->init($this, $item);
+                        if(is_bool($item) && $item === false){
+                            continue;
+                        }
                     }
                     $tmp = $this->parseChunk($subTpl, $item);
 

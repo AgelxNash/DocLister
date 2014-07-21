@@ -134,6 +134,9 @@ class onetableDocLister extends DocLister
 
                     if($extPrepare){
                         $item = $extPrepare->init($this, $item);
+						if(is_bool($item) && $item === false){
+                            continue;
+                        }
                     }
                     $tmp = $this->parseChunk($subTpl, $item);
                     if ($this->getCFGDef('contentPlaceholder', 0) !== 0) {
