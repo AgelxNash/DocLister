@@ -93,7 +93,7 @@ class paginate_DL_Extender extends extDocLister
                 $this->DocLister->toPlaceholders($to,1,"to");
             }
             else {
-                $this->modx->sendRedirect($this->getUrl($this->getRequestName()));
+                $this->modx->sendRedirect($this->getUrl($this->getRequestName($this->DocLister->getCFGDef('paginate'))));
             }
         }
         return ($name != '' && isset($this->_pages[$name])) ? $this->_pages[$name] : $this->_pages;
