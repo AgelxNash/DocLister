@@ -160,7 +160,7 @@ abstract class filterDocLister{
 				}
                 break;
             case 'in': 
-            	$output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', false) . ')'; 
+            	$output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')'; 
             	break;
             default: $output = '';
         }
