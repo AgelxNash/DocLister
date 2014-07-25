@@ -154,6 +154,14 @@ class DLTemplate{
                     }
                     break;
                 }
+				case '@SNIPPET':{
+					if ($subTmp != '') {
+                        $tpl = $this->modx->runSnippet($subTmp);
+                    } else {
+                        //error snippet name
+                    }
+					break;
+				}
                 default:{
                     $tpl = $this->modx->getChunk($name);
                 }
