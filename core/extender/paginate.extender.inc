@@ -85,15 +85,14 @@ class paginate_DL_Extender extends extDocLister
 
             $display = $this->DocLister->getCFGDef('display', 0);
             $this->_pages['total'] = ceil($tmp / $display);
-            if ($this->_pages['current'] <= $this->_pages['total']) {
+            if ($this->_pages['current'] <= $this->_pages['total'] || $this->_pages['total']==0 || $this->DocLister->getCFGDef('noRedirect', 0)) {
                 $this->DocLister->toPlaceholders($tmp, 1, "count");
                 $from = ($this->_pages['current'] - 1) * $display + 1;
                 $this->DocLister->toPlaceholders($from,1,"from");
                 $to = ($this->_pages['current'] == $this->_pages['total']) ? $from - 1 + $tmp - ($this->_pages['current'] - 1) * $display : $from - 1 + $display;
                 $this->DocLister->toPlaceholders($to,1,"to");
-            }
-            else {
-                $this->modx->sendRedirect($this->getUrl($this->getRequestName($this->DocLister->getCFGDef('paginate'))));
+            } else {
+                $this->modx->sendRedirect($this->getUrl($this->getRequestName('page')));
             }
         }
         return ($name != '' && isset($this->_pages[$name])) ? $this->_pages[$name] : $this->_pages;
