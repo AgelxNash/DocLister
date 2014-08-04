@@ -421,33 +421,45 @@ class site_contentDocLister extends DocLister
     */
     protected function getChildrenList()
     {
-        $where = $this->getCFGDef('addWhereList', '');
-		$where = sqlHelper::trimLogicalOp($where);
-		
-        $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
-		$where = sqlHelper::trimLogicalOp($where);
-		
-        if ($where != '') {
-            $where .= " AND ";
+        $where = array();
+
+        $tmpWhere = $this->getCFGDef('addWhereList', '');
+        $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
+        if(!empty($tmpWhere)){
+            $where[] = $tmpWhere;
+        }
+
+        $tmpWhere = sqlHelper::trimLogicalOp($this->_filters['where']);
+        if(!empty($tmpWhere)){
+            $where[] = $tmpWhere;
         }
 
         $tbl_site_content = $this->getTable('site_content','c');
 
         $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
         list($from, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
+        $sanitarInIDs = $this->sanitarIn($this->IDs);
 
-        $tmpWhere = "c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
-        $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ")");
-
+        $tmpWhere = null;
+        if ($sanitarInIDs != "''" && !$this->getCFGDef('ignoreEmpty', '0')) {
+            $tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
+            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND c.id NOT IN(" .$sanitarInIDs . ")");
+        }
         if(($addDocs = $this->getCFGDef('documents', '')) != ''){
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
             $tmpWhere = "((".$tmpWhere.") OR c.id IN({$addDocs}))";
         }
-        $where = "WHERE {$where} {$tmpWhere}";
-        if(!$this->getCFGDef('showNoPublish', 0)){
-            $where .= " AND c.deleted=0 AND c.published=1";
+        if(!empty($tmpWhere)){
+            $where[] = $tmpWhere;
         }
-
+        if(!$this->getCFGDef('showNoPublish', 0)){
+            $where[] = "c.deleted=0 AND c.published=1";
+        }
+        if(!empty($where)){
+            $where = "WHERE ".implode(" AND ",$where);
+        }else{
+            $where = '';
+        }
         $fields = $this->getCFGDef('selectFields', 'c.*');
         $sql = $this->dbQuery("SELECT DISTINCT {$fields} FROM ".$from." ".$where." ".
                 $sort . " " .

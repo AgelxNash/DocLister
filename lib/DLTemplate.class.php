@@ -274,6 +274,7 @@ class DLTemplate{
 	public function parseDocumentSource($out){
         $site_status = $this->modx->getConfig('site_status');
         $this->modx->config['site_status'] = 0;
+		$out = str_replace(array('[!', '!]'), array('[[', ']]'), $out);
         $out = $this->modx->parseDocumentSource($out);
         $out = $this->modx->rewriteUrls($out);
         $this->modx->config['site_status'] = $site_status;
