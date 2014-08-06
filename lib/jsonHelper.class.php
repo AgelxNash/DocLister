@@ -4,12 +4,12 @@ include_once("xnop.class.php");
 
 class jsonHelper {
     protected static $_error = array(
-        JSON_ERROR_NONE => 'error_none',
-        JSON_ERROR_DEPTH => 'error_depth',
-        JSON_ERROR_STATE_MISMATCH => 'error_state_mismatch',
-        JSON_ERROR_CTRL_CHAR => 'error_ctrl_char',
-        JSON_ERROR_SYNTAX => 'error_syntax',
-        JSON_ERROR_UTF8 => 'error_utf8'
+        0 => 'error_none', //JSON_ERROR_NONE
+        1 => 'error_depth', //JSON_ERROR_DEPTH
+        2 => 'error_state_mismatch', //JSON_ERROR_STATE_MISMATCH
+        3 => 'error_ctrl_char', //JSON_ERROR_CTRL_CHAR
+        4 => 'error_syntax', //JSON_ERROR_SYNTAX
+        5 => 'error_utf8' //SON_ERROR_UTF8
     );
 
     /**

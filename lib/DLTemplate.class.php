@@ -192,7 +192,7 @@ class DLTemplate{
                 $out = str_replace(array_keys($item), array_values($item), $out);
             }
 			if(preg_match("/:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?/is",$out)){
-				if( ! $this->pxh){
+				if(is_null($this->phx) || !($this->phx instanceof DLphx)){
 					$this->phx = $this->createPHx(0, 1000);
 				}
 				$this->phx->placeholders = array();
