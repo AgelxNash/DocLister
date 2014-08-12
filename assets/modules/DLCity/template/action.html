@@ -1,0 +1,10 @@
+<? $id = $tplClass->getParam('id', $tplParams); ?>
+<li<? if(!empty($id)): ?> id="<?=$id;?>"<?endif;?>>
+    <a href="<?=$tplClass->getParam('href', $tplParams, '#');?>">
+        <?php $icon = $tplClass->getParam('icon', $tplParams); ?>
+        <? if(!empty($icon)): ?>
+            <img src="<?=$icon;?>" />
+        <? endif; ?>
+        <?=$tplClass->getParam('title', $tplParams, 'Закрыть'); ?>
+    </a>
+</li>
