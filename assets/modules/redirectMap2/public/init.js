@@ -69,7 +69,7 @@
                             },
                             loadtype: 'POST',
                             loadurl: $.URLAction.getValue,
-                            indicator: "<img src='/assets/modules/RedirectMap2/public/jeditable/img/indicator.gif'>",
+                            indicator: "<img src='/assets/js/jeditable/img/indicator.gif'>",
                             placeholder: "Для редактирования нужно кликнуть...",
                             loadtext: "Загрузка...",
                             tooltip: "Для редактирования нужно кликнуть...",
