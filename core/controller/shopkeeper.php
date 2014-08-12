@@ -74,7 +74,6 @@ class shopkeeperDocLister extends site_contentDocLister
                 $extPrepare = $this->getExtender('prepare');
 
                 foreach ($this->_docs as $item) {
-                    $subTpl = '';
                     if ($extUser){
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
@@ -94,24 +93,24 @@ class shopkeeperDocLister extends site_contentDocLister
                     }
 
                     $class = array();
-					
-					$subTpl = $this->getCFGDef('tplId'.$i, $tpl);
+
+                    $this->renderTPL = $this->getCFGDef('tplId'.$i, $tpl);
 
                     $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
 					$class[] = strtolower($iterationName);
-					
-					$subTpl = $this->getCFGDef('tpl'.$iterationName, $subTpl);
+
+                    $this->renderTPL = $this->getCFGDef('tpl'.$iterationName, $this->renderTPL);
 					
 					if ($i == 1) {
-                        $subTpl = $this->getCFGDef('tplFirst', $subTpl);
+                        $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
                         $class[] = 'first';
                     }
                     if ($i == count($this->_docs)) {
-                        $subTpl = $this->getCFGDef('tplLast', $subTpl);
+                        $this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
                         $class[] = 'last';
                     }
                     if ($this->modx->documentIdentifier == $item['id']) {
-                        $subTpl = $this->getCFGDef('tplCurrent', $subTpl);
+                        $this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
                         $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
                         $class[] = 'current';
                     } else {
@@ -119,8 +118,8 @@ class shopkeeperDocLister extends site_contentDocLister
                     }
                     $class = implode(" ", $class);
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
-                    if($subTpl==''){
-                        $subTpl = $tpl;
+                    if($this->renderTPL==''){
+                        $this->renderTPL = $tpl;
                     }
                     if($extPrepare){
                         $item = $extPrepare->init($this, $item);
@@ -128,7 +127,7 @@ class shopkeeperDocLister extends site_contentDocLister
                             continue;
                         }
                     }
-                    $tmp = $this->parseChunk($subTpl, $item);
+                    $tmp = $this->parseChunk($this->renderTPL, $item);
 
                     if ($this->getCFGDef('contentPlaceholder', 0) !== 0) {
                         $this->toPlaceholders($tmp, 1, "item[" . $i . "]"); // [+item[x]+] – individual placeholder for each iteration documents on this page

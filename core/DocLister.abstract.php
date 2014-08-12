@@ -157,6 +157,9 @@ abstract class DocLister
      */
     protected $totalFilters = 0;
 
+    /** @var string имя шаблона для вывода записи */
+    public $renderTPL = '';
+
     /**
      * Конструктор контроллеров DocLister
      *
