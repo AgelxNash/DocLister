@@ -10,3 +10,5 @@
 * [Refactor] Добавлена поддержка микроформата Breadcrumb schema.org
 * [Refactor] Пересмотрена структура каталогов
 * [Refactor] Перенос сниппета Summary в репозиторий DocLister
+* [Refactor] Обновление JS библиотек FileAPI и jeditable
+* [Refactor] Перенос методов из класса APIhelpers в DLHelper
