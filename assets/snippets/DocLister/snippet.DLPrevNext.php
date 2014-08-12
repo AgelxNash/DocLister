@@ -8,26 +8,26 @@ $params = array_merge($params, array(
 );
 
 $json = $modx->runSnippet("DocLister", $params);
-$children = jsonHelper::jsonDecode($json, array('assoc'=>true));
+$children = jsonHelper::jsonDecode($json, array('assoc' => true));
 $children = is_array($children) ? $children : array();
 
 $self = $prev = $next = null;
-foreach($children as $key => $data){
-    if(!empty($self)){
+foreach ($children as $key => $data) {
+    if (!empty($self)) {
         $next = $key;
         break;
     }
-    if($key == $ID){
+    if ($key == $ID) {
         $self = $key;
-        if(empty($prev)){
+        if (empty($prev)) {
             $prev = end($children);
             $prev = $prev['id'];
         }
-    }else{
+    } else {
         $prev = $key;
     }
 }
-if(empty($next)){
+if (empty($next)) {
     reset($children);
     $next = current($children);
     $next = $next['id'];
@@ -35,6 +35,6 @@ if(empty($next)){
 $TPL = DLTemplate::getInstance($modx);
 
 return $TPL->parseChunk($prevnextTPL, array(
-    'prev'=> $TPL->parseChunk($prevTPL, $children[$prev]),
-    'next'=> $TPL->parseChunk($nextTPL, $children[$next]),
+    'prev' => $TPL->parseChunk($prevTPL, $children[$prev]),
+    'next' => $TPL->parseChunk($nextTPL, $children[$next]),
 ));

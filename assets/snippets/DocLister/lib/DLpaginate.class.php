@@ -2,13 +2,13 @@
 class DLpaginate
 {
     /**
-    Script Name: *Digg Style Paginator Class
-    Script URI: http://www.mis-algoritmos.com/2007/05/27/digg-style-pagination-class/
-    Description: Class in PHP that allows to use a pagination like a digg or sabrosus style.
-    Script Version: 0.4
-    Author: Victor De la Rocha
-    Author URI: http://www.mis-algoritmos.com
-    */
+     * Script Name: *Digg Style Paginator Class
+     * Script URI: http://www.mis-algoritmos.com/2007/05/27/digg-style-pagination-class/
+     * Description: Class in PHP that allows to use a pagination like a digg or sabrosus style.
+     * Script Version: 0.4
+     * Author: Victor De la Rocha
+     * Author URI: http://www.mis-algoritmos.com
+     */
     /**Default values*/
     var $total_pages = -1; //items
     var $limit = null;
@@ -147,10 +147,10 @@ class DLpaginate
                     return "$this->target?$this->parameterName=$id";
                 }
             }
-        else{
+        else {
             if ($id <= 1) {
                 return "$this->target";
-            }else{
+            } else {
                 return "$this->target&$this->parameterName=$id";
             }
         }

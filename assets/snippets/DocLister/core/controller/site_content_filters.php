@@ -27,4 +27,6 @@ if (!defined('MODX_BASE_PATH')) {
 
 include_once(dirname(__FILE__) . "/site_content.php");
 
-class site_content_filtersDocLister extends site_contentDocLister{}
+class site_content_filtersDocLister extends site_contentDocLister
+{
+}

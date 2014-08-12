@@ -15,9 +15,9 @@
  * Revision: $Id$
  *
  */
- 
+
 $.editable.addInputType('autogrow', {
-    element : function(settings, original) {
+    element: function (settings, original) {
         var textarea = $('<textarea />');
         if (settings.rows) {
             textarea.attr('rows', settings.rows);
@@ -32,7 +32,7 @@ $.editable.addInputType('autogrow', {
         $(this).append(textarea);
         return(textarea);
     },
-    plugin : function(settings, original) {
+    plugin: function (settings, original) {
         $('textarea', this).autogrow(settings.autogrow);
     }
 });

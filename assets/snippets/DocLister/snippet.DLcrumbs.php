@@ -8,23 +8,23 @@
  * @todo: добавить поддержку отображения/скрытия главной страницы
  */
 if (!defined('MODX_BASE_PATH')) {
-	die('HACK???');
+    die('HACK???');
 }
 $_out = '';
 
 $_parents = array();
-if(!isset($hideMain) || (int)$hideMain==0){
+if (!isset($hideMain) || (int)$hideMain == 0) {
     $_parents[] = $modx->config['site_start'];
 }
 
-$tmp=$modx->getParentIds($modx->documentObject['id']);
-$_parents=array_merge($_parents, array_reverse(array_values($tmp)));
+$tmp = $modx->getParentIds($modx->documentObject['id']);
+$_parents = array_merge($_parents, array_reverse(array_values($tmp)));
 
-if(isset($showCurrent) && (int)$showCurrent>0){
+if (isset($showCurrent) && (int)$showCurrent > 0) {
     $_parents[] = $modx->documentObject['id'];
 }
 
-if(!empty($_parents)){
+if (!empty($_parents)) {
     $_options = array_merge(
         array(
             'config' => 'crumbs:core'
@@ -33,7 +33,7 @@ if(!empty($_parents)){
         array(
             'idType' => 'documents',
             'sortType' => 'doclist',
-            'documents' => implode(",",$_parents)
+            'documents' => implode(",", $_parents)
         )
     );
 

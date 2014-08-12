@@ -33,6 +33,7 @@ abstract class extDocLister
     protected $_cfg = array();
 
     protected $lang = false;
+
     /**
      * Запуск экстендера.
      * Метод определяющий действия экстендера при инициализации
@@ -44,25 +45,27 @@ abstract class extDocLister
      *
      * @param DocLister $DocLister объект класса DocLister
      */
-    public function __construct($DocLister,$name){
+    public function __construct($DocLister, $name)
+    {
         if ($DocLister instanceof DocLister) {
             $this->DocLister = $DocLister;
             $this->modx = $this->DocLister->getMODX();
         }
-        if($this->lang){
+        if ($this->lang) {
             $this->DocLister->loadLang($name);
         }
     }
+
     /**
      * Вызов экстенедара с параметрами полученными в этой функции
      *
      * @param DocLister $DocLister объект класса DocLister
-     * @param mixed $config, ... неограниченное число параметров (используются для конфигурации экстендера)
+     * @param mixed $config , ... неограниченное число параметров (используются для конфигурации экстендера)
      * @return mixed ответ от экстендера (как правило это string)
      */
     final public function init($DocLister)
     {
-        $this->DocLister->debug->debug('Run extender '.get_class($this), 'runExtender', 2);
+        $this->DocLister->debug->debug('Run extender ' . get_class($this), 'runExtender', 2);
         $flag = false;
         if ($DocLister instanceof DocLister) {
             $this->DocLister = $DocLister;

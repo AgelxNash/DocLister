@@ -14,9 +14,10 @@ if (!defined('MODX_BASE_PATH')) {
 include_once(dirname(__FILE__) . "/site_content.php");
 class shopkeeperDocLister extends site_contentDocLister
 {
-    function __construct($modx, $cfg = array(), $startTime = null){
+    function __construct($modx, $cfg = array(), $startTime = null)
+    {
         $cfg = array_merge(array('tvValuesTable' => 'catalog_tmplvar_contentvalues'), $cfg);
-        parent::__construct($modx,$cfg, $startTime);
+        parent::__construct($modx, $cfg, $startTime);
     }
 
     /**
@@ -74,7 +75,7 @@ class shopkeeperDocLister extends site_contentDocLister
                 $extPrepare = $this->getExtender('prepare');
 
                 foreach ($this->_docs as $item) {
-                    if ($extUser){
+                    if ($extUser) {
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
@@ -83,7 +84,7 @@ class shopkeeperDocLister extends site_contentDocLister
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
 
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
-                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage()-1)) : $i;
+                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
 
                     $item['url'] = ($item['type'] == 'reference') ? (is_numeric($item['content']) ? $this->modx->makeUrl($item['content']) : $item['content']) : $this->modx->makeUrl($item['id']);
 
@@ -94,14 +95,14 @@ class shopkeeperDocLister extends site_contentDocLister
 
                     $class = array();
 
-                    $this->renderTPL = $this->getCFGDef('tplId'.$i, $tpl);
+                    $this->renderTPL = $this->getCFGDef('tplId' . $i, $tpl);
 
                     $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
-					$class[] = strtolower($iterationName);
+                    $class[] = strtolower($iterationName);
 
-                    $this->renderTPL = $this->getCFGDef('tpl'.$iterationName, $this->renderTPL);
-					
-					if ($i == 1) {
+                    $this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
+
+                    if ($i == 1) {
                         $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
                         $class[] = 'first';
                     }
@@ -118,12 +119,12 @@ class shopkeeperDocLister extends site_contentDocLister
                     }
                     $class = implode(" ", $class);
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
-                    if($this->renderTPL==''){
+                    if ($this->renderTPL == '') {
                         $this->renderTPL = $tpl;
                     }
-                    if($extPrepare){
+                    if ($extPrepare) {
                         $item = $extPrepare->init($this, $item);
-                        if(is_bool($item) && $item === false){
+                        if (is_bool($item) && $item === false) {
                             continue;
                         }
                     }
@@ -161,41 +162,43 @@ class shopkeeperDocLister extends site_contentDocLister
     {
         $out = 0;
         $sanitarInIDs = $this->sanitarIn($this->IDs);
-        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')){
+        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
-			$where = sqlHelper::trimLogicalOp($where);
+            $where = sqlHelper::trimLogicalOp($where);
             $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             if ($where != '' && $this->_filters['where'] != '') {
                 $where .= " AND ";
             }
-			$where = sqlHelper::trimLogicalOp($where);
-			
+            $where = sqlHelper::trimLogicalOp($where);
+
             $where = "WHERE {$where}";
             $whereArr = array();
-            if(!$this->getCFGDef('showNoPublish', 0)){
-                $whereArr[]="c.published=1";
+            if (!$this->getCFGDef('showNoPublish', 0)) {
+                $whereArr[] = "c.published=1";
             }
 
-            $tbl_site_content = $this->getTable('catalog','c');
+            $tbl_site_content = $this->getTable('catalog', 'c');
 
-            if($sanitarInIDs != "''"){
-                switch($this->getCFGDef('idType', 'parents')){
-                    case 'parents':{
-                        if($this->getCFGDef('showParent', '0')) {
-                            $tmpWhere="(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
-                        }else{
-                            $tmpWhere="c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
+            if ($sanitarInIDs != "''") {
+                switch ($this->getCFGDef('idType', 'parents')) {
+                    case 'parents':
+                    {
+                        if ($this->getCFGDef('showParent', '0')) {
+                            $tmpWhere = "(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
+                        } else {
+                            $tmpWhere = "c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
                         }
-                        if(($addDocs = $this->getCFGDef('documents', '')) != ''){
+                        if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-                            $whereArr[] = "((".$tmpWhere.") OR c.id IN({$addDocs}))";
-                        }else{
+                            $whereArr[] = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
+                        } else {
                             $whereArr[] = $tmpWhere;
                         }
                         break;
                     }
-                    case 'documents':{
-                        $whereArr[]="c.id IN({$sanitarInIDs})";
+                    case 'documents':
+                    {
+                        $whereArr[] = "c.id IN({$sanitarInIDs})";
                         break;
                     }
                 }
@@ -204,14 +207,14 @@ class shopkeeperDocLister extends site_contentDocLister
             $from = $tbl_site_content . " " . $this->_filters['join'];
             $where = sqlHelper::trimLogicalOp($where);
 
-            if(trim($where) != 'WHERE'){
-                $where .=" AND ";
+            if (trim($where) != 'WHERE') {
+                $where .= " AND ";
             }
 
             $where .= implode(" AND ", $whereArr);
             $where = sqlHelper::trimLogicalOp($where);
 
-            if(trim($where)=='WHERE'){
+            if (trim($where) == 'WHERE') {
                 $where = '';
             }
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
@@ -230,27 +233,27 @@ class shopkeeperDocLister extends site_contentDocLister
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
-			$where = sqlHelper::trimLogicalOp($where);
-            
-			$where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             $where = sqlHelper::trimLogicalOp($where);
 
-            $tbl_site_content = $this->getTable('catalog','c');
-            if($sanitarInIDs != "''"){
-				$where .= ($where ? " AND " : "") . "c.id IN ({$sanitarInIDs}) AND";
-			}
+            $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             $where = sqlHelper::trimLogicalOp($where);
 
-            if($this->getCFGDef('showNoPublish', 0)){
-                if($where!=''){
+            $tbl_site_content = $this->getTable('catalog', 'c');
+            if ($sanitarInIDs != "''") {
+                $where .= ($where ? " AND " : "") . "c.id IN ({$sanitarInIDs}) AND";
+            }
+            $where = sqlHelper::trimLogicalOp($where);
+
+            if ($this->getCFGDef('showNoPublish', 0)) {
+                if ($where != '') {
                     $where = "WHERE {$where}";
-                }else{
+                } else {
                     $where = '';
                 }
-            }else{
-                if($where!=''){
+            } else {
+                if ($where != '') {
                     $where = "WHERE {$where} AND ";
-                }else{
+                } else {
                     $where = "WHERE {$where} ";
                 }
                 $where .= "c.published=1";
@@ -260,7 +263,7 @@ class shopkeeperDocLister extends site_contentDocLister
             $fields = $this->getCFGDef('selectFields', 'c.*');
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
             $sort = $this->SortOrderSQL("c.createdon");
-            list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
+            list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content . ' ' . $this->_filters['join'], $sort);
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
 
@@ -278,20 +281,20 @@ class shopkeeperDocLister extends site_contentDocLister
     public function getChildernFolder($id)
     {
         $where = $this->getCFGDef('addWhereFolder', '');
-		$where = sqlHelper::trimLogicalOp($where);
+        $where = sqlHelper::trimLogicalOp($where);
         if ($where != '') {
             $where .= " AND ";
         }
-		
-        $tbl_site_content = $this->getTable('site_content','c');
+
+        $tbl_site_content = $this->getTable('site_content', 'c');
         $sanitarInIDs = $this->sanitarIn($id);
-        if($this->getCFGDef('showNoPublish', 0)){
+        if ($this->getCFGDef('showNoPublish', 0)) {
             $where = "WHERE {$where} c.parent IN ({$sanitarInIDs}";
-        }else{
+        } else {
             $where = "WHERE {$where} c.parent IN ({$sanitarInIDs}) AND c.deleted=0 AND c.published=1";
         }
 
-        $rs = $this->dbQuery("SELECT id FROM {$tbl_site_content} {$where} AND c.id IN(SELECT DISTINCT s.parent FROM ".$this->getTable('catalog', 's').")");
+        $rs = $this->dbQuery("SELECT id FROM {$tbl_site_content} {$where} AND c.id IN(SELECT DISTINCT s.parent FROM " . $this->getTable('catalog', 's') . ")");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
@@ -304,38 +307,38 @@ class shopkeeperDocLister extends site_contentDocLister
     protected function getChildrenList()
     {
         $where = $this->getCFGDef('addWhereList', '');
-		$where = sqlHelper::trimLogicalOp($where);
-		
+        $where = sqlHelper::trimLogicalOp($where);
+
         $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
-		$where = sqlHelper::trimLogicalOp($where);
-		
+        $where = sqlHelper::trimLogicalOp($where);
+
         if ($where != '') {
             $where .= " AND ";
         }
 
-        $tbl_site_content = $this->getTable('catalog','c');
+        $tbl_site_content = $this->getTable('catalog', 'c');
 
         $sort = $this->SortOrderSQL("c.createdon");
-        list($from, $sort) = $this->injectSortByTV($tbl_site_content.' '.$this->_filters['join'], $sort);
+        list($from, $sort) = $this->injectSortByTV($tbl_site_content . ' ' . $this->_filters['join'], $sort);
 
         $tmpWhere = "c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
         $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ")");
 
-        if(($addDocs = $this->getCFGDef('documents', '')) != ''){
+        if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-            $tmpWhere = "((".$tmpWhere.") OR c.id IN({$addDocs}))";
+            $tmpWhere = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
         }
         $where = "WHERE {$where} {$tmpWhere}";
-        if(!$this->getCFGDef('showNoPublish', 0)){
+        if (!$this->getCFGDef('showNoPublish', 0)) {
             $where .= " AND c.published=1";
         }
         $fields = $this->getCFGDef('selectFields', 'c.*');
-		
-        $sql = $this->dbQuery("SELECT DISTINCT ".$fields." FROM ".$from." ".$where." ".
-                $sort . " " .
-                $this->LimitSQL($this->getCFGDef('queryLimit', 0))
+
+        $sql = $this->dbQuery("SELECT DISTINCT " . $fields . " FROM " . $from . " " . $where . " " .
+            $sort . " " .
+            $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );
-		
+
         $rows = $this->modx->db->makeArray($sql);
         $out = array();
         foreach ($rows as $item) {

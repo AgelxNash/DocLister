@@ -1,6 +1,7 @@
 <?php namespace RedirectMap;
 
-class Template{
+class Template
+{
     protected $_modx = null;
     protected $_tplFolder = null;
 
@@ -20,26 +21,32 @@ class Template{
     );
     protected static $_ajax = false;
 
-    public function __construct(\DocumentParser $modx, $ajax = false){
+    public function __construct(\DocumentParser $modx, $ajax = false)
+    {
         $this->_modx = $modx;
-        self::$_ajax = (boolean) $ajax;
+        self::$_ajax = (boolean)$ajax;
         $this->loadVars();
-        $this->_tplFolder = dirname(dirname(__FILE__))."/template/";
+        $this->_tplFolder = dirname(dirname(__FILE__)) . "/template/";
     }
 
-    public static function isAjax(){
+    public static function isAjax()
+    {
         return self::$_ajax;
     }
-    public function showHeader(){
+
+    public function showHeader()
+    {
         return $this->_getMainTpl('header.inc.php');
     }
-    protected function _getMainTpl($name){
+
+    protected function _getMainTpl($name)
+    {
         $content = '';
-        if( ! self::isAjax()){
+        if (!self::isAjax()) {
 
             ob_start();
             extract($this->vars);
-            if(file_exists($incPath . $name)){
+            if (file_exists($incPath . $name)) {
                 include($incPath . $name);
                 $content = ob_get_contents();
             }
@@ -47,9 +54,11 @@ class Template{
         }
         return $content;
     }
-    public function loadVars(){
+
+    public function loadVars()
+    {
         $vars = array();
-        foreach($this->vars as $item){
+        foreach ($this->vars as $item) {
             global $$item;
             $vars[$item] = $$item;
         }
@@ -57,23 +66,31 @@ class Template{
         $this->vars['tplClass'] = $this;
         $this->vars['modx'] = $this->_modx;
     }
-    public function showFooter(){
+
+    public function showFooter()
+    {
         return $this->_getMainTpl('footer.inc.php');
     }
-    public function showBody($TplName, array $tplParams = array()){
+
+    public function showBody($TplName, array $tplParams = array())
+    {
         ob_start();
-        if(file_exists($this->_tplFolder.$TplName.".".self::TPL_EXT)){
+        if (file_exists($this->_tplFolder . $TplName . "." . self::TPL_EXT)) {
             extract($this->vars);
-            include($this->_tplFolder.$TplName.".".self::TPL_EXT);
+            include($this->_tplFolder . $TplName . "." . self::TPL_EXT);
         }
         $content = ob_get_contents();
         ob_end_clean();
         return $content;
     }
-    public static function getParam($key, array $param = array(), $default = null){
+
+    public static function getParam($key, array $param = array(), $default = null)
+    {
         return isset($param[$key]) ? $param[$key] : $default;
     }
-    public function makeUrl($action, array $data = array(), $full = false){
+
+    public function makeUrl($action, array $data = array(), $full = false)
+    {
         $action = is_scalar($action) ? $action : '';
         $content = self::getParam('content', $this->vars, array());
         $data = array_merge(
@@ -88,32 +105,39 @@ class Template{
             )
         );
         $out = implode("?", array($this->_modx->getManagerPath(), http_build_query($data)));
-        if($full){
+        if ($full) {
             $out = $this->_modx->getConfig('site_url') . ltrim($out, '/');
         }
         return $out;
     }
-    public static function showLog(){
+
+    public static function showLog()
+    {
         return self::isAjax() ? 'log' : 'main';
     }
-    public function Lists(){
+
+    public function Lists()
+    {
         $out = '';
         $this->_modx->documentIdentifier = $this->_modx->getConfig('site_start');
         $this->_modx->config['site_url'] = MODX_MANAGER_URL;
 
         $method = $this->getParam('method', $_GET, '');
         $addWhere = array();
-        switch($method){
-            case 'doc':{
+        switch ($method) {
+            case 'doc':
+            {
                 $docID = (int)$this->getParam('doc', $_GET, 0);
-                $addWhere[] = '`page`='.$docID;
+                $addWhere[] = '`page`=' . $docID;
                 break;
             }
-            case 'active':{
+            case 'active':
+            {
                 $addWhere[] = '`active`=1';
                 break;
             }
-            case 'deactive':{
+            case 'deactive':
+            {
                 $addWhere[] = '`active`=0';
                 break;
             }
@@ -124,39 +148,39 @@ class Template{
          */
         $key = $this->getParam('by', $_GET, 'page');
         $modSeo = new modRedirectMap($this->_modx);
-        if( ! $modSeo->issetField($key)){
+        if (!$modSeo->issetField($key)) {
             $key = 'uri';
         }
 
         $data = array(
-            'orderBy'=>'`'.$key.'` '.$this->getParam('order', $_GET, 'ASC'),
+            'orderBy' => '`' . $key . '` ' . $this->getParam('order', $_GET, 'ASC'),
             'addWhereList' => implode(" AND ", $addWhere)
         );
 
         /**
          * Хакаем URL пагинатора
          */
-        parse_str(parse_url(MODX_SITE_URL.$_SERVER['REQUEST_URI'], PHP_URL_QUERY), $URL);
-        $_SERVER['REQUEST_URI'] = $this->_modx->getManagerPath()."?".http_build_query(array_merge($URL, array('q' => null, 'action' => null)));
-        if(!empty($data)){
+        parse_str(parse_url(MODX_SITE_URL . $_SERVER['REQUEST_URI'], PHP_URL_QUERY), $URL);
+        $_SERVER['REQUEST_URI'] = $this->_modx->getManagerPath() . "?" . http_build_query(array_merge($URL, array('q' => null, 'action' => null)));
+        if (!empty($data)) {
             $out = $this->_modx->runSnippet('DocLister', array_merge(array(
-                'controller'=>'onetable',
+                'controller' => 'onetable',
                 'table' => 'redirect_map',
-                'tpl' => '@CODE: '.$this->showBody('table/body'),
-                'ownerTPL' => '@CODE: '.$this->showBody('table/wrap'),
-                'altItemClass'=>'gridAltItem',
+                'tpl' => '@CODE: ' . $this->showBody('table/body'),
+                'ownerTPL' => '@CODE: ' . $this->showBody('table/wrap'),
+                'altItemClass' => 'gridAltItem',
                 'itemClass' => 'gridItem',
                 'display' => self::getParam('display', $this->_modx->event->params),
                 'id' => 'dl',
-                'pageInfoTpl' => '@CODE: '.$this->showBody('table/pageInfo'),
-                'pageInfoEmptyTpl' => '@CODE: '.$this->showBody('table/pageInfoEmpty'),
+                'pageInfoTpl' => '@CODE: ' . $this->showBody('table/pageInfo'),
+                'pageInfoEmptyTpl' => '@CODE: ' . $this->showBody('table/pageInfoEmpty'),
                 'debug' => 0,
                 'noneTPL' => '@CODE: Нет данных',
                 'noneWrapOuter' => 0,
                 'paginate' => 'pages',
-                'prepare' => function(array $data = array(), \DocumentParser $modx, \onetableDocLister $_DocLister){
-                        if(!empty($data['page'])){
-                            include_once(MODX_BASE_PATH."assets/lib/MODxAPI/modResource.php");
+                'prepare' => function (array $data = array(), \DocumentParser $modx, \onetableDocLister $_DocLister) {
+                        if (!empty($data['page'])) {
+                            include_once(MODX_BASE_PATH . "assets/lib/MODxAPI/modResource.php");
                             $DOC = new \modResource($modx);
                             $DOC->edit($data['page']);
 
@@ -164,7 +188,7 @@ class Template{
                             $data['doc_parent'] = $DOC->getID() ? $DOC->get('parent') : '0';
 
                             $tpl = 'pageInfoTpl';
-                        }else{
+                        } else {
                             $tpl = 'pageInfoEmptyTpl';
                         }
                         $data['pageInfo'] = $_DocLister->parseChunk($_DocLister->getCFGDef($tpl), $data);
@@ -177,8 +201,8 @@ class Template{
 
                         return $data;
                     },
-                'idType'=>'documents',
-                'ignoreEmpty'=>1
+                'idType' => 'documents',
+                'ignoreEmpty' => 1
             ), $data));
             $out .= $this->_modx->getPlaceholder('dl.pages');
         }

@@ -14,29 +14,37 @@ if (!defined('MODX_BASE_PATH')) {
  * Обработка TV параметров перед выводом
  *
  */
-class tv_DL_Extender extends extDocLister{
+class tv_DL_Extender extends extDocLister
+{
     protected $_TVnames = array();
     protected $tvValuesTable = 'site_tmplvar_contentvalues';
     protected $_TVprefix = null;
 
-    public function __construct($DocLister,$name){
+    public function __construct($DocLister, $name)
+    {
         parent::__construct($DocLister, $name);
         $this->tvValuesTable = $this->DocLister->getCFGDef('tvValuesTable', $this->tvValuesTable());
         $this->_TVprefix = $this->getTVprefix();
     }
 
-    protected function run(){
+    protected function run()
+    {
         return true;
     }
-    public function tvValuesTable(){
+
+    public function tvValuesTable()
+    {
         return $this->tvValuesTable;
     }
-    public function getTVnames(){
+
+    public function getTVnames()
+    {
         return $this->_TVnames;
     }
+
     public function getAllTV_Name($reload = false)
     {
-        if(empty($this->_TVnames) || $reload){
+        if (empty($this->_TVnames) || $reload) {
             $from = $this->DocLister->getTable('site_tmplvars');
             $rs = $this->DocLister->dbQuery("SELECT id, name FROM {$from}");
             $rows = $this->modx->db->makeArray($rs);
@@ -48,6 +56,7 @@ class tv_DL_Extender extends extDocLister{
         }
         return $this->_TVnames;
     }
+
     public function getTVList($IDs, $tvlist)
     {
         $tv = $this->getTVid($tvlist);
@@ -59,14 +68,14 @@ class tv_DL_Extender extends extDocLister{
         $rs = $this->DocLister->dbQuery("SELECT tmplvarid,value,contentid FROM {$tbl_site_tmplvar_contentvalues} WHERE {$where}");
         $rows = $this->modx->db->makeArray($rs);
         $out = array();
-		$tvPrefix = $this->_TVprefix;
+        $tvPrefix = $this->_TVprefix;
 
         foreach ($rows as $item) {
             $out[$item['contentid']][$tvPrefix . $tv[$item['tmplvarid']]] = $item['value'];
         }
         $tmp = explode(",", $this->DocLister->sanitarIn($IDs, ',', false));
-        foreach($tmp as $item){
-            if(!isset($out[$item])){
+        foreach ($tmp as $item) {
+            if (!isset($out[$item])) {
                 $out[$item] = array();
             };
         }
@@ -85,13 +94,16 @@ class tv_DL_Extender extends extDocLister{
         }
         return $out;
     }
-    public function getTVprefix(){
+
+    public function getTVprefix()
+    {
         $tvPrefix = $this->DocLister->getCFGDef('tvPrefix', 'tv');
-        if(!empty($tvPrefix)){
+        if (!empty($tvPrefix)) {
             $tvPrefix .= '.';
         }
         return $tvPrefix;
     }
+
     public function getListRenderTV()
     {
         $tmp = $this->DocLister->getCFGDef('renderTV', '');
@@ -111,12 +123,14 @@ class tv_DL_Extender extends extDocLister{
         }
         return $tmp;
     }
+
     public function renderTV($iddoc, $tvname, $tvval, $param)
     {
         include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
         include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
         return getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $iddoc, '');
     }
+
     public function getTVid($tvlist)
     {
         if (!empty($tvlist) && is_scalar($tvlist)) {
@@ -131,6 +145,7 @@ class tv_DL_Extender extends extDocLister{
         }
         return $out;
     }
+
     public function loadTVDefault($tvId)
     {
         $tbl_site_tmplvars = $this->DocLister->getTable('site_tmplvars');
@@ -145,47 +160,49 @@ class tv_DL_Extender extends extDocLister{
         return $out;
     }
 
-    public function addTVSortWithDefault($name){
+    public function addTVSortWithDefault($name)
+    {
         $dTV = explode(',', $this->DocLister->getCFGDef('tvSortWithDefault', ''));
         $dTV[] = $name;
         $tvList = implode(",", array_unique($dTV));
-        $this->DocLister->setConfig(array('tvSortWithDefault'=> $tvList));
+        $this->DocLister->setConfig(array('tvSortWithDefault' => $tvList));
         return $tvList;
     }
 
-    public function injectSortByTV($table, $sort){
+    public function injectSortByTV($table, $sort)
+    {
         if (preg_match("/^ORDER BY (.*)/", $sort, $match)) {
             $TVnames = $this->getTVnames();
-            if(!is_array($TVnames)){
+            if (!is_array($TVnames)) {
                 $TVnames = array();
             }
             $matches = explode(",", $match[1]);
             $sortType = explode(",", $this->DocLister->getCFGDef('tvSortType'));
             $withDefault = explode(",", $this->DocLister->getCFGDef('tvSortWithDefault'));
-             foreach($matches as $i => &$item){
+            foreach ($matches as $i => &$item) {
                 $item = explode(" ", trim($item), 2);
                 if (isset($TVnames[$item[0]])) {
                     $exists = $this->DocLister->checkTableAlias($item[0], $this->tvValuesTable());
-                    $prefix = $this->DocLister->TableAlias($item[0], $this->tvValuesTable(), 'dltv_'.$item[0].'_'.($i+1));
-                    if(!$exists){
+                    $prefix = $this->DocLister->TableAlias($item[0], $this->tvValuesTable(), 'dltv_' . $item[0] . '_' . ($i + 1));
+                    if (!$exists) {
                         $table .= " LEFT JOIN " . $this->DocLister->getTable($this->tvValuesTable(), $prefix) . "
-                        on `".$prefix."`.`contentid`=`c`.`id` AND `".$prefix."`.`tmplvarid`=" . $TVnames[$item[0]];
+                        on `" . $prefix . "`.`contentid`=`c`.`id` AND `" . $prefix . "`.`tmplvarid`=" . $TVnames[$item[0]];
                     }
-                    if(in_array($item[0], $withDefault)){
+                    if (in_array($item[0], $withDefault)) {
                         $exists = $this->DocLister->checkTableAlias($item[0], "site_tmplvars");
-                        $dPrefix = $this->DocLister->TableAlias($item[0], "site_tmplvars", 'd_'.$prefix);
-                        if(!$exists){
-                            $table .= " LEFT JOIN ".$this->DocLister->getTable("site_tmplvars", $dPrefix)." on `".$dPrefix."`.`id` = " . $TVnames[$item[0]];
+                        $dPrefix = $this->DocLister->TableAlias($item[0], "site_tmplvars", 'd_' . $prefix);
+                        if (!$exists) {
+                            $table .= " LEFT JOIN " . $this->DocLister->getTable("site_tmplvars", $dPrefix) . " on `" . $dPrefix . "`.`id` = " . $TVnames[$item[0]];
                         }
                         $field = "IFNULL(`{$prefix}`.`value`, `{$dPrefix}`.`default_text`)";
-                    }else{
+                    } else {
                         $field = "`{$prefix}`.`value`";
                     }
                     $item[0] = $this->DocLister->changeSortType($field, isset($sortType[$i]) ? $sortType[$i] : null);
                 }
                 $item = implode(" ", $item);
             }
-            $sort = "ORDER BY ".implode(",", $matches);
+            $sort = "ORDER BY " . implode(",", $matches);
         }
         return array($table, $sort);
     }

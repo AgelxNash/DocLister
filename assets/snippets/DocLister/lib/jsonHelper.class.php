@@ -2,7 +2,8 @@
 if (!defined("JSON_ERROR_UTF8")) define("JSON_ERROR_UTF8", 5); //PHP < 5.3.3
 include_once("xnop.class.php");
 
-class jsonHelper {
+class jsonHelper
+{
     protected static $_error = array(
         0 => 'error_none', //JSON_ERROR_NONE
         1 => 'error_depth', //JSON_ERROR_DEPTH
@@ -20,29 +21,30 @@ class jsonHelper {
      * @param bool $nop создавать ли пустой объект запрашиваемого типа
      * @return array|mixed|xNop
      */
-    public static function jsonDecode($json, $config = array(), $nop = false){
-        if(isset($config['assoc'])){
+    public static function jsonDecode($json, $config = array(), $nop = false)
+    {
+        if (isset($config['assoc'])) {
             $assoc = (boolean)$config['assoc'];
-        }else{
+        } else {
             $assoc = false;
         }
 
-        if(isset($config['depth']) && (int)$config['depth']>0){
+        if (isset($config['depth']) && (int)$config['depth'] > 0) {
             $depth = (int)$config['depth'];
-        }else{
+        } else {
             $depth = 512;
         }
 
         if (version_compare(phpversion(), '5.3.0', '<')) {
             $out = json_decode($json, $assoc);
-        }else{
+        } else {
             $out = json_decode($json, $assoc, $depth);
         }
 
-        if($nop && is_null($out)){
-            if($assoc){
+        if ($nop && is_null($out)) {
+            if ($assoc) {
                 $out = array();
-            }else{
+            } else {
                 $out = new xNop();
             }
         }
@@ -54,12 +56,13 @@ class jsonHelper {
      * @see http://www.php.net/manual/ru/function.json-last-error-msg.php
      * @return string
      */
-    public static function json_last_error_msg(){
-		if(function_exists('json_last_error')){
-			$error = json_last_error();
-		}else{
-			$error = 999;
-		}
+    public static function json_last_error_msg()
+    {
+        if (function_exists('json_last_error')) {
+            $error = json_last_error();
+        } else {
+            $error = 999;
+        }
         return isset(self::$_error[$error]) ? self::$_error[$error] : 'other';
     }
 }

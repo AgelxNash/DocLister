@@ -14,26 +14,28 @@ if (!defined('MODX_BASE_PATH')) {
 class prepare_DL_Extender extends extDocLister
 {
     private $_store = array();
-	
-    public function setStore($name,$val){
+
+    public function setStore($name, $val)
+    {
         $this->_store[$name] = $val;
     }
-	
-    public function getStore($name){
+
+    public function getStore($name)
+    {
         return isset($this->_store[$name]) ? $this->_store[$name] : null;
     }
-	
+
     protected function run()
     {
         $out = $this->_cfg;
         if (($prepare = $this->DocLister->getCFGDef('prepare', '')) != '') {
             $params = $this->getParams($out);
-            if(is_scalar($prepare)){
+            if (is_scalar($prepare)) {
                 $names = explode(",", $prepare);
-                foreach($names as $item){
+                foreach ($names as $item) {
                     $params['data'] = $this->callPrepare($item, $params);
                 }
-            }else{
+            } else {
                 $params['data'] = $this->callPrepare($prepare, $params);
             }
             $out = $params['data'];
@@ -41,7 +43,8 @@ class prepare_DL_Extender extends extDocLister
         return $out;
     }
 
-    public function getParams(array $data = array()){
+    public function getParams(array $data = array())
+    {
         return array(
             '_extDocLister' => $this,
             '_DocLister' => $this->DocLister,
@@ -49,27 +52,31 @@ class prepare_DL_Extender extends extDocLister
             'modx' => $this->modx
         );
     }
-	
-    public function callPrepare($name, array $params){
+
+    public function callPrepare($name, array $params)
+    {
         $out = null;
-        if((is_object($name) && ($name instanceof Closure)) || is_callable($name)){
+        if ((is_object($name) && ($name instanceof Closure)) || is_callable($name)) {
             $data = call_user_func($name, $params['data'], $params['modx'], $params['_DocLister'], $params['_extDocLister']);
-        }else{
+        } else {
             $data = $this->modx->runSnippet($name, $params);
         }
-        switch(true){
-            case is_array($data):{
+        switch (true) {
+            case is_array($data):
+            {
                 $out = $data;
                 break;
             }
-            case ($data==='' || (is_bool($data) && $data===false)):{
+            case ($data === '' || (is_bool($data) && $data === false)):
+            {
                 $out = false;
                 break;
             }
-            case is_string($data):{
-                if($data[0] == '[' || $data[0] == '{'){
+            case is_string($data):
+            {
+                if ($data[0] == '[' || $data[0] == '{') {
                     $out = $this->DocLister->jsonDecode($data, array('assoc' => true), true);
-                }else{
+                } else {
                     $out = unserialize($data);
                 }
             }

@@ -5,7 +5,8 @@
     <td class="[+class+]" style="text-align:left">
         <div class="uri_edit">
             <div>
-                <a href="[+uri+]" target="_blank"><img src="media/style/<?=$manager_theme;?>/images/icons/globe.gif"></a>
+                <a href="[+uri+]" target="_blank"><img
+                        src="media/style/<?=$manager_theme;?>/images/icons/globe.gif"></a>
             </div>
             <span class="click" id="uri_[+id+]">
                 [+uri+]
@@ -13,11 +14,13 @@
         </div>
     </td>
     <td class="[+class+]">
-        <a class="is_active" href="<?=$tplClass->makeUrl('saveGet');?>&docId=[+id+]" title="Сохранять GET параметры при редиректе">
+        <a class="is_active" href="<?=$tplClass->makeUrl('saveGet');?>&docId=[+id+]"
+           title="Сохранять GET параметры при редиректе">
             <img src="media/style/<?=$manager_theme;?>/images/icons/[+saveGet+].png">
         </a>
 
-        <a class="is_active" href="<?=$tplClass->makeUrl('fullRequest');?>&docId=[+id+]" title="Искать с учетом GET параметров">
+        <a class="is_active" href="<?=$tplClass->makeUrl('fullRequest');?>&docId=[+id+]"
+           title="Искать с учетом GET параметров">
             <img src="media/style/<?=$manager_theme;?>/images/icons/[+fullRequest+].png">
         </a>
 

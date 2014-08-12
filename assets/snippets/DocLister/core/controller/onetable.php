@@ -11,9 +11,9 @@ if (!defined('MODX_BASE_PATH')) {
  * @author Agel_Nash <Agel_Nash@xaker.ru>
  *
  * @TODO add controller for construct tree from table
- * @param introField=`` //introtext
- * @param contentField=`description` //content
- * @param table=`` //table name
+ * @param introField =`` //introtext
+ * @param contentField =`description` //content
+ * @param table =`` //table name
  */
 
 class onetableDocLister extends DocLister
@@ -33,8 +33,8 @@ class onetableDocLister extends DocLister
     }
 
     /**
-    * @absctract
-    */
+     * @absctract
+     */
     public function getDocs($tvlist = '')
     {
         $this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
@@ -65,25 +65,25 @@ class onetableDocLister extends DocLister
             if (count($this->_docs) == 0 && $noneTPL != '') {
                 $out = $this->parseChunk($noneTPL, $sysPlh);
             } else {
-				/**
+                /**
                  * @var $extUser user_DL_Extender
                  */
                 if ($extUser = $this->getExtender('user')) {
                     $extUser->init($this, array('fields' => $this->getCFGDef("userFields", "")));
                 }
 
-				/**
+                /**
                  * @var $extSummary summary_DL_Extender
                  */
                 $extSummary = $this->getExtender('summary');
-				
-				/**
+
+                /**
                  * @var $extPrepare prepare_DL_Extender
                  */
                 $extPrepare = $this->getExtender('prepare');
-				
+
                 foreach ($this->_docs as $item) {
-                    if ($extUser){
+                    if ($extUser) {
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
@@ -100,13 +100,13 @@ class onetableDocLister extends DocLister
 
                     $class = array();
 
-                    $this->renderTPL = $this->getCFGDef('tplId'.$i, $tpl);
-					
-                    $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
-					$class[] = strtolower($iterationName);
+                    $this->renderTPL = $this->getCFGDef('tplId' . $i, $tpl);
 
-                    $this->renderTPL = $this->getCFGDef('tpl'.$iterationName, $this->renderTPL);
-					
+                    $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
+                    $class[] = strtolower($iterationName);
+
+                    $this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
+
                     if ($i == 1) {
                         $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
                         $class[] = 'first';
@@ -123,17 +123,17 @@ class onetableDocLister extends DocLister
                         $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
                     }
                     $item[$this->getCFGDef("sysKey", "dl") . '.iteration'] = $i; //[+iteration+] - Number element. Starting from zero
-                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->checkExtender('paginate')) ? ($i + $this->getCFGDef('display', 0) * ($this->extender['paginate']->currentPage()-1)) : $i;
+                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->checkExtender('paginate')) ? ($i + $this->getCFGDef('display', 0) * ($this->extender['paginate']->currentPage() - 1)) : $i;
 
-                    if($this->renderTPL==''){
+                    if ($this->renderTPL == '') {
                         $this->renderTPL = $tpl;
                     }
                     $class = implode(" ", $class);
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 
-                    if($extPrepare){
+                    if ($extPrepare) {
                         $item = $extPrepare->init($this, $item);
-						if(is_bool($item) && $item === false){
+                        if (is_bool($item) && $item === false) {
                             continue;
                         }
                     }
@@ -192,16 +192,16 @@ class onetableDocLister extends DocLister
             if ($where != '') {
                 $where = array($where);
             }
-            if($sanitarInIDs != "''"){
+            if ($sanitarInIDs != "''") {
                 $where[] = "`{$this->getPK()}` IN ({$sanitarInIDs})";
             }
 
-            if(!empty($where)){
-                $where = "WHERE ".implode(" AND ",$where);
+            if (!empty($where)) {
+                $where = "WHERE " . implode(" AND ", $where);
             }
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
-			$fields = $this->getCFGDef('selectFields', '*');
-			$group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
+            $fields = $this->getCFGDef('selectFields', '*');
+            $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
             $rs = $this->dbQuery("SELECT {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
 
             $rows = $this->modx->db->makeArray($rs);
@@ -223,16 +223,16 @@ class onetableDocLister extends DocLister
             if ($where != '') {
                 $where = array($where);
             }
-            if($sanitarInIDs != "''"){
+            if ($sanitarInIDs != "''") {
                 $where[] = "`{$this->getPK()}` IN ({$sanitarInIDs})";
             }
-            if(!empty($where)){
-                $where = "WHERE ".implode(" AND ",$where);
+            if (!empty($where)) {
+                $where = "WHERE " . implode(" AND ", $where);
             }
-            
-			$group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
+
+            $group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group}) as `tmp`");
-			
+
             $out = $this->modx->db->getValue($rs);
         }
         return $out;
@@ -241,8 +241,8 @@ class onetableDocLister extends DocLister
     public function getChildernFolder($id)
     {
         $where = $this->getCFGDef('addWhereFolder', '');
-        if(!empty($where)){
-            $where = "WHERE ".$where;
+        if (!empty($where)) {
+            $where = "WHERE " . $where;
         }
         $rs = $this->dbQuery("SELECT `{$this->getPK()}` FROM {$this->table} {$where}");
 

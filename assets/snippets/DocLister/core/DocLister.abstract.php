@@ -18,10 +18,10 @@ if (!defined('MODX_BASE_PATH')) {
  * @TODO prepare value before return final data (maybe callback function OR extender)
  */
 
-require_once(dirname(dirname(__FILE__))."/lib/jsonHelper.class.php");
-require_once(dirname(dirname(__FILE__))."/lib/sqlHelper.class.php");
-require_once(dirname(dirname(__FILE__))."/lib/DLTemplate.class.php");
-require_once(dirname(dirname(__FILE__)). "/lib/xnop.class.php");
+require_once(dirname(dirname(__FILE__)) . "/lib/jsonHelper.class.php");
+require_once(dirname(dirname(__FILE__)) . "/lib/sqlHelper.class.php");
+require_once(dirname(dirname(__FILE__)) . "/lib/DLTemplate.class.php");
+require_once(dirname(dirname(__FILE__)) . "/lib/xnop.class.php");
 
 abstract class DocLister
 {
@@ -114,14 +114,14 @@ abstract class DocLister
      * @var array
      * @access protected
      */
-    protected $_filters = array('where'=>'', 'join'=>'');
+    protected $_filters = array('where' => '', 'join' => '');
 
     /**
      * Список доступных логических операторов для фильтрации
      * @var array
      * @access protected
      */
-    protected $_logic_ops = array('AND'=>' AND ', 'OR' => ' OR '); // logic operators currently supported
+    protected $_logic_ops = array('AND' => ' AND ', 'OR' => ' OR '); // logic operators currently supported
 
     /**
      * Режим отладки
@@ -142,7 +142,7 @@ abstract class DocLister
      * Массив дополнительно подключаемых таблиц с псевдонимами
      * @var array
      */
-    public $AddTable=array();
+    public $AddTable = array();
 
     /**
      * Время запуска сниппета
@@ -180,13 +180,13 @@ abstract class DocLister
             if ($modx instanceof DocumentParser) {
                 $this->modx = $modx;
                 $this->setDebug(1);
-                $this->loadLang(array('core','json'));
+                $this->loadLang(array('core', 'json'));
 
                 if (!is_array($cfg) || empty($cfg)) $cfg = $this->modx->Event->params;
             } else {
                 throw new Exception('MODX var is not instaceof DocumentParser');
             }
-            if(isset($cfg['config'])){
+            if (isset($cfg['config'])) {
                 $cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
             }
             if (!$this->setConfig($cfg)) {
@@ -200,23 +200,25 @@ abstract class DocLister
         if ($this->checkDL()) {
             $cfg = array();
             $idType = $this->getCFGDef('idType', '');
-            if(empty($idType) && $this->getCFGDef('documents', '') != ''){
+            if (empty($idType) && $this->getCFGDef('documents', '') != '') {
                 $idType = 'documents';
             }
-            switch($idType){
-                case 'documents':{
+            switch ($idType) {
+                case 'documents':
+                {
                     $IDs = $this->getCFGDef('documents');
                     $cfg['idType'] = "documents";
                     break;
                 }
                 case 'parents':
-                default:{
+                default:
+                    {
                     $cfg['idType'] = "parents";
                     if (($IDs = $this->getCFGDef('parents')) === null) {
                         $IDs = $this->modx->documentObject['id'];
                     }
                     break;
-                }
+                    }
             }
             $this->setConfig($cfg);
             $this->setIDs($IDs);
@@ -224,7 +226,7 @@ abstract class DocLister
 
         $this->setLocate();
 
-        if($this->getCFGDef("customLang")){
+        if ($this->getCFGDef("customLang")) {
             $this->getCustomLang();
         }
         $this->loadExtender($this->getCFGDef("extender", ""));
@@ -234,11 +236,13 @@ abstract class DocLister
         }
         $this->_filters = $this->getFilters($this->getCFGDef('filters', ''));
     }
+
     /**
      * Установить время запуска сниппета
      * @param float|null $time
      */
-    public function setTimeStart($time = null){
+    public function setTimeStart($time = null)
+    {
         $this->_timeStart = is_null($time) ? microtime(true) : $time;
     }
 
@@ -247,7 +251,8 @@ abstract class DocLister
      *
      * @return int
      */
-    public function getTimeStart(){
+    public function getTimeStart()
+    {
         return $this->_timeStart;
     }
 
@@ -255,13 +260,14 @@ abstract class DocLister
      * Установка режима отладки
      * @param int $flag режим отладки
      */
-    public function setDebug($flag=0){
-        $flag = abs( (int)$flag );
-        if($this->_debugMode!=$flag){
+    public function setDebug($flag = 0)
+    {
+        $flag = abs((int)$flag);
+        if ($this->_debugMode != $flag) {
             $this->_debugMode = $flag;
             $this->debug = null;
-            if($this->_debugMode>0){
-                if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
+            if ($this->_debugMode > 0) {
+                if (isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'manager') {
                     error_reporting(E_ALL ^ E_NOTICE);
                     ini_set('display_errors', 1);
                 }
@@ -274,11 +280,11 @@ abstract class DocLister
                 }
             }
 
-            if(is_null($this->debug)){
+            if (is_null($this->debug)) {
                 $this->debug = new xNop();
                 $this->_debugMode = 0;
-				error_reporting(0);
-                ini_set('display_errors',0);
+                error_reporting(0);
+                ini_set('display_errors', 0);
             }
         }
     }
@@ -286,7 +292,8 @@ abstract class DocLister
     /**
      * Информация о режиме отладки
      */
-    public function getDebug(){
+    public function getDebug()
+    {
         return $this->_debugMode;
     }
 
@@ -297,26 +304,29 @@ abstract class DocLister
      * @param string $alias желаемый алиас таблицы
      * @return string имя таблицы с префиксом и алиасом
      */
-    public function getTable($name, $alias = ''){
-        if(!isset($this->_table[$name])){
+    public function getTable($name, $alias = '')
+    {
+        if (!isset($this->_table[$name])) {
             $this->_table[$name] = $this->modx->getFullTableName($name);
         }
         $table = $this->_table[$name];
-        if(!empty($alias) && is_scalar($alias)){
-            $table .= " as `".$alias."`";
+        if (!empty($alias) && is_scalar($alias)) {
+            $table .= " as `" . $alias . "`";
         }
         return $table;
     }
 
 
-    public function TableAlias($name, $table, $alias){
-        if(!$this->checkTableAlias($name, $table)){
+    public function TableAlias($name, $table, $alias)
+    {
+        if (!$this->checkTableAlias($name, $table)) {
             $this->AddTable[$table][$name] = $alias;
         }
         return $this->AddTable[$table][$name];
     }
 
-    public function checkTableAlias($name, $table){
+    public function checkTableAlias($name, $table)
+    {
         return isset($this->AddTable[$table][$name]);
     }
 
@@ -326,22 +336,23 @@ abstract class DocLister
      * @param $name string имя конфига
      * @return array массив с настройками
      */
-    public function loadConfig($name){
-        $this->debug->debug('Load json config: '.$this->debug->dumpData($name), 'loadconfig', 2);
-        if(!is_scalar($name)){
+    public function loadConfig($name)
+    {
+        $this->debug->debug('Load json config: ' . $this->debug->dumpData($name), 'loadconfig', 2);
+        if (!is_scalar($name)) {
             $name = '';
         }
         $config = array();
         $name = explode(";", $name);
-        foreach($name as $cfgName){
+        foreach ($name as $cfgName) {
             $cfgName = explode(":", $cfgName, 2);
-            if(empty($cfgName[1])){
+            if (empty($cfgName[1])) {
                 $cfgName[1] = 'custom';
             }
-            $configFile = dirname(dirname(__FILE__))."/config/{$cfgName[1]}/{$cfgName[0]}.json";
-            if(file_exists($configFile) && is_readable($configFile)){
+            $configFile = dirname(dirname(__FILE__)) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
+            if (file_exists($configFile) && is_readable($configFile)) {
                 $json = file_get_contents($configFile);
-                $config = array_merge($config, $this->jsonDecode($json, array('assoc'=>true), true));
+                $config = array_merge($config, $this->jsonDecode($json, array('assoc' => true), true));
             }
         }
 
@@ -358,8 +369,9 @@ abstract class DocLister
      * @param bool $nop создавать ли пустой объект запрашиваемого типа
      * @return array|mixed|xNop
      */
-    public function jsonDecode($json, $config = array(), $nop = false){
-        $this->debug->debug('Decode JSON: '.$this->debug->dumpData($json)."\r\nwith config: ".$this->debug->dumpData($config), 'jsonDecode', 2);
+    public function jsonDecode($json, $config = array(), $nop = false)
+    {
+        $this->debug->debug('Decode JSON: ' . $this->debug->dumpData($json) . "\r\nwith config: " . $this->debug->dumpData($config), 'jsonDecode', 2);
         $config = jsonHelper::jsonDecode($json, $config, $nop);
         $this->isErrorJSON($json);
         $this->debug->debugEnd("jsonDecode");
@@ -372,15 +384,17 @@ abstract class DocLister
      * @param $json string строка с JSON для записи в лог при отладке
      * @return bool|string
      */
-    public function isErrorJSON($json){
+    public function isErrorJSON($json)
+    {
         $error = false;
         $error = jsonHelper::json_last_error_msg();
-        if(!in_array($error, array('error_none','other'))){
-            $this->debug->error($this->getMsg('json.'.$error).": ".$this->debug->dumpData($json, 'code'), 'JSON');
+        if (!in_array($error, array('error_none', 'other'))) {
+            $this->debug->error($this->getMsg('json.' . $error) . ": " . $this->debug->dumpData($json, 'code'), 'JSON');
             $error = true;
         }
         return $error;
     }
+
     /**
      * Проверка параметров и загрузка необходимых экстендеров
      * return boolean статус загрузки
@@ -417,7 +431,7 @@ abstract class DocLister
                 $extenders = $this->unsetArrayVal($extenders, 'paginate');
             }
 
-            if($this->getCFGDef('prepare', '')!=''){
+            if ($this->getCFGDef('prepare', '') != '') {
                 $this->_loadExtender('prepare');
             }
         } catch (Exception $e) {
@@ -482,7 +496,7 @@ abstract class DocLister
      */
     public function render($tpl = '')
     {
-        $this->debug->debug('Render data with template '.$this->debug->dumpData($tpl), 'render', 2);
+        $this->debug->debug('Render data with template ' . $this->debug->dumpData($tpl), 'render', 2);
         $out = '';
         if (1 == $this->getCFGDef('tree', '0')) {
             foreach ($this->_tree as $item) {
@@ -492,9 +506,9 @@ abstract class DocLister
         } else {
             $out = $this->_render($tpl);
         }
-		
-		$out = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
-		
+
+        $out = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
+
         $this->debug->debugEnd('render');
         return $out;
     }
@@ -516,7 +530,7 @@ abstract class DocLister
      */
     final public function ErrorLogger($message, $code, $file, $line, $trace)
     {
-        if (abs ($this->getCFGDef('debug', '0')) == '1') {
+        if (abs($this->getCFGDef('debug', '0')) == '1') {
             echo "CODE #" . $code . "<br />";
             echo "on file: " . $file . ":" . $line . "<br />";
             echo "<pre>";
@@ -600,7 +614,7 @@ abstract class DocLister
      */
     final public function toPlaceholders($data, $set = 0, $key = 'contentPlaceholder')
     {
-        $this->debug->debug(null,'toPlaceholders',2);
+        $this->debug->debug(null, 'toPlaceholders', 2);
         if ($set == 0) {
             $set = $this->getCFGDef('contentPlaceholder', 0);
         }
@@ -610,7 +624,7 @@ abstract class DocLister
         $out = DLTemplate::getInstance($this->getMODX())->toPlaceholders($data, $set, $key, $id);
 
         $this->debug->debugEnd(
-            "toPlaceholders", $this->debug->dumpData($key)." placeholder: ".$this->debug->dumpData($data)
+            "toPlaceholders", $this->debug->dumpData($key) . " placeholder: " . $this->debug->dumpData($data)
         );
         return $out;
     }
@@ -625,7 +639,7 @@ abstract class DocLister
      * @param boolean $quote заключать ли данные на выходе в кавычки
      * @return string обработанная строка
      */
-    final public function sanitarIn($data, $sep = ',', $quote=true)
+    final public function sanitarIn($data, $sep = ',', $quote = true)
     {
         if (!is_array($data)) {
             $data = explode($sep, $data);
@@ -635,7 +649,7 @@ abstract class DocLister
             $out[] = $this->modx->db->escape($item);
         }
         $q = $quote ? "'" : "";
-        $out = $q . implode($q.",".$q, $out) . $q;
+        $out = $q . implode($q . "," . $q, $out) . $q;
         return $out;
     }
 
@@ -650,7 +664,8 @@ abstract class DocLister
      * @param string $lang имя языкового пакета
      * @return array
      */
-    final public function getCustomLang($lang = ''){
+    final public function getCustomLang($lang = '')
+    {
         if (empty($lang)) {
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
         }
@@ -669,24 +684,24 @@ abstract class DocLister
      * @param boolean $rename Переименовывать ли элементы массива
      * @return array массив с лексиконом
      */
-    final public function loadLang($name = 'core', $lang = '', $rename=true)
+    final public function loadLang($name = 'core', $lang = '', $rename = true)
     {
         if (empty($lang)) {
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
         }
 
-        $this->debug->debug('Load language '.$this->debug->dumpData($name).".".$this->debug->dumpData($lang), 'loadlang', 2);
-        if(is_scalar($name)){
+        $this->debug->debug('Load language ' . $this->debug->dumpData($name) . "." . $this->debug->dumpData($lang), 'loadlang', 2);
+        if (is_scalar($name)) {
             $name = array($name);
         }
-        foreach($name as $n){
+        foreach ($name as $n) {
             if (file_exists(dirname(__FILE__) . "/lang/" . $lang . "/" . $n . ".inc.php")) {
                 $tmp = include_once(dirname(__FILE__) . "/lang/" . $lang . "/" . $n . ".inc.php");
                 if (is_array($tmp)) {
                     /**
                      * Переименовыываем элементы массива из array('test'=>'data') в array('name.test'=>'data')
                      */
-                    if($rename){
+                    if ($rename) {
                         $tmp = $this->renameKeyArr($tmp, $n, '', '.');
                     }
                     $this->_lang = array_merge($this->_lang, $tmp);
@@ -706,9 +721,9 @@ abstract class DocLister
      */
     final public function getMsg($name, $def = '')
     {
-        if(isset($this->_customLang[$name])){
+        if (isset($this->_customLang[$name])) {
             $say = $this->_customLang[$name];
-        }else{
+        } else {
             $say = isset($this->_lang[$name]) ? $this->_lang[$name] : $def;
         }
         return $say;
@@ -776,7 +791,7 @@ abstract class DocLister
      */
     private function _getChunk($name)
     {
-        $this->debug->debug('Get chunk by name "'.$this->debug->dumpData($name).'"',"getChunk",2);
+        $this->debug->debug('Get chunk by name "' . $this->debug->dumpData($name) . '"', "getChunk", 2);
         //without trim
         $tpl = DLTemplate::getInstance($this->getMODX())->getChunk($name);
         $tpl = $this->parseLang($tpl);
@@ -791,26 +806,28 @@ abstract class DocLister
      * @param string $tpl HTML шаблон
      * @return string
      */
-    public function parseLang($tpl){
+    public function parseLang($tpl)
+    {
         $this->debug->debug(
-            "parseLang ".$this->debug->dumpData($tpl),
+            "parseLang " . $this->debug->dumpData($tpl),
             "parseLang",
             2
         );
-        if(is_scalar($tpl) && !empty($tpl)){
-            if(preg_match_all("/\[\%([a-zA-Z0-9\.\_\-]+)\%\]/", $tpl, $match)){
+        if (is_scalar($tpl) && !empty($tpl)) {
+            if (preg_match_all("/\[\%([a-zA-Z0-9\.\_\-]+)\%\]/", $tpl, $match)) {
                 $langVal = array();
-                foreach($match[1] as $item){
+                foreach ($match[1] as $item) {
                     $langVal[] = $this->getMsg($item);
                 }
                 $tpl = str_replace($match[0], $langVal, $tpl);
             }
-        }else{
+        } else {
             $tpl = '';
         }
         $this->debug->debugEnd("parseLang");
         return $tpl;
     }
+
     /**
      * refactor $modx->parseChunk();
      *
@@ -823,13 +840,13 @@ abstract class DocLister
     {
         $out = null;
         $this->debug->debug(
-            "parseChunk ".$this->debug->dumpData($name)." ".$this->debug->dumpData($data),
+            "parseChunk " . $this->debug->dumpData($name) . " " . $this->debug->dumpData($data),
             "parseChunk",
             2
         );
         $out = DLTemplate::getInstance($this->getMODX())->parseChunk($name, $data, $parseDocumentSource);
         if (empty($out)) {
-            $this->debug->debug("Empty chunk: ".$this->debug->dumpData($name), '', 2);
+            $this->debug->debug("Empty chunk: " . $this->debug->dumpData($name), '', 2);
         }
         $this->debug->debugEnd("parseChunk");
         return $out;
@@ -896,28 +913,29 @@ abstract class DocLister
         return $out;
     }
 
-	protected function getSummary(array $item = array(), $extSummary = null, $introField = '', $contentField = ''){
-		$out = '';
-	
-		if(is_null($extSummary)){
-			/**
-			* @var $extSummary summary_DL_Extender
-			*/
+    protected function getSummary(array $item = array(), $extSummary = null, $introField = '', $contentField = '')
+    {
+        $out = '';
+
+        if (is_null($extSummary)) {
+            /**
+             * @var $extSummary summary_DL_Extender
+             */
             $extSummary = $this->getExtender('summary');
-		}
-		$introField = $this->getCFGDef("introField", $introField);
-		$contentField = $this->getCFGDef("contentField", $contentField);
-		
-		if (!empty($introField) && !empty($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0) {
-			$out = $item[$introField];
-        } else {
-			if(!empty($contentField) && !empty($item[$contentField]) && mb_strlen($item[$contentField], 'UTF-8') > 0){
-				$out = $extSummary->init($this, array("content" => $item[$contentField], "summary" => $this->getCFGDef("summary", "")));
-			}
         }
-		return $out;
-	}
-	
+        $introField = $this->getCFGDef("introField", $introField);
+        $contentField = $this->getCFGDef("contentField", $contentField);
+
+        if (!empty($introField) && !empty($item[$introField]) && mb_strlen($item[$introField], 'UTF-8') > 0) {
+            $out = $item[$introField];
+        } else {
+            if (!empty($contentField) && !empty($item[$contentField]) && mb_strlen($item[$contentField], 'UTF-8') > 0) {
+                $out = $extSummary->init($this, array("content" => $item[$contentField], "summary" => $this->getCFGDef("summary", "")));
+            }
+        }
+        return $out;
+    }
+
     /**
      * @param string $name extender name
      * @return boolean status extender load
@@ -927,9 +945,11 @@ abstract class DocLister
         return (isset($this->extender[$name]) && $this->extender[$name] instanceof $name . "_DL_Extender");
     }
 
-    public function setExtender($name, $obj){
+    public function setExtender($name, $obj)
+    {
         $this->extender[$name] = $obj;
     }
+
     /**
      * Вытащить экземпляр класса экстендера из общего массива экстендеров
      *
@@ -938,12 +958,13 @@ abstract class DocLister
      * @param bool $nop если экстендер не загружен, то загружать ли xNop
      * @return null|xNop
      */
-    public function getExtender($name, $autoload = false, $nop = false){
+    public function getExtender($name, $autoload = false, $nop = false)
+    {
         $out = null;
-        if((is_scalar($name) && $this->checkExtender($name)) || ($autoload && $this->_loadExtender($name))){
+        if ((is_scalar($name) && $this->checkExtender($name)) || ($autoload && $this->_loadExtender($name))) {
             $out = $this->extender[$name];
         }
-        if($nop && is_null($out)){
+        if ($nop && is_null($out)) {
             $out = new xNop();
         }
         return $out;
@@ -957,7 +978,7 @@ abstract class DocLister
      */
     final protected function _loadExtender($name)
     {
-        $this->debug->debug('Load Extender '.$this->debug->dumpData($name), 'LoadExtender', 2);
+        $this->debug->debug('Load Extender ' . $this->debug->dumpData($name), 'LoadExtender', 2);
         $flag = false;
 
         $classname = ($name != '') ? $name . "_DL_Extender" : "";
@@ -970,12 +991,12 @@ abstract class DocLister
                 }
             }
             if (class_exists($classname, false) && $classname != '') {
-                $this->extender[$name] = new $classname($this,$name);
+                $this->extender[$name] = new $classname($this, $name);
                 $flag = true;
             }
         }
-        if(!$flag){
-            $this->debug->debug("Error load Extender ".$this->debug->dumpData($name));
+        if (!$flag) {
+            $this->debug->debug("Error load Extender " . $this->debug->dumpData($name));
         }
         $this->debug->debugEnd('LoadExtender');
         return $flag;
@@ -993,7 +1014,7 @@ abstract class DocLister
      */
     final public function setIDs($IDs)
     {
-        $this->debug->debug('set ID list '.$this->debug->dumpData($IDs), 'setIDs', 2);
+        $this->debug->debug('set ID list ' . $this->debug->dumpData($IDs), 'setIDs', 2);
         $IDs = $this->cleanIDs($IDs);
         $type = $this->getCFGDef('idType', 'parents');
         $depth = $this->getCFGDef('depth', '');
@@ -1009,10 +1030,12 @@ abstract class DocLister
         $this->debug->debugEnd("setIDs");
         return ($this->IDs = $IDs);
     }
-	
-	final public function getIDs(){
-		return $this->IDs;
-	}
+
+    final public function getIDs()
+    {
+        return $this->IDs;
+    }
+
     /**
      * Очистка данных и уникализация списка цифр.
      * Если был $IDs был передан как строка, то эта строка будет преобразована в массив по разделителю $sep
@@ -1022,7 +1045,7 @@ abstract class DocLister
      */
     final public function cleanIDs($IDs, $sep = ',')
     {
-        $this->debug->debug('clean IDs '.$this->debug->dumpData($IDs).' with separator '.$this->debug->dumpData($sep), 'cleanIDs', 2);
+        $this->debug->debug('clean IDs ' . $this->debug->dumpData($IDs) . ' with separator ' . $this->debug->dumpData($sep), 'cleanIDs', 2);
         $out = array();
         if (!is_array($IDs)) {
             $IDs = explode($sep, $IDs);
@@ -1086,73 +1109,78 @@ abstract class DocLister
      */
     abstract public function getChildernFolder($id);
 
-	protected function getGroupSQL($group = ''){
-		$out = '';
-		if($group!=''){
-			$out = 'GROUP BY '.$group;
-		}
-		return $out;
-	}
+    protected function getGroupSQL($group = '')
+    {
+        $out = '';
+        if ($group != '') {
+            $out = 'GROUP BY ' . $group;
+        }
+        return $out;
+    }
+
     /**
      *    Sorting method in SQL queries
      *
-     *    @global string $order
-     *    @global string $orderBy
-     *    @global string sortBy
+     * @global string $order
+     * @global string $orderBy
+     * @global string sortBy
      *
-     *    @param string $sortNme default sort field
-     *    @param string $orderDef default order (ASC|DESC)
+     * @param string $sortNme default sort field
+     * @param string $orderDef default order (ASC|DESC)
      *
-     *    @return string Order by for SQL
+     * @return string Order by for SQL
      */
     final protected function SortOrderSQL($sortName, $orderDef = 'DESC')
     {
         $this->debug->debug('', 'sortORDER', 2);
 
         $sort = '';
-        switch($this->getCFGDef('sortType','')){
-            case 'none':{
+        switch ($this->getCFGDef('sortType', '')) {
+            case 'none':
+            {
                 break;
             }
-            case 'doclist':{
-                $idList = $this->sanitarIn($this->IDs,',', false);
+            case 'doclist':
+            {
+                $idList = $this->sanitarIn($this->IDs, ',', false);
                 $out['orderBy'] = "FIND_IN_SET({$this->getPK()}, '{$idList}')";
                 $this->setConfig($out); //reload config;
-                $sort = "ORDER BY ".$out['orderBy'];
+                $sort = "ORDER BY " . $out['orderBy'];
                 break;
             }
-            default:{
-            $out = array('orderBy' => '', 'order' => '', 'sortBy' => '');
-            if (($tmp = $this->getCFGDef('orderBy', '')) != '') {
-                $out['orderBy'] = $tmp;
-            } else {
-                switch (true) {
-                    case ('' != ($tmp = $this->getCFGDef('sortDir', ''))):
-                    { //higher priority than order
-                        $out['order'] = $tmp;
+            default:
+                {
+                $out = array('orderBy' => '', 'order' => '', 'sortBy' => '');
+                if (($tmp = $this->getCFGDef('orderBy', '')) != '') {
+                    $out['orderBy'] = $tmp;
+                } else {
+                    switch (true) {
+                        case ('' != ($tmp = $this->getCFGDef('sortDir', ''))):
+                        { //higher priority than order
+                            $out['order'] = $tmp;
+                        }
+                        case ('' != ($tmp = $this->getCFGDef('order', ''))):
+                        {
+                            $out['order'] = $tmp;
+                        }
                     }
-                    case ('' != ($tmp = $this->getCFGDef('order', ''))):
-                    {
-                        $out['order'] = $tmp;
+                    if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
+                        $out['order'] = $orderDef; //Default
                     }
-                }
-                if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
-                    $out['order'] = $orderDef; //Default
-                }
 
-                $out['sortBy'] = (($tmp = $this->getCFGDef('sortBy', '')) != '') ? $tmp : $sortName;
-                $out['orderBy'] = $out['sortBy'] . " " . $out['order'];
-            }
-            $this->setConfig($out); //reload config;
-            $sort = "ORDER BY " . $out['orderBy'];
-            break;
-            }
+                    $out['sortBy'] = (($tmp = $this->getCFGDef('sortBy', '')) != '') ? $tmp : $sortName;
+                    $out['orderBy'] = $out['sortBy'] . " " . $out['order'];
+                }
+                $this->setConfig($out); //reload config;
+                $sort = "ORDER BY " . $out['orderBy'];
+                break;
+                }
         }
-        $this->debug->debugEnd("sortORDER",'Get sort order for SQL: '.$this->debug->dumpData($sort));
+        $this->debug->debugEnd("sortORDER", 'Get sort order for SQL: ' . $this->debug->dumpData($sort));
         return $sort;
     }
 
-	
+
     /**
      * Получение LIMIT вставки в SQL запрос
      *
@@ -1185,7 +1213,7 @@ abstract class DocLister
                 $ret = "LIMIT " . (int)$offset . ",18446744073709551615";
             }
         }
-        $this->debug->debugEnd("limitSQL","Get limit for SQL: ".$this->debug->dumpData($ret));
+        $this->debug->debugEnd("limitSQL", "Get limit for SQL: " . $this->debug->dumpData($ret));
         return $ret;
     }
 
@@ -1198,10 +1226,10 @@ abstract class DocLister
     final public function sanitarData($data)
     {
         return is_scalar($data) ? str_replace(
-									array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D'), 
-									array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;'), 
-									htmlspecialchars($data, ENT_COMPAT, 'UTF-8', false)
-								) : '';
+            array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D'),
+            array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;'),
+            htmlspecialchars($data, ENT_COMPAT, 'UTF-8', false)
+        ) : '';
     }
 
     /**
@@ -1253,7 +1281,8 @@ abstract class DocLister
      *
      * @return string PrimaryKey основной таблицы
      */
-    public function getPK(){
+    public function getPK()
+    {
         return isset($this->idField) ? $this->idField : 'id';
     }
 
@@ -1264,22 +1293,23 @@ abstract class DocLister
      * @param string $filter_string строка со всеми фильтрами
      * @return mixed результат разбора фильтров
      */
-    protected function getFilters($filter_string){
-        $this->debug->debug("getFilters: ".$this->debug->dumpData($filter_string),'getFilter',1);
+    protected function getFilters($filter_string)
+    {
+        $this->debug->debug("getFilters: " . $this->debug->dumpData($filter_string), 'getFilter', 1);
         // the filter parameter tells us, which filters can be used in this query
         $filter_string = trim($filter_string, ' ;');
         if (!$filter_string) return;
-        $output = array('join' => '', 'where'=>'');
+        $output = array('join' => '', 'where' => '');
         $logic_op_found = false;
-        if(substr($filter_string,-1)==')'){
+        if (substr($filter_string, -1) == ')') {
             $filter_string = mb_substr($filter_string, 0, -1, "UTF-8");
         }
-        foreach ($this->_logic_ops as $op => $sql){
-            if (strpos($filter_string, $op) === 0){
+        foreach ($this->_logic_ops as $op => $sql) {
+            if (strpos($filter_string, $op) === 0) {
                 $logic_op_found = true;
-                $subfilters = mb_substr($filter_string, strlen($op)+1, mb_strlen($filter_string,"UTF-8"), "UTF-8");
-                $subfilters = explode(';', rtrim($subfilters,";"));
-                foreach ($subfilters as $subfilter){
+                $subfilters = mb_substr($filter_string, strlen($op) + 1, mb_strlen($filter_string, "UTF-8"), "UTF-8");
+                $subfilters = explode(';', rtrim($subfilters, ";"));
+                foreach ($subfilters as $subfilter) {
                     $subfilter = $this->getFilters(trim($subfilter));
                     if (!$subfilter) continue;
                     if ($subfilter['join']) $joins[] = $subfilter['join'];
@@ -1295,7 +1325,7 @@ abstract class DocLister
             if (!$filter) {
                 $this->debug->warning('Error while loading DocLister filter "' . $this->debug->dumpData($filter_string) . '": check syntax!');
                 $output = false;
-            }else{
+            } else {
                 $output['join'] = $filter->get_join();
                 $output['where'] = $filter->get_where();
             }
@@ -1304,13 +1334,16 @@ abstract class DocLister
         return $output;
     }
 
-	public function filtersWhere(){
-		return isset($this->_filters['where']) ? $this->_filters['where'] : '';
-	}
-	
-	public function filtersJoin(){
-		return isset($this->_filters['join']) ? $this->_filters['join'] : '';
-	}
+    public function filtersWhere()
+    {
+        return isset($this->_filters['where']) ? $this->_filters['where'] : '';
+    }
+
+    public function filtersJoin()
+    {
+        return isset($this->_filters['join']) ? $this->_filters['join'] : '';
+    }
+
     /**
      * Приведение типа поля
      *
@@ -1318,27 +1351,33 @@ abstract class DocLister
      * @param $type string тип фильтрации
      * @return string имя поля с учетом приведения типа
      */
-    public function changeSortType($field, $type){
+    public function changeSortType($field, $type)
+    {
         $type = trim($type);
-        switch(strtoupper($type)){
-            case 'DECIMAL':{
-                $field = 'CAST('.$field.' as DECIMAL(10,2))';
+        switch (strtoupper($type)) {
+            case 'DECIMAL':
+            {
+                $field = 'CAST(' . $field . ' as DECIMAL(10,2))';
                 break;
             }
-            case 'UNSIGNED':{
-                $field = 'CAST('.$field.' as UNSIGNED)';
+            case 'UNSIGNED':
+            {
+                $field = 'CAST(' . $field . ' as UNSIGNED)';
                 break;
             }
-            case 'BINARY':{
-                $field = 'CAST('.$field.' as BINARY)';
+            case 'BINARY':
+            {
+                $field = 'CAST(' . $field . ' as BINARY)';
                 break;
             }
-            case 'DATETIME':{
-                $field = 'CAST('.$field.' as DATETIME)';
+            case 'DATETIME':
+            {
+                $field = 'CAST(' . $field . ' as DATETIME)';
                 break;
             }
-            case 'SIGNED':{
-                $field = 'CAST('.$field.' as SIGNED)';
+            case 'SIGNED':
+            {
+                $field = 'CAST(' . $field . ' as SIGNED)';
                 break;
             }
         }
@@ -1350,13 +1389,14 @@ abstract class DocLister
      * @param string $filter срока с параметрами фильтрации
      * @return bool
      */
-    protected function loadFilter($filter){
-        $this->debug->debug('Load filter '.$this->debug->dumpData($filter) , 'loadFilter', 2);
+    protected function loadFilter($filter)
+    {
+        $this->debug->debug('Load filter ' . $this->debug->dumpData($filter), 'loadFilter', 2);
         $out = false;
         $fltr_params = explode(':', $filter, 2);
         $fltr = isset($fltr_params[0]) ? $fltr_params[0] : null;
         // check if the filter is implemented
-        if (!is_null($fltr) && file_exists(dirname(__FILE__) . '/filter/' . $fltr . '.filter.php')){
+        if (!is_null($fltr) && file_exists(dirname(__FILE__) . '/filter/' . $fltr . '.filter.php')) {
             require_once dirname(__FILE__) . '/filter/' . $fltr . '.filter.php';
             /**
              * @var tv_DL_filter|content_DL_filter $fltr_class
@@ -1364,12 +1404,12 @@ abstract class DocLister
             $fltr_class = $fltr . '_DL_filter';
             $this->totalFilters++;
             $fltr_obj = new $fltr_class();
-            if($fltr_obj->init($this, $filter)){
+            if ($fltr_obj->init($this, $filter)) {
                 $out = $fltr_obj;
-            }else{
+            } else {
                 $this->debug->error("Wrong filter parameter: '{$this->debug->dumpData($filter)}'", 'Filter');
             }
-        }else{
+        } else {
             $this->debug->error("Error load Filter: '{$this->debug->dumpData($filter)}'", 'Filter');
         }
         $this->debug->debugEnd("loadFilter");
@@ -1380,7 +1420,8 @@ abstract class DocLister
      * Общее число фильтров
      * @return int
      */
-    public function getCountFilters(){
+    public function getCountFilters()
+    {
         return (int)$this->totalFilters;
     }
 
@@ -1388,7 +1429,8 @@ abstract class DocLister
      * Выполнить SQL запрос
      * @param string $q SQL запрос
      */
-    public function dbQuery($q){
+    public function dbQuery($q)
+    {
         $this->debug->debug($this->debug->dumpData($q), "query", 1);
         $out = $this->modx->db->query($q);
         $this->debug->debugEnd("query");
@@ -1405,17 +1447,19 @@ abstract class DocLister
      * @param string $tpl шаблон подстановки значения в SQL запрос
      * @return string строка для подстановки в SQL запрос
      */
-    public function LikeEscape($field, $value, $escape='=', $tpl='%[+value+]%'){
-        return sqlHelper::LikeEscape($this->modx, $field,$value,$escape, $tpl);
+    public function LikeEscape($field, $value, $escape = '=', $tpl = '%[+value+]%')
+    {
+        return sqlHelper::LikeEscape($this->modx, $field, $value, $escape, $tpl);
     }
 
     /**
      * Получение REQUEST_URI без GET-ключа с
      * @return string
      */
-    final public function getRequest(){
+    final public function getRequest()
+    {
         $URL = null;
-        parse_str(parse_url(MODX_SITE_URL.$_SERVER['REQUEST_URI'], PHP_URL_QUERY), $URL);
+        parse_str(parse_url(MODX_SITE_URL . $_SERVER['REQUEST_URI'], PHP_URL_QUERY), $URL);
         return http_build_query(array_merge($URL, array(DocLister::AliasRequest => null)));
     }
 }

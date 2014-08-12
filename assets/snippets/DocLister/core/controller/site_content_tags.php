@@ -20,8 +20,9 @@ class site_content_tagsDocLister extends site_contentDocLister
 {
     private $tag = array();
 
-    function __construct($modx, $cfg = array(), $startTime = null){
-        parent::__construct($modx,$cfg, $startTime);
+    function __construct($modx, $cfg = array(), $startTime = null)
+    {
+        parent::__construct($modx, $cfg, $startTime);
         $this->whereTag();
     }
 
@@ -85,18 +86,18 @@ class site_content_tagsDocLister extends site_contentDocLister
 					RIGHT JOIN " . $this->getTable('tags', 't') . " on t.id=ct.tag_id";
             $where = "t.`name`='" . $this->modx->db->escape($tag['tag']) . "'" .
                 (($this->getCFGDef('tagsData', '') > 0) ? "AND ct.tv_id=" . (int)$this->getCFGDef('tagsData', '') : "");
-				
-			if(!empty($this->_filters['where'])){
-				$this->_filters['where'] .= " AND ".$where;
-			}else{
-				$this->_filters['where'] = $where;
-			}
 
-			if(!empty($this->_filters['join'])){
-				$this->_filters['join'] .= ' '.$join;
-			}else{
-				$this->_filters['join'] = $join;
-			}
+            if (!empty($this->_filters['where'])) {
+                $this->_filters['where'] .= " AND " . $where;
+            } else {
+                $this->_filters['where'] = $where;
+            }
+
+            if (!empty($this->_filters['join'])) {
+                $this->_filters['join'] .= ' ' . $join;
+            } else {
+                $this->_filters['join'] = $join;
+            }
         }
         return $this->_filters;
     }

@@ -7,7 +7,8 @@ if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
 
-abstract class filterDocLister{
+abstract class filterDocLister
+{
     /**
      * Объект унаследованный от абстрактоного класса DocLister
      * @var DocLister $DocLister
@@ -64,8 +65,9 @@ abstract class filterDocLister{
      * @param $filter строка с условиями фильтрации
      * @return bool
      */
-    public function init(DocLister $DocLister, $filter){
-        $this->DocLister=$DocLister;
+    public function init(DocLister $DocLister, $filter)
+    {
+        $this->DocLister = $DocLister;
         $this->modx = $this->DocLister->getMODX();
         $this->totalFilters = $this->DocLister->getCountFilters();
         return $this->parseFilter($filter);
@@ -91,7 +93,8 @@ abstract class filterDocLister{
      * @param $filter строка фильтрации
      * @return bool результат разбора фильтра
      */
-    protected function parseFilter($filter){
+    protected function parseFilter($filter)
+    {
         // first parse the give filter string
         $parsed = explode(':', $filter, 4);
         $this->field = isset($parsed[1]) ? $parsed[1] : null;
@@ -105,7 +108,8 @@ abstract class filterDocLister{
      * Установка алиаса таблицы
      * @param string $value алиас
      */
-    public function setTableAlias($value){
+    public function setTableAlias($value)
+    {
         $this->tableAlias = $value;
     }
 
@@ -118,23 +122,55 @@ abstract class filterDocLister{
      * @param $value искомое значение
      * @return string
      */
-    protected function build_sql_where($table_alias, $field, $operator, $value){
-        $this->DocLister->debug->debug('Build SQL query for filters: '.$this->DocLister->debug->dumpData(func_get_args()), 'buildQuery', 2);
+    protected function build_sql_where($table_alias, $field, $operator, $value)
+    {
+        $this->DocLister->debug->debug('Build SQL query for filters: ' . $this->DocLister->debug->dumpData(func_get_args()), 'buildQuery', 2);
         $output = sqlHelper::tildeField($field, $table_alias);
 
-        switch ($operator){
-            case '=': case 'eq': case 'is': $output .= " = '" . $this->modx->db->escape($value) ."'"; break;
-			case '!=': case 'no': case 'isnot': $output .= " != '" . $this->modx->db->escape($value) ."'"; break;
-            case '>': case 'gt': $output .= ' > ' . floatval($value); break;
-            case '<': case 'lt': $output .= ' < ' . floatval($value); break;
-            case '<=': case 'elt': $output .= ' <= ' . floatval($value); break;
-            case '>=': case 'egt': $output .= ' >= ' . floatval($value); break;
-            case '%': case 'like': $output = $this->DocLister->LikeEscape($output,$value); break;
-            case 'like-r': $output = $this->DocLister->LikeEscape($output, $value,'=', '[+value+]%'); break;
-            case 'like-l': $output = $this->DocLister->LikeEscape($output, $value,'=', '%[+value+]'); break;
-            case 'regexp': $output .= " REGEXP '".$this->modx->db->escape($value)."'"; break;
-            case 'against':{ /** content:pagetitle,description,content,introtext:against:искомая строка */
-                if(trim($value)!=''){
+        switch ($operator) {
+            case '=':
+            case 'eq':
+            case 'is':
+                $output .= " = '" . $this->modx->db->escape($value) . "'";
+                break;
+            case '!=':
+            case 'no':
+            case 'isnot':
+                $output .= " != '" . $this->modx->db->escape($value) . "'";
+                break;
+            case '>':
+            case 'gt':
+                $output .= ' > ' . floatval($value);
+                break;
+            case '<':
+            case 'lt':
+                $output .= ' < ' . floatval($value);
+                break;
+            case '<=':
+            case 'elt':
+                $output .= ' <= ' . floatval($value);
+                break;
+            case '>=':
+            case 'egt':
+                $output .= ' >= ' . floatval($value);
+                break;
+            case '%':
+            case 'like':
+                $output = $this->DocLister->LikeEscape($output, $value);
+                break;
+            case 'like-r':
+                $output = $this->DocLister->LikeEscape($output, $value, '=', '[+value+]%');
+                break;
+            case 'like-l':
+                $output = $this->DocLister->LikeEscape($output, $value, '=', '%[+value+]');
+                break;
+            case 'regexp':
+                $output .= " REGEXP '" . $this->modx->db->escape($value) . "'";
+                break;
+            case 'against':
+            {
+                /** content:pagetitle,description,content,introtext:against:искомая строка */
+                if (trim($value) != '') {
                     $field = explode(",", $this->field);
                     $field = implode(",", $this->DocLister->renameKeyArr($field, $this->getTableAlias()));
                     $output = "MATCH ({$field}) AGAINST ('{$this->modx->db->escape($value)}*')";
@@ -144,7 +180,7 @@ abstract class filterDocLister{
             case 'containsOne' :
                 $words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $value);
                 $word_arr = array();
-                foreach ($words as $word){
+                foreach ($words as $word) {
                     /**
                      * $word оставляю без trim, т.к. мало ли, вдруг важно найти не просто слово, а именно его начало
                      * Т.е. хочется найти не слово содержащее $word, а начинающееся с $word. Для примера:
@@ -153,16 +189,17 @@ abstract class filterDocLister{
                      */
                     $word_arr[] = $this->DocLister->LikeEscape($output, $word);
                 }
-                if(!empty($word_arr)){
+                if (!empty($word_arr)) {
                     $output = '(' . implode(' OR ', $word_arr) . ')';
-                }else{
-					$output = '';
-				}
+                } else {
+                    $output = '';
+                }
                 break;
-            case 'in': 
-            	$output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')'; 
-            	break;
-            default: $output = '';
+            case 'in':
+                $output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')';
+                break;
+            default:
+                $output = '';
         }
         $this->DocLister->debug->debugEnd("buildQuery");
         return $output;
@@ -172,7 +209,8 @@ abstract class filterDocLister{
      * Получение алиаса таблицы по которой идет выборка
      * @return string
      */
-    public function getTableAlias(){
+    public function getTableAlias()
+    {
         return $this->tableAlias;
     }
 }

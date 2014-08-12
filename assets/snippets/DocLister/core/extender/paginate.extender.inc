@@ -85,12 +85,12 @@ class paginate_DL_Extender extends extDocLister
 
             $display = $this->DocLister->getCFGDef('display', 0);
             $this->_pages['total'] = ceil($tmp / $display);
-            if ($this->_pages['current'] <= $this->_pages['total'] || $this->_pages['total']==0 || $this->DocLister->getCFGDef('noRedirect', 0)) {
+            if ($this->_pages['current'] <= $this->_pages['total'] || $this->_pages['total'] == 0 || $this->DocLister->getCFGDef('noRedirect', 0)) {
                 $this->DocLister->toPlaceholders($tmp, 1, "count");
                 $from = ($this->_pages['current'] - 1) * $display + 1;
-                $this->DocLister->toPlaceholders($from,1,"from");
+                $this->DocLister->toPlaceholders($from, 1, "from");
                 $to = ($this->_pages['current'] == $this->_pages['total']) ? $from - 1 + $tmp - ($this->_pages['current'] - 1) * $display : $from - 1 + $display;
-                $this->DocLister->toPlaceholders($to,1,"to");
+                $this->DocLister->toPlaceholders($to, 1, "to");
             } else {
                 $this->modx->sendRedirect($this->getUrl($this->getRequestName('page')));
             }
@@ -102,7 +102,8 @@ class paginate_DL_Extender extends extDocLister
      * Номер текущей страницы
      * @return int
      */
-    public function currentPage(){
+    public function currentPage()
+    {
         return isset($this->_pages['current']) ? (int)$this->_pages['current'] : 1;
     }
 
@@ -110,9 +111,11 @@ class paginate_DL_Extender extends extDocLister
      * Общее число страниц
      * @return int
      */
-    public function totalPage(){
+    public function totalPage()
+    {
         return isset($this->_pages['total']) ? (int)$this->_pages['total'] : 1;
     }
+
     /**
      *
      * @todo template list pages
@@ -132,8 +135,8 @@ class paginate_DL_Extender extends extDocLister
             default:
                 {
                 /**
-                * @see http://mis-algoritmos.com/2007/05/27/digg-style-pagination-class
-                */
+                 * @see http://mis-algoritmos.com/2007/05/27/digg-style-pagination-class
+                 */
                 $out = '';
                 $dir = dirname(dirname(dirname(__FILE__)));
                 if (file_exists($dir . "/lib/DLpaginate.class.php")) {
@@ -147,7 +150,7 @@ class paginate_DL_Extender extends extDocLister
                         $p->dotsT = $this->DocLister->getChunkByParam('TplDotsPage', '@CODE: ...');
                         $p->prevI = '';
                         $p->nextI = '';
-                        if($this->DocLister->getCFGDef("PrevNextAlwaysShow", 0)=='1'){
+                        if ($this->DocLister->getCFGDef("PrevNextAlwaysShow", 0) == '1') {
                             $p->nextI = $this->DocLister->getChunkByParam('TplNextI', '@CODE: [%paginate.next%] >');
                             $p->prevI = $this->DocLister->getChunkByParam('TplPrevI', '@CODE: < [%paginate.prev%]');
                         }
@@ -166,42 +169,49 @@ class paginate_DL_Extender extends extDocLister
         }
         return $out;
     }
-    public function getUrl($requestName=''){
+
+    public function getUrl($requestName = '')
+    {
         $url = $this->DocLister->getUrl();
         $params = parse_url($url, PHP_URL_QUERY);
         parse_str(html_entity_decode($params), $params);
-        if($requestName==''){
+        if ($requestName == '') {
             switch ($this->DocLister->getCFGDef('paginate', '')) {
-                case 'pages':{
+                case 'pages':
+                {
                     $requestName = 'page';
                     break;
                 }
-                case 'ditto':{
+                case 'ditto':
+                {
                     $requestName = 'start';
                     break;
                 }
-                default:{
+                default:
+                    {
 
-                }
+                    }
             }
         }
-        if($requestName!='' && is_array($params)){
-            $q = http_build_query(array_merge($params, array($this->getRequestName($requestName)=>null)));
+        if ($requestName != '' && is_array($params)) {
+            $q = http_build_query(array_merge($params, array($this->getRequestName($requestName) => null)));
             $url = explode("?", $url, 2);
             $url = $url[0];
-            if(!empty($q)){
-                $url .= "?".$q;
+            if (!empty($q)) {
+                $url .= "?" . $q;
             }
         }
         return $url;
     }
+
     /**
      * Имя REQUEST переменной в пагинаторе
      *
      * @param $name основное имя REQUEST переменной в пагинаторе
      * @return string
      */
-    public function getRequestName($name){
+    public function getRequestName($name)
+    {
         $id = $this->DocLister->getCFGDef('id', '');
         return (($id != '') ? ($id . "_") : "") . $name;
     }

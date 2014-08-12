@@ -7,7 +7,8 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class DLdebug{
+class DLdebug
+{
     private $_log = array();
     private $_calcLog = array();
 
@@ -25,7 +26,8 @@ class DLdebug{
      */
     protected $modx = null;
 
-    public function __construct($DocLister){
+    public function __construct($DocLister)
+    {
         if ($DocLister instanceof DocLister) {
             $this->DocLister = $DocLister;
             $this->modx = $this->DocLister->getMODX();
@@ -37,27 +39,29 @@ class DLdebug{
      * 1 - SQL
      * 2 - Full debug
      */
-    public function debug($message, $key = '', $mode=0){
+    public function debug($message, $key = '', $mode = 0)
+    {
         $mode = (int)$mode;
-        if($mode>0 && $this->DocLister->getDebug() >= $mode){
+        if ($mode > 0 && $this->DocLister->getDebug() >= $mode) {
             $data = array(
-                'msg'=> $message,
+                'msg' => $message,
                 'start' => microtime(true) - $this->DocLister->getTimeStart()
             );
-            if(is_scalar($key) && $key!=''){
+            if (is_scalar($key) && $key != '') {
                 $data['time'] = microtime(true);
                 $this->_calcLog[$key] = $data;
-            }else{
+            } else {
                 $this->_log[count($this->_log)] = $data;
             }
         }
     }
 
-    public function debugEnd($key,$msg=null){
-        if(is_scalar($key) && isset($this->_calcLog[$key],$this->_calcLog[$key]['time']) && $this->DocLister->getDebug()>0){
+    public function debugEnd($key, $msg = null)
+    {
+        if (is_scalar($key) && isset($this->_calcLog[$key], $this->_calcLog[$key]['time']) && $this->DocLister->getDebug() > 0) {
             $this->_log[count($this->_log)] = array(
                 'msg' => isset($msg) ? $msg : $this->_calcLog[$key]['msg'],
-                'start'=>$this->_calcLog[$key]['start'],
+                'start' => $this->_calcLog[$key]['start'],
                 'time' => microtime(true) - $this->_calcLog[$key]['time']
             );
             unset($this->_calcLog[$key]['time']);
@@ -65,35 +69,43 @@ class DLdebug{
     }
 
 
-    public function critical($message, $title=''){
+    public function critical($message, $title = '')
+    {
         //@TODO: dump $_SERVER/$_POST/$_GET/$_COOKIE
     }
-    public function info($message, $title=''){
+
+    public function info($message, $title = '')
+    {
         $this->_sendLogEvent(1, $message, $title);
     }
 
-    public function warning($message, $title=''){
+    public function warning($message, $title = '')
+    {
         $this->_sendLogEvent(2, $message, $title);
     }
-    public function error($message, $title=''){
+
+    public function error($message, $title = '')
+    {
         $this->_sendLogEvent(3, $message, $title);
     }
 
-    private function _sendLogEvent($type, $message, $title=''){
-        $title = "DocLister" . (!empty($title) ? ' - '.$title : '');
+    private function _sendLogEvent($type, $message, $title = '')
+    {
+        $title = "DocLister" . (!empty($title) ? ' - ' . $title : '');
         $this->modx->logEvent(0, $type, $message, $title);
     }
 
-    public function showLog(){
+    public function showLog()
+    {
         $out = "";
-        if($this->DocLister->getDebug()>0 && is_array($this->_log)){
-            foreach($this->_log as $item){
+        if ($this->DocLister->getDebug() > 0 && is_array($this->_log)) {
+            foreach ($this->_log as $item) {
                 $item['time'] = isset($item['time']) ? round(floatval($item['time']), 5) : 0;
                 $item['start'] = isset($item['start']) ? round(floatval($item['start']), 5) : 0;
 
-                if(isset($item['msg'])){
-                    $item['msg']= $this->dumpData($item['msg']);
-                }else{
+                if (isset($item['msg'])) {
+                    $item['msg'] = $this->dumpData($item['msg']);
+                } else {
                     $item['msg'] = '';
                 }
 
@@ -101,9 +113,9 @@ class DLdebug{
                             <strong>action time</strong>: <em>[+time+]</em> &middot; <strong>total time</strong>: <em>[+start+]</em><br />
                             <blockquote>[+msg+]</blockquote>
                     </li>';
-                $out .= $this->DocLister->parseChunk("@CODE: ".$tpl, $item);
+                $out .= $this->DocLister->parseChunk("@CODE: " . $tpl, $item);
             }
-            if(!empty($out)){
+            if (!empty($out)) {
                 $out = $this->DocLister->parseChunk("@CODE:
                 <style>.dlDebug{
                     background: #eee !important;
@@ -143,15 +155,16 @@ class DLdebug{
                     word-break: break-all !important;
                 }
                 </style>
-                <div class=\"dlDebug\"><ul>[+wrap+]</ul></div>", array('wrap'=>$out));
+                <div class=\"dlDebug\"><ul>[+wrap+]</ul></div>", array('wrap' => $out));
             }
         }
         return $out;
     }
 
-    public function dumpData($data, $wrap=''){
-        $out = $this->DocLister->sanitarData(print_r($data,1));
-        if(!empty($wrap) && is_string($wrap)){
+    public function dumpData($data, $wrap = '')
+    {
+        $out = $this->DocLister->sanitarData(print_r($data, 1));
+        if (!empty($wrap) && is_string($wrap)) {
             $out = "<{$wrap}>{$out}</{$wrap}>";
         }
         return $out;

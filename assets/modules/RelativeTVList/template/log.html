@@ -4,7 +4,7 @@
     <div class="sectionHeader">Отчет</div>
     <div class="sectionBody" style="padding:10px 20px;">
         <? if(is_array($logContent)): ?>
-            <? $logContent = implode("<br />", $logContent); ?>
+        <? $logContent = implode("<br />", $logContent); ?>
         <? endif; ?>
         <?=$logContent;?>
     </div>

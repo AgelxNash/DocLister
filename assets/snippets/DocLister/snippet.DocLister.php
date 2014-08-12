@@ -24,7 +24,7 @@ if (isset($controller)) {
     $controller = "site_content";
 }
 $classname = $controller . "DocLister";
-$dir = isset($dir) ? $dir : $DLDir."/core/controller/";
+$dir = isset($dir) ? $dir : $DLDir . "/core/controller/";
 if ($classname != 'DocLister' && file_exists($dir . $controller . ".php") && !class_exists($classname, false)) {
     require_once($dir . $controller . ".php");
 }
@@ -33,17 +33,17 @@ if (class_exists($classname, false) && $classname != 'DocLister') {
     $DocLister = new $classname($modx, $modx->Event->params, $_time);
     $data = $DocLister->getDocs();
     $out = isset($modx->Event->params['api']) ? $DocLister->getJSON($data, $modx->Event->params['api']) : $DocLister->render();
-    if(isset($_SESSION['usertype']) && $_SESSION['usertype']=='manager'){
+    if (isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'manager') {
         $debug = $DocLister->debug->showLog();
-    }else{
+    } else {
         $debug = '';
     }
-    if($DocLister->getCFGDef('debug', 0)){
-		if(isset($modx->Event->params['api'])){
-			$modx->setPlaceholder($DocLister->getCFGDef("sysKey", "dl").".debug", $debug);
-		}else{
-			$out = ($DocLister->getCFGDef('debug')>0) ? $debug.$out : $out.$debug;
-		}
+    if ($DocLister->getCFGDef('debug', 0)) {
+        if (isset($modx->Event->params['api'])) {
+            $modx->setPlaceholder($DocLister->getCFGDef("sysKey", "dl") . ".debug", $debug);
+        } else {
+            $out = ($DocLister->getCFGDef('debug') > 0) ? $debug . $out : $out . $debug;
+        }
     }
 }
 return $out;

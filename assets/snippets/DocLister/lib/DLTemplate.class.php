@@ -1,5 +1,6 @@
 <?php
-class DLTemplate{
+class DLTemplate
+{
     protected $modx = null;
 
     /**
@@ -7,8 +8,8 @@ class DLTemplate{
      */
     protected static $instance;
 
-	public $phx = null;
-	
+    public $phx = null;
+
     /**
      * gets the instance via lazy initialization (created on first usage)
      *
@@ -71,13 +72,15 @@ class DLTemplate{
         }
         return $out;
     }
+
     /**
      * refactor $modx->getChunk();
      *
      * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
      * @return string html template with placeholders without data
      */
-    public function getChunk($name){
+    public function getChunk($name)
+    {
         $tpl = '';
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
             $mode = (preg_match('/^((@[A-Z]+)[:]{0,1})(.*)/Asu', trim($name), $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
@@ -154,21 +157,23 @@ class DLTemplate{
                     }
                     break;
                 }
-				case '@SNIPPET':{
-					if ($subTmp != '') {
+                case '@SNIPPET':
+                {
+                    if ($subTmp != '') {
                         $tpl = $this->modx->runSnippet($subTmp);
                     } else {
                         //error snippet name
                     }
-					break;
-				}
-                default:{
-                    $tpl = $this->modx->getChunk($name);
+                    break;
                 }
+                default:
+                    {
+                    $tpl = $this->modx->getChunk($name);
+                    }
             }
             $this->modx->chunkCache[$name] = $tpl;
-        }else{
-            if($name!=''){
+        } else {
+            if ($name != '') {
                 $tpl = $this->modx->getChunk($name);
             }
         }
@@ -187,62 +192,67 @@ class DLTemplate{
     {
         $out = null;
         if (is_array($data) && ($out = $this->getChunk($name)) != '') {
-            if(preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is",$out)){
+            if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
                 $item = $this->renameKeyArr($data, '[', ']', '+');
                 $out = str_replace(array_keys($item), array_values($item), $out);
             }
-			if(preg_match("/:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?/is",$out)){
-				if(is_null($this->phx) || !($this->phx instanceof DLphx)){
-					$this->phx = $this->createPHx(0, 1000);
-				}
-				$this->phx->placeholders = array();
-				$this->setPHxPlaceholders($data);
-				$out = $this->phx->Parse($out);
-				$out = $this->cleanPHx($out);
-			}
+            if (preg_match("/:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?/is", $out)) {
+                if (is_null($this->phx) || !($this->phx instanceof DLphx)) {
+                    $this->phx = $this->createPHx(0, 1000);
+                }
+                $this->phx->placeholders = array();
+                $this->setPHxPlaceholders($data);
+                $out = $this->phx->Parse($out);
+                $out = $this->cleanPHx($out);
+            }
         }
-        if($parseDocumentSource){
+        if ($parseDocumentSource) {
             $out = $this->parseDocumentSource($out);
         }
         return $out;
     }
-	/**
+
+    /**
      *
      * @param string $value
      * @param string $key
      * @param string $path
      */
-    public function setPHxPlaceholders($value = '', $key = '', $path = ''){
+    public function setPHxPlaceholders($value = '', $key = '', $path = '')
+    {
         $keypath = !empty($path) ? $path . "." . $key : $key;
         $this->phx->curPass = 0;
-        if(is_array($value)){
+        if (is_array($value)) {
             foreach ($value as $subkey => $subval) {
                 $this->setPHxPlaceholders($subval, $subkey, $keypath);
             }
-        }else{
+        } else {
             $this->phx->setPHxVariable($keypath, $value);
         }
     }
-	
-	/**
+
+    /**
      *
      * @param string $string
      * @return string
      */
-    public function cleanPHx($string){
+    public function cleanPHx($string)
+    {
         preg_match_all('~\[(\+|\*|\()([^:\+\[\]]+)([^\[\]]*?)(\1|\))\]~s', $string, $matches);
-        if ($matches[0]){
+        if ($matches[0]) {
             $string = str_replace($matches[0], '', $string);
         }
         return $string;
     }
-	
-	public function createPHx($debug=0, $maxpass=50){
-		if(!class_exists('DLphx', false)){
-			include_once(dirname(__FILE__) . '/DLphx.class.php');
-		}
-		return new DLphx($debug, $maxpass);
-	}
+
+    public function createPHx($debug = 0, $maxpass = 50)
+    {
+        if (!class_exists('DLphx', false)) {
+            include_once(dirname(__FILE__) . '/DLphx.class.php');
+        }
+        return new DLphx($debug, $maxpass);
+    }
+
     /**
      * Переменовывание элементов массива
      *
@@ -270,11 +280,12 @@ class DLTemplate{
         }
         return $out;
     }
-	
-	public function parseDocumentSource($out){
+
+    public function parseDocumentSource($out)
+    {
         $site_status = $this->modx->getConfig('site_status');
         $this->modx->config['site_status'] = 0;
-		$out = str_replace(array('[!', '!]'), array('[[', ']]'), $out);
+        $out = str_replace(array('[!', '!]'), array('[[', ']]'), $out);
         $out = $this->modx->parseDocumentSource($out);
         $out = $this->modx->rewriteUrls($out);
         $this->modx->config['site_status'] = $site_status;

@@ -219,54 +219,54 @@ class Textile
     }
 
 // -------------------------------------------------------------
-    function TextileThis($text, $lite='', $encode='', $noimage='', $strict='', $rel='')
+    function TextileThis($text, $lite = '', $encode = '', $noimage = '', $strict = '', $rel = '')
     {
         if ($rel)
-           $this->rel = ' rel="'.$rel.'" ';
+            $this->rel = ' rel="' . $rel . '" ';
 
         $text = $this->incomingEntities($text);
-        
-        if ($encode) {
-			$text = str_replace("x%x%", "&#38;", $text);
-        	return $text;
-        } else {
-        
-	    	if(!$strict) {
-				$text = $this->fixEntities($text);
-				$text = $this->cleanWhiteSpace($text);
-			}
-	
-			$text = $this->getRefs($text);
-	
-			$text = $this->noTextile($text);
-			$text = $this->links($text);
-			if (!$noimage) {
-				$text = $this->image($text);
-			}
-			$text = $this->code($text);
-			$text = $this->span($text);
-			$text = $this->superscript($text);
-			$text = $this->footnoteRef($text);
-			$text = $this->glyphs($text);
-			$text = $this->retrieve($text);
-	
-			if (!$lite) {
-				$text = $this->lists($text);
-				$text = $this->table($text);
-				$text = $this->block($text);
-			}
 
-				// clean up <notextile>
-			$text = preg_replace('/<\/?notextile>/', "", $text);
-	
-				// turn the temp char back to an ampersand entity
-			$text = str_replace("x%x%", "&#38;", $text);
-	
-				// just to be tidy
-			$text = str_replace("<br />", "<br />\n", $text);
-	
-			return $text;
-      	}
+        if ($encode) {
+            $text = str_replace("x%x%", "&#38;", $text);
+            return $text;
+        } else {
+
+            if (!$strict) {
+                $text = $this->fixEntities($text);
+                $text = $this->cleanWhiteSpace($text);
+            }
+
+            $text = $this->getRefs($text);
+
+            $text = $this->noTextile($text);
+            $text = $this->links($text);
+            if (!$noimage) {
+                $text = $this->image($text);
+            }
+            $text = $this->code($text);
+            $text = $this->span($text);
+            $text = $this->superscript($text);
+            $text = $this->footnoteRef($text);
+            $text = $this->glyphs($text);
+            $text = $this->retrieve($text);
+
+            if (!$lite) {
+                $text = $this->lists($text);
+                $text = $this->table($text);
+                $text = $this->block($text);
+            }
+
+            // clean up <notextile>
+            $text = preg_replace('/<\/?notextile>/', "", $text);
+
+            // turn the temp char back to an ampersand entity
+            $text = str_replace("x%x%", "&#38;", $text);
+
+            // just to be tidy
+            $text = str_replace("<br />", "<br />\n", $text);
+
+            return $text;
+        }
     }
 
 // -------------------------------------------------------------
@@ -324,13 +324,13 @@ class Textile
                 $class = $ids[1];
             }
 
-            return join('',array(
-                ($style)   ? ' style="'   . join("", $style) .'"':'',
-                ($class)   ? ' class="'   . $class           .'"':'',
-                ($lang)    ? ' lang="'    . $lang            .'"':'',
-                ($id)      ? ' id="'      . $id              .'"':'',
-                ($colspan) ? ' colspan="' . $colspan         .'"':'',
-                ($rowspan) ? ' rowspan="' . $rowspan         .'"':''
+            return join('', array(
+                ($style) ? ' style="' . join("", $style) . '"' : '',
+                ($class) ? ' class="' . $class . '"' : '',
+                ($lang) ? ' lang="' . $lang . '"' : '',
+                ($id) ? ' id="' . $id . '"' : '',
+                ($colspan) ? ' colspan="' . $colspan . '"' : '',
+                ($rowspan) ? ' rowspan="' . $rowspan . '"' : ''
             ));
         }
         return '';
@@ -340,8 +340,8 @@ class Textile
     function table($text)
     {
         $text = $text . "\n\n";
-        return preg_replace_callback("/^(?:table(_?{$this->s}{$this->a}{$this->c})\. ?\n)?^({$this->a}{$this->c}\.? ?\|.*\|)\n\n/smU", 
-           array(&$this, "fTable"), $text);
+        return preg_replace_callback("/^(?:table(_?{$this->s}{$this->a}{$this->c})\. ?\n)?^({$this->a}{$this->c}\.? ?\|.*\|)\n\n/smU",
+            array(&$this, "fTable"), $text);
     }
 
 // -------------------------------------------------------------
@@ -349,13 +349,13 @@ class Textile
     {
         $tatts = $this->pba($matches[1], 'table');
 
-        foreach(preg_split("/\|$/m", $matches[2], -1, PREG_SPLIT_NO_EMPTY) as $row) {
+        foreach (preg_split("/\|$/m", $matches[2], -1, PREG_SPLIT_NO_EMPTY) as $row) {
             if (preg_match("/^($this->a$this->c\. )(.*)/m", $row, $rmtch)) {
                 $ratts = $this->pba($rmtch[1], 'tr');
                 $row = $rmtch[2];
             } else $ratts = '';
 
-            foreach(explode("|", $row) as $cell) {
+            foreach (explode("|", $row) as $cell) {
                 $ctyp = "d";
                 if (preg_match("/^_/", $cell)) $ctyp = "h";
                 if (preg_match("/^(_?$this->s$this->a$this->c\. )(.*)/", $cell, $cmtch)) {
@@ -382,7 +382,7 @@ class Textile
     function fList($m)
     {
         $text = explode("\n", $m[0]);
-        foreach($text as $line) {
+        foreach ($text as $line) {
             $nextline = next($text);
             if (preg_match("/^([#*]+)($this->a$this->c) (.*)$/s", $line, $m)) {
                 list(, $tl, $atts, $content) = $m;
@@ -395,11 +395,11 @@ class Textile
                     $line = "\t\t<li>" . $content;
                 }
 
-                if(strlen($nl) <= strlen($tl)) $line .= "</li>";
-                foreach(array_reverse($lists) as $k => $v) {
-                    if(strlen($k) > strlen($nl)) {
+                if (strlen($nl) <= strlen($tl)) $line .= "</li>";
+                foreach (array_reverse($lists) as $k => $v) {
+                    if (strlen($k) > strlen($nl)) {
                         $line .= "\n\t</" . $this->lT($k) . "l>";
-                        if(strlen($k) > 1) 
+                        if (strlen($k) > 1)
                             $line .= "</li>";
                         unset($lists[$k]);
                     }
@@ -428,35 +428,32 @@ class Textile
         $text = explode("\n", $text);
         array_push($text, " ");
 
-        foreach($text as $line) {
+        foreach ($text as $line) {
             if (preg_match('/<pre>/i', $line)) {
                 $pre = true;
-            }
-            elseif (preg_match('/<txp:php>/i', $line)) {
+            } elseif (preg_match('/<txp:php>/i', $line)) {
                 $php = true;
-            }
-            elseif (preg_match('/^\s*<txp:/i', $line)) {
+            } elseif (preg_match('/^\s*<txp:/i', $line)) {
                 $txp = true;
             }
 
 
-            foreach($find as $tag) {
+            foreach ($find as $tag) {
                 $line = ($pre == false and $php == false and $txp == false)
-                ? preg_replace_callback("/^($tag)($this->a$this->c)\.(?::(\S+))? (.*)$/",
-                    array(&$this, "fBlock"), $line)
-                : $line;
+                    ? preg_replace_callback("/^($tag)($this->a$this->c)\.(?::(\S+))? (.*)$/",
+                        array(&$this, "fBlock"), $line)
+                    : $line;
             }
 
             $line = (!$php and !$txp) ? preg_replace('/^(?!\t|<\/?pre|<\/?code|$| )(.*)/', "\t<p>$1</p>", $line) : $line;
 
-            $line = ($pre or $php) ? str_replace("<br />", "\n", $line):$line;
+            $line = ($pre or $php) ? str_replace("<br />", "\n", $line) : $line;
             if (preg_match('/<\/pre>/i', $line)) {
                 $pre = false;
+            } elseif (preg_match('/<\/txp:php>/i', $line)) {
+                $php = false;
             }
-            elseif (preg_match('/<\/txp:php>/i', $line)) {
-		$php = false;
-            }
-			if ($txp == true) $txp = false;
+            if ($txp == true) $txp = false;
             $out[] = $line;
         }
         return join("\n", $out);
@@ -493,9 +490,9 @@ class Textile
 // -------------------------------------------------------------
     function span($text)
     {
-        $qtags = array('\*\*','\*','\?\?','-','__','_','%','\+','~');
+        $qtags = array('\*\*', '\*', '\?\?', '-', '__', '_', '%', '\+', '~');
 
-        foreach($qtags as $f) {
+        foreach ($qtags as $f) {
             $text = preg_replace_callback("/
                 (?<=^|\s|[[:punct:]]|[{([])
                 ($f)
@@ -514,15 +511,15 @@ class Textile
     function fSpan($m)
     {
         $qtags = array(
-        	'*'  => 'strong',
+            '*' => 'strong',
             '**' => 'b',
             '??' => 'cite',
-            '_'  => 'em',
+            '_' => 'em',
             '__' => 'i',
-            '-'  => 'del',
-            '%'  => 'span',
-            '+'  => 'ins',
-            '~'  => 'sub'
+            '-' => 'del',
+            '%' => 'span',
+            '+' => 'ins',
+            '~' => 'sub'
         );
 
         list(, $tag, $atts, $cite, $content, $end) = $m;
@@ -535,7 +532,7 @@ class Textile
 //		$this->dump($out);
 
         return $out;
-    
+
     }
 
 // -------------------------------------------------------------
@@ -570,12 +567,12 @@ class Textile
 
         $parts = parse_url($url);
         if (empty($parts['host']) and preg_match('/^\w/', @$parts['path']))
-            $url = hu.$url;
+            $url = hu . $url;
 
         $out = $pre . '<a href="' . $url . $slash . '"' . $atts . $this->rel . '>' . $text . '</a>' . $post;
 
-		// $this->dump($out);
-		return $out;
+        // $this->dump($out);
+        return $out;
 
     }
 
@@ -585,9 +582,10 @@ class Textile
         return preg_replace_callback("/(?<=^|\s)\[(.+)\]((?:http:\/\/|\/)\S+)(?=\s|$)/U",
             array(&$this, "refs"), $text);
     }
+
     // -------------------------------------------------------------
 
-function refs($m)
+    function refs($m)
     {
         list(, $flag, $url) = $m;
         $this->urlrefs[$flag] = $url;
@@ -621,10 +619,10 @@ function refs($m)
     function fImage($m)
     {
         list(, $algn, $atts, $url) = $m;
-        $atts  = $this->pba($atts);
-        $atts .= ($algn != '')  ? ' align="' . $this->iAlign($algn) . '"' : '';
+        $atts = $this->pba($atts);
+        $atts .= ($algn != '') ? ' align="' . $this->iAlign($algn) . '"' : '';
         $atts .= (isset($m[4])) ? ' title="' . $m[4] . '"' : '';
-        $atts .= (isset($m[4])) ? ' alt="'   . $m[4] . '"' : ' alt=""';
+        $atts .= (isset($m[4])) ? ' alt="' . $m[4] . '"' : ' alt=""';
         $size = @getimagesize($url);
         if ($size) $atts .= " $size[3]";
 
@@ -633,7 +631,7 @@ function refs($m)
 
         $parts = parse_url($url);
         if (empty($parts['host']) and preg_match('/^\w/', @$parts['path']))
-            $url = hu.$url;
+            $url = hu . $url;
 
         $out = array(
             ($href) ? '<a href="' . $href . '">' : '',
@@ -641,7 +639,7 @@ function refs($m)
             ($href) ? '</a>' : ''
         );
 
-        return join('',$out);
+        return join('', $out);
     }
 
 // -------------------------------------------------------------
@@ -679,7 +677,7 @@ function refs($m)
     {
         $i = 0;
         if (isset($this->shelf) && is_array($this->shelf)) {
-            foreach($this->shelf as $r) {
+            foreach ($this->shelf as $r) {
                 $i++;
                 $text = str_replace("<$i>", $r, $text);
             }
@@ -697,8 +695,8 @@ function refs($m)
     function encodeEntities($text)
     {
         return (function_exists('mb_encode_numericentity'))
-        ?    $this->encode_high($text)
-        :    htmlentities($text, ENT_NOQUOTES, "utf-8");
+            ? $this->encode_high($text)
+            : htmlentities($text, ENT_NOQUOTES, "utf-8");
     }
 
 // -------------------------------------------------------------
@@ -722,16 +720,16 @@ function refs($m)
 // -------------------------------------------------------------
     function noTextile($text)
     {
-        $text = preg_replace_callback('/(^|\s)<notextile>(.*)<\/notextile>(\s|$)?/msU', 
+        $text = preg_replace_callback('/(^|\s)<notextile>(.*)<\/notextile>(\s|$)?/msU',
             array(&$this, "fTextile"), $text);
-        return preg_replace_callback('/(^|\s)==(.*)==(\s|$)?/msU', 
+        return preg_replace_callback('/(^|\s)==(.*)==(\s|$)?/msU',
             array(&$this, "fTextile"), $text);
-    } 
+    }
 
 // -------------------------------------------------------------
     function fTextile($m)
     {
-        $modifiers = array(     
+        $modifiers = array(
             '"' => '&#34;',
             '%' => '&#37;',
             '*' => '&#42;',
@@ -740,12 +738,12 @@ function refs($m)
             '<' => '&#60;',
             '=' => '&#61;',
             '>' => '&#62;',
-            '?' => '&#63;',     
+            '?' => '&#63;',
             '^' => '&#94;',
             '_' => '&#95;',
-            '~' => '&#126;',        
-            );
-        
+            '~' => '&#126;',
+        );
+
         @list(, $before, $notextile, $after) = $m;
         $notextile = str_replace(array_keys($modifiers), array_values($modifiers), $notextile);
         return $before . '<notextile>' . $notextile . '</notextile>' . $after;
@@ -770,7 +768,7 @@ function refs($m)
         if (empty($this->fn[$id]))
             $this->fn[$id] = uniqid(rand());
         $fnid = $this->fn[$id];
-        return '<sup><a href="#fn'.$fnid.'">'.$id.'</a></sup>'.$t;
+        return '<sup><a href="#fn' . $fnid . '">' . $id . '</a></sup>' . $t;
     }
 
 // -------------------------------------------------------------
@@ -778,44 +776,43 @@ function refs($m)
     {
         // fix: hackish
         $text = preg_replace('/"\z/', "\" ", $text);
-		$pnc = '[[:punct:]]';
+        $pnc = '[[:punct:]]';
 
         $glyph_search = array(
-            '/([^\s[{(>_*])?\'(?(1)|(?=\s|s\b|'.$pnc.'))/',      //  single closing
-            '/\'/',                                              //  single opening
-            '/([^\s[{(>_*])?"(?(1)|(?=\s|'.$pnc.'))/',           //  double closing
-            '/"/',                                               //  double opening
-            '/\b( )?\.{3}/',                                     //  ellipsis
-            '/\b([A-Z][A-Z0-9]{2,})\b(?:[(]([^)]*)[)])/',        //  3+ uppercase acronym
-            '/\s?--\s?/',                                        //  em dash
-            '/\s-\s/',                                           //  en dash
-            '/(\d+) ?x ?(\d+)/',                                 //  dimension sign
-            '/\b ?[([]TM[])]/i',                                 //  trademark
-            '/\b ?[([]R[])]/i',                                  //  registered
-            '/\b ?[([]C[])]/i');                                 //  copyright
+            '/([^\s[{(>_*])?\'(?(1)|(?=\s|s\b|' . $pnc . '))/', //  single closing
+            '/\'/', //  single opening
+            '/([^\s[{(>_*])?"(?(1)|(?=\s|' . $pnc . '))/', //  double closing
+            '/"/', //  double opening
+            '/\b( )?\.{3}/', //  ellipsis
+            '/\b([A-Z][A-Z0-9]{2,})\b(?:[(]([^)]*)[)])/', //  3+ uppercase acronym
+            '/\s?--\s?/', //  em dash
+            '/\s-\s/', //  en dash
+            '/(\d+) ?x ?(\d+)/', //  dimension sign
+            '/\b ?[([]TM[])]/i', //  trademark
+            '/\b ?[([]R[])]/i', //  registered
+            '/\b ?[([]C[])]/i'); //  copyright
 
-        $glyph_replace = array('$1&#8217;$2',   //  single closing
-            '&#8216;',                          //  single opening
-            '$1&#8221;',                        //  double closing
-            '&#8220;',                          //  double opening
-            '$1&#8230;',                        //  ellipsis
+        $glyph_replace = array('$1&#8217;$2', //  single closing
+            '&#8216;', //  single opening
+            '$1&#8221;', //  double closing
+            '&#8220;', //  double opening
+            '$1&#8230;', //  ellipsis
             '<acronym title="$2">$1</acronym>', //  3+ uppercase acronym
-            '&#8212;',                          //  em dash
-            ' &#8211; ',                        //  en dash
-            '$1&#215;$2',                       //  dimension sign
-            '&#8482;',                          //  trademark
-            '&#174;',                           //  registered
-            '&#169;');                          //  copyright
+            '&#8212;', //  em dash
+            ' &#8211; ', //  en dash
+            '$1&#215;$2', //  dimension sign
+            '&#8482;', //  trademark
+            '&#174;', //  registered
+            '&#169;'); //  copyright
 
         $codepre = false;
         /*  if no html, do a simple search and replace... */
         if (!preg_match("/<.*>/", $text)) {
             $text = preg_replace($glyph_search, $glyph_replace, $text);
             return $text;
-        }
-        else {
+        } else {
             $text = preg_split("/(<.*>)/U", $text, -1, PREG_SPLIT_DELIM_CAPTURE);
-            foreach($text as $line) {
+            foreach ($text as $line) {
                 $offtags = ('code|pre|kbd|notextile|txp:php');
 
                 /*  matches are off if we're between <code>, <pre> etc. */
@@ -830,7 +827,7 @@ function refs($m)
                 if ($codepre == true) {
                     $line = htmlspecialchars($line, ENT_NOQUOTES, "UTF-8");
                     $line = preg_replace('/&lt;(\/?' . $offtags . ')&gt;/', "<$1>", $line);
-                    $line = str_replace("&amp;#","&#",$line);
+                    $line = str_replace("&amp;#", "&#", $line);
                 }
 
                 $glyph_out[] = $line;
@@ -853,9 +850,9 @@ function refs($m)
     function hAlign($in)
     {
         $vals = array(
-            '<'  => 'left',
-            '='  => 'center',
-            '>'  => 'right',
+            '<' => 'left',
+            '=' => 'center',
+            '>' => 'right',
             '<>' => 'justify');
         return (isset($vals[$in])) ? $vals[$in] : '';
     }
@@ -905,25 +902,23 @@ function refs($m)
         if (isset($_POST[$thing])) {
             if (get_magic_quotes_gpc()) {
                 return stripslashes($_POST[$thing]);
-            }
-            else {
+            } else {
                 return $_POST[$thing];
             }
-        }
-        else {
+        } else {
             return '';
         }
     }
-    
+
 // -------------------------------------------------------------
     function dump()
     {
-		foreach (func_get_args() as $a)
-			echo "\n<pre>",(is_array($a)) ? print_r($a) : $a, "</pre>\n";
-	}
-	
+        foreach (func_get_args() as $a)
+            echo "\n<pre>", (is_array($a)) ? print_r($a) : $a, "</pre>\n";
+    }
+
 // -------------------------------------------------------------
-	function blockLite($text)
+    function blockLite($text)
     {
         $find = array('bq', 'p');
 
@@ -933,9 +928,9 @@ function refs($m)
         $text = explode("\n", $text);
         array_push($text, " ");
 
-        foreach($text as $line) {
+        foreach ($text as $line) {
 
-            foreach($find as $tag) {
+            foreach ($find as $tag) {
                 $line = preg_replace_callback("/^($tag)($this->a$this->c)\.(?::(\S+))? (.*)$/",
                     array(&$this, "fBlock"), $line);
             }
