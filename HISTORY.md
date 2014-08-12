@@ -4,5 +4,7 @@
 * [Add] Добавлен хелпер класс DLHelper
 * [Refactor] Библиотека MODxAPI перенесена в репозиторий DocLister
 * [Refactor] Модуль RelativeTVList перемещен в репозиторий DocLister
+* [Refactor] Модуль RedirectMap2 перемещен в репозиторий DocLister
+* [Refactor] Плагин getPageID перемещен добавлен DocLister
 * [Refactor] Добавлена поддержка микроформата Breadcrumb schema.org
 * [Refactor] Пересмотрена структура каталогов

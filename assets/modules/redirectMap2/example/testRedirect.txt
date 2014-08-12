@@ -1,0 +1,3 @@
+/index.html
+/hello
+/example/blog-post.php
