@@ -13,6 +13,7 @@ jQuery plugin for [FileAPI](https://github.com/mailru/FileAPI/) (multiupload, im
 	};
 </script>
 <script src="/js/jquery.fileapi/FileAPI/FileAPI.min.js"></script>
+<script src="/js/jquery.fileapi/FileAPI/FileAPI.exif.js"></script>
 <script src="/js/jquery.fileapi/jquery.fileapi.min.js"></script>
 ```
 
@@ -210,6 +211,17 @@ $('...').fileapi({
 });
 ```
 
+### onBeforeUpload`:Function`(evt`:$.Event`, uiEvt`:Object`)
+Before start uploading.
+```js
+function (evt, uiEvt){
+	var files = uiEvt.files;
+	var widget = uiEvt.widget;
+	if (files.length > 1000) {
+	   return false; // prevent uploading
+	}
+}
+```
 
 ### onUpload`:Function`(evt`:$.Event`, uiEvt`:Object`)
 Start uploading.
@@ -336,6 +348,96 @@ $('#userpic').fileapi({
 });
 ```
 
+---
+
+
+## Customization
+
+```js
+$('#upload').fileapi({
+	multiple: true,
+
+	// Restores the list of files uploaded earlier.
+	files: [{
+		src: "http://path/to/filename.png",
+		type: "image/png",
+		name: "filename.png"
+		size: 31409,
+		data: { id: 999, token: "..." }
+	}],
+
+	// Remove a file from the upload queue
+	onFileRemove: function (evt, file){
+		if( !confirm("Are you sure?") ){
+			// Cancel remove
+			evt.preventDefault();
+		}
+	},
+
+	onFileComplete: function (evt, uiEvt){
+		var file = uiEvt.file;
+		var json = uiEvt.result;
+
+		file.data = {
+			id: json.id,
+			token: json.token
+		};
+	},
+
+	onFileRemoveCompleted: function (evt, file){
+		evt.preventDefault();
+
+		file.$el
+			.attr('disabled', true)
+			.addClass('my_disabled')
+		;
+
+		new ModalConfirm('Delete "'+file.name+'"?')
+			.then(function (){
+				$.post('/api/remove', file.data);
+
+				$('#upload').fileapi("remove", file);
+				// or so
+				evt.widget.remove(file);
+			}, function (){
+				file.$el
+					.attr('disabled', false)
+					.removeClass('my_disabled')
+				;
+			})
+		;
+	}
+
+})
+```
+
+
+---
+
+## Using with Bootstrap
+
+You can use this uploader with Bootstrap framework without writing much additional CSS. Just add the following CSS to your page to hide the browser's "browse" button:
+
+```css
+#id-of-uploader .btn {
+	cursor: pointer;
+	display: inline-block;
+	position: relative;
+	overflow: hidden;
+}
+
+#id-of-uploader .btn input {
+	top: -10px;
+	right: -40px;
+	z-index: 2;
+	position: absolute;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+	font-size: 50px;
+}
+```
+
 
 ---
 
@@ -368,6 +470,27 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 ## Changelog
+### 0.4.3
+ * #84: fixed modal.js
+ * #82: clear(all: true)
+ * #61: always parse result (dataType === 'json')
+
+### 0.4.2
+ * #73: git -> gif (fixed typo)
+
+### 0.4.1
+ * #67: `resize` method
+ * #63: `remove` method
+ * - console.log
+ * `modal` close
+
+### 0.4.0
+* #57: + `onBeforeUpload` event
+* support `disabled` dom-attribute
+* #34: fixed `imageTransform`
+* + FileAPI v2.0.3
+* #35: + `imageOriginal` option
+
 ### 0.3.1
  * fixed `crop` method
  * + `onFilePrepare` event

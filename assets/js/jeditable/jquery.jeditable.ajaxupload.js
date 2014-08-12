@@ -15,26 +15,26 @@
  * Revision: $Id$
  *
  */
-
+ 
 $.editable.addInputType('ajaxupload', {
     /* create input element */
-    element: function (settings) {
+    element : function(settings) {
         settings.onblur = 'ignore';
         var input = $('<input type="file" id="upload" name="upload" />');
         $(this).append(input);
         return(input);
     },
-    content: function (string, settings, original) {
+    content : function(string, settings, original) {
         /* do nothing */
     },
-    plugin: function (settings, original) {
+    plugin : function(settings, original) {
         var form = this;
         form.attr("enctype", "multipart/form-data");
-        $("button:submit", form).bind('click', function () {
+        $("button:submit", form).bind('click', function() {
             //$(".message").show();
             $.ajaxFileUpload({
                 url: settings.target,
-                secureuri: false,
+                secureuri:false,
                 fileElementId: 'upload',
                 dataType: 'html',
                 success: function (data, status) {

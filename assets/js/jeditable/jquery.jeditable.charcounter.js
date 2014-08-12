@@ -15,9 +15,9 @@
  * Revision: $Id: jquery.jeditable.autogrow.js 344 2008-03-24 16:02:11Z tuupola $
  *
  */
-
+ 
 $.editable.addInputType('charcounter', {
-    element: function (settings, original) {
+    element : function(settings, original) {
         var textarea = $('<textarea />');
         if (settings.rows) {
             textarea.attr('rows', settings.rows);
@@ -32,7 +32,7 @@ $.editable.addInputType('charcounter', {
         $(this).append(textarea);
         return(textarea);
     },
-    plugin: function (settings, original) {
+    plugin : function(settings, original) {
         $('textarea', this).charCounter(settings.charcounter.characters, settings.charcounter);
     }
 });
