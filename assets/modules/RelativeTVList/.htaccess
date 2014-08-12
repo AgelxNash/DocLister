@@ -1,5 +1,8 @@
-Order deny,allow
-Deny from all
+IndexIgnore */*
+<Files *.php>
+    Order Deny,Allow
+    Deny from all
+</Files>
 
 <Files init.php>
 	Allow from All
