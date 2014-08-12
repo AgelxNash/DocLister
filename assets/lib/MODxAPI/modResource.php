@@ -84,6 +84,10 @@ class modResource extends MODxAPI
     {
         if (is_scalar($value) && is_scalar($key) && !empty($key)) {
             switch ($key) {
+                case 'parent':{
+                    $value = (int)$value;
+                    break;
+                }
                 case 'template':
                 {
                     $value = trim($value);
@@ -129,6 +133,7 @@ class modResource extends MODxAPI
 
     public function save($fire_events = null, $clearCache = false)
     {
+        $parent = null;
         if ($this->field['pagetitle'] == '') {
             $this->log['emptyPagetitle'] = 'Pagetitle is empty in <pre>' . print_r($this->field, true) . '</pre>';
             return false;
@@ -174,10 +179,23 @@ class modResource extends MODxAPI
                 }
                 $this->set($key, $value);
             }
-            if ($key == 'alias_visible' && !$this->checkVersion('1.0.10', true)) {
-                $this->eraseField('alias_visible');
-            } else {
-                $this->Uset($key);
+            switch(true){
+                case $key == 'parent':{
+                    $parent = (int)$value;
+                    $q = $this->query("SELECT count(`id`) FROM {$this->makeTable('site_content')} WHERE `id`='{$parent}'");
+                    if($this->modx->db->getValue($q)!=1){
+                        $parent = 0;
+                    }
+                    $this->set($key, $parent);
+                    break;
+                }
+                case ($key == 'alias_visible' && !$this->checkVersion('1.0.10', true)):{
+                    $this->eraseField('alias_visible');
+                    break;
+                }
+                default:{
+                    $this->Uset($key);
+                }
             }
             unset($fld[$key]);
         }
@@ -189,6 +207,11 @@ class modResource extends MODxAPI
                 $SQL = "UPDATE {$this->makeTable('site_content')} SET " . implode(', ', $this->set) . " WHERE `id` = " . $this->id;
             }
             $this->query($SQL);
+
+
+            if($parent > 0){
+                $this->query("UPDATE {$this->makeTable('site_content')} SET `isfolder`='1' WHERE `id`='{$parent}'");
+            }
         }
 
         if ($this->newDoc) {
@@ -234,7 +257,7 @@ class modResource extends MODxAPI
         }
         return $this;
     }
-    
+
     public function delete($ids, $fire_events = null)
     {
         //@TODO: delete with SET deleted=1
