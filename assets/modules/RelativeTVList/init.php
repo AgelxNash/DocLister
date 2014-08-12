@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Agel_Nash
- * Date: 03.01.14
- * Time: 3:23
- */
 if(IN_MANAGER_MODE!="true" || empty($modx) || !($modx instanceof DocumentParser)){
     die("<b>INCLUDE_ORDERING_ERROR</b><br /><br />Please use the MODX Content Manager instead of accessing this file directly.");
 }

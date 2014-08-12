@@ -4,12 +4,12 @@
 
 2) Создаем модуль с кодом
 ```php
-include_once(MODX_BASE_PATH."assets/modules/DLCity/init.php");
+include_once(MODX_BASE_PATH."assets/modules/RelativeTVList/init.php");
 ```
 3) Создаем **сниппет CityList** с кодом
 ```php
 <?php
-return require MODX_BASE_PATH.'assets/modules/DLCity/CityList.snippet.php';
+return require MODX_BASE_PATH.'assets/modules/RelativeTVList/CityList.snippet.php';
 ```
 4) Создаем **сниппет StreetList** с кодом
 ```php
