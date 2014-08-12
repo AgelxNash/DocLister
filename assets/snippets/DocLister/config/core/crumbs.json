@@ -1,0 +1,7 @@
+{
+    "debug" : "0",
+    "tpl" : "@CODE:<li itemscope itemtype=\"http://data-vocabulary.org/Breadcrumb\"><a href=\"[+url+]\" title=\"[+title+]\" itemprop=\"url\"><span itemprop=\"title\">[+title+]</span></a></li>",
+    "tplCurrent" : "@CODE:<li class=\"active\"><span>[+title+]</span></li>",
+    "ownerTPL" : "@CODE:<nav class=\"breadcrumbs\"><ul class=\"breadcrumb\">[+crumbs.wrap+]</ul></nav>",
+    "sysKey" : "crumbs"
+}
