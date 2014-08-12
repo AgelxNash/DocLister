@@ -221,6 +221,20 @@ class modResource extends MODxAPI
         return $this->id;
     }
 
+    public function toTrash($ids){
+        $ignore = $this->systemID();
+        $_ids = $this->cleanIDs($ids, ',', $ignore);
+        try {
+            if (is_array($_ids) && $_ids != array()) {
+                $id = $this->sanitarIn($_ids);
+                $this->query("UPDATE {$this->makeTable('site_content')} SET `deleted`='1' WHERE `id` IN ({$id})");
+            } else throw new Exception('Invalid IDs list for mark trash: <pre>' . print_r($ids, 1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+        return $this;
+    }
+    
     public function delete($ids, $fire_events = null)
     {
         //@TODO: delete with SET deleted=1
