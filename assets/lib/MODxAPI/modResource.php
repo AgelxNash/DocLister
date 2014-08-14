@@ -181,12 +181,13 @@ class modResource extends MODxAPI
             }
             switch(true){
                 case $key == 'parent':{
-                    $parent = (int)$value;
+                    $parent = (int)$this->get($key);
                     $q = $this->query("SELECT count(`id`) FROM {$this->makeTable('site_content')} WHERE `id`='{$parent}'");
                     if($this->modx->db->getValue($q)!=1){
-                        $parent = 0;
+                        $parent = $value;
                     }
                     $this->set($key, $parent);
+					$this->Uset($key);
                     break;
                 }
                 case ($key == 'alias_visible' && !$this->checkVersion('1.0.10', true)):{
