@@ -198,6 +198,9 @@ abstract class filterDocLister
             case 'in':
                 $output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')';
                 break;
+            case 'notin':
+                $output .= ' NOT IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')';
+                break;
             default:
                 $output = '';
         }

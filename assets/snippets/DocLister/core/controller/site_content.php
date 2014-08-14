@@ -50,7 +50,11 @@ class site_contentDocLister extends DocLister
          */
         $request = $this->getExtender('request');
         $link = $request ? $request : $this->getRequest();
-        $url = ($id == $this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "") : $this->modx->makeUrl($id, '', $link, 'full');
+        if($id == $this->modx->config['site_start']){
+            $url = $this->modx->config['site_url'].($link != '' ? "?{$link}" : "");
+        }else{
+            $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
+        }
         return $url;
     }
 
@@ -157,7 +161,11 @@ class site_contentDocLister extends DocLister
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
                     $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
 
-                    $item['url'] = ($item['type'] == 'reference') ? (is_numeric($item['content']) ? $this->modx->makeUrl($item['content']) : $item['content']) : $this->modx->makeUrl($item['id']);
+                    if($item['type'] == 'reference'){
+                        $item['url'] = is_numeric($item['content']) ? $this->modx->makeUrl($item['content'], '', '', $this->getCFGDef('urlScheme', '')) : $item['content'];
+                    }else{
+                        $item['url'] = $this->modx->makeUrl($item['id'], '', '', $this->getCFGDef('urlScheme', ''));
+                    }
 
                     $item['date'] = (isset($item[$date]) && $date != 'createdon' && $item[$date] != 0 && $item[$date] == (int)$item[$date]) ? $item[$date] : $item['createdon'];
                     $item['date'] = $item['date'] + $this->modx->config['server_offset_time'];
