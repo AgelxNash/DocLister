@@ -933,8 +933,9 @@ abstract class DocLister
                 $out = $extSummary->init($this, array(
                     "content" => $item[$contentField],
                     "action" => $this->getCFGDef("summary", ""),
-                    "cut" => $this->getCFGDef('cut'),
-                    "dotted" => $this->getCFGDef('dotted'),
+                    "cutSummary" => $this->getCFGDef('cutSummary'),
+                    "dotSummary" => $this->getCFGDef('dotSummary'),
+                    'breakSummary' => $this->getCFGDef('breakSummary')
                 ));
             }
         }

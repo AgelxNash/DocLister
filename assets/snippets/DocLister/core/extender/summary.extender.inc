@@ -18,9 +18,9 @@ class summary_DL_Extender extends extDocLister
     {
         if (!empty($this->_cfg['action']) && !empty($this->_cfg['content'])) {
             include_once(MODX_BASE_PATH . 'assets/lib/class.summary.php');
-            $summary = new SummaryText($this->_cfg['content'], $this->_cfg['action'], $this->getCFGDef('break', null));
-            $summary->setCut($this->getCFGDef('cut', '<cut/>'));
-            $this->_cfg['content'] = $summary->run($this->getCFGDef('dotted', 0));
+            $summary = new SummaryText($this->_cfg['content'], $this->_cfg['action'], $this->getCFGDef('breakSummary', null));
+            $summary->setCut($this->getCFGDef('cutSummary', '<cut/>'));
+            $this->_cfg['content'] = $summary->run($this->getCFGDef('dotSummary', 0));
         }
         return $this->_cfg['content'];
     }
