@@ -20,22 +20,25 @@ if (file_exists($summary) && !class_exists('SummaryText', false)) {
 }
 
 if (class_exists('SummaryText', false)) {
-    $action = array();
+    $action = (!empty($action) && is_scalar($action)) ? $action : array();
+    if(is_array($action)){
+        if (empty($tags)) {
+            $action[] = 'notags';
+        }
 
-    if (empty($tags)) {
-        $action[] = 'notags';
+        if (!empty($noparser)) {
+            $action[] = 'noparser';
+        }
+
+        if (!empty($len)) {
+            $action[] = 'len' . ((int)$len > 0 ? ':' . (int)$len : '');
+        }
+        if (!empty($chars)) {
+            $action[] = 'chars' . ((int)$chars > 0 ? ':' . (int)$chars : '');
+        }
+
+        $action = implode(",", $action);
     }
-
-    if (!empty($noparser)) {
-        $action[] = 'noparser';
-    }
-
-    if (!empty($len)) {
-        $action[] = 'len' . ((int)$len > 0 ? ':' . (int)$len : '');
-    }
-
-
-    $action = implode(",", $action);
 
     if (!isset($dot)) {
         $dot = 0;

@@ -1,3 +1,12 @@
+## 2.0.2 (15.08.2014)
+* [Add] Поддержка сокращения текста по словам, а не предложениям
+* [Add] Добавлены новые методы в класс APIhelpers
+* [Refactor] Избавление от DLHelper в пользу класса APIhelpers со static методами. Оригинальный класс APIhelpers из комплекта MODxAPI переименован в MODxAPIhelpers
+* [Refactor] Экстендер и сниппет summary в зависимости от одного класса
+* [Refactor] Пересмотр доступности методов в классе SummaryText
+* [Fix] Исправлен вызов экстендера summary в контроллерах onetable и site_content
+* [Fix] Обработка ошибки разбора JSON в модуле RedirectMap
+
 ## 2.0.1 (14.08.2014)
 * [Add] Добавлен параметр urlScheme к контроллерам DocLister
 * [Add] Добавлен новый фильтр notin

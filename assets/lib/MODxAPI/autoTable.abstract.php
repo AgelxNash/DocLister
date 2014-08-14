@@ -1,7 +1,7 @@
 <?php
 require_once('MODx.php');
 
-abstract class autoTable extends MODxAPI
+abstract class autoTable extends MODxAPIhelpers
 {
     protected $table = null;
 

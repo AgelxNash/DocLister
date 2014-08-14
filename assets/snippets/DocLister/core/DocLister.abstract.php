@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '2.0.1';
+    const VERSION = '2.0.2';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -930,7 +930,12 @@ abstract class DocLister
             $out = $item[$introField];
         } else {
             if (!empty($contentField) && !empty($item[$contentField]) && mb_strlen($item[$contentField], 'UTF-8') > 0) {
-                $out = $extSummary->init($this, array("content" => $item[$contentField], "summary" => $this->getCFGDef("summary", "")));
+                $out = $extSummary->init($this, array(
+                    "content" => $item[$contentField],
+                    "action" => $this->getCFGDef("summary", ""),
+                    "cut" => $this->getCFGDef('cut'),
+                    "dotted" => $this->getCFGDef('dotted'),
+                ));
             }
         }
         return $out;

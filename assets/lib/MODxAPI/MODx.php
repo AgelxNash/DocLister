@@ -1,7 +1,7 @@
 <?php
 include_once(MODX_BASE_PATH.'assets/lib/APIHelpers.class.php');
 
-abstract class MODxAPI extends APIhelpers
+abstract class MODxAPI extends MODxAPIhelpers
 {
     protected $modx = null;
     protected $log = array();
@@ -339,5 +339,31 @@ abstract class MODxAPI extends APIhelpers
             $flag = true;
         }
         return $flag;
+    }
+}
+
+class MODxAPIhelpers
+{
+    public function emailValidate($email, $dns = true)
+    {
+        return \APIhelpers::emailValidate($email, $dns);
+    }
+    public function genPass($len, $data = '')
+    {
+        return \APIhelpers::genPass($len, $data);
+    }
+    public function getUserIP($out = '127.0.0.1')
+    {
+        return \APIhelpers::getUserIP($out);
+    }
+
+    public function sanitarTag($data)
+    {
+        return \APIhelpers::sanitarTag($data);
+    }
+
+    public function checkString($value, $minLen = 1, $alph = array(), $mixArray = array(), $debug = false)
+    {
+        return \APIhelpers::checkString($value, $minLen, $alph, $mixArray, $debug);
     }
 }

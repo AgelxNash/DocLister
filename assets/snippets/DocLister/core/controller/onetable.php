@@ -168,11 +168,16 @@ class onetableDocLister extends DocLister
         $fields = is_array($fields) ? $fields : explode(",", $fields);
         $date = $this->getCFGDef('dateSource', 'pub_date');
 
+        /**
+         * @var $extSummary summary_DL_Extender
+         */
+        $extSummary = $this->getExtender('summary');
+
         foreach ($data as $num => $item) {
             switch (true) {
-                case ((array('1') == $fields || in_array('summary', $fields)) && $this->checkExtender('summary')):
+                case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
                 {
-                    $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $this->extender['summary']->init($this, array("content" => $this->_docs[$num]['content'], "summary" => $this->getCFGDef("summary", "")));
+                    $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $this->getSummary($this->_docs[$num], $extSummary);
                     //without break
                 }
                 case ((array('1') == $fields || in_array('date', $fields)) && $date != 'date'):

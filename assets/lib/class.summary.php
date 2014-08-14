@@ -12,19 +12,20 @@
  * @date 31.07.2013
  * @version 1.0.3
  */
-
+include_once(MODX_BASE_PATH . 'assets/lib/APIhelpers.class.php');
 class SummaryText
 {
-    private $_cfg = array('content' => '', 'summary' => '');
+    private $_cfg = array('content' => '', 'summary' => '', 'original' => '', 'break' => '');
     private $_useCut = null;
     private $_useSubstr = false;
     private $_dotted = 0;
 
-    public function __construct($text, $action)
+    public function __construct($text, $action, $break = null)
     {
         $this->_cfg['content'] = is_scalar($text) ? $text : '';
         $this->_cfg['original'] = $this->_cfg['content'];
         $this->_cfg['summary'] = is_scalar($action) ? $action : '';
+        $this->_cfg['break'] = is_scalar($break) ? $break : '. ';
     }
 
     public function setCut($cut)
@@ -43,7 +44,7 @@ class SummaryText
         return isset($this->_cfg['cut']) ? $this->_cfg['cut'] : '<cut/>';
     }
 
-    public function dotted($scheme = 0)
+    protected function dotted($scheme = 0)
     {
         if (($scheme == 1 && ($this->_useCut || $this->_useSubstr)) || ($scheme == 2 && $this->_useSubstr && !$this->_useCut)) {
             $this->_cfg['content'] .= '&hellip;'; //...
@@ -70,7 +71,14 @@ class SummaryText
                     }
                     case 'noparser':
                     {
-                        $this->_cfg['content'] = $this->sanitarData($this->_cfg['content']);
+                        $this->_cfg['content'] = APIhelpers::sanitarTag($this->_cfg['content']);
+                        break;
+                    }
+                    case 'chars':{
+                        if (!(isset($process[1]) && $process[1] > 0)) {
+                            $process[1] = 200;
+                        }
+                        $this->_cfg['content'] = APIhelpers::mb_trim_word($this->_cfg['content'], $process[1]);
                         break;
                     }
                     case 'len':
@@ -87,18 +95,7 @@ class SummaryText
         return $this->dotted($dotted);
     }
 
-    /*
-     * Clean up the modx and html tags
-     *
-     * @param string $data String for cleaning
-     * @return string Clear string
-     */
-    final public function sanitarData($data)
-    {
-        return is_scalar($data) ? str_replace(array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D'), array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;'), htmlspecialchars($data)) : '';
-    }
-
-    public function beforeCut($resource, $splitter = '')
+    protected  function beforeCut($resource, $splitter = '')
     {
         if ($splitter !== '') {
             $summary = str_replace('<p>' . $splitter . '</p>', $splitter, $resource); // For TinyMCE or if it isn't wrapped inside paragraph tags
@@ -111,7 +108,7 @@ class SummaryText
         return $summary;
     }
 
-    public function summary($resource, $truncLen, $truncOffset, $truncChars, $splitter = '')
+    protected function summary($resource, $truncLen, $truncOffset, $truncChars, $splitter = '')
     {
         if (isset($this->_useCut) && $splitter != '' && mb_strstr($resource, $splitter, 'UTF-8')) {
             $summary = $this->beforeCut($resource, $splitter);
@@ -133,7 +130,7 @@ class SummaryText
     * @see summary extender for Ditto (truncate::html_substr)
     * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L142
     */
-    public function html_substr($posttext, $minimum_length = 200, $length_offset = 100, $truncChars = false)
+    protected  function html_substr($posttext, $minimum_length = 200, $length_offset = 100, $truncChars = false)
     {
         $tag_counter = 0;
         $quotes_on = FALSE;
@@ -183,14 +180,14 @@ class SummaryText
                 }
             }
         }
-        return $this->textTrunc($posttext, $minimum_length + $length_offset);
+        return $this->textTrunc($posttext, $minimum_length + $length_offset, $this->_cfg['break']);
     }
 
     /*
      * @see summary extender for Ditto (truncate::textTrunc)
      * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L213
      */
-    public function textTrunc($string, $limit, $break = ". ")
+    protected function textTrunc($string, $limit, $break = ". ")
     {
         // Original PHP code from The Art of Web: www.the-art-of-web.com
 
@@ -208,7 +205,7 @@ class SummaryText
         return $string;
     }
 
-    public function rTriming($str)
+    protected function rTriming($str)
     {
         $str = preg_replace('/[\r\n]++/', ' ', $str);
         if (!$this->_useCut || $this->_dotted != 2) {
@@ -225,8 +222,6 @@ class SummaryText
     {
         $openPattern = "/<([^\/].*?)>/";
         $closePattern = "/<\/(.*?)>/";
-        $endOpenPattern = "/<([^\/].*?)$/";
-        $endClosePattern = "/<(\/.*?[^>])$/";
         $endTags = '';
 
         preg_match_all($openPattern, $text, $openTags);

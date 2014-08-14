@@ -75,10 +75,11 @@ class Helper
     public function isErrorJSON($json)
     {
         require_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/jsonHelper.class.php");
+        require_once(MODX_BASE_PATH . "assets/lib/APIHelpers.class.php");
         $error = false;
         $error = \jsonHelper::json_last_error_msg();
         if (!in_array($error, array('error_none', 'other'))) {
-            Debug::error($this->getMsg('json.' . $error) . ": " . static::sanitarTag($json, 'code'), 'JSON');
+            Debug::error($this->getMsg('json.' . $error) . ": " . APIHelpers::sanitarTag($json), 'JSON');
             $error = true;
         }
         return $error;
