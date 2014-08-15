@@ -1,5 +1,5 @@
 <?php
-include_once(MODX_BASE_PATH . 'assets/lib/APIhelpers.class.php');
+include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 $modx->event->params['TplMainOwner'] = \APIhelpers::getkey($modx->event->params, 'TplMainOwner', '@CODE: <ul id="nav" class="menu level-1">[+dl.wrap+]</ul>');
 $modx->event->params['TplSubOwner'] = \APIhelpers::getkey($modx->event->params, 'TplSubOwner', '@CODE: <ul class="sub-menu level-[+dl.currentDepth+]">[+dl.wrap+]</ul>');
 $modx->event->params['TplOneItem'] = \APIhelpers::getkey($modx->event->params, 'TplOneItem', '@CODE: <li id="menu-item-[+id+]" class="menu-item [+dl.class+]"><a href="[+url+]" title="[+e.title+]">[+title+]</a>[+dl.submenu+]</li>');

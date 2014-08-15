@@ -12,7 +12,7 @@
  * @date 31.07.2013
  * @version 1.0.3
  */
-include_once(MODX_BASE_PATH . 'assets/lib/APIhelpers.class.php');
+include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 class SummaryText
 {
     private $_cfg = array('content' => '', 'summary' => '', 'original' => '', 'break' => '');
