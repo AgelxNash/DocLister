@@ -160,7 +160,7 @@ class DLTemplate
                 case '@SNIPPET':
                 {
                     if ($subTmp != '') {
-                        $tpl = $this->modx->runSnippet($subTmp);
+                        $tpl = $this->modx->runSnippet($subTmp, $this->modx->event->params);
                     } else {
                         //error snippet name
                     }
