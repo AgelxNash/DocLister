@@ -631,5 +631,3 @@ class DLphx
         return count(preg_split('~[^\p{L}\p{N}\']+~u', $str));
     }
 }
-
-?>

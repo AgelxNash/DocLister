@@ -70,4 +70,3 @@ $prepare = isset($config['prepare']) ? explode(",", $config['prepare']) : array(
 $prepare[] = 'FirstChar::get';
 $config['prepare'] = implode(",", $prepare);
 return $modx->runSnippet('DocLister', $config);
-?>

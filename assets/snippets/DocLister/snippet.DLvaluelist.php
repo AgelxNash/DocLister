@@ -13,4 +13,3 @@ foreach ($json as $item) {
     $out[] = $item->pagetitle . '==' . $item->id;
 }
 return implode("||", $out);
-?>

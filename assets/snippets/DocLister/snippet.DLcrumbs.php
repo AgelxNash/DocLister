@@ -40,4 +40,3 @@ if (!empty($_parents)) {
     $_out = $modx->runSnippet("DocLister", $_options);
 }
 return $_out;
-?>

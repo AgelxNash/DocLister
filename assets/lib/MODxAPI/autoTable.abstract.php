@@ -1,7 +1,7 @@
 <?php
 require_once('MODx.php');
 
-abstract class autoTable extends MODxAPIhelpers
+abstract class autoTable extends MODxAPI
 {
     protected $table = null;
 
@@ -23,12 +23,13 @@ abstract class autoTable extends MODxAPIhelpers
     {
         if ($this->getID() != $id) {
             $this->newDoc = false;
-            $this->id = $id;
+            $this->id = null;
             $this->field = array();
             $this->set = array();
 
             $result = $this->query("SELECT * from {$this->makeTable($this->table)} where `" . $this->pkName . "`=" . (int)$id);
             $this->fromArray($this->modx->db->getRow($result));
+            $this->id = isset($this->field[$this->pkName]) ? $this->field[$this->pkName] : null;
             unset($this->field[$this->pkName]);
         }
         return $this;
