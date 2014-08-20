@@ -249,6 +249,7 @@ class onetableDocLister extends DocLister
 
     public function getChildernFolder($id)
     {
+        $this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
         $where = $this->getCFGDef('addWhereFolder', '');
         if (!empty($where)) {
             $where = "WHERE " . $where;
