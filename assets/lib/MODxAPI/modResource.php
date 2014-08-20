@@ -342,12 +342,12 @@ class modResource extends MODxAPI
         }
     }
 
-    private function setTemplate($tpl)
+    public function setTemplate($tpl)
     {
         if (!is_numeric($tpl) || $tpl != (int)$tpl) {
             try {
                 if (is_scalar($tpl)) {
-                    $sql = "SELECT `id` FROM {$this->makeTable('site_templates')} WHERE `templatename` = '{$tpl}'";
+                    $sql = "SELECT `id` FROM {$this->makeTable('site_templates')} WHERE `templatename` = '".$this->modx->db->escape($tpl)."'";
                     $rs = $this->query($sql);
                     if (!$rs || $this->modx->db->getRecordCount($rs) <= 0) throw new Exception("Template {$tpl} is not exists");
                     $tpl = $this->modx->db->getValue($rs);
