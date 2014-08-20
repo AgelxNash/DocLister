@@ -1,6 +1,7 @@
 ## 2.0.4 (20.08.2014)
 * [Fix] Валидация значения parent в modResource классе
 * [Fix] Исправлена SQL-injection в методе modResource::setTemplate
+* [Fix] Игнорирование пропускаемых документов в множественных prepare вызовах
 * [Refactor] Уровень доступа к методу modResource::setTemplate изменен на public
 
 ## 2.0.3 (18.08.2014)
