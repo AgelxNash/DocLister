@@ -209,14 +209,13 @@ class modResource extends MODxAPI
             }
             $this->query($SQL);
 
+		    if ($this->newDoc) {
+            	$this->id = $this->modx->db->getInsertId();
+		    }
 
-            if($parent > 0){
+            if ($parent > 0) {
                 $this->query("UPDATE {$this->makeTable('site_content')} SET `isfolder`='1' WHERE `id`='{$parent}'");
             }
-        }
-
-        if ($this->newDoc) {
-            $this->id = $this->modx->db->getInsertId();
         }
 
         foreach ($fld as $key => $value) {
