@@ -43,7 +43,7 @@ abstract class autoTable extends MODxAPI
             if ($this->newDoc && $this->get($key) === null && $this->get($key) !== $value) {
                 $this->set($key, $value);
             }
-            $this->Uset($key);
+            if (isset($fld[$key])) $this->Uset($key);
             unset($fld[$key]);
         }
         if (!empty($this->set)) {
