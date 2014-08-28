@@ -180,13 +180,12 @@ class DLphx
                         // Check if placeholder is set
                         if (!array_key_exists($input, $this->placeholders) && !array_key_exists($input, $modx->placeholders)) {
                             // not set so try again later.
-                            $replace = $match;
-                            $this->Log("  |--- Skipping - hasn't been set yet.");
+                            $input = '';
                         } else {
                             // is set, get value and run filter
                             $input = $this->getPHxVariable($input);
-                            $replace = $this->Filter($input, $modifiers);
                         }
+                        $replace = $this->Filter($input, $modifiers);
                         break;
                 }
                 $var_replace[] = $replace;
@@ -372,6 +371,7 @@ class DLphx
                     case "isnotempty":
                         if (!empty($output)) $output = $modifier_value[$i];
                         break;
+                    case "isempty":
                     case "ifempty":
                         if (empty($output)) $output = $modifier_value[$i];
                         break;

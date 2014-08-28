@@ -305,25 +305,36 @@ class APIhelpers
      * @param $data массив с данными
      * @param string $prefix префикс ключей
      * @param string $suffix суффикс ключей
-     * @param string $sep разделитель суффиксов, префиксов и ключей массива
+     * @param string $addPS разделитель суффиксов, префиксов и ключей массива
+     * @param string $sep разделитель ключей при склейке многомерных массивов
      * @return array массив с переименованными ключами
      */
-    public static function renameKeyArr($data, $prefix = '', $suffix = '', $sep = '.')
-    {
-        $out = array();
-        if ($prefix == '' && $suffix == '') {
-            $out = $data;
-        } else {
-            if ($prefix != '') {
-                $prefix = $prefix . $sep;
+    public static function renameKeyArr($data, $prefix = '', $suffix = '', $addPS = '.', $sep = '.'){
+    $out = array();
+    if ($prefix == '' && $suffix == '') {
+        $out = $data;
+    } else {
+        $InsertPrefix = ($prefix != '') ? ($prefix . $addPS) : '';
+        $InsertSuffix = ($suffix != '') ? ($addPS. $suffix) : '';
+
+        foreach ($data as $key => $item) {
+            $key = $InsertPrefix . $key;
+            $val = null;
+            switch(true){
+                case is_scalar($item):{
+                    $val = $item;
+                    break;
+                }
+                case is_array($item):{
+                    $val = self::renameKeyArr($item, $key.$sep, $InsertSuffix, '', $sep);
+                    $out = array_merge($out, $val);
+                    $val = '';
+                    break;
+                }
             }
-            if ($suffix != '') {
-                $suffix = $sep . $suffix;
-            }
-            foreach ($data as $key => $item) {
-                $out[$prefix . $key . $suffix] = $item;
-            }
+            $out[$key . $InsertSuffix] = $val;
         }
-        return $out;
     }
+    return $out;
+}
 }

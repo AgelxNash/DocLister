@@ -5,6 +5,8 @@
 * [Add] Удаление документов из корзины через modResource
 * [Add] Поддержка @bindings в классе modResource для методов modResource::toArray(), modResource::toArrayTV(), modResource::renderTV()
 * [Refactor] Выгрузка значений ТВ параметров вместе со значениями по умолчанию через методы modResource::get(), modResource::toArrayTV() и modResource::toArray()
+* [Refactor] Замена несуществующего плейсхолдера на пустое значение при парсинге шаблона с использованием phx
+* [Add] Метод APIhelpers::renameKeyArr теперь работает с многомерными массивами и склеивает ключи по заданому разделителю
 
 ## 2.0.4 (20.08.2014)
 * [Fix] Валидация значения parent в modResource классе
