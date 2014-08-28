@@ -257,10 +257,31 @@ class modResource extends MODxAPI
         }
         return $this;
     }
+    public function clearTrash($fire_events = null){
+        $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} WHERE `deleted`='1'");
+        $q = $this->modx->makeArray($q);
+        $_ids = array();
+        foreach($q as $item){
+              $_ids[] = $item['id'];
+        }
+        if (is_array($_ids) && $_ids != array()) {
+            $this->invokeEvent('OnBeforeEmptyTrash', array(
+                "ids" => $_ids
+            ), $fire_events);
+
+            $id = $this->sanitarIn($_ids);
+            $this->query("DELETE from {$this->makeTable('site_content')} where `id` IN ({$id})");
+            $this->query("DELETE from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid` IN ({$id})");
+
+            $this->invokeEvent('OnEmptyTrash', array(
+                "ids" => $_ids
+            ), $fire_events);
+        }
+        return $this;
+    }
 
     public function delete($ids, $fire_events = null)
     {
-        //@TODO: delete with SET deleted=1
         $ignore = $this->systemID();
         $_ids = $this->cleanIDs($ids, ',', $ignore);
         try {
