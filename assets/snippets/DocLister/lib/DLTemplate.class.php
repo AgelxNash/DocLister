@@ -264,21 +264,7 @@ class DLTemplate
      */
     public function renameKeyArr($data, $prefix = '', $suffix = '', $sep = '.')
     {
-        $out = array();
-        if ($prefix == '' && $suffix == '') {
-            $out = $data;
-        } else {
-            if ($prefix != '') {
-                $prefix = $prefix . $sep;
-            }
-            if ($suffix != '') {
-                $suffix = $sep . $suffix;
-            }
-            foreach ($data as $key => $item) {
-                $out[$prefix . $key . $suffix] = $item;
-            }
-        }
-        return $out;
+        return APIhelpers::renameKeyArr($data, $prefix, $suffix, $sep);
     }
 
     public function parseDocumentSource($out)

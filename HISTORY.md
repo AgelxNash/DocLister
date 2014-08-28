@@ -3,6 +3,8 @@
 * [Add] Добавлена возможность получить список полей по умолчанию при помощи метода MODxAPI::getDefaultFields()
 * [Add] Добавлена возможность работы MODxAPI в режиме отладки (коллекционирование SQL запросов)
 * [Add] Удаление документов из корзины через modResource
+* [Add] Поддержка @bindings в классе modResource для методов modResource::toArray(), modResource::toArrayTV(), modResource::renderTV()
+* [Refactor] Выгрузка значений ТВ параметров вместе со значениями по умолчанию через методы modResource::get(), modResource::toArrayTV() и modResource::toArray()
 
 ## 2.0.4 (20.08.2014)
 * [Fix] Валидация значения parent в modResource классе

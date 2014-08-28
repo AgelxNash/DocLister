@@ -5,9 +5,9 @@ abstract class autoTable extends MODxAPI
 {
     protected $table = null;
 
-    public function __construct($modx)
+    public function __construct($modx, $debug = false)
     {
-        parent::__construct($modx);
+        parent::__construct($modx, $debug);
         $data = $this->modx->db->getTableMetaData($this->makeTable($this->table));
         foreach ($data as $item) {
             if (empty($this->pkName) && $item['Key'] == 'PRI') {

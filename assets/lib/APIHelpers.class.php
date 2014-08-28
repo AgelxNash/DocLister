@@ -298,4 +298,32 @@ class APIhelpers
         }
         return $flag;
     }
+
+    /**
+     * Переменовывание элементов массива
+     *
+     * @param $data массив с данными
+     * @param string $prefix префикс ключей
+     * @param string $suffix суффикс ключей
+     * @param string $sep разделитель суффиксов, префиксов и ключей массива
+     * @return array массив с переименованными ключами
+     */
+    public static function renameKeyArr($data, $prefix = '', $suffix = '', $sep = '.')
+    {
+        $out = array();
+        if ($prefix == '' && $suffix == '') {
+            $out = $data;
+        } else {
+            if ($prefix != '') {
+                $prefix = $prefix . $sep;
+            }
+            if ($suffix != '') {
+                $suffix = $sep . $suffix;
+            }
+            foreach ($data as $key => $item) {
+                $out[$prefix . $key . $suffix] = $item;
+            }
+        }
+        return $out;
+    }
 }

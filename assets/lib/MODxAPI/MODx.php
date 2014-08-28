@@ -14,7 +14,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     protected $_debug = false;
     protected $_query = array();
 
-    public function __construct($modx)
+    public function __construct($modx, $debug = false)
     {
         try {
             if ($modx instanceof DocumentParser) {
@@ -23,6 +23,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         } catch (Exception $e) {
             die($e->getMessage());
         }
+        $this->setDebug($debug);
     }
 
     public function setDebug($flag){

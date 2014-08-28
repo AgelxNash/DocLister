@@ -17,7 +17,7 @@ if (!defined('MODX_BASE_PATH')) {
  * @TODO depending on the parameters
  * @TODO prepare value before return final data (maybe callback function OR extender)
  */
-
+include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 require_once(dirname(dirname(__FILE__)) . "/lib/jsonHelper.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/sqlHelper.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/DLTemplate.class.php");

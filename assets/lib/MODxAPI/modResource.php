@@ -51,33 +51,87 @@ class modResource extends MODxAPI
         'О' => 'O', 'П' => 'P', 'Р' => 'R', 'С' => 'S', 'Т' => 'T', 'У' => 'U', 'Ф' => 'F', 'Х' => 'H', 'Ц' => 'C',
         'Ч' => 'Ch', 'Ш' => 'Sh', 'Щ' => 'Sch', 'Ь' => '', 'Ы' => 'Y', 'Ъ' => '', 'Э' => 'E', 'Ю' => 'Yu', 'Я' => 'Ya',
     );
+    /**
+     * @var array массив ТВшек где name это ключ массива, а ID это значение
+     */
     private $tv = array();
+    /**
+     * @var array массив ТВшек где ID это ключ массива, а name это значение
+     */
     private $tvid = array();
+    /**
+     * @var array значения по умолчанию для ТВ параметров
+     */
+    private $tvd = array();
 
-    public function __construct($modx)
+    /** @var array связи ТВ и шаблонов */
+    private $tvTpl = array();
+
+    public function __construct($modx, $debug = false)
     {
-        parent::__construct($modx);
+        parent::__construct($modx, $debug);
         $this->get_TV();
     }
 
     public function toArrayMain()
     {
-        $out = array_intersect_key($this->toArray(), $this->default_field);
+        $out = array_intersect_key(parent::toArray(), $this->default_field);
         return $out;
     }
 
-    public function toArrayTV()
+    public function toArrayTV($render = false)
     {
-        $out = array_diff_key($this->toArray(), $this->default_field);
+        $out = array_diff_key(parent::toArray(), $this->default_field);
+        $tpl = $this->get('template');
+        $tvTPL = isset($this->tvTpl[$tpl]) ? $this->tvTpl[$tpl] : array();
+        foreach($tvTPL as $item){
+            if(isset($this->tvid[$item]) && !array_key_exists($this->tvid[$item], $out)){
+                $out[$this->tvid[$item]] = $this->get($this->tvid[$item]);
+            }
+        }
+        if($render){
+            foreach($out as $key => $val){
+                $out[$key] = $this->renderTV($key);
+            }
+        }
         return $out;
     }
 
+    public function toArray($prefix = '', $suffix = '', $sep = '_', $render = true){
+        $out = array_merge($this->toArrayMain(), $this->toArrayTV($render));
+        return \APIhelpers::renameKeyArr($out, $prefix, $suffix, $sep);
+    }
     public function isWebShow()
     {
         $pub = ($this->get('publishedon') < time() && $this->get('published'));
         $unpub = ($this->get('unpub_date') == 0 || $this->get('unpub_date') > time());
         $del = ($this->get('deleted') == 0 && ($this->get('deletedon') == 0 || $this->get('deletedon') > time()));
         return ($pub && $unpub && $del);
+    }
+
+    public function renderTV($tvname){
+        $out = null;
+        if($this->getID() > 0){
+            include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
+            include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
+            $tvval = $this->get($tvname);
+            $param = isset($this->tvd[$tvname]) ? $this->tvd[$tvname] : array();
+            $out = getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $this->getID(), '');
+        }
+        return $out;
+    }
+
+    public function get($key){
+        $out = parent::get($key);
+        if(isset($this->tv[$key])){
+            $tpl = $this->get('template');
+            $tvTPL = isset($this->tvTpl[$tpl]) ? $this->tvTpl[$tpl] : array();
+            $tvID = isset($this->tv[$key]) ? $this->tv[$key] : 0;
+            if(in_array($tvID, $tvTPL) && is_null($out)){
+                $out = isset($this->tvd[$key]['value']) ? $this->tvd[$key]['value'] : null;
+            }
+        }
+        return $out;
     }
 
     public function set($key, $value)
@@ -109,7 +163,7 @@ class modResource extends MODxAPI
         return $this;
     }
 
-    public function edit($id)
+    public function edit($id, $defaultTV = false)
     {
         if ($this->getID() != $id) {
             $this->close();
@@ -127,6 +181,7 @@ class modResource extends MODxAPI
                 $this->id = $this->field['id'];
             }
             unset($this->field['id']);
+
         }
         return $this;
     }
@@ -146,7 +201,7 @@ class modResource extends MODxAPI
             "id" => $this->id ? $this->id : ''
         ), $fire_events);
 
-        $fld = $this->toArray();
+        $fld = parent::toArray();
 
         foreach ($this->default_field as $key => $value) {
             if ($this->newDoc && $this->get($key) == '' && $this->get($key) !== $value) {
@@ -353,15 +408,40 @@ class modResource extends MODxAPI
         return (isset($this->default_field[$key]) || isset($this->tv[$key]));
     }
 
-    public function get_TV()
+    protected function get_TV()
     {
         $result = $this->query('SELECT `id`,`name` FROM ' . $this->makeTable('site_tmplvars'));
         while ($row = $this->modx->db->GetRow($result)) {
             $this->tv[$row['name']] = $row['id'];
             $this->tvid[$row['id']] = $row['name'];
         }
+        $this->loadTVTemplate()->loadTVDefault(array_values($this->tv));
+        return $this;
     }
-
+    protected function loadTVTemplate(){
+        $q = $this->query("SELECT `tmplvarid`, `templateid` FROM ".$this->makeTable('site_tmplvar_templates'));
+        $q = $this->modx->db->makeArray($q);
+        $this->tpl = array();
+        foreach($q as $item){
+            $this->tvTpl[$item['templateid']][] = $item['tmplvarid'];
+        }
+        return $this;
+    }
+    protected function loadTVDefault(array $tvId = array())
+    {
+        if(is_array($tvId) && !empty($tvId)){
+            $tbl_site_tmplvars = $this->makeTable('site_tmplvars');
+            $fields = 'id,name,default_text as value,display,display_params,type';
+            $implodeTvId = implode(',', $tvId);
+            $rs = $this->query("SELECT {$fields} FROM {$tbl_site_tmplvars} WHERE id IN({$implodeTvId})");
+            $rows = $this->modx->db->makeArray($rs);
+            $this->tvd = array();
+            foreach ($rows as $item) {
+                $this->tvd[$item['name']] = $item;
+            }
+        }
+        return $this;
+    }
     public function setTemplate($tpl)
     {
         if (!is_numeric($tpl) || $tpl != (int)$tpl) {
