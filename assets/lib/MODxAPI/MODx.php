@@ -11,6 +11,8 @@ abstract class MODxAPI extends MODxAPIhelpers
     protected $set = array();
     protected $newDoc = false;
     protected $pkName = 'id';
+    protected $_debug = false;
+    protected $_query = array();
 
     public function __construct($modx)
     {
@@ -23,13 +25,34 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
     }
 
+    public function setDebug($flag){
+        $this->_debug = (bool)$flag;
+        return $this;
+    }
+    public function getDebug(){
+        return $this->_debug;
+    }
+    public function getDefaultFields(){
+        return $this->default_field;
+    }
     final protected function modxConfig($name, $default = null)
     {
         return isset($this->modx->config[$name]) ? $this->modx->config[$name] : $default;
     }
-
+    public function addQuery($q){
+        if(is_scalar($q)){
+            $this->_query[] = $q;
+        }
+        return $this;
+    }
+    public function getQueryList(){
+        return $this->_query;
+    }
     final protected function query($SQL)
     {
+        if($this->getDebug()){
+            $this->addQuery($SQL);
+        }
         return $this->modx->db->query($SQL);
     }
 
@@ -114,7 +137,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     {
         $tmp = '';
         if (!isset($this->field[$key])) {
-            $tmp = "{$key}=''";
+            $tmp = "`{$key}`=''";
             $this->log[] = "{$key} is empty";
         } else {
             try {
