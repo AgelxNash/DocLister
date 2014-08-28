@@ -163,7 +163,7 @@ class modResource extends MODxAPI
         return $this;
     }
 
-    public function edit($id, $defaultTV = false)
+    public function edit($id)
     {
         if ($this->getID() != $id) {
             $this->close();
