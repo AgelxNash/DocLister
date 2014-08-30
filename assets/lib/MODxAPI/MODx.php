@@ -56,6 +56,17 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $this->modx->db->query($SQL);
     }
+    final protected function escape($value){
+        if(!is_scalar($value)){
+            $value = '';
+        }else{
+            if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
+                $value = stripslashes($value);
+            }
+            $value = $this->modx->db->escape($value);
+        }
+        return $value;
+    }
 
     final protected function invokeEvent($name, $data = array(), $flag = false)
     {
@@ -143,7 +154,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         } else {
             try {
                 if ($this->issetField($key) && is_scalar($this->field[$key])) {
-                    $tmp = "`{$key}`='{$this->modx->db->escape($this->field[$key])}'";
+                    $tmp = "`{$key}`='{$this->escape($this->field[$key])}'";
                 } else throw new Exception("{$key} is invalid <pre>" . print_r($this->field[$key], true) . "</pre>");
             } catch (Exception $e) {
                 die($e->getMessage());
@@ -277,7 +288,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         $out = array();
         foreach ($data as $item) {
-            $out[] = $this->modx->db->escape($item);
+            $out[] = $this->escape($item);
         }
         $out = "'" . implode("','", $out) . "'";
         return $out;
@@ -287,7 +298,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     {
         $val = $this->get($field);
         if ($val != '') {
-            $sql = $this->query("SELECT `" . $this->modx->db->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE `" . $this->modx->db->escape($field) . "`='" . $this->modx->db->escape($val) . "'");
+            $sql = $this->query("SELECT `" . $this->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE `" . $this->modx->db->escape($field) . "`='" . $this->modx->db->escape($val) . "'");
             $id = $this->modx->db->getValue($sql);
             if (is_null($id) || (!$this->newDoc && $id == $this->getID())) {
                 $flag = true;

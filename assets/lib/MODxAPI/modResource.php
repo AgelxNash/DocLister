@@ -278,7 +278,7 @@ class modResource extends MODxAPI
             if ($value === '') {
                 $result = $this->query("DELETE FROM {$this->makeTable('site_tmplvar_contentvalues')} WHERE `contentid` = '{$this->id}' AND `tmplvarid` = '{$this->tv[$key]}'");
             } else {
-                $value = $this->modx->db->escape($value);
+                $value = $this->escape($value);
                 $result = $this->query("SELECT `value` FROM {$this->makeTable('site_tmplvar_contentvalues')} WHERE `contentid` = '{$this->id}' AND `tmplvarid` = '{$this->tv[$key]}'");
                 if ($this->modx->db->getRecordCount($result) > 0) {
                     $result = $this->query("UPDATE {$this->makeTable('site_tmplvar_contentvalues')} SET `value` = '{$value}' WHERE `contentid` = '{$this->id}' AND `tmplvarid` = '{$this->tv[$key]}';");
@@ -383,7 +383,7 @@ class modResource extends MODxAPI
         $alias = strtolower($alias);
         if ($this->modxConfig('friendly_urls')) {
             $flag = false;
-            $_alias = $this->modx->db->escape($alias);
+            $_alias = $this->escape($alias);
             if ((!$this->modxConfig('allow_duplicate_alias') && !$this->modxConfig('use_alias_path')) || ($this->modxConfig('allow_duplicate_alias') && $this->modxConfig('use_alias_path'))) {
                 $flag = $this->modx->db->getValue($this->query("SELECT `id` FROM {$this->makeTable('site_content')} WHERE `alias`='{$_alias}' AND `parent`={$this->get('parent')} LIMIT 1"));
             } else {
@@ -447,7 +447,7 @@ class modResource extends MODxAPI
         if (!is_numeric($tpl) || $tpl != (int)$tpl) {
             try {
                 if (is_scalar($tpl)) {
-                    $sql = "SELECT `id` FROM {$this->makeTable('site_templates')} WHERE `templatename` = '".$this->modx->db->escape($tpl)."'";
+                    $sql = "SELECT `id` FROM {$this->makeTable('site_templates')} WHERE `templatename` = '".$this->escape($tpl)."'";
                     $rs = $this->query($sql);
                     if (!$rs || $this->modx->db->getRecordCount($rs) <= 0) throw new Exception("Template {$tpl} is not exists");
                     $tpl = $this->modx->db->getValue($rs);

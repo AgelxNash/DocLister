@@ -74,7 +74,7 @@ class modUsers extends MODxAPI
             $result = $this->query("
 				SELECT * from {$this->makeTable('web_user_attributes')} as attribute
 				LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
-				WHERE {$find}='{$this->modx->db->escape($id)}'
+				WHERE {$find}='{$this->escape($id)}'
 			");
             $this->field = $this->modx->db->getRow($result);
 
@@ -187,7 +187,7 @@ class modUsers extends MODxAPI
             $flag = $this->query("
           DELETE user,attribute FROM {$this->makeTable('web_user_attributes')} as attribute
             LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
-            WHERE attribute.internalKey='{$this->modx->db->escape($this->getID())}'");
+            WHERE attribute.internalKey='{$this->escape($this->getID())}'");
             $this->query("DELETE FROM {$this->makeTable('web_user_settings')} WHERE webuser='{$this->getID()}'");
         } else {
             $flag = false;
@@ -243,7 +243,7 @@ class modUsers extends MODxAPI
             $cookie = explode('|', $_COOKIE[$cookieName], 2);
             if (isset($cookie[0], $cookie[1]) && strlen($cookie[0]) == 32 && strlen($cookie[1]) == 32) {
                 $this->close();
-                $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->modx->db->escape($cookie[0])}'");
+                $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->escape($cookie[0])}'");
                 $id = $this->modx->db->getValue($q);
                 if ($this->edit($id) && $this->getID() && $this->get('password') == $cookie[1] && $this->testAuth($this->getID(), $cookie[1], true)) {
                     $flag = $this->authUser($this->getID(), $fulltime, $cookieName);
