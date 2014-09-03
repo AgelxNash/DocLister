@@ -346,12 +346,13 @@ class modResource extends MODxAPI
                 ), $fire_events);
 
                 $id = $this->sanitarIn($_ids);
-                $this->query("DELETE from {$this->makeTable('site_content')} where `id` IN ({$id})");
-                $this->query("DELETE from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid` IN ({$id})");
-
-                $this->invokeEvent('OnEmptyTrash', array(
-                    "ids" => $_ids
-                ), $fire_events);
+				if(!empty($id)){
+					$this->query("DELETE from {$this->makeTable('site_content')} where `id` IN ({$id})");
+					$this->query("DELETE from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid` IN ({$id})");
+					$this->invokeEvent('OnEmptyTrash', array(
+						"ids" => $_ids
+					), $fire_events);
+				}
             } else throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
         } catch (Exception $e) {
             die($e->getMessage());

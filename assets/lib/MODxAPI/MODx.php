@@ -36,12 +36,12 @@ abstract class MODxAPI extends MODxAPIhelpers
     public function getDefaultFields(){
         return $this->default_field;
     }
-    final protected function modxConfig($name, $default = null)
+    final public function modxConfig($name, $default = null)
     {
         return isset($this->modx->config[$name]) ? $this->modx->config[$name] : $default;
     }
     public function addQuery($q){
-        if(is_scalar($q)){
+        if(is_scalar($q) && !empty($q)){
             $this->_query[] = $q;
         }
         return $this;
@@ -49,26 +49,15 @@ abstract class MODxAPI extends MODxAPIhelpers
     public function getQueryList(){
         return $this->_query;
     }
-    final protected function query($SQL)
+    final public function query($SQL)
     {
         if($this->getDebug()){
             $this->addQuery($SQL);
         }
-        return $this->modx->db->query($SQL);
-    }
-    final protected function escape($value){
-        if(!is_scalar($value)){
-            $value = '';
-        }else{
-            if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
-                $value = stripslashes($value);
-            }
-            $value = $this->modx->db->escape($value);
-        }
-        return $value;
+        return empty($SQL) ? null : $this->modx->db->query($SQL);
     }
 
-    final protected function invokeEvent($name, $data = array(), $flag = false)
+    final public function invokeEvent($name, $data = array(), $flag = false)
     {
         $flag = (isset($flag) && $flag != '') ? (bool)$flag : false;
         if ($flag) {
@@ -154,7 +143,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         } else {
             try {
                 if ($this->issetField($key) && is_scalar($this->field[$key])) {
-                    $tmp = "`{$key}`='{$this->escape($this->field[$key])}'";
+                    $tmp = "`{$key}`='{$this->modx->db->escape($this->field[$key])}'";
                 } else throw new Exception("{$key} is invalid <pre>" . print_r($this->field[$key], true) . "</pre>");
             } catch (Exception $e) {
                 die($e->getMessage());
@@ -171,7 +160,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
 
-    final protected function cleanIDs($IDs, $sep = ',', $ignore = array())
+    final public function cleanIDs($IDs, $sep = ',', $ignore = array())
     {
         $out = array();
         if (!is_array($IDs)) {
@@ -276,29 +265,29 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $out;
     }
 
-    final protected function makeTable($table)
+    final public function makeTable($table)
     {
         return (isset($this->_table[$table])) ? $this->_table[$table] : $this->modx->getFullTableName($table);
     }
 
-    final protected function sanitarIn($data, $sep = ',')
+    final public function sanitarIn($data, $sep = ',')
     {
         if (!is_array($data)) {
             $data = explode($sep, $data);
         }
         $out = array();
         foreach ($data as $item) {
-            $out[] = $this->escape($item);
+            $out[] = $this->modx->db->escape($item);
         }
-        $out = "'" . implode("','", $out) . "'";
+        $out = empty($out) ? '' : "'" . implode("','", $out) . "'";
         return $out;
     }
 
-    protected function checkUnique($table, $field, $PK = 'id')
+    public function checkUnique($table, $field, $PK = 'id')
     {
         $val = $this->get($field);
         if ($val != '') {
-            $sql = $this->query("SELECT `" . $this->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE `" . $this->modx->db->escape($field) . "`='" . $this->modx->db->escape($val) . "'");
+            $sql = $this->query("SELECT `" . $this->modx->db->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE `" . $this->modx->db->escape($field) . "`='" . $this->modx->db->escape($val) . "'");
             $id = $this->modx->db->getValue($sql);
             if (is_null($id) || (!$this->newDoc && $id == $this->getID())) {
                 $flag = true;
@@ -365,13 +354,13 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $flag;
     }
-
+	
     protected function eraseField($name)
     {
         $flag = false;
         if (array_key_exists($name, $this->field)) {
+            $flag = $this->field[$name];
             unset($this->field[$name]);
-            $flag = true;
         }
         return $flag;
     }
