@@ -31,7 +31,7 @@ abstract class autoTable extends MODxAPI
             $this->field = array();
             $this->set = array();
 
-            $result = $this->query("SELECT * from {$this->makeTable($this->table)} where `" . $this->pkName . "`='" . $this->modx->db->escape($id)."'");
+            $result = $this->query("SELECT * from {$this->makeTable($this->table)} where `" . $this->pkName . "`='" . $this->escape($id)."'");
 			$this->fromArray($this->modx->db->getRow($result));
             $this->id = $this->eraseField($this->pkName);
 			if(is_bool($this->id) && $this->id === false){
