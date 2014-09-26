@@ -7,7 +7,7 @@
  * @name            redirectMap
  * @internal        @caption Правила переадресации
  * @internal        @input_type custom_tv
- * @internal        @input_options @INCLUDE: assets/modules/RedirectMap/tv.RedirectMap.php
+ * @internal        @input_options @INCLUDE: assets/modules/redirectMap2/tv.RedirectMap.php
  * @internal        @input_default 
  * @internal        @output_widget 
  * @internal        @output_widget_params 
