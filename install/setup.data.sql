@@ -13,6 +13,7 @@ CREATE TABLE `{PREFIX}redirect_map` (
   KEY `full_request` (`full_request`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `{PREFIX}city`;
 CREATE TABLE `{PREFIX}city` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -21,6 +22,8 @@ CREATE TABLE `{PREFIX}city` (
   UNIQUE KEY `name` (`name`),
   KEY `hide` (`hide`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `{PREFIX}street`;
 CREATE TABLE `{PREFIX}street` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
