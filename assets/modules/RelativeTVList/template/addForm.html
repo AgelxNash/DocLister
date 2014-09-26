@@ -1,0 +1,14 @@
+<div class="section">
+    <div class="sectionHeader">Добавить новое значение</div>
+    <div class="sectionBody" style="padding:10px 20px;">
+        <form method="POST">
+            <input type="hidden" name="action" value="add"/>
+            <input type="hidden" name="mode" value="<?=\DLCity\Helper::getMode();?>"/>
+            <label for="dataname"><?=\DLCity\Helper::getTextMode();?>: </label> <input style="width:300px" type="text"
+                                                                                       id="dataname" name="dataname"
+                                                                                       value=""/>
+            <input type="submit" value="Добавить">
+        </form>
+    </div>
+</div>
+

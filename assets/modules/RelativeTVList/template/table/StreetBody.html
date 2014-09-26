@@ -1,0 +1,11 @@
+<tr>
+    <td class="[+class+]"><span class="Class_[+action+]">[+name+]</span></td>
+    <td class="[+class+]">
+        <a href="<?=$tplClass->makeUrl('edit', array('dataID' => $tplClass->getParam('dataID', $_REQUEST)));?>&editID=[+id+]"><img
+                src="media/style/<?=$manager_theme;?>/images/icons/logging.gif"></a>
+        <a href="<?=$tplClass->makeUrl('display', array('dataID' => $tplClass->getParam('dataID', $_REQUEST)));?>&editID=[+id+]"><img
+                src="media/style/<?=$manager_theme;?>/images/icons/[+action+].png"></a>
+        <a href="<?=$tplClass->makeUrl('delete', array('dataID' => $tplClass->getParam('dataID', $_REQUEST)));?>&editID=[+id+]"><img
+                src="media/style/<?=$manager_theme;?>/images/icons/delete.png"></a>
+    </td>
+</tr>

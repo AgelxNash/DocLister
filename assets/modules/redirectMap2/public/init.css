@@ -1,0 +1,117 @@
+ol li {
+    margin-left: 20px;
+}
+
+ul li {
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+ul li li {
+    font-weight: normal;
+    margin: 5px 0px 5px 0px;
+}
+
+pre {
+    font-size: 13px;
+    background: #eee;
+    border: 1px solid #aaa;
+}
+
+table td {
+    vertical-align: top;
+}
+
+.paginate {
+    text-align: center;
+    margin-top: 5px;
+}
+
+.grid a {
+    color: #000;
+}
+
+.grid td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.grid td .editclass form {
+    text-align: center !important;
+}
+
+span .editclass input {
+    padding: 3px;
+    display: block;
+    width: 300px;
+    border: 1px solid #000;
+    color: #000;
+}
+
+.uri_edit div {
+    float: left;
+}
+
+input.errorInput {
+    border: 1px solid #960018 !important;
+    color: #960018 !important;
+}
+
+.js-fileapi-wrapper input {
+    width: 150px;
+}
+
+.js-fileapi-wrapper .progress {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: .5;
+    position: absolute;
+}
+
+.js-fileapi-wrapper .progress .bar {
+    width: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    position: absolute;
+    background-color: #f60;
+    height: 5px;
+}
+
+.js-fileapi-wrapper .progress-small {
+    height: 5px;
+    padding: 1px;
+    box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, .5);
+}
+
+.js-fileapi-wrapper .progress-small .bar {
+    width: 0;
+    height: 100%;
+    position: static;
+    border-radius: 10px;
+    background-color: orange;
+}
+
+.js-fileapi-wrapper {
+    width: 95%;
+}
+
+dl {
+    overflow: hidden;
+}
+
+dl dt {
+    float: left;
+    clear: both;
+    width: 32px;
+    margin-bottom: 5px;
+}
+
+dl dd {
+    margin-left: 32px;
+    margin-bottom: 5px;
+}

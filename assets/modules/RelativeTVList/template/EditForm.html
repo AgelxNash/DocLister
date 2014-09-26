@@ -1,0 +1,20 @@
+<div class="section">
+    <div class="sectionHeader">Редактирование записи</div>
+    <div class="sectionBody" style="padding:10px 20px;">
+        <form method="POST">
+            <input type="hidden" name="mode" value="<?=\DLCity\Helper::getMode();?>"/>
+            <label for="dataname">Название: <input style="width:300px" type="text" id="dataname" name="dataname"
+                                                   value="<?=$tplClass->getParam('name', $tplParams);?>"/>
+                <br/><br/>
+
+                <p>Отображать:
+                    <input type="radio" name="hide" value="0" id="isShow" <? if(!$tplClass->getParam('hide',
+                    $tplParams)):?>checked="checked" <? endif; ?>/> <label for="isShow">Да</label>
+                    <input type="radio" name="hide" value="1" id="isHide" <? if($tplClass->getParam('hide',
+                    $tplParams)):?>checked="checked" <? endif; ?>/> <label for="isHide">Нет</label>
+                </p>
+                <input type="submit" value="Изменить">
+        </form>
+    </div>
+</div>
+

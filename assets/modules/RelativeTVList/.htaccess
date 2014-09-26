@@ -1,0 +1,12 @@
+IndexIgnore */*
+<Files *.php>
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files init.php>
+	Allow from All
+</Files>
+<Files StreetList.php>
+	Allow from All
+</Files>

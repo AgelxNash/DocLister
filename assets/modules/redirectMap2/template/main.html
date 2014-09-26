@@ -1,0 +1,91 @@
+<link rel="stylesheet" type="text/css" href="/assets/modules/redirectMap2/public/init.css"/>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" type="text/javascript"
+        charset="utf-8"></script>
+<script>
+    $.URLAction = {
+        saveValue: "<?=$tplClass->makeUrl('saveValue');?>",
+        checkUniq: "<?=$tplClass->makeUrl('checkUniq');?>",
+        getValue: "<?=$tplClass->makeUrl('getValue');?>",
+        csvUpload: "<?=$tplClass->makeUrl('csv', array('mode'=>'upload'));?>"
+    };
+    jQuery.noConflict();
+</script>
+
+<script src="/assets/js/jeditable/jquery.jeditable.js" type="text/javascript"
+        charset="utf-8"></script>
+<script src="/assets/js/fileapi/FileAPI/FileAPI.min.js" type="text/javascript"
+        charset="utf-8"></script>
+<script src="/assets/js/fileapi/jquery.fileapi.min.js" type="text/javascript"
+        charset="utf-8"></script>
+<script src="/assets/modules/redirectMap2/public/init.js" type="text/javascript" charset="utf-8"></script>
+
+<div id="actions">
+    <ul class="actionButtons">
+        <? if($tplClass->getParam('method', $_GET)!=''): ?>
+        <?=$tplClass->showBody('action', array('id'=>'prevBtn', 'href'=>$tplClass->makeUrl('list'),
+        'title'=>'Вернуться', 'icon'=>"media/style/{$manager_theme}/images/icons/prev.gif")); ?>
+        <? endif; ?>
+        <?=$tplClass->showBody('action', array('id'=>'showCsvUpload', 'href'=>$tplClass->makeUrl('showCsvUpload'),
+        'title'=>'Загрузить CSV', 'icon'=>"media/style/{$manager_theme}/images/icons/b092.gif")); ?>
+        <?=$tplClass->showBody('action', array('id'=>'closeBtn', 'href'=>$modx->getManagerPath().'?a=106',
+        'title'=>'Закрыть', 'icon'=>"media/style/{$manager_theme}/images/icons/stop.png")); ?>
+    </ul>
+</div>
+<h1><?=$tplClass->getParam('name', $content)?></h1>
+
+<div id="csvUpload"><?=$tplClass->showBody('uploadForm');?></div>
+
+<div class="section">
+    <div class="sectionHeader">Форма добавления нового правила</div>
+    <div class="sectionBody" style="padding:10px 20px;">
+        <form action="<?=$tplClass->makeUrl('addUri', array('order' => $tplClass->getParam('order', $_GET, 'DESC'), 'by'=>$tplClass->getParam('by', $_GET, 'page'), 'method' => $tplClass->getParam('method', $_GET, 'list'), 'doc' => $tplClass->getParam('doc', $_GET, 0)));?>"
+              method="POST">
+            <table>
+                <tr>
+                    <td style="width:100px">
+                        <label for="pageField">
+                            <strong>ID Документа:</strong><br/>
+                            <input id="pageField" type="text" value="<?=$tplClass->getParam('pageField', $tplParams);?>"
+                                   name="page" style="width:70px"/>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="UriField">
+                            <strong>URI:</strong><br/>
+                            <input id="UriField" type="text" value="<?=$tplClass->getParam('uriField', $tplParams);?>"
+                                   name="uri" style="width:250px"/>
+                        </label>
+                    </td>
+                    <td style="width:280px">
+                        <br/>
+                        <input type="submit" value="Добавить"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<div class="section">
+    <div class="sectionHeader">Список правил перенаправления</div>
+    <div class="sectionBody" style="padding:10px 20px;">
+        <div id="ajaxTable"></div>
+    </div>
+</div>
+
+<div id="logBlock"><?=$tplClass->showBody('log', array('log'=> $tplClass->getParam('log', $tplParams)));?></div>
+
+<div id="legend"><?=$tplClass->showBody('legend');?></div>
+
+<?=$tplClass->showBody('footer');?>
+
+<p style="text-align:center">
+    <small><strong>Всего правил</strong>: <?=\RedirectMap\Helper::countRules();?></small>
+    <br/>
+    <small><strong><a
+            href="<?=$tplClass->makeUrl('filter',array('method'=>'active'));?>">Активных</a></strong>: <?=\RedirectMap\Helper::countActiveRules();?>
+    </small>
+    &middot;
+    <small><strong><a href="<?=$tplClass->makeUrl('filter',array('method'=>'deactive'));?>">Не
+        активных</a></strong>: <?=\RedirectMap\Helper::countDeactiveRules();?></small>
+</p>

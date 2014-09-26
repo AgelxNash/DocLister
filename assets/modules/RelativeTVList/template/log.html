@@ -1,0 +1,12 @@
+<? $logContent = $tplClass->getParam('log', $tplParams); ?>
+<? if(!empty($logContent)): ?>
+<div class="section">
+    <div class="sectionHeader">Отчет</div>
+    <div class="sectionBody" style="padding:10px 20px;">
+        <? if(is_array($logContent)): ?>
+        <? $logContent = implode("<br />", $logContent); ?>
+        <? endif; ?>
+        <?=$logContent;?>
+    </div>
+</div>
+<? endif; ?>

@@ -1,0 +1,28 @@
+<table class="grid" cellpadding="1" cellspacing="1">
+    <thead>
+    <tr>
+        <td class="gridHeader" style="width:400px">
+            <a href="<?=$tplClass->makeUrl('order', array('order' => 'DESC', 'by'=>'page', 'method' => $tplClass->getParam('method', $_GET), 'doc' => $tplClass->getParam('doc', $_GET, 0)));?>">
+                &#709;
+            </a>
+            Целевая страница
+            <a href="<?=$tplClass->makeUrl('order', array('order' => 'ASC', 'by'=>'page', 'method' => $tplClass->getParam('method', $_GET), 'doc' => $tplClass->getParam('doc', $_GET, 0)));?>">
+                &#708;
+            </a>
+        </td>
+        <td class="gridHeader">
+            <a href="<?=$tplClass->makeUrl('order', array('order' => 'DESC', 'by'=>'uri', 'method' => $tplClass->getParam('method', $_GET), 'doc' => $tplClass->getParam('doc', $_GET, 0)));?>">
+                &#709;
+            </a>
+            URI
+            <a href="<?=$tplClass->makeUrl('order', array('order' => 'ASC', 'by'=>'uri', 'method' => $tplClass->getParam('method', $_GET), 'doc' => $tplClass->getParam('doc', $_GET, 0)));?>">
+                &#708;
+            </a>
+        </td>
+        <td class="gridHeader" style="width:100px">
+            Действие
+        </td>
+    </tr>
+    </thead>
+    <tbody>[+dl.wrap+]</tbody>
+</table>

@@ -1,0 +1,68 @@
+<div id="actions">
+    <ul class="actionButtons">
+        <? if(\DLCity\Helper::getMode()!='city'): ?>
+        <?=$tplClass->showBody('action', array('id'=>'prevBtn', 'href'=>$tplClass->makeUrl('view',
+        array('mode'=>'city')), 'title'=>'Вернуться', 'icon'=>"media/style/{$manager_theme}/images/icons/prev.gif")); ?>
+        <? endif; ?>
+
+        <?=$tplClass->showBody('action', array('id'=>'closeBtn', 'href'=>$modx->getManagerPath().'?a=106',
+        'title'=>'Закрыть', 'icon'=>"media/style/{$manager_theme}/images/icons/stop.png")); ?>
+    </ul>
+</div>
+<h1><?=$tplClass->getParam('name', $content)?></h1>
+<div id="logBlock"><?=$tplClass->showBody('log', array('log'=> $tplClass->getParam('log', $tplParams)));?></div>
+
+<?=$tplClass->showBody("addForm");?>
+
+<div class="section">
+    <div class="sectionHeader">Список городов</div>
+    <div class="sectionBody" style="padding:10px 20px;">
+        <?=$tplClass->Lists(); ?>
+    </div>
+</div>
+
+<p style="text-align:center">
+    <small><strong>Всего городов</strong>: <?=\DLCity\Helper::countCity();?> / <?=\DLCity\Helper::countDisplayCity();?>
+    </small>
+    <br/>
+    <small><strong>Всего улиц</strong>: <?=\DLCity\Helper::countStreet();?> / <?=\DLCity\Helper::countDisplayStreet();?>
+    </small>
+</p>
+<style>
+    ol li {
+        margin-left: 40px;
+    }
+
+    ul li {
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    ul li li {
+        font-weight: normal;
+        margin: 5px 0px 5px 0px;
+    }
+
+    pre {
+        font-size: 13px;
+        background: #eee;
+        border: 1px solid #aaa;
+    }
+
+    table td {
+        vertical-align: top;
+    }
+
+    .paginate {
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .grid a {
+        color: #000;
+    }
+
+    .Class_add a {
+        color: #aaa;
+    }
+</style>
