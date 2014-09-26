@@ -15,4 +15,4 @@
  * @internal    @installset base, sample
  */
 
-include MODX_BASE_PATH."assets/modules/RedirectMap/init.php";
+include MODX_BASE_PATH."assets/modules/redirectMap2/init.php";
