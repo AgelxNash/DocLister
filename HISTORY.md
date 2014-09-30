@@ -1,3 +1,7 @@
+## 2.0.8 (30.09.2014)
+* [Fix] Два вызова сниппета DLFirstChar на странице
+* [Add] Правила для установки через Extras.Evolution и PackageManager
+
 ## 2.0.7 (03.09.2014)
 * [Fix] Ошибочный запрос в методах autoTable::delete() и modResource::delete() при удалении записей по пустому списку
 * [Refactor] При наличии массива default_field при инициализации autoTable модели в MODxAPI не происходит перезапись
