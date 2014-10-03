@@ -16,13 +16,15 @@ if (!defined('MODX_BASE_PATH')) {
  */
 class tv_DL_Extender extends extDocLister
 {
-    protected $_TVnames = array();
     protected $tvValuesTable = 'site_tmplvar_contentvalues';
     protected $_TVprefix = null;
 
     public function __construct($DocLister, $name)
     {
         parent::__construct($DocLister, $name);
+        if(!isset($this->modx->_TVnames)){
+            $this->modx->_TVnames = array();
+        }
         $this->tvValuesTable = $this->DocLister->getCFGDef('tvValuesTable', $this->tvValuesTable());
         $this->_TVprefix = $this->getTVprefix();
     }
@@ -39,12 +41,12 @@ class tv_DL_Extender extends extDocLister
 
     public function getTVnames()
     {
-        return $this->_TVnames;
+        return $this->modx->_TVnames;
     }
 
     public function getAllTV_Name($reload = false)
     {
-        if (empty($this->_TVnames) || $reload) {
+        if (empty($this->modx->_TVnames) || $reload) {
             $from = $this->DocLister->getTable('site_tmplvars');
             $rs = $this->DocLister->dbQuery("SELECT id, name FROM {$from}");
             $rows = $this->modx->db->makeArray($rs);
@@ -52,9 +54,9 @@ class tv_DL_Extender extends extDocLister
             foreach ($rows as $item) {
                 $out[$item['name']] = $item['id'];
             }
-            $this->_TVnames = $out;
+            $this->modx->_TVnames = $out;
         }
-        return $this->_TVnames;
+        return $this->getTVnames();
     }
 
     public function getTVList($IDs, $tvlist)
@@ -139,8 +141,8 @@ class tv_DL_Extender extends extDocLister
         $out = array();
         foreach ($tvlist as $tv) {
             $tv = trim($tv);
-            if (isset($this->_TVnames[$tv])) {
-                $out[$this->_TVnames[$tv]] = $tv;
+            if (isset($this->modx->_TVnames[$tv])) {
+                $out[$this->modx->_TVnames[$tv]] = $tv;
             }
         }
         return $out;
