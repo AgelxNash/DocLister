@@ -409,12 +409,17 @@ class modResource extends MODxAPI
         return (isset($this->default_field[$key]) || isset($this->tv[$key]));
     }
 
-    protected function get_TV()
+    protected function get_TV($reload = false)
     {
-        $result = $this->query('SELECT `id`,`name` FROM ' . $this->makeTable('site_tmplvars'));
-        while ($row = $this->modx->db->GetRow($result)) {
-            $this->tv[$row['name']] = $row['id'];
-            $this->tvid[$row['id']] = $row['name'];
+        if (empty($this->modx->_TVnames) || $reload) {
+            $result = $this->query('SELECT `id`,`name` FROM ' . $this->makeTable('site_tmplvars'));
+            while ($row = $this->modx->db->GetRow($result)) {
+                $this->modx->_TVnames[$row['name']] = $row['id'];
+            }
+        }
+        foreach($this->modx->_TVnames as $name => $id){
+            $this->tvid[$id] = $name;
+            $this->tv[$name] = $id;
         }
         $this->loadTVTemplate()->loadTVDefault(array_values($this->tv));
         return $this;
