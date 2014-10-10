@@ -6,32 +6,32 @@ class modUsers extends MODxAPI
 
     protected $default_field = array(
         'user' => array(
-            'username',
-            'password',
-            'cachepwd'
+            'username' => null,
+            'password' => null,
+            'cachepwd' => null
         ),
         'attribute' => array(
-            'fullname',
-            'role',
-            'email',
-            'phone',
-            'mobilephone',
-            'blocked',
-            'blockeduntil',
-            'blockedafter',
-            'logincount',
-            'lastlogin',
-            'thislogin',
-            'failedlogincount',
-            'sessionid',
-            'dob',
-            'gender',
-            'country',
-            'state',
-            'zip',
-            'fax',
-            'photo',
-            'comment'
+            'fullname' => null,
+            'role' => null,
+            'email' => null,
+            'phone' => null,
+            'mobilephone' => null,
+            'blocked' => null,
+            'blockeduntil' => null,
+            'blockedafter' => null,
+            'logincount' => null,
+            'lastlogin' => null,
+            'thislogin' => null,
+            'failedlogincount' => null,
+            'sessionid' => null,
+            'dob' => null,
+            'gender' => null,
+            'country' => null,
+            'state' => null,
+            'zip' => null,
+            'fax' => null,
+            'photo' => null,
+            'comment' => null
         ),
         'hidden' => array(
             'internalKey'
