@@ -1,8 +1,8 @@
 //<?php
 /**
- * DLglossary
+ * DLcrumbs
  * 
- * DLglossary
+ * DLcrumbs
  *
  * @category 	snippet
  * @version 	1
@@ -12,4 +12,4 @@
  * @internal    @installset base, sample
  */
 
-return require MODX_BASE_PATH.'assets/snippets/DocLister/snippet.DLglossary.php';
+return require MODX_BASE_PATH.'assets/snippets/DocLister/snippet.DLcrumbs.php';

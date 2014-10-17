@@ -15,4 +15,4 @@
  * @author      Agel_Nash <modx@agel-nash.ru>
  */
 
-include MODX_BASE_PATH."assets/modules/RedirectMap/plugin.RedirectMap.php";
+include MODX_BASE_PATH."assets/modules/redirectMap2/plugin.RedirectMap.php";
