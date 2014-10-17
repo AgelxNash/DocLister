@@ -31,12 +31,12 @@ return $modx->runSnippet('DocLister', array_merge(array(
         'idType' => 'parents',
         'parents' => \APIhelpers::getkey($modx->event->params, 'parents', 0),
         'params' => $modx->event->params,
-        'tpl' => '@CODE: [+dl.tpl+]',
+        'tpl' => $currentTpl,
         'ownerTPL' => $currentOwnerTpl,
         'mainRowTpl' => $currentTpl,
         'noChildrenRowTPL' => $currentNoChildrenTpl,
         'noneWrapOuter' => '0',
-        'prepare' => function ($data, DocumentParser $modx, DocLister $_DL) {
+        'prepare' => function ($data, DocumentParser $modx, DocLister $_DL, $_extDocLister) {
                 $params = $_DL->getCFGDef('params', array());
                 if ($_DL->getCfgDef('currentDepth', 1) < $_DL->getCFGDef('maxDepth', 5)) {
                     $params['currentDepth'] = $_DL->getCfgDef('currentDepth', 1) + 1;
@@ -47,8 +47,21 @@ return $modx->runSnippet('DocLister', array_merge(array(
                 }
                 $data['dl.currentDepth'] = $_DL->getCfgDef('currentDepth', 1);
 
-                $tpl = empty($data['dl.submenu']) ? 'noChildrenRowTPL' : 'mainRowTpl';
-                $data['dl.tpl'] = $_DL->parseChunk($_DL->getCfgDef($tpl), $data);
+                if(($parentIDs=$_extDocLister->getStore('parentIDs')) === null){
+					$parentIDs = array_values($modx->getParentIds($modx->documentObject['id']));
+					$_extDocLister->setStore('parentIDs', $parentIDs);
+				}
+				$isActive = ((is_array($parentIDs) && in_array($data['id'], $parentIDs)) || $data['id'] == $modx->documentObject['id']);
+				if($isActive){
+					$data['dl.class'] = 'active';
+				}
+
+				if(strpos($data['dl.class'], 'current')!==false){
+					$data['dl.class'] = str_replace($data['dl.class'], 'current', 'current active');
+				}
+				
+				$tpl = empty($data['dl.submenu']) ? 'noChildrenRowTPL' : 'mainRowTpl';
+                $_DL->renderTPL = $_DL->getCfgDef($tpl);
                 return $data;
             }
     ))
