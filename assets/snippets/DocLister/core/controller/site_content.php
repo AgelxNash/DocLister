@@ -161,11 +161,13 @@ class site_contentDocLister extends DocLister
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
                     $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
 
-                    if($item['type'] == 'reference'){
-                        $item['url'] = is_numeric($item['content']) ? $this->modx->makeUrl($item['content'], '', '', $this->getCFGDef('urlScheme', '')) : $item['content'];
-                    }else{
-                        $item['url'] = $this->modx->makeUrl($item['id'], '', '', $this->getCFGDef('urlScheme', ''));
-                    }
+					if($this->getCFGDef('makeUrl', 1)){
+						if($item['type'] == 'reference'){
+							$item['url'] = is_numeric($item['content']) ? $this->modx->makeUrl($item['content'], '', '', $this->getCFGDef('urlScheme', '')) : $item['content'];
+						}else{
+							$item['url'] = $this->modx->makeUrl($item['id'], '', '', $this->getCFGDef('urlScheme', ''));
+						}
+					}
 
                     $item['date'] = (isset($item[$date]) && $date != 'createdon' && $item[$date] != 0 && $item[$date] == (int)$item[$date]) ? $item[$date] : $item['createdon'];
                     $item['date'] = $item['date'] + $this->modx->config['server_offset_time'];
