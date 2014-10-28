@@ -15,4 +15,4 @@
  * @author      Agel_Nash <modx@agel-nash.ru>
  */
 
-include MODX_BASE_PATH."assets/plugins/getPageID/getPageID.plugin.php;
+include MODX_BASE_PATH."assets/plugins/getPageID/getPageID.plugin.php";
