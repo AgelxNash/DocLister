@@ -12,7 +12,7 @@ if (empty($currentTpl)) {
 }
 $currentNoChildrenTpl = \APIhelpers::getkey($modx->event->params, 'TplNoChildrenDepth' . $currentDepth);
 if (empty($currentNoChildrenTpl)) {
-    $currentNoChildrenTpl = \APIhelpers::getkey($modx->event->params, 'TplNochildrenItem', $currentTpl);
+    $currentNoChildrenTpl = \APIhelpers::getkey($modx->event->params, 'noChildrenRowTPL', $currentTpl);
 }
 
 $currentOwnerTpl = \APIhelpers::getkey($modx->event->params, 'TplOwner' . $currentDepth);
@@ -25,20 +25,18 @@ if (empty($currentOwnerTpl)) {
     }
 }
 
-return $modx->runSnippet('DocLister', array_merge(array(
-        'orderBy' => 'menuindex ASC, id ASC'
-    ), $modx->event->params, array(
-        'idType' => 'parents',
-        'parents' => \APIhelpers::getkey($modx->event->params, 'parents', 0),
-        'params' => $modx->event->params,
-        'tpl' => $currentTpl,
-        'ownerTPL' => $currentOwnerTpl,
-        'mainRowTpl' => $currentTpl,
-        'noChildrenRowTPL' => $currentNoChildrenTpl,
-        'noneWrapOuter' => '0',
-        'prepare' => function ($data, DocumentParser $modx, DocLister $_DL, $_extDocLister) {
-                $params = $_DL->getCFGDef('params', array());
-                if ($_DL->getCfgDef('currentDepth', 1) < $_DL->getCFGDef('maxDepth', 5)) {
+$prepare = \APIhelpers::getkey($modx->event->params, 'BeforePrepare', '');
+$prepare = explode(",", $prepare);
+$prepare[] = 'DLBuildMenu::prepare';
+$prepare[] = \APIhelpers::getkey($modx->event->params, 'AfterPrepare', '');
+$modx->event->params['prepare'] = trim(implode(",", $prepare), ',');
+
+if(!class_exists("DLBuildMenu", false)){
+	class DLBuildMenu{
+		public static function prepare(array $data = array(), DocumentParser $modx, $_DL, prepare_DL_Extender $_extDocLister)
+		{
+			$params = $_DL->getCFGDef('params', array());
+            if ($_DL->getCfgDef('currentDepth', 1) < $_DL->getCFGDef('maxDepth', 5)) {
                     $params['currentDepth'] = $_DL->getCfgDef('currentDepth', 1) + 1;
                     $params['parents'] = $data['id'];
                     $data['dl.submenu'] = $modx->runSnippet('DLBuildMenu', $params);
@@ -63,6 +61,20 @@ return $modx->runSnippet('DocLister', array_merge(array(
 				$tpl = empty($data['dl.submenu']) ? 'noChildrenRowTPL' : 'mainRowTpl';
                 $_DL->renderTPL = $_DL->getCfgDef($tpl);
                 return $data;
-            }
+		}
+	}
+}
+return $modx->runSnippet('DocLister', array_merge(array(
+        'orderBy' => 'menuindex ASC, id ASC'
+    ), $modx->event->params, array(
+        'idType' => 'parents',
+        'parents' => \APIhelpers::getkey($modx->event->params, 'parents', 0),
+        'params' => $modx->event->params,
+        'tpl' => $currentTpl,
+        'ownerTPL' => $currentOwnerTpl,
+        'mainRowTpl' => $currentTpl,
+        'noChildrenRowTPL' => $currentNoChildrenTpl,
+        'noneWrapOuter' => '0'
     ))
 );
+?>

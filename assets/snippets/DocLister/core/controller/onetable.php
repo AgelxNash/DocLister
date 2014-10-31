@@ -19,7 +19,8 @@ if (!defined('MODX_BASE_PATH')) {
 class onetableDocLister extends DocLister
 {
     protected $table = 'site_content';
-
+	protected $idField = 'id';
+	protected $parentField = 'parent';
     /**
      * @absctract
      */
@@ -41,15 +42,13 @@ class onetableDocLister extends DocLister
      */
     public function getDocs($tvlist = '')
     {
-        $this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
-        $this->idField = $this->getCFGDef('idField', 'id');
-
         if ($this->checkExtender('paginate')) {
             $pages = $this->extender['paginate']->init($this);
         } else {
             $this->setConfig(array('start' => 0));
         }
-        $this->_docs = $this->getDocList();
+        $type = $this->getCFGDef('idType', 'parents');
+        $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
 
         return $this->_docs;
     }
@@ -222,6 +221,47 @@ class onetableDocLister extends DocLister
         return $out;
     }
 
+	protected function getChildrenList()
+    {
+        $where = array();
+
+        $tmpWhere = $this->getCFGDef('addWhereList', '');
+        $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
+        if (!empty($tmpWhere)) {
+            $where[] = $tmpWhere;
+        }
+        $sanitarInIDs = $this->sanitarIn($this->IDs);
+
+        $tmpWhere = null;
+        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+            $tmpWhere = "`{$this->getParentField()}` IN (" . $sanitarInIDs . ")";
+		    $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND {$this->getPK()} NOT IN(" . $sanitarInIDs . ")");
+        }
+        if (($addDocs = $this->getCFGDef('documents', '')) != '') {
+            $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
+            $tmpWhere = "((" . $tmpWhere . ") OR {$this->getPK()} IN({$addDocs}))";
+        }
+        if (!empty($tmpWhere)) {
+            $where[] = $tmpWhere;
+        }
+        if (!empty($where)) {
+            $where = "WHERE " . implode(" AND ", $where);
+        } else {
+            $where = '';
+        }
+        $fields = $this->getCFGDef('selectFields', '*');
+        $sql = $this->dbQuery("SELECT DISTINCT {$fields} FROM " . $this->table . " " . $where . " " .
+            $this->SortOrderSQL($this->getPK()) . " " .
+            $this->LimitSQL($this->getCFGDef('queryLimit', 0))
+        );
+        $rows = $this->modx->db->makeArray($sql);
+        $out = array();
+        foreach ($rows as $item) {
+            $out[$item[$this->getPK()]] = $item;
+        }
+        return $out;
+    }
+	
     // @abstract
     public function getChildrenCount()
     {
@@ -231,9 +271,35 @@ class onetableDocLister extends DocLister
             $where = $this->getCFGDef('addWhereList', '');
             if ($where != '') {
                 $where = array($where);
-            }
+            }else{
+				$where = array();
+			}
             if ($sanitarInIDs != "''") {
-                $where[] = "`{$this->getPK()}` IN ({$sanitarInIDs})";
+				if ($sanitarInIDs != "''") {
+					switch ($this->getCFGDef('idType', 'parents')) {
+						case 'parents':
+						{
+							if ($this->getCFGDef('showParent', '0')) {
+								$tmpWhere = "(`{$this->getParentField()}` IN ({$sanitarInIDs}) OR `{$this->getPK()}` IN({$sanitarInIDs}))";
+							} else {
+								$tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs}) AND `{$this->getPK()}` NOT IN({$sanitarInIDs})";
+							}
+							if (($addDocs = $this->getCFGDef('documents', '')) != '') {
+								$addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
+								$whereArr[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
+							} else {
+								$where[] = $tmpWhere;
+							}
+
+							break;
+						}
+						case 'documents':
+						{
+							$where[] = "`{$this->getPK()}` IN({$sanitarInIDs})";
+							break;
+						}
+					}
+				}
             }
             if (!empty($where)) {
                 $where = "WHERE " . implode(" AND ", $where);
@@ -249,12 +315,15 @@ class onetableDocLister extends DocLister
 
     public function getChildernFolder($id)
     {
-        $this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
-        $where = $this->getCFGDef('addWhereFolder', '');
-        if (!empty($where)) {
-            $where = "WHERE " . $where;
+		$sanitarInIDs = $this->sanitarIn($id);
+		
+        $tmp = $this->getCFGDef('addWhereFolder', '');
+		$where = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
+        if (!empty($tmp)) {
+            $where .= " AND " . $tmp;
         }
-        $rs = $this->dbQuery("SELECT `{$this->getPK()}` FROM {$this->table} {$where}");
+		 
+        $rs = $this->dbQuery("SELECT `{$this->getPK()}` FROM {$this->table} WHERE {$where}");
 
         $rows = $this->modx->db->makeArray($rs);
         $out = array();

@@ -67,7 +67,10 @@ if(!class_exists("FirstChar", false)){
 }
 
 $config = $modx->event->params;
-$prepare = isset($config['prepare']) ? explode(",", $config['prepare']) : array();
+
+$prepare = isset($config['BeforePrepare']) ? explode(",", $config['BeforePrepare']) : array();
 $prepare[] = 'FirstChar::get';
-$config['prepare'] = implode(",", $prepare);
+$prepare[] = isset($config['AfterPrepare']) ? $config['AfterPrepare'] : '';
+$config['prepare'] = trim(implode(",", $prepare), ',');
+
 return $modx->runSnippet('DocLister', $config);

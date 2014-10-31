@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '2.0.2';
+    const VERSION = '2.0.12';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -109,6 +109,12 @@ abstract class DocLister
      */
     protected $idField = 'id';
 
+	/**
+	* Parent Key основной таблицы
+    * @var string
+    * @access protected
+	*/
+	protected $parentField = 'parent';
     /**
      * Дополнительные условия для SQL запросов
      * @var array
@@ -221,6 +227,11 @@ abstract class DocLister
                     }
             }
             $this->setConfig($cfg);
+			
+			$this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
+			$this->idField = $this->getCFGDef('idField', 'id');
+			$this->parentField = $this->getCFGDef('parentField', 'parent');
+			
             $this->setIDs($IDs);
         }
 
@@ -349,6 +360,7 @@ abstract class DocLister
             if (empty($cfgName[1])) {
                 $cfgName[1] = 'custom';
             }
+			
             $configFile = dirname(dirname(__FILE__)) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
             if (file_exists($configFile) && is_readable($configFile)) {
                 $json = file_get_contents($configFile);
@@ -685,7 +697,7 @@ abstract class DocLister
      * @return array массив с лексиконом
      */
     final public function loadLang($name = 'core', $lang = '', $rename = true)
-    {
+    {	
         if (empty($lang)) {
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
         }
@@ -1020,7 +1032,7 @@ abstract class DocLister
      */
     final public function setIDs($IDs)
     {
-        $this->debug->debug('set ID list ' . $this->debug->dumpData($IDs), 'setIDs', 2);
+		$this->debug->debug('set ID list ' . $this->debug->dumpData($IDs), 'setIDs', 2);
         $IDs = $this->cleanIDs($IDs);
         $type = $this->getCFGDef('idType', 'parents');
         $depth = $this->getCFGDef('depth', '');
@@ -1292,6 +1304,14 @@ abstract class DocLister
         return isset($this->idField) ? $this->idField : 'id';
     }
 
+	/**
+	* Получение Parent key
+	* По умолчанию это parent. Переопределить можно в контроллере присвоив другое значение переменной parentField
+	* @return string Parent Key основной таблицы
+	*/
+	public function getParentField(){
+		return isset($this->parentField) ? $this->parentField : '';
+	}
     /**
      * Разбор фильтров
      * OR(AND(filter:field:operator:value;filter2:field:oerpator:value);(...)), etc.

@@ -38,3 +38,4 @@ return $TPL->parseChunk($prevnextTPL, array(
     'prev' => $TPL->parseChunk($prevTPL, $children[$prev]),
     'next' => $TPL->parseChunk($nextTPL, $children[$next]),
 ));
+?>

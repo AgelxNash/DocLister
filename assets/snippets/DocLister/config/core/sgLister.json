@@ -1,0 +1,15 @@
+{
+	"table": "sg_images",
+	"idField": "sg_id",
+	"parentField" : "sg_rid",
+	"idType": "documents",
+	"ignoreEmpty": "1",
+	"orderBy": "sg_index DESC",
+	"prepare": "",
+	"addWhereList" : "`sg_isactive`=1",
+	"thumbOptions" : "hp=90&wl=90&far=C",
+	"imageField" : "sg_image",
+	"titleField" : "sg_title",
+	"descField": "sg_description",
+	"noneWrapOuter" : "0"
+}

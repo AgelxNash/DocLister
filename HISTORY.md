@@ -1,3 +1,9 @@
+## 2.0.12 (31.10.2014)
+* [Add] Добавлена выборка документов по типу idType = parents в контроллере onetable
+* [Fix] Некорректая проверка списка ID и параметра ignoreEmpty в методе getChildrenList контроллера site_content
+* [Fix] Исправлено получение значения параметра noChildrenRowTPL в сниппете DLBuldMenu
+* [Refactor] Обязательный парметр prepare в сниппетах DLBuildMenu, DLFirstChar обернут двумя новыми необязательными параметрами BeforePrepare, AfterPrepare
+
 ## 2.0.11 (17.10.2014)
 * [Fix] Исправлен путь к файлам сниппетов для инсталлятора
 * [Add] Добавлен параметр makeUrl к контроллеру site_content, который позволяет отключить создание url плейсхолдеров
