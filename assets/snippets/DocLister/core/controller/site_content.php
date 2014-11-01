@@ -391,7 +391,7 @@ class site_contentDocLister extends DocLister
         return $out;
     }
 
-    public function getChildernFolder($id)
+    public function getChildrenFolder($id)
     {
         /**
          * @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)

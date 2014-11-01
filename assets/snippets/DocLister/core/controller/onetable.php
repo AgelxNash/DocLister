@@ -313,7 +313,7 @@ class onetableDocLister extends DocLister
         return $out;
     }
 
-    public function getChildernFolder($id)
+    public function getChildrenFolder($id)
     {
 		$sanitarInIDs = $this->sanitarIn($id);
 		
