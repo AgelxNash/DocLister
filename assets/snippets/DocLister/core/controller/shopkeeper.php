@@ -286,7 +286,7 @@ class shopkeeperDocLister extends site_contentDocLister
         return $out;
     }
 
-    public function getChildernFolder($id)
+    public function getChildrenFolder($id)
     {
         $where = $this->getCFGDef('addWhereFolder', '');
         $where = sqlHelper::trimLogicalOp($where);

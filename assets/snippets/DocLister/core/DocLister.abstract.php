@@ -1040,7 +1040,7 @@ abstract class DocLister
             $tmp = $IDs;
             do {
                 if (count($tmp) > 0) {
-                    $tmp = $this->getChildernFolder($tmp);
+                    $tmp = $this->getChildrenFolder($tmp);
                     $IDs = array_merge($IDs, $tmp);
                 }
             } while ((--$depth) > 0);
@@ -1125,7 +1125,7 @@ abstract class DocLister
      * @param string $id значение PrimaryKey родителя
      * @return array массив документов
      */
-    abstract public function getChildernFolder($id);
+    abstract public function getChildrenFolder($id);
 
     protected function getGroupSQL($group = '')
     {
