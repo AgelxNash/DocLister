@@ -43,7 +43,7 @@ class prepare_DL_Extender extends extDocLister
             }
             $out = $params['data'];
         }
-        return $out;
+        return (!empty($ret) && is_scalar($ret) && isset($out[$ret])) ? $out[$ret] : $out;
     }
 
     public function getParams(array $data = array()){
@@ -79,8 +79,6 @@ class prepare_DL_Extender extends extDocLister
                 }
             }
         }
-        $out = is_null($out) ? $params['data'] : $out;
-        $out = (!empty($ret) && is_scalar($ret) && isset($out[$ret])) ? $out[$ret] : $out;
-        return $out;
+        return is_null($out) ? $params['data'] : $out;
     }
 }
