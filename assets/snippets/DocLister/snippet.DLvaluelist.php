@@ -1,4 +1,7 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
 $params = array_merge($modx->event->params, array(
     'idType' => 'parents',
     'controller' => 'site_content',

@@ -11,7 +11,9 @@
  * &orderBy=`BINARY pagetitle ASC`
  * ]]
  */
-
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
 if(!class_exists("FirstChar", false)){
 	class FirstChar{
 		public static function get(array $data = array(), DocumentParser $modx, $_DocLister, prepare_DL_Extender $_extDocLister)

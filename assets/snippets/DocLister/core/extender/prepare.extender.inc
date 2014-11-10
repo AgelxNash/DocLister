@@ -25,19 +25,21 @@ class prepare_DL_Extender extends extDocLister
 	
     protected function run()
     {
-        $out = $this->_cfg;
-        if (($prepare = $this->DocLister->getCFGDef('prepare', '')) != '') {
+        $out = $this->getCFGDef('data', array());
+        $nameParam = $this->getCFGDef('nameParam', 'prepare');
+        $ret = $this->getCFGDef('return', null);
+        if (($prepare = $this->DocLister->getCFGDef($nameParam, '')) != '') {
             $params = $this->getParams($out);
             if(is_scalar($prepare)){
                 $names = explode(",", $prepare);
                 foreach($names as $item){
-                    $params['data'] = $this->callPrepare($item, $params);
+                    $params['data'] = $this->callPrepare($item, $params, $ret);
                     if($params['data'] === false){
                         break;
                     }
                 }
             }else{
-                $params['data'] = $this->callPrepare($prepare, $params);
+                $params['data'] = $this->callPrepare($prepare, $params, $ret);
             }
             $out = $params['data'];
         }
@@ -53,7 +55,7 @@ class prepare_DL_Extender extends extDocLister
         );
     }
 	
-    public function callPrepare($name, array $params){
+    public function callPrepare($name, array $params, $ret = null){
         $out = null;
         if((is_object($name) && ($name instanceof Closure)) || is_callable($name)){
             $data = call_user_func($name, $params['data'], $params['modx'], $params['_DocLister'], $params['_extDocLister']);
@@ -77,6 +79,8 @@ class prepare_DL_Extender extends extDocLister
                 }
             }
         }
-        return is_null($out) ? $params['data'] : $out;
+        $out = is_null($out) ? $params['data'] : $out;
+        $out = (!empty($ret) && is_scalar($ret) && isset($out[$ret])) ? $out[$ret] : $out;
+        return $out;
     }
 }

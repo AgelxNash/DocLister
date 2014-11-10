@@ -131,7 +131,7 @@ class shopkeeperDocLister extends site_contentDocLister
                         $this->renderTPL = $tpl;
                     }
                     if ($extPrepare) {
-                        $item = $extPrepare->init($this, $item);
+                        $item = $extPrepare->init($this, array('data' => $item));
                         if (is_bool($item) && $item === false) {
                             continue;
                         }
@@ -148,12 +148,7 @@ class shopkeeperDocLister extends site_contentDocLister
                 $noneTPL = $this->getCFGDef("noneTPL", "");
                 $out = ($noneTPL != '') ? $this->parseChunk($noneTPL, $sysPlh) : '';
             }
-            if (($this->getCFGDef("noneWrapOuter", "1") && count($this->_docs) == 0) || count($this->_docs) > 0) {
-                $ownerTPL = $this->getCFGDef("ownerTPL", "");
-                if ($ownerTPL != '') {
-                    $out = $this->parseChunk($ownerTPL, array($this->getCFGDef("sysKey", "dl") . ".wrap" => $out));
-                }
-            }
+            $out = $this->renderWrap($out);
         } else {
             $out = 'no template';
         }
@@ -286,7 +281,7 @@ class shopkeeperDocLister extends site_contentDocLister
         return $out;
     }
 
-    public function getChildernFolder($id)
+    public function getChildrenFolder($id)
     {
         $where = $this->getCFGDef('addWhereFolder', '');
         $where = sqlHelper::trimLogicalOp($where);

@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: Agel_Nash
- * Date: 28.08.13
- * Time: 2:46
- * To change this template use File | Settings | File Templates.
- */
 
 class DLdebug
 {
@@ -34,12 +27,19 @@ class DLdebug
         }
 
     }
-
+	
+	public function getLog(){
+		return $this->_log;
+	}
+	
+    public function countLog(){
+        return count($this->_log);
+    }
     /*
      * 1 - SQL
      * 2 - Full debug
      */
-    public function debug($message, $key = '', $mode = 0)
+    public function debug($message, $key = null, $mode = 0)
     {
         $mode = (int)$mode;
         if ($mode > 0 && $this->DocLister->getDebug() >= $mode) {
@@ -47,19 +47,24 @@ class DLdebug
                 'msg' => $message,
                 'start' => microtime(true) - $this->DocLister->getTimeStart()
             );
-            if (is_scalar($key) && $key != '') {
+            if (is_scalar($key) && !empty($key)) {
                 $data['time'] = microtime(true);
                 $this->_calcLog[$key] = $data;
             } else {
-                $this->_log[count($this->_log)] = $data;
+                $this->_log[$this->countLog()] = $data;
             }
+        }
+    }
+    public function updateMessage($message, $key){
+        if (is_scalar($key) && !empty($key) && isset($this->_calcLog[$key])) {
+            $this->_calcLog[$key]['msg'] = $message;
         }
     }
 
     public function debugEnd($key, $msg = null)
     {
         if (is_scalar($key) && isset($this->_calcLog[$key], $this->_calcLog[$key]['time']) && $this->DocLister->getDebug() > 0) {
-            $this->_log[count($this->_log)] = array(
+            $this->_log[$this->countLog()] = array(
                 'msg' => isset($msg) ? $msg : $this->_calcLog[$key]['msg'],
                 'start' => $this->_calcLog[$key]['start'],
                 'time' => microtime(true) - $this->_calcLog[$key]['time']

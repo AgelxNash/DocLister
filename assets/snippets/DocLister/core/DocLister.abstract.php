@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '2.0.12';
+    const VERSION = '2.0.13';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -166,6 +166,9 @@ abstract class DocLister
     /** @var string имя шаблона для вывода записи */
     public $renderTPL = '';
 
+    /** @var string имя шаблона обертки для записей  */
+    public $ownerTPL = '';
+
     /**
      * Конструктор контроллеров DocLister
      *
@@ -246,6 +249,7 @@ abstract class DocLister
             $this->extender['request']->init($this, $this->getCFGDef("requestActive", ""));
         }
         $this->_filters = $this->getFilters($this->getCFGDef('filters', ''));
+        $this->ownerTPL = $this->getCFGDef("ownerTPL", "");
     }
 
     /**
@@ -514,7 +518,7 @@ abstract class DocLister
             foreach ($this->_tree as $item) {
                 $out .= $this->renderTree($item);
             }
-            $out = $this->parseChunk($this->getCFGDef("ownerTPL", ""), array($this->getCFGDef("sysKey", "dl") . ".wrap" => $out));
+            $out = $this->renderWrap($out);
         } else {
             $out = $this->_render($tpl);
         }
@@ -788,7 +792,7 @@ abstract class DocLister
             }
         }
 
-        $data[$this->getCFGDef("sysKey", "dl") . ".wrap"] = $this->parseChunk($this->getCFGDef("ownerTPL", ""), array($this->getCFGDef("sysKey", "dl") . ".wrap" => $out));
+        $data[$this->getCFGDef("sysKey", "dl") . ".wrap"] = $this->renderWrap($out);
         $out = $this->parseChunk($this->getCFGDef('tpl', ''), $data);
         return $out;
     }
@@ -852,7 +856,7 @@ abstract class DocLister
     {
         $out = null;
         $this->debug->debug(
-            "parseChunk " . $this->debug->dumpData($name) . " " . $this->debug->dumpData($data),
+            "parseChunk: " . $this->debug->dumpData($name) . "\r\nWith data: " . $this->debug->dumpData($data),
             "parseChunk",
             2
         );
@@ -879,6 +883,45 @@ abstract class DocLister
         return $data;
     }
 
+    /**
+     * Помещение html кода в какой-то блок обертку
+     *
+     * @param string $data html код который нужно обернуть в ownerTPL
+     * @return string результатирующий html код
+     */
+    public function renderWrap($data){
+        $out = $data;
+        if ((($this->getCFGDef("noneWrapOuter", "1") && count($this->_docs) == 0) || count($this->_docs) > 0) && !empty($this->ownerTPL)) {
+            $this->debug->debug("","renderWrapTPL",2);
+            $parse = true;
+            $plh = array($this->getCFGDef("sysKey", "dl") . ".wrap" => $data);
+            /**
+            * @var $extPrepare prepare_DL_Extender
+            */
+            $extPrepare = $this->getExtender('prepare');
+            if ($extPrepare) {
+                $params = array('docs' => $this->_docs, 'placeholders' => $plh);
+                $params = $extPrepare->init($this, array('data' => $params, 'nameParam' => 'prepareWrap', 'return' => 'placeholders'));
+                if (is_bool($params) && $params === false){
+                    $out = $data;
+                    $parse = false;
+                }
+                $plh = $params;
+            }
+            if($parse && !empty($this->ownerTPL)){
+                $this->debug->updateMessage(
+                    "render ownerTPL: " . $this->debug->dumpData($this->ownerTPL) . "\r\nWith data: " . $this->debug->dumpData($plh),
+                    "renderWrapTPL"
+                );
+                $out = $this->parseChunk($this->ownerTPL, $plh);
+            }
+            if(empty($this->ownerTPL)){
+                $this->debug->updateMessage("empty ownerTPL", "renderWrapTPL");
+            }
+            $this->debug->debugEnd("renderWrapTPL");
+        }
+        return $out;
+    }
     /**
      * Формирование JSON ответа
      *
@@ -1040,7 +1083,7 @@ abstract class DocLister
             $tmp = $IDs;
             do {
                 if (count($tmp) > 0) {
-                    $tmp = $this->getChildernFolder($tmp);
+                    $tmp = $this->getChildrenFolder($tmp);
                     $IDs = array_merge($IDs, $tmp);
                 }
             } while ((--$depth) > 0);
@@ -1125,7 +1168,7 @@ abstract class DocLister
      * @param string $id значение PrimaryKey родителя
      * @return array массив документов
      */
-    abstract public function getChildernFolder($id);
+    abstract public function getChildrenFolder($id);
 
     protected function getGroupSQL($group = '')
     {

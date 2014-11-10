@@ -135,7 +135,7 @@ class onetableDocLister extends DocLister
                     $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 
                     if ($extPrepare) {
-                        $item = $extPrepare->init($this, $item);
+                        $item = $extPrepare->init($this, array('data' => $item));
                         if (is_bool($item) && $item === false) {
                             continue;
                         }
@@ -148,12 +148,7 @@ class onetableDocLister extends DocLister
                     $i++;
                 }
             }
-            if (($this->getCFGDef("noneWrapOuter", "1") && count($this->_docs) == 0) || count($this->_docs) > 0) {
-                $ownerTPL = $this->getCFGDef("ownerTPL", "");
-                if ($ownerTPL != '') {
-                    $out = $this->parseChunk($ownerTPL, array($this->getCFGDef("sysKey", "dl") . ".wrap" => $out));
-                }
-            }
+            $out = $this->renderWrap($out);
         } else {
             $out = 'none TPL';
         }
@@ -313,7 +308,7 @@ class onetableDocLister extends DocLister
         return $out;
     }
 
-    public function getChildernFolder($id)
+    public function getChildrenFolder($id)
     {
 		$sanitarInIDs = $this->sanitarIn($id);
 		

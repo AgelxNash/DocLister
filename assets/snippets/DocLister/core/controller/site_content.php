@@ -205,7 +205,7 @@ class site_contentDocLister extends DocLister
                         $this->renderTPL = $tpl;
                     }
                     if ($extPrepare) {
-                        $item = $extPrepare->init($this, $item);
+                        $item = $extPrepare->init($this, array('data' => $item));
                         if (is_bool($item) && $item === false) {
                             continue;
                         }
@@ -222,12 +222,7 @@ class site_contentDocLister extends DocLister
                 $noneTPL = $this->getCFGDef("noneTPL", "");
                 $out = ($noneTPL != '') ? $this->parseChunk($noneTPL, $sysPlh) : '';
             }
-            if (($this->getCFGDef("noneWrapOuter", "1") && count($this->_docs) == 0) || count($this->_docs) > 0) {
-                $ownerTPL = $this->getCFGDef("ownerTPL", "");
-                if ($ownerTPL != '') {
-                    $out = $this->parseChunk($ownerTPL, array($this->getCFGDef("sysKey", "dl") . ".wrap" => $out));
-                }
-            }
+            $out = $this->renderWrap($out);
         } else {
             $out = 'no template';
         }
@@ -391,7 +386,7 @@ class site_contentDocLister extends DocLister
         return $out;
     }
 
-    public function getChildernFolder($id)
+    public function getChildrenFolder($id)
     {
         /**
          * @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)

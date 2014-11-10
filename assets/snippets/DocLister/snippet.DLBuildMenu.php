@@ -1,4 +1,7 @@
 <?php
+if (!defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 $modx->event->params['TplMainOwner'] = \APIhelpers::getkey($modx->event->params, 'TplMainOwner', '@CODE: <ul id="nav" class="menu level-1">[+dl.wrap+]</ul>');
 $modx->event->params['TplSubOwner'] = \APIhelpers::getkey($modx->event->params, 'TplSubOwner', '@CODE: <ul class="sub-menu level-[+dl.currentDepth+]">[+dl.wrap+]</ul>');
