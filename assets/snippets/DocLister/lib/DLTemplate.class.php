@@ -166,6 +166,15 @@ class DLTemplate
                     }
                     break;
                 }
+				case '@RENDERPAGE':{
+					$tpl = $this->renderDoc($subTmp, false);
+					break;
+				}
+				
+				case '@LOADPAGE':{
+					$tpl = $this->renderDoc($subTmp, true);
+					break;
+				}
                 default:
                     {
                     $tpl = $this->modx->getChunk($name);
@@ -179,7 +188,42 @@ class DLTemplate
         }
         return $tpl;
     }
-
+	/**
+	* Рендер документа с подстановкой плейсхолдеров и выполнением сниппетов
+	*
+	* @param int $id ID документа
+	* @param bool $events Во время рендера документа стоит ли вызывать события OnLoadWebDocument и OnLoadDocumentObject (внутри метода getDocumentObject).
+	* @return string
+	* 
+	* Событие OnLoadWebDocument дополнительно передает параметры:
+	*		- с источиком от куда произошел вызов события
+	*		- оригинальный экземпляр класса DocumentParser
+	*/
+	public function renderDoc($id, $events = false){
+		if((int)$id <= 0) return '';
+		
+		$m = clone $this->modx; //Чтобы была возможность вызывать события
+		$m->documentObject = $m->getDocumentObject('id', (int)$id , $events ? 'prepareResponse' : null);
+		if ($m->documentObject['type'] == "reference") {
+			if (is_numeric($m->documentObject['content']) && $m->documentObject['content'] > 0) {
+				$m->documentObject['content'] = $this->renderDoc($m->documentObject['content'], $events);
+			}
+		}
+		$m->documentContent = null;
+		if ($m->documentObject['template'] > 0){
+			$m->documentContent = $m->db->getValue("SELECT `content` FROM {$m->getFullTableName("site_templates")} WHERE `id` = '{$m->documentObject['template']}'");
+        }
+		if(is_null($m->documentContent)){
+			$m->documentContent = '[*content*]';
+		}
+		if($events){
+			$m->invokeEvent("OnLoadWebDocument", array(
+				'source' => 'DLTemplate',
+				'mainModx' => $this->modx,
+			));
+		}
+		return $m->parseDocumentSource($m->documentContent);
+	}
     /**
      * refactor $modx->parseChunk();
      *
