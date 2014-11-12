@@ -222,7 +222,7 @@ class DLTemplate
 				'mainModx' => $this->modx,
 			));
 		}
-		return $m->parseDocumentSource($m->documentContent);
+		return $this->parseDocumentSource($m->documentContent, $m);
 	}
     /**
      * refactor $modx->parseChunk();
@@ -311,14 +311,17 @@ class DLTemplate
         return APIhelpers::renameKeyArr($data, $prefix, $suffix, $sep);
     }
 
-    public function parseDocumentSource($out)
+	public function parseDocumentSource($out, $modx = null)
     {
-        $site_status = $this->modx->getConfig('site_status');
-        $this->modx->config['site_status'] = 0;
+		if(!is_object($modx)){
+			$modx = $this->modx;
+		}
+        $site_status = $modx->getConfig('site_status');
+        $modx->config['site_status'] = 0;
         $out = str_replace(array('[!', '!]'), array('[[', ']]'), $out);
-        $out = $this->modx->parseDocumentSource($out);
-        $out = $this->modx->rewriteUrls($out);
-        $this->modx->config['site_status'] = $site_status;
+        $out = $modx->parseDocumentSource($out);
+        $out = $modx->rewriteUrls($out);
+        $modx->config['site_status'] = $site_status;
         return $out;
     }
 }
