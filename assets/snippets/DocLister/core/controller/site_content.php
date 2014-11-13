@@ -142,7 +142,7 @@ class site_contentDocLister extends DocLister
                 }
 
                 foreach ($this->_docs as $item) {
-                    $this->renderTPL = '';
+                    $this->renderTPL = $tpl;
                     if ($extUser) {
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
@@ -153,13 +153,11 @@ class site_contentDocLister extends DocLister
                         $item['jotcount'] = isset($comments[$item['id']]) ? $comments[$item['id']] : 0;
                     }
 
-
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
-                    $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
-                    $item['e.title'] = htmlentities($item['title'], ENT_COMPAT, 'UTF-8', false);
-
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
-                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
+					
+					$item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
+                    $item['e.title'] = htmlentities($item['title'], ENT_COMPAT, 'UTF-8', false);
 
 					if($this->getCFGDef('makeUrl', 1)){
 						if($item['type'] == 'reference'){
@@ -174,36 +172,13 @@ class site_contentDocLister extends DocLister
                     if ($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
                         $item['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $item['date']);
                     }
-
-                    $class = array();
-
-                    $this->renderTPL = $this->getCFGDef('tplId' . $i, $tpl);
-
-                    $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
-                    $class[] = strtolower($iterationName);
-
-                    $this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
-
-                    if ($i == 1) {
-                        $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
-                        $class[] = 'first';
-                    }
-                    if ($i == count($this->_docs)) {
-                        $this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
-                        $class[] = 'last';
-                    }
-                    if ($this->modx->documentIdentifier == $item['id']) {
-                        $this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
-                        $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
-                        $class[] = 'current';
-                    } else {
-                        $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
-                    }
-                    $class = implode(" ", $class);
-                    $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
-                    if ($this->renderTPL == '') {
-                        $this->renderTPL = $tpl;
-                    }
+					
+					$findTpl = $this->renderTPL;
+					extract($this->uniformPrepare(&$item, $i), EXTR_SKIP);
+					if ($this->renderTPL == '') {
+						$this->renderTPL = $findTpl;
+					}
+					
                     if ($extPrepare) {
                         $item = $extPrepare->init($this, array('data' => $item));
                         if (is_bool($item) && $item === false) {

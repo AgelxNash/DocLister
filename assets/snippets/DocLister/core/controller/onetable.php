@@ -86,6 +86,7 @@ class onetableDocLister extends DocLister
                 $extPrepare = $this->getExtender('prepare');
 
                 foreach ($this->_docs as $item) {
+					$this->renderTPL = $tpl;
                     if ($extUser) {
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
@@ -100,40 +101,13 @@ class onetableDocLister extends DocLister
                     if ($date != '' && $this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
                         $item[$this->getCFGDef("sysKey", "dl") . '.date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $date);
                     }
-
-                    $class = array();
-
-                    $this->renderTPL = $this->getCFGDef('tplId' . $i, $tpl);
-
-                    $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
-                    $class[] = strtolower($iterationName);
-
-                    $this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
-
-                    if ($i == 1) {
-                        $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
-                        $class[] = 'first';
+					
+					$findTpl = $this->renderTPL;
+                    extract($this->uniformPrepare(&$item, $i), EXTR_SKIP);
+					if ($this->renderTPL == '') {
+                        $this->renderTPL = $findTpl;
                     }
-                    if ($i == count($this->_docs)) {
-                        $this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
-                        $class[] = 'last';
-                    }
-                    if ($this->modx->documentIdentifier == $item['id']) {
-                        $this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
-                        $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
-                        $class[] = 'current';
-                    } else {
-                        $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
-                    }
-                    $item[$this->getCFGDef("sysKey", "dl") . '.iteration'] = $i; //[+iteration+] - Number element. Starting from zero
-                    $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->checkExtender('paginate')) ? ($i + $this->getCFGDef('display', 0) * ($this->extender['paginate']->currentPage() - 1)) : $i;
-
-                    if ($this->renderTPL == '') {
-                        $this->renderTPL = $tpl;
-                    }
-                    $class = implode(" ", $class);
-                    $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
-
+					
                     if ($extPrepare) {
                         $item = $extPrepare->init($this, array('data' => $item));
                         if (is_bool($item) && $item === false) {
@@ -298,8 +272,10 @@ class onetableDocLister extends DocLister
             }
             if (!empty($where)) {
                 $where = "WHERE " . implode(" AND ", $where);
-            }
-
+            }else{
+				$where = '';
+			}
+			
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group}) as `tmp`");
 

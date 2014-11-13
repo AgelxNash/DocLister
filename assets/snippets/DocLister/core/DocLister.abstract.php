@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '2.0.14';
+    const VERSION = '2.0.15';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -922,6 +922,45 @@ abstract class DocLister
         }
         return $out;
     }
+	/**
+	* Единые обработки массива с данными о документе для всех контроллеров 
+	*
+	* @param array $data массив с данными о текущем документе
+	* @param int $i номер итерации в цикле
+	* @return array массив с данными которые можно использовать в цикле render метода
+	*/
+	protected function uniformPrepare($data, $i=0){
+		$class = array();
+		
+		$iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
+		$tmp = strtolower($iterationName);
+        $class[] = $this->getCFGDef($tmp.'Class', $tmp);
+		
+		$this->renderTPL = $this->getCFGDef('tplId' . $i, $this->renderTPL);
+		$this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
+		
+        $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
+					
+		if ($i == 1) {
+			$this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
+            $class[] = $this->getCFGDef('firstClass', 'first');
+        }
+		if ($i == count($this->_docs)) {
+			$this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
+            $class[] = $this->getCFGDef('lastClass', 'last');
+        }
+		if ($this->modx->documentIdentifier == $item['id']) {
+			$this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
+            $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
+            $class[] = $this->getCFGDef('currentClass', 'current');
+        } else {
+			$item[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
+        }
+		
+		$class = implode(" ", $class);
+        $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
+		return compact('class', 'iterationName');
+	}
     /**
      * Формирование JSON ответа
      *

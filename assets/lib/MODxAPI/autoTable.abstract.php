@@ -6,6 +6,9 @@ abstract class autoTable extends MODxAPI
     protected $table = null;
 	protected $generateField = false;
 	
+	public function tableName(){
+		return $this->table;
+	}
     public function __construct($modx, $debug = false)
     {
         parent::__construct($modx, $debug);

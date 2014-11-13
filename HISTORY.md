@@ -1,3 +1,10 @@
+## 2.0.15 (13.11.2014)
+* [Add] Добавлен новый метод DocLister::uniformPrepare с однообразными для всех контроллеров подготовками плейсхолдеров
+* [Add] Добавлены параметры lastClass, currentClass, firstClass, oddClass, evenClass для подмены имен классов для плейсхолдера [+dl.class+]
+* [Add] Метод MODxAPI::fieldPKName для получения имени PK поля в таблице
+* [Add] Метод autoTable::tableName для получения оригинального имени таблицы из protected переменной autoTable::$table
+* [Fix] Исправлена ошибка SQL запроса в контроллере onetable
+
 ## 2.0.14 (12.11.2014)
 * [Add] Метод DLTemplate::renderDoc() для получения результатирующего html кода любой страницы вместе с шаблоном и выполнением сниппетов
 * [Add] Добавлены новые типы для шаблонизатора @RENDERPAGE и @LOADPAGE

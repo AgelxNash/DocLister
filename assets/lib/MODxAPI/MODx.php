@@ -275,7 +275,9 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $out;
     }
-
+	final public function fieldPKName(){
+		return $this->pkName;
+	}
     final public function makeTable($table)
     {
         return (isset($this->_table[$table])) ? $this->_table[$table] : $this->modx->getFullTableName($table);
