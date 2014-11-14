@@ -929,7 +929,7 @@ abstract class DocLister
 	* @param int $i номер итерации в цикле
 	* @return array массив с данными которые можно использовать в цикле render метода
 	*/
-	protected function uniformPrepare($data, $i=0){
+	protected function uniformPrepare(&$data, $i=0){
 		$class = array();
 		
 		$iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';

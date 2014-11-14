@@ -116,7 +116,7 @@ class shopkeeperDocLister extends site_contentDocLister
                     }
 					
 					$findTpl = $this->renderTPL;
-					extract($this->uniformPrepare(&$item, $i), EXTR_SKIP);
+					extract($this->uniformPrepare($item, $i), EXTR_SKIP);
 					if ($this->renderTPL == '') {
 						$this->renderTPL = $findTpl;
 					}
