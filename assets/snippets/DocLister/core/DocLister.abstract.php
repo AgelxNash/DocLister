@@ -939,7 +939,7 @@ abstract class DocLister
 		$this->renderTPL = $this->getCFGDef('tplId' . $i, $this->renderTPL);
 		$this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
 		
-        $item[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
+        $data[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
 					
 		if ($i == 1) {
 			$this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
@@ -949,16 +949,16 @@ abstract class DocLister
 			$this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
             $class[] = $this->getCFGDef('lastClass', 'last');
         }
-		if ($this->modx->documentIdentifier == $item['id']) {
+		if ($this->modx->documentIdentifier == $data['id']) {
 			$this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
-            $item[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
+            $data[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
             $class[] = $this->getCFGDef('currentClass', 'current');
         } else {
-			$item[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
+			$data[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
         }
 		
 		$class = implode(" ", $class);
-        $item[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
+        $data[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 		return compact('class', 'iterationName');
 	}
     /**
