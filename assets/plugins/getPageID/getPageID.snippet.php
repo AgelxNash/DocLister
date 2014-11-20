@@ -11,7 +11,7 @@
  * @internal    @code           return require MODX_BASE_PATH.'assets/plugins/getPageID/getPageID.snippet.php';
  */
 $requestName = (!empty($requestName) && is_scalar($requestName)) ? (string)$requestName : 'getPageId';
-$uri = !empty($uri) && is_scalar($uri) ? (string)$uri : '';
+$uri = !empty($uri) && is_scalar($uri) ? trim((string)$uri) : '';
 $q = $parseUri = array();
 $host = null;
 $out = 0;

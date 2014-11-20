@@ -3,8 +3,7 @@ if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
 
-$dir = realpath(MODX_BASE_PATH . (isset($dir) ? $dir : 'assets/snippets/DocLister/'));
-require_once($dir . "/lib/sqlHelper.class.php");
+require_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/sqlHelper.class.php");
 
 switch (true) {
     case (!empty($fromget)):
@@ -22,9 +21,9 @@ switch (true) {
         break;
     }
     default:
-        {
+    {
         $from = $data = null;
-        }
+    }
 }
 if (!empty($from)) {
     $char = (isset($data[$from]) && is_scalar($data[$from])) ? $data[$from] : null;
@@ -52,7 +51,7 @@ $register = empty($register) ? true : false; //Чувствительность 
 
 if (preg_match("/\s+/", $field)) {
     /** SQL-injection protection :-)  */
-    $char = '';
+$char = '';
 }
 
 $out = $where = '';
@@ -73,26 +72,25 @@ if (!is_null($char)) {
     }
 }
 
-if (!is_null($char)) {
-    $_options = !empty($modx->event->params) ? $modx->event->params : array();
-    if (!empty($loadfilter)) {
-        $field = end(explode(".", $field));
-        if (!empty($_options['filters'])) {
-            $_options['filters'] = rtrim(trim($_options['filters']), ";") . ";";
-        }
-        $_options['filters'] = "AND({$loadfilter}:{$field}:{$action}:{$char})";
-    } else {
-        $field = sqlHelper::tildeField($field);
-        if ($action == 'regexp') {
-            $where = $field . " REGEXP '" . $modx->db->escape($char) . "'";
-        } else {
-            $where = sqlHelper::LikeEscape($modx, $field, $char, '=', '[+value+]%');
-        }
-        $_options['addWhereList'] = empty($_options['addWhereList']) ? $where : (sqlHelper::trimLogicalOp($_options['addWhereList']) . " AND " . $where);
-    }
+if (is_null($char)) $modx->sendErrorPage();
 
-    $out = $modx->runSnippet("DocLister", $_options);
-} else {
-    $modx->sendErrorPage();
+$p = &$modx->event->params;
+if(!is_array($p)){
+    $p = array();
 }
-return $out;
+if (!empty($loadfilter)) {
+    $field = end(explode(".", $field));
+    if (!empty($p['filters'])) {
+        $p['filters'] = rtrim(trim($p['filters']), ";") . ";";
+    }
+    $p['filters'] = "AND({$loadfilter}:{$field}:{$action}:{$char})";
+} else {
+    $field = sqlHelper::tildeField($field);
+    if ($action == 'regexp') {
+        $where = $field . " REGEXP '" . $modx->db->escape($char) . "'";
+    } else {
+        $where = sqlHelper::LikeEscape($modx, $field, $char, '=', '[+value+]%');
+    }
+    $p['addWhereList'] = empty($p['addWhereList']) ? $where : (sqlHelper::trimLogicalOp($p['addWhereList']) . " AND " . $where);
+}
+return $modx->runSnippet("DocLister", $p);

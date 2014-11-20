@@ -169,6 +169,10 @@ abstract class DocLister
     /** @var string имя шаблона обертки для записей  */
     public $ownerTPL = '';
 
+    /** @var string результатирующая строка которая была последний раз сгенирирована
+    *               вызовами методов DocLister::render и DocLister::getJSON
+    */
+    protected $outData = '';
     /**
      * Конструктор контроллеров DocLister
      *
@@ -230,11 +234,11 @@ abstract class DocLister
                     }
             }
             $this->setConfig($cfg);
-			
+
 			$this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
 			$this->idField = $this->getCFGDef('idField', 'id');
 			$this->parentField = $this->getCFGDef('parentField', 'parent');
-			
+
             $this->setIDs($IDs);
         }
 
@@ -250,6 +254,15 @@ abstract class DocLister
         }
         $this->_filters = $this->getFilters($this->getCFGDef('filters', ''));
         $this->ownerTPL = $this->getCFGDef("ownerTPL", "");
+    }
+
+    /**
+     * Трансформация объекта в строку
+     * @return string последний ответ от DocLister'а
+     */
+    public function __toString()
+    {
+        return $this->outData;
     }
 
     /**
@@ -364,7 +377,7 @@ abstract class DocLister
             if (empty($cfgName[1])) {
                 $cfgName[1] = 'custom';
             }
-			
+
             $configFile = dirname(dirname(__FILE__)) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
             if (file_exists($configFile) && is_readable($configFile)) {
                 $json = file_get_contents($configFile);
@@ -523,10 +536,9 @@ abstract class DocLister
             $out = $this->_render($tpl);
         }
 
-        $out = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
-
+        $this->outData = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
         $this->debug->debugEnd('render');
-        return $out;
+        return $this->outData;
     }
 
     /***************************************************
@@ -701,7 +713,7 @@ abstract class DocLister
      * @return array массив с лексиконом
      */
     final public function loadLang($name = 'core', $lang = '', $rename = true)
-    {	
+    {
         if (empty($lang)) {
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
         }
@@ -923,7 +935,7 @@ abstract class DocLister
         return $out;
     }
 	/**
-	* Единые обработки массива с данными о документе для всех контроллеров 
+	* Единые обработки массива с данными о документе для всех контроллеров
 	*
 	* @param array $data массив с данными о текущем документе
 	* @param int $i номер итерации в цикле
@@ -931,16 +943,16 @@ abstract class DocLister
 	*/
 	protected function uniformPrepare(&$data, $i=0){
 		$class = array();
-		
+
 		$iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
 		$tmp = strtolower($iterationName);
         $class[] = $this->getCFGDef($tmp.'Class', $tmp);
-		
+
 		$this->renderTPL = $this->getCFGDef('tplId' . $i, $this->renderTPL);
 		$this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
-		
+
         $data[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
-					
+
 		if ($i == 1) {
 			$this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
             $class[] = $this->getCFGDef('firstClass', 'first');
@@ -956,7 +968,7 @@ abstract class DocLister
         } else {
 			$data[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
         }
-		
+
 		$class = implode(" ", $class);
         $data[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 		return compact('class', 'iterationName');
@@ -1002,9 +1014,9 @@ abstract class DocLister
         } else {
             $return = $out;
         }
-        $out = json_encode($return);
+        $this->outData = json_encode($return);
         $this->isErrorJSON($return);
-        return $out;
+        return $this->outData;
     }
 
     protected function getSummary(array $item = array(), $extSummary = null, $introField = '', $contentField = '')
