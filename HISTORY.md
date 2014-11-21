@@ -1,4 +1,4 @@
-## 2.0.17 (11.2014)
+## 2.0.17 (21.11.2014)
 * [Add] Запись результатирующего ответа от DocLister::render и DocLister::getJSON в переменную DocLister::$outData;
 * [Add] Схранение объекта DocLister в плейсхолдер с именем указанным в параметре saveDLObject
 * [Add] Задание произвольных имен полей в сниппете DLValueList
