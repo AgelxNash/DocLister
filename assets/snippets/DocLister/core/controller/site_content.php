@@ -155,30 +155,30 @@ class site_contentDocLister extends DocLister
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
-					
-					$item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
+
+                    $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
                     $item['e.title'] = htmlentities($item['title'], ENT_COMPAT, 'UTF-8', false);
 
-					if($this->getCFGDef('makeUrl', 1)){
-						if($item['type'] == 'reference'){
-							$item['url'] = is_numeric($item['content']) ? $this->modx->makeUrl($item['content'], '', '', $this->getCFGDef('urlScheme', '')) : $item['content'];
-						}else{
-							$item['url'] = $this->modx->makeUrl($item['id'], '', '', $this->getCFGDef('urlScheme', ''));
-						}
-					}
+                    if($this->getCFGDef('makeUrl', 1)){
+                        if($item['type'] == 'reference'){
+                            $item['url'] = is_numeric($item['content']) ? $this->modx->makeUrl($item['content'], '', '', $this->getCFGDef('urlScheme', '')) : $item['content'];
+                        }else{
+                            $item['url'] = $this->modx->makeUrl($item['id'], '', '', $this->getCFGDef('urlScheme', ''));
+                        }
+                    }
 
                     $item['date'] = (isset($item[$date]) && $date != 'createdon' && $item[$date] != 0 && $item[$date] == (int)$item[$date]) ? $item[$date] : $item['createdon'];
                     $item['date'] = $item['date'] + $this->modx->config['server_offset_time'];
                     if ($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
                         $item['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $item['date']);
                     }
-					
-					$findTpl = $this->renderTPL;
-					extract($this->uniformPrepare($item, $i), EXTR_SKIP);
-					if ($this->renderTPL == '') {
-						$this->renderTPL = $findTpl;
-					}
-					
+
+                    $findTpl = $this->renderTPL;
+                    extract($this->uniformPrepare($item, $i), EXTR_SKIP);
+                    if ($this->renderTPL == '') {
+                        $this->renderTPL = $findTpl;
+                    }
+
                     if ($extPrepare) {
                         $item = $extPrepare->init($this, array('data' => $item));
                         if (is_bool($item) && $item === false) {
@@ -446,7 +446,9 @@ class site_contentDocLister extends DocLister
             $where = '';
         }
         $fields = $this->getCFGDef('selectFields', 'c.*');
-        $sql = $this->dbQuery("SELECT DISTINCT {$fields} FROM " . $from . " " . $where . " " .
+        $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
+        $sql = $this->dbQuery("SELECT {$fields} FROM " . $from . " " . $where . " " .
+            $group . " ".
             $sort . " " .
             $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );

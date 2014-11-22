@@ -101,13 +101,13 @@ class onetableDocLister extends DocLister
                     if ($date != '' && $this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
                         $item[$this->getCFGDef("sysKey", "dl") . '.date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $date);
                     }
-					
+
 					$findTpl = $this->renderTPL;
                     extract($this->uniformPrepare($item, $i), EXTR_SKIP);
 					if ($this->renderTPL == '') {
                         $this->renderTPL = $findTpl;
                     }
-					
+
                     if ($extPrepare) {
                         $item = $extPrepare->init($this, array('data' => $item));
                         if (is_bool($item) && $item === false) {
@@ -219,7 +219,9 @@ class onetableDocLister extends DocLister
             $where = '';
         }
         $fields = $this->getCFGDef('selectFields', '*');
-        $sql = $this->dbQuery("SELECT DISTINCT {$fields} FROM " . $this->table . " " . $where . " " .
+        $group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
+        $sql = $this->dbQuery("SELECT {$fields} FROM " . $this->table . " " . $where . " " .
+            $group . " " .
             $this->SortOrderSQL($this->getPK()) . " " .
             $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         );
@@ -230,7 +232,7 @@ class onetableDocLister extends DocLister
         }
         return $out;
     }
-	
+
     // @abstract
     public function getChildrenCount()
     {
@@ -275,7 +277,7 @@ class onetableDocLister extends DocLister
             }else{
 				$where = '';
 			}
-			
+
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group}) as `tmp`");
 
@@ -287,13 +289,13 @@ class onetableDocLister extends DocLister
     public function getChildrenFolder($id)
     {
 		$sanitarInIDs = $this->sanitarIn($id);
-		
+
         $tmp = $this->getCFGDef('addWhereFolder', '');
 		$where = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
         if (!empty($tmp)) {
             $where .= " AND " . $tmp;
         }
-		 
+
         $rs = $this->dbQuery("SELECT `{$this->getPK()}` FROM {$this->table} WHERE {$where}");
 
         $rows = $this->modx->db->makeArray($rs);
