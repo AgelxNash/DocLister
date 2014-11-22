@@ -1,5 +1,6 @@
 ## 2.0.18 (23.11.2014)
 * [Fix] Некорректная работа методов getChildrenList в контроллерах при изменении значения параметров groupBy или selectFields
+* [Fix] Вшитый в ТВ параметр префикс таблицы (Issue #96)
 
 ## 2.0.17 (21.11.2014)
 * [Add] Запись результатирующего ответа от DocLister::render и DocLister::getJSON в переменную DocLister::$outData;

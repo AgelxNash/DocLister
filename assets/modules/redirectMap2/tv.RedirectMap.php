@@ -17,7 +17,7 @@ if (!empty($module['id']) && $module['disabled'] == 0) {
     }
     if (!empty($group)) {
 
-        $showLink = (bool)$modx->db->getValue("SELECT count(*) FROM evo_member_groups WHERE member='" . $modx->getLoginUserID('mgr') . "' AND user_group IN (" . implode(',', $group) . ")");
+        $showLink = (bool)$modx->db->getValue("SELECT count(*) FROM ".$modx->getFullTableName("member_groups")." WHERE member='" . $modx->getLoginUserID('mgr') . "' AND user_group IN (" . implode(',', $group) . ")");
     } else {
         $showLink = true;
     }
