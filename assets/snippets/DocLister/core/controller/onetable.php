@@ -141,20 +141,35 @@ class onetableDocLister extends DocLister
          */
         $extSummary = $this->getExtender('summary');
 
+		/**
+        * @var $extPrepare prepare_DL_Extender
+        */
+        $extPrepare = $this->getExtender('prepare');
+		
         foreach ($data as $num => $item) {
+			$row = $item;
+		
             switch (true) {
                 case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
                 {
-                    $out[$num]['summary'] = (mb_strlen($this->_docs[$num]['introtext'], 'UTF-8') > 0) ? $this->_docs[$num]['introtext'] : $this->getSummary($this->_docs[$num], $extSummary);
+                    $row['summary'] = $this->getSummary($this->_docs[$num], $extSummary, 'introtext');
                     //without break
                 }
                 case ((array('1') == $fields || in_array('date', $fields)) && $date != 'date'):
                 {
                     $tmp = (isset($this->_docs[$num][$date]) && $date != 'createdon' && $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
-                    $out[$num]['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
+                    $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
                     //without break
                 }
             }
+			
+			if ($extPrepare) {
+                $row = $extPrepare->init($this, array('data' => $row));
+                if (is_bool($row) && $row === false) {
+                    continue;
+                }
+            }
+            $out[$num] = $row;
         }
 
         return parent::getJSON($data, $fields, $out);
