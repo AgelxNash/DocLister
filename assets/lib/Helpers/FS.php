@@ -2,7 +2,7 @@
 
 namespace Helpers;
 
-class HDD{
+class FS{
 	/**
      * @var cached reference to singleton instance
      */
