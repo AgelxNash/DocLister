@@ -8,7 +8,7 @@ class HDD{
      */
     protected static $instance;
 
-	private $this->_fileInfo = array();
+	private $_fileInfo = array();
 
 	/**
      * gets the instance via lazy initialization (created on first usage)
@@ -55,15 +55,15 @@ class HDD{
      * @return string информация из pathinfo о обрабатываемом файле input
      */
     private function _pathinfo($file, $mode){
-    	if(is_scalar($file) && is_scalar($mode)){
+    	if(!is_scalar($file) && !is_scalar($mode)){
     		$file = $mode = '';
 		}
 		$flag = !(empty($file) || empty($mode));
 		$f = MODX_BASE_PATH . $this->relativePath($file);
-        if($flag && !isset($this->_fileInfo[$file], $this->_fileInfo[$file][$mode]) $this->checkFile($file)){
-            $this->_fileInfo[$file][$mode] = pathinfo($f);
+        if($flag && !isset($this->_fileInfo[$f], $this->_fileInfo[$f][$mode])){
+            $this->_fileInfo[$f] = pathinfo($f);
         }
-        $out = $flag && isset($this->_fileInfo[$file][$mode]) ? $this->_fileInfo[$file][$mode] : '';
+        $out = $flag && isset($this->_fileInfo[$f][$mode]) ? $this->_fileInfo[$f][$mode] : '';
         return $out;
     }
 
@@ -166,7 +166,7 @@ class HDD{
         if(intval($tmp, 8) === octdec($chmod)){
             $tmp = (string)octdec($tmp);
         }
-        return intval($tmp, 8);
+        return $tmp;
     }
 
     public function rmDir($dirPath) {
@@ -187,7 +187,7 @@ class HDD{
         $out = $file;
         while ($this->checkFile($file)) {
             $i++;
-            $out = $full ? $this->takeDir($file).'/';
+            $out = $full ? $this->takeDir($file).'/' : '';
             $out .= $this->takeFileName($file)."({$i}).".$this->takeFileExt($file);
         }
         return $out;
