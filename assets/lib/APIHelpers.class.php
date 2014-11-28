@@ -221,15 +221,18 @@ class APIhelpers
         return (false !== $out && preg_match('|^(?:[0-9]{1,3}\.){3,3}[0-9]{1,3}$|', $out, $matches)) ? $out : false;
     }
 
-    public static function sanitarTag($data)
+    public static function sanitarTag($data, $charset = 'UTF-8')
     {
         return is_scalar($data) ? str_replace(
-            array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D'),
-            array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;'),
-            htmlspecialchars($data, ENT_COMPAT, 'UTF-8', false)
+            array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D', '`', '%60'),
+            array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;', '&#96', '&#96'),
+            self::e($data, $charset)
         ) : '';
     }
 
+    public static function e($text, $charset = 'UTF-8'){
+        return is_scalar($text) ? htmlspecialchars($text, ENT_COMPAT, $charset, false) : '';
+    }
     /**
      * Проверка строки на наличе запрещенных символов
      * Проверка конечно круто, но валидация русских символов в строке порой завершается не удачей по разным причинам
@@ -309,32 +312,33 @@ class APIhelpers
      * @param string $sep разделитель ключей при склейке многомерных массивов
      * @return array массив с переименованными ключами
      */
-    public static function renameKeyArr($data, $prefix = '', $suffix = '', $addPS = '.', $sep = '.'){
-    $out = array();
-    if ($prefix == '' && $suffix == '') {
-        $out = $data;
-    } else {
-        $InsertPrefix = ($prefix != '') ? ($prefix . $addPS) : '';
-        $InsertSuffix = ($suffix != '') ? ($addPS. $suffix) : '';
+    public static function renameKeyArr($data, $prefix = '', $suffix = '', $addPS = '.', $sep = '.')
+    {
+        $out = array();
+        if ($prefix == '' && $suffix == '') {
+            $out = $data;
+        } else {
+            $InsertPrefix = ($prefix != '') ? ($prefix . $addPS) : '';
+            $InsertSuffix = ($suffix != '') ? ($addPS. $suffix) : '';
 
-        foreach ($data as $key => $item) {
-            $key = $InsertPrefix . $key;
-            $val = null;
-            switch(true){
-                case is_scalar($item):{
-                    $val = $item;
-                    break;
+            foreach ($data as $key => $item) {
+                $key = $InsertPrefix . $key;
+                $val = null;
+                switch(true){
+                    case is_scalar($item):{
+                        $val = $item;
+                        break;
+                    }
+                    case is_array($item):{
+                        $val = self::renameKeyArr($item, $key.$sep, $InsertSuffix, '', $sep);
+                        $out = array_merge($out, $val);
+                        $val = '';
+                        break;
+                    }
                 }
-                case is_array($item):{
-                    $val = self::renameKeyArr($item, $key.$sep, $InsertSuffix, '', $sep);
-                    $out = array_merge($out, $val);
-                    $val = '';
-                    break;
-                }
+                $out[$key . $InsertSuffix] = $val;
             }
-            $out[$key . $InsertSuffix] = $val;
         }
+        return $out;
     }
-    return $out;
-}
 }

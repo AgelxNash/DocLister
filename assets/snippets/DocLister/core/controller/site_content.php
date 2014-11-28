@@ -157,7 +157,7 @@ class site_contentDocLister extends DocLister
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
 
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
-                    $item['e.title'] = htmlentities($item['title'], ENT_COMPAT, 'UTF-8', false);
+                    $item['e.title'] = \APIHelpers::e($item['title']);
 
                     if($this->getCFGDef('makeUrl', 1)){
                         if($item['type'] == 'reference'){

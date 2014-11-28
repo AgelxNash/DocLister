@@ -1,4 +1,6 @@
 <?php
+
+include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 class DLTemplate
 {
     protected $modx = null;
@@ -170,7 +172,7 @@ class DLTemplate
 					$tpl = $this->renderDoc($subTmp, false);
 					break;
 				}
-				
+
 				case '@LOADPAGE':{
 					$tpl = $this->renderDoc($subTmp, true);
 					break;
@@ -202,14 +204,14 @@ class DLTemplate
 	*						int(0-n) - Получить шаблон из базы данных с указанным ID и применить его к документу
 	*						string - Применить шаблон указанный в строке к документу
 	* @return string
-	* 
+	*
 	* Событие OnLoadWebDocument дополнительно передает параметры:
 	*		- с источиком от куда произошел вызов события
 	*		- оригинальный экземпляр класса DocumentParser
 	*/
 	public function renderDoc($id, $events = false, $tpl = null){
 		if((int)$id <= 0) return '';
-		
+
 		$m = clone $this->modx; //Чтобы была возможность вызывать события
 		$m->documentObject = $m->getDocumentObject('id', (int)$id , $events ? 'prepareResponse' : null);
 		if ($m->documentObject['type'] == "reference") {
@@ -239,7 +241,7 @@ class DLTemplate
 		}
 		return $this->parseDocumentSource($m->documentContent, $m);
 	}
-	
+
 	/**
 	* Получить содержимое шаблона с определенным номером
 	* @param int $id Номер шаблона

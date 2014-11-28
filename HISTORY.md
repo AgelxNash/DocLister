@@ -1,3 +1,9 @@
+## 2.0.20 (28.11.2014)
+* [Add] Добавлено приведение символа тильда к HTML сущности в методе APIHelpers::sanitarTag()
+* [Add] Добавлен новый метод APIHelpers::e()
+* [Fix] Использование класса DLTemplate без предварительной загрузки класса APIHelpers
+* [Refactor] В классе DLphx экранирование символов происходит через класс APIHelpers
+
 ## 2.0.19 (24.11.2014)
 * [Refactor] Поддержка prepare в контроллерах onetable и site_content при запуске DocLister с параметром api
 * [Add] Добавлен класс \Helpers\FS для работы с файловой структурой

@@ -28,7 +28,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '2.0.15';
+    const VERSION = '2.0.20';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
@@ -593,7 +593,7 @@ abstract class DocLister
                 try {
                     if ($item != '' && !$this->_loadExtender($item)) {
                         $out = false;
-                        throw new Exception('Error load ' . htmlspecialchars($item) . ' extender');
+                        throw new Exception('Error load ' . APIHelpers::e($item) . ' extender');
                         break;
                     }
                 } catch (Exception $e) {
@@ -768,7 +768,7 @@ abstract class DocLister
      */
     final public function renameKeyArr($data, $prefix = '', $suffix = '', $sep = '.')
     {
-        return DLTemplate::getInstance($this->getMODX())->renameKeyArr($data, $prefix, $suffix, $sep);
+        return \APIHelpers::renameKeyArr($data, $prefix, $suffix, $sep);
     }
 
     /**
@@ -1333,15 +1333,12 @@ abstract class DocLister
      * Clean up the modx and html tags
      *
      * @param string $data String for cleaning
+     * @param  string charset
      * @return string Clear string
      */
-    final public function sanitarData($data)
+    final public function sanitarData($data, $charset = 'UTF-8')
     {
-        return is_scalar($data) ? str_replace(
-            array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D'),
-            array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;'),
-            htmlspecialchars($data, ENT_COMPAT, 'UTF-8', false)
-        ) : '';
+        return APIHelpers::sanitarTag($data, $charset);
     }
 
     /**
