@@ -5,7 +5,7 @@ abstract class autoTable extends MODxAPI
 {
     protected $table = null;
 	protected $generateField = false;
-	
+
 	public function tableName(){
 		return $this->table;
 	}
@@ -31,22 +31,24 @@ abstract class autoTable extends MODxAPI
         if ($this->getID() != $id) {
             $this->newDoc = false;
             $this->id = null;
+            $this->markAllEncode();
             $this->field = array();
             $this->set = array();
-
             $result = $this->query("SELECT * from {$this->makeTable($this->table)} where `" . $this->pkName . "`='" . $this->escape($id)."'");
 			$this->fromArray($this->modx->db->getRow($result));
             $this->id = $this->eraseField($this->pkName);
 			if(is_bool($this->id) && $this->id === false){
 				$this->id = null;
-			}
+			}else{
+                $this->decodeFields();
+            }
         }
         return $this;
     }
 
     public function save($fire_events = null, $clearCache = false)
     {
-        $fld = $this->toArray();
+        $fld = $this->encodeFields()->toArray();
         foreach ($this->default_field as $key => $value) {
             if ($this->newDoc && $this->get($key) === null && $this->get($key) !== $value) {
                 $this->set($key, $value);

@@ -34,11 +34,14 @@ class jsonHelper
         } else {
             $depth = 512;
         }
-
-        if (version_compare(phpversion(), '5.3.0', '<')) {
-            $out = json_decode($json, $assoc);
-        } else {
-            $out = json_decode($json, $assoc, $depth);
+        if(is_scalar($json)){
+            if (version_compare(phpversion(), '5.3.0', '<')) {
+                $out = json_decode($json, $assoc);
+            } else {
+                $out = json_decode($json, $assoc, $depth);
+            }
+        }else{
+            $out = null;
         }
 
         if ($nop && is_null($out)) {

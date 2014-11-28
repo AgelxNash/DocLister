@@ -181,7 +181,6 @@ class modResource extends MODxAPI
                 $this->id = $this->field['id'];
             }
             unset($this->field['id']);
-
         }
         return $this;
     }

@@ -1,5 +1,6 @@
 <?php
 include_once(MODX_BASE_PATH.'assets/lib/APIHelpers.class.php');
+include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/jsonHelper.class.php');
 
 abstract class MODxAPI extends MODxAPIhelpers
 {
@@ -13,6 +14,8 @@ abstract class MODxAPI extends MODxAPIhelpers
     protected $pkName = 'id';
     protected $_debug = false;
     protected $_query = array();
+    protected $jsonFields = array();
+    private $_decodedFields = array();
 
     public function __construct($modx, $debug = false)
     {
@@ -119,7 +122,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     public function set($key, $value)
     {
-        if (is_scalar($value) && is_scalar($key) && !empty($key)) {
+        if ((is_scalar($value) || $this->isJsonField($key)) && is_scalar($key) && !empty($key)) {
             $this->field[$key] = $value;
         }
         return $this;
@@ -334,6 +337,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         $this->id = null;
         $this->field = array();
         $this->set = array();
+        $this->markAllEncode();
     }
 
     public function issetField($key)
@@ -377,6 +381,155 @@ abstract class MODxAPI extends MODxAPIhelpers
             unset($this->field[$name]);
         }
         return $flag;
+    }
+
+    /**
+     * Может ли содержать данное поле json массив
+     * @param  string $field имя поля
+     * @return boolean
+     */
+    public function isJsonField($field){
+        return (is_scalar($field) && in_array($field, $this->jsonFields));
+    }
+
+    /**
+     * Пометить поле как распакованное
+     * @param  string $field имя поля
+     * @return $this
+     */
+    public function markAsDecode($field){
+        if(is_scalar($field)){
+            $this->_decodedFields[$field] = true;
+        }
+        return $this;
+    }
+
+    /**
+     * Пометить поле как запакованное
+     * @param  string $field имя поля
+     * @return $this
+     */
+    public function markAsEncode($field){
+        if(is_scalar($field)){
+            $this->_decodedFields[$field] = false;
+        }
+        return $this;
+    }
+
+    /**
+     * Пометить все поля как запакованные
+     * @return $this
+     */
+    public function markAllEncode(){
+        foreach($this->jsonFields as $field){
+            $this->markAsEncode($field);
+        }
+        return $this;
+    }
+
+    /**
+     * Получить список запакованных полей
+     * @return array
+     */
+    public function getNoEncodeFields(){
+        return array_keys(array_filter($this->_decodedFields, function($value){
+            return $value;
+        }));
+    }
+
+    /**
+     * Получить список распакованных полей
+     * @return array
+     */
+    public function getNoDecodeFields(){
+        return array_keys(array_filter($this->_decodedFields, function($value){
+            return !$value;
+        }));
+    }
+
+    /**
+     * Можно ли данное декодировать с помощью json_decode
+     * @param  string $field имя поля
+     * @return boolean
+     */
+    public function isDecodableField($field){
+        $data = $this->get($field);
+        /**
+         * Если поле скалярного типа и оно не распаковывалось раньше
+         */
+        return (is_scalar($data) && is_scalar($field) && APIHelpers::getkey($this->_decodedFields, $field, true));
+    }
+
+    /**
+     * Можно ли закодировать данные с помощью json_encode
+     * @param  string  $field имя поля
+     * @return boolean
+     */
+    public function isEncodableField($field){
+        /**
+         * Если поле было распаковано ранее и еще не упаковано
+         */
+        return (is_scalar($field) && APIHelpers::getkey($this->_decodedFields, $field, true));
+    }
+
+    /**
+     * Декодирует конкретное поле
+     * @param  string $field Имя поля
+     * @param  bool $store обновить распакованное поле
+     * @return array ассоциативный массив с данными из json строки
+     */
+    public function decodeField($field, $store = false){
+        $out = array();
+        if($this->isDecodableField($field)){
+            $data = $this->get($field);
+            $out = jsonHelper::jsonDecode($data, array('assoc' => true), true);
+        }
+        if($store){
+            $this->field[$field] = $out;
+            $this->markAsDecode($field);
+        }
+        return $out;
+    }
+
+    /**
+     * Декодирование всех json полей
+     * @return $this
+     */
+    protected function decodeFields(){
+        foreach($this->getNoDecodeFields() as $field){
+            $this->decodeField($field, true);
+        }
+        return $this;
+    }
+
+    /**
+     * Запаковывает конкретное поле в JSON
+     * @param  string $field Имя поля
+     * @param  bool $store обновить запакованное поле
+     * @return array json строка
+     */
+    public function encodeField($field, $store = false){
+        $out = null;
+        if($this->isEncodableField($field)){
+            $data = $this->get($field);
+            $out = json_encode($data);
+        }
+        if($store){
+            $this->field[$field] = $out;
+            $this->markAsEncode($field);
+        }
+        return $out;
+    }
+
+    /**
+     * Запаковка всех json полей
+     * @return $this
+     */
+    protected function encodeFields(){
+        foreach($this->getNoEncodeFields() as $field){
+            $this->encodeField($field, true);
+        }
+        return $this;
     }
 }
 
