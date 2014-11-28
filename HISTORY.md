@@ -1,8 +1,11 @@
 ## 2.0.20 (28.11.2014)
+* [Add] Экстендер e (Iusse #95)
 * [Add] Добавлено приведение символа тильда к HTML сущности в методе APIHelpers::sanitarTag()
 * [Add] Добавлен новый метод APIHelpers::e()
 * [Fix] Использование класса DLTemplate без предварительной загрузки класса APIHelpers
 * [Refactor] В классе DLphx экранирование символов происходит через класс APIHelpers
+* [Refactor] Проверки isset заменены на метод APIHelpers::getkey()
+* [Refactor] Экранирование символов в методе MODx::list_log()
 
 ## 2.0.19 (24.11.2014)
 * [Refactor] Поддержка prepare в контроллерах onetable и site_content при запуске DocLister с параметром api

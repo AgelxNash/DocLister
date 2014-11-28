@@ -150,14 +150,13 @@ class site_contentDocLister extends DocLister
                     $item['summary'] = $extSummary ? $this->getSummary($item, $extSummary, 'introtext', 'content') : '';
 
                     if ($extJotCount) {
-                        $item['jotcount'] = isset($comments[$item['id']]) ? $comments[$item['id']] : 0;
+                        $item['jotcount'] = APIHelpers::gekey($comments, $item['id'], 0);
                     }
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
 
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
-                    $item['e.title'] = \APIHelpers::e($item['title']);
 
                     if($this->getCFGDef('makeUrl', 1)){
                         if($item['type'] == 'reference'){

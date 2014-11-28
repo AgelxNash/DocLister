@@ -86,7 +86,7 @@ class shopkeeperDocLister extends site_contentDocLister
                 if ($extJotCount) {
                     $comments = $extJotCount->countComments(array_keys($this->_docs));
                 }
-				
+
                 foreach ($this->_docs as $item) {
 					$this->renderTPL = $tpl;
                     if ($extUser) {
@@ -94,11 +94,11 @@ class shopkeeperDocLister extends site_contentDocLister
                     }
 
                     $item['summary'] = $extSummary ? $this->getSummary($item, $extSummary, '', 'content') : '';
-					
+
 					if ($extJotCount) {
-                        $item['jotcount'] = isset($comments[$item['id']]) ? $comments[$item['id']] : 0;
+                        $item['jotcount'] = APIHelpers::gekey($comments, $item['id'], 0);
                     }
-					
+
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
 					$item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
 
@@ -114,13 +114,13 @@ class shopkeeperDocLister extends site_contentDocLister
                     if ($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
                         $item['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $item['date']);
                     }
-					
+
 					$findTpl = $this->renderTPL;
 					extract($this->uniformPrepare($item, $i), EXTR_SKIP);
 					if ($this->renderTPL == '') {
 						$this->renderTPL = $findTpl;
 					}
-					
+
                     if ($extPrepare) {
                         $item = $extPrepare->init($this, array('data' => $item));
                         if (is_bool($item) && $item === false) {

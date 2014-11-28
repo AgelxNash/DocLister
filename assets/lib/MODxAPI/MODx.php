@@ -38,7 +38,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
     final public function modxConfig($name, $default = null)
     {
-        return isset($this->modx->config[$name]) ? $this->modx->config[$name] : $default;
+        return APIHelpers::getkey($this->modx->config, $name, $default);
     }
     public function addQuery($q){
         if(is_scalar($q) && !empty($q)){
@@ -90,7 +90,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     final public function list_log($flush = false)
     {
-        echo '<pre>' . print_r($this->log, true) . '</pre>';
+        echo '<pre>' . print_r(APIHelpers::sanitarTag($this->log), true) . '</pre>';
         if ($flush) $this->clearLog();
         return $this;
     }
@@ -132,7 +132,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     public function get($key)
     {
-        return isset($this->field[$key]) ? $this->field[$key] : null;
+        return APIHelpers::getkey($this->field, $key, null);
     }
 
     public function fromArray($data)
@@ -280,6 +280,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 	}
     final public function makeTable($table)
     {
+        //Без использования APIHelpers::getkey(). Иначе getFullTableName будет всегда выполняться
         return (isset($this->_table[$table])) ? $this->_table[$table] : $this->modx->getFullTableName($table);
     }
 
@@ -356,7 +357,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         $flag = false;
         $currentVer = $this->modx->getVersionData('version');
         if (is_array($currentVer)) {
-            $currentVer = isset($currentVer['version']) ? $currentVer['version'] : '';
+            $currentVer = APIHelpers::getkey($currentVer, 'version', '');
         }
         $tmp = substr($currentVer, 0, strlen($version));
         if (version_compare($tmp, $version, '>=')) {
@@ -367,7 +368,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $flag;
     }
-	
+
     protected function eraseField($name)
     {
         $flag = false;

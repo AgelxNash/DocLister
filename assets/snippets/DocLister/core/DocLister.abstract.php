@@ -629,7 +629,7 @@ abstract class DocLister
      */
     final public function getCFGDef($name, $def = null)
     {
-        return isset($this->_cfg[$name]) ? $this->_cfg[$name] : $def;
+        return \APIHelpers::getkey($this->_cfg, $name, $def);
     }
 
     /**
@@ -752,7 +752,7 @@ abstract class DocLister
         if (isset($this->_customLang[$name])) {
             $say = $this->_customLang[$name];
         } else {
-            $say = isset($this->_lang[$name]) ? $this->_lang[$name] : $def;
+            $say = \APIHelpers::getkey($this->_lang, $name, $def);
         }
         return $say;
     }
@@ -971,6 +971,13 @@ abstract class DocLister
 
 		$class = implode(" ", $class);
         $data[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
+
+        /**
+        * @var $extE e_DL_Extender
+        */
+        $extE = $this->getExtender('e', false, true);
+        $extE->init($this, compact('data'));
+
 		return compact('class', 'iterationName');
 	}
     /**
@@ -1008,7 +1015,7 @@ abstract class DocLister
 
             $return['rows'] = array();
             foreach ($out as $key => $item) {
-                $return['rows'][] = isset($item[$key]) ? $item[$key] : $item;
+                $return['rows'][] = APIHelpers::getkey($item, $key, $item);
             }
             $return['total'] = $this->getChildrenCount();
         } else {
@@ -1453,12 +1460,12 @@ abstract class DocLister
 
     public function filtersWhere()
     {
-        return isset($this->_filters['where']) ? $this->_filters['where'] : '';
+        return APIHelpers::getkey($this->_filters, 'where', '');
     }
 
     public function filtersJoin()
     {
-        return isset($this->_filters['join']) ? $this->_filters['join'] : '';
+        return APIHelpers::getkey($this->_filters, 'join', '');
     }
 
     /**
@@ -1511,7 +1518,7 @@ abstract class DocLister
         $this->debug->debug('Load filter ' . $this->debug->dumpData($filter), 'loadFilter', 2);
         $out = false;
         $fltr_params = explode(':', $filter, 2);
-        $fltr = isset($fltr_params[0]) ? $fltr_params[0] : null;
+        $fltr = APIHelpers::getkey($fltr_params, 0, null);
         // check if the filter is implemented
         if (!is_null($fltr) && file_exists(dirname(__FILE__) . '/filter/' . $fltr . '.filter.php')) {
             require_once dirname(__FILE__) . '/filter/' . $fltr . '.filter.php';

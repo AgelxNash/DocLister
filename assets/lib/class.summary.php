@@ -41,7 +41,7 @@ class SummaryText
 
     public function getCut()
     {
-        return isset($this->_cfg['cut']) ? $this->_cfg['cut'] : '<cut/>';
+        return \APIHelpers::getkey($this->_cfg, 'cut', '<cut/>');
     }
 
     protected function dotted($scheme = 0)

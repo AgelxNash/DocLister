@@ -56,7 +56,7 @@ class APIhelpers
     public static function getkey($data, $key, $default = null)
     {
         $out = $default;
-        if (is_array($data) && array_key_exists($key, $data)) {
+        if (is_array($data) && is_scalar($key) && $key !== '' && array_key_exists($key, $data)) {
             $out = $data[$key];
         }
         return $out;

@@ -9,6 +9,7 @@
 if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
+include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 abstract class extDocLister
 {
     /**
@@ -99,6 +100,6 @@ abstract class extDocLister
      */
     final protected function getCFGDef($name, $def)
     {
-        return isset($this->_cfg[$name]) ? $this->_cfg[$name] : $def;
+        return \APIHelpers::getkey($this->_cfg, $name, $def);
     }
 }

@@ -14,15 +14,15 @@ if (!defined('MODX_BASE_PATH')) {
 class prepare_DL_Extender extends extDocLister
 {
     private $_store = array();
-	
+
     public function setStore($name,$val){
         $this->_store[$name] = $val;
     }
-	
+
     public function getStore($name){
-        return isset($this->_store[$name]) ? $this->_store[$name] : null;
+        return APIHelpers::getkey($this->_store, $name);
     }
-	
+
     protected function run()
     {
         $out = $this->getCFGDef('data', array());
@@ -54,7 +54,7 @@ class prepare_DL_Extender extends extDocLister
             'modx' => $this->modx
         );
     }
-	
+
     public function callPrepare($name, array $params, $ret = null){
         $out = null;
         if((is_object($name) && ($name instanceof Closure)) || is_callable($name)){

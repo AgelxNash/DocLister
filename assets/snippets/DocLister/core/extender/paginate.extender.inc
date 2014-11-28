@@ -95,7 +95,7 @@ class paginate_DL_Extender extends extDocLister
                 $this->modx->sendRedirect($this->getUrl($this->getRequestName('page')));
             }
         }
-        return ($name != '' && isset($this->_pages[$name])) ? $this->_pages[$name] : $this->_pages;
+        return APIHelpers::getkey($this->_pages, $name, $this->_pages);
     }
 
     /**
@@ -104,7 +104,7 @@ class paginate_DL_Extender extends extDocLister
      */
     public function currentPage()
     {
-        return isset($this->_pages['current']) ? (int)$this->_pages['current'] : 1;
+        return (int)APIHelpers::getkey($this->_pages, 'current', 1);
     }
 
     /**
@@ -113,7 +113,7 @@ class paginate_DL_Extender extends extDocLister
      */
     public function totalPage()
     {
-        return isset($this->_pages['total']) ? (int)$this->_pages['total'] : 1;
+        return (int)APIHelpers::getkey($this->_pages, 'total', 1);
     }
 
     /**

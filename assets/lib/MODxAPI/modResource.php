@@ -83,7 +83,7 @@ class modResource extends MODxAPI
     {
         $out = array_diff_key(parent::toArray(), $this->default_field);
         $tpl = $this->get('template');
-        $tvTPL = isset($this->tvTpl[$tpl]) ? $this->tvTpl[$tpl] : array();
+        $tvTPL = APIHelpers::getkey($this->tvTpl, $tpl, array());
         foreach($tvTPL as $item){
             if(isset($this->tvid[$item]) && !array_key_exists($this->tvid[$item], $out)){
                 $out[$this->tvid[$item]] = $this->get($this->tvid[$item]);
@@ -115,7 +115,7 @@ class modResource extends MODxAPI
             include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
             include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
             $tvval = $this->get($tvname);
-            $param = isset($this->tvd[$tvname]) ? $this->tvd[$tvname] : array();
+            $param = APIHelpers::getkey($this->tvd, $tvname, array());
             $out = getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $this->getID(), '');
         }
         return $out;
@@ -125,10 +125,10 @@ class modResource extends MODxAPI
         $out = parent::get($key);
         if(isset($this->tv[$key])){
             $tpl = $this->get('template');
-            $tvTPL = isset($this->tvTpl[$tpl]) ? $this->tvTpl[$tpl] : array();
-            $tvID = isset($this->tv[$key]) ? $this->tv[$key] : 0;
+            $tvTPL = APIHelpers::getkey($this->tvTpl, $tpl, array());
+            $tvID = APIHelpers::getkey($this->tv, $key, 0);
             if(in_array($tvID, $tvTPL) && is_null($out)){
-                $out = isset($this->tvd[$key]['value']) ? $this->tvd[$key]['value'] : null;
+                $out = APIHelpers::getkey($this->tvd[$key], 'value', null);
             }
         }
         return $out;
