@@ -326,7 +326,7 @@ class DLphx
                         $output = html_entity_decode($output, ENT_QUOTES, $modx->config['modx_charset']);
                         break;
                     case "esc":
-                        $output = preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", APIHelpers:e($output));
+                        $output = preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", APIHelpers::e($output));
                         $output = str_replace(array("[", "]", "`"), array("&#91;", "&#93;", "&#96;"), $output);
                         break;
                     case "strip":
