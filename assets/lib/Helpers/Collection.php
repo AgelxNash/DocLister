@@ -60,7 +60,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     }
     public function add($data, $id = null){
         if((is_int($id) || is_string($id)) && $id !== ''){
-            $this->data[$key] = $data;
+            $this->data[$id] = $data;
         }else{
             $this->append($data);
         }
@@ -132,6 +132,10 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     public function dump(){
         return var_dump($this->data);
     }
+    public function show(){
+        print_r($this->data);
+    }
+
     public function offsetGet($offset)
     {
         return $this->get($offset);

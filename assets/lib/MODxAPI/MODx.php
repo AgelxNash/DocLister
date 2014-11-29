@@ -28,6 +28,7 @@ abstract class MODxAPI extends MODxAPIhelpers
             die($e->getMessage());
         }
         $this->setDebug($debug);
+        $this->_decodedFields = new DLCollection($this->modx);
     }
 
     public function setDebug($flag){
@@ -343,7 +344,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         $this->id = null;
         $this->field = array();
         $this->set = array();
-        $this->markAllEncode();
+        $this->markAllDecode();
     }
 
     public function issetField($key)
@@ -405,7 +406,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     public function markAsDecode($field){
         if(is_scalar($field)){
-            $this->_decodedFields[$field] = true;
+            $this->_decodedFields->set($field, false);
         }
         return $this;
     }
@@ -417,7 +418,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     public function markAsEncode($field){
         if(is_scalar($field)){
-            $this->_decodedFields[$field] = false;
+            $this->_decodedFields->set($field, true);
         }
         return $this;
     }
@@ -427,6 +428,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @return $this
      */
     public function markAllEncode(){
+        $this->_decodedFields->clear();
         foreach($this->jsonFields as $field){
             $this->markAsEncode($field);
         }
@@ -434,23 +436,35 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * Получить список запакованных полей
-     * @return array
+     * Пометить все поля как распакованные
+     * @return $this
      */
-    public function getNoEncodeFields(){
-        return array_keys(array_filter($this->_decodedFields, function($value){
-            return $value;
-        }));
+    public function markAllDecode(){
+        $this->_decodedFields->clear();
+        foreach($this->jsonFields as $field){
+            $this->markAsDecode($field);
+        }
+        return $this;
     }
 
     /**
-     * Получить список распакованных полей
+     * Получить список не запакованных полей
+     * @return array
+     */
+    public function getNoEncodeFields(){
+        return $this->_decodedFields->filter(function($value){
+            return ($value === false);
+        });
+    }
+
+    /**
+     * Получить список не распакованных полей
      * @return array
      */
     public function getNoDecodeFields(){
-        return array_keys(array_filter($this->_decodedFields, function($value){
-            return !$value;
-        }));
+       return $this->_decodedFields->filter(function($value){
+            return ($value === true);
+        });
     }
 
     /**
@@ -463,7 +477,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         /**
          * Если поле скалярного типа и оно не распаковывалось раньше
          */
-        return (is_scalar($data) && is_scalar($field) && APIHelpers::getkey($this->_decodedFields, $field, true));
+        return (is_scalar($data) && is_scalar($field) && $this->_decodedFields->get($field)===true);
     }
 
     /**
@@ -475,7 +489,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         /**
          * Если поле было распаковано ранее и еще не упаковано
          */
-        return (is_scalar($field) && APIHelpers::getkey($this->_decodedFields, $field, true));
+        return (is_scalar($field) && $this->_decodedFields->get($field)===false);
     }
 
     /**
@@ -502,7 +516,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @return $this
      */
     protected function decodeFields(){
-        foreach($this->getNoDecodeFields() as $field){
+        foreach($this->getNoDecodeFields() as $field => $flag){
             $this->decodeField($field, true);
         }
         return $this;
@@ -532,7 +546,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @return $this
      */
     protected function encodeFields(){
-        foreach($this->getNoEncodeFields() as $field){
+        foreach($this->getNoEncodeFields() as $field => $flag){
             $this->encodeField($field, true);
         }
         return $this;
