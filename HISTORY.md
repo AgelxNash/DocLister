@@ -1,5 +1,7 @@
 ## 2.0.21 (29.11.2014)
+* [Fix] Баг в \Helpers\FS::getInexistantFilename() (Issue #106)
 * [Refactor] Доработан алгоритм метода \Helpers\FS::takeFileMIME()
+
 ## 2.0.20 (28.11.2014)
 * [Add] Поддержка виртуальных полей (Issue #100)
 * [Add] Экстендер e (Iusse #95)

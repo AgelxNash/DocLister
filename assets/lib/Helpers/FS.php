@@ -142,7 +142,7 @@ class FS{
 		}
 		return $out;
 	}
-	
+
     public function makeDir($path, $perm = 0755){
         $flag = false;
         if (!$this->checkDir($path)){
@@ -222,13 +222,13 @@ class FS{
 
     public function getInexistantFilename($file, $full = false) {
         $i = 1;
-        $file = MODX_BASE_PATH.$this->relativePath($file);
-        $out = $file;
+        $file = $mainFile = MODX_BASE_PATH.$this->relativePath($file);
         while ($this->checkFile($file)) {
             $i++;
-            $out = $full ? $this->takeDir($file).'/' : '';
-            $out .= $this->takeFileName($file)."({$i}).".$this->takeFileExt($file);
+            $out = $this->takeFileDir($file).'/';
+            $out .= $this->takeFileName($mainFile)."({$i}).".$this->takeFileExt($file);
+            $file = $out;
         }
-        return $out;
+        return $full ? $file : $this->takeFileBasename($file);
     }
 }
