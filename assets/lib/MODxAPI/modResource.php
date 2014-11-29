@@ -331,7 +331,8 @@ class modResource extends MODxAPI
             "mode" => $this->newDoc ? "new" : "upd",
             "id" => $this->id ? $this->id : ''
         ), $fire_events);
-        $fld = $this->toArray();
+
+        $fld = $this->toArray(null, null, null, false);
 
         foreach ($this->default_field as $key => $value) {
             if ($this->newDoc && $this->get($key) == '' && $this->get($key) !== $value) {
