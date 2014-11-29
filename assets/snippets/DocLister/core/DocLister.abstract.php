@@ -18,6 +18,7 @@ if (!defined('MODX_BASE_PATH')) {
  * @TODO prepare value before return final data (maybe callback function OR extender)
  */
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
+include_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 require_once(dirname(dirname(__FILE__)) . "/lib/jsonHelper.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/sqlHelper.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/DLTemplate.class.php");
@@ -169,6 +170,7 @@ abstract class DocLister
     /** @var string имя шаблона обертки для записей  */
     public $ownerTPL = '';
 
+    public $FS = null;
     /** @var string результатирующая строка которая была последний раз сгенирирована
     *               вызовами методов DocLister::render и DocLister::getJSON
     */
@@ -199,6 +201,7 @@ abstract class DocLister
             } else {
                 throw new Exception('MODX var is not instaceof DocumentParser');
             }
+            $this->FS = \Helpers\FS::getInstance();
             if (isset($cfg['config'])) {
                 $cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
             }
@@ -377,9 +380,20 @@ abstract class DocLister
             if (empty($cfgName[1])) {
                 $cfgName[1] = 'custom';
             }
+            $cfgName[1] = rtrim($cfgName[1], '/');
+            switch($cfgName[1]){
+                case 'custom':
+                case 'core':{
+                    $configFile = dirname(dirname(__FILE__)) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
+                    break;
+                }
+                default:{
+                    $configFile = $this->FS->relativePath( $cfgName[1] . '/' . $cfgName[0] . ".json");
+                    break;
+                }
+            }
 
-            $configFile = dirname(dirname(__FILE__)) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
-            if (file_exists($configFile) && is_readable($configFile)) {
+            if ($this->FS->checkFile($configFile)) {
                 $json = file_get_contents($configFile);
                 $config = array_merge($config, $this->jsonDecode($json, array('assoc' => true), true));
             }

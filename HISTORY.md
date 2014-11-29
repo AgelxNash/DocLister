@@ -4,7 +4,9 @@
 * [Fix] Баг в \Helpers\FS::getInexistantFilename() (Issue #106)
 * [Fix] Отсутствие ID записи в modResource::toArray() (Issue #104)
 * [Fix] Исправлена проверка возникновения ошибок при запаковке данных в методе MODxAPI::toJson()
+* [Fix] Параметры по умолчанию для сниппета getPageID
 * [Refactor] Доработан алгоритм метода \Helpers\FS::takeFileMIME()
+* [Refactor] Загрузка конфигов из произвольной папки (Issue #103)
 
 ## 2.0.20 (28.11.2014)
 * [Add] Поддержка виртуальных полей (Issue #100)

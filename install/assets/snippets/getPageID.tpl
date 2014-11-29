@@ -1,13 +1,13 @@
 //<?php
 /**
  * getPageID
- * 
+ *
  * Получение id документа MODX по его URI
  *
  * @category 	snippet
  * @version 	0.01
  * @license 	http://www.gnu.org/copyleft/gpl.html GNU Public License (GPL)
- * @internal	@properties 
+ * @internal    @properties     &requestName=Имя GET переменной;input;getPageId
  * @internal	@modx_category API
  * @internal    @installset base, sample
  */
