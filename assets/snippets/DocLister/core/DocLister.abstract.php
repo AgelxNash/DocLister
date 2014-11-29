@@ -29,7 +29,7 @@ abstract class DocLister
     /**
      * Текущая версия ядра DocLister
      */
-    const VERSION = '2.0.21';
+    const VERSION = '2.1.0';
 
     /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа

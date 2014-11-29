@@ -234,11 +234,11 @@ class Action
                          */
                         $modRM = new modRedirectMap($modx);
                         $insert = array(
-                            'uri' => $line,
-                            'active' => 0,
-                            'page' => 0
+                                'uri' => $line,
+                                'active' => 0,
+                                'page' => 0
                         );
-                        $insert = Action::checkPageID($insert['uri'], $insert['page']);
+                        $insert = array_merge($insert, Action::checkPageID($insert['uri'], $insert['page']));
                         $isNew = $modRM->create($insert)->save();
 
                         $uri = $modRM->get('uri');
@@ -276,7 +276,7 @@ class Action
                                 'active' => Template::getParam(3, $data, '1'),
                                 'uri' => iconv('windows-1251', 'UTF-8//IGNORE', Template::getParam(4, $data)),
                             );
-                            $insert = Action::checkPageID($insert['uri'], $insert['page']);
+                            $insert = array_merge($insert, Action::checkPageID($insert['uri'], $insert['page']));
                             $isNew = $modRM->create($insert)->save();
                             $uri = $modRM->get('uri');
                             $q = $modx->db->select('id', $modx->getFullTableName("redirect_map"), "`uri` = '" . $modx->db->escape($uri) . "'");

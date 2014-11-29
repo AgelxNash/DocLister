@@ -170,8 +170,7 @@ class modResource extends MODxAPI
                     break;
                 }
                 case 'published':{
-                    $value = (int)$value;
-                    $value = $value ? 1 : 0;
+                    $value = (int)((bool)$value);
                     if($value){
                         $this->field['publishedon'] = time() + $this->modxConfig('server_offset_time');
                     }
@@ -203,8 +202,7 @@ class modResource extends MODxAPI
                     break;
                 }
                 case 'deleted':{
-                    $value = (int)$value;
-                    $value = $value ? 1 : 0;
+                    $value = (int)((bool)$value);
                     if($value){
                         $this->field['deletedon'] = time() + $this->modxConfig('server_offset_time');
                     }else{
