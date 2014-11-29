@@ -1,4 +1,5 @@
 ## 2.0.21 (29.11.2014)
+* [Add] Добавлен класс \Helpers\Collection для работы с коллекциями
 * [Fix] Баг в \Helpers\FS::getInexistantFilename() (Issue #106)
 * [Refactor] Доработан алгоритм метода \Helpers\FS::takeFileMIME()
 

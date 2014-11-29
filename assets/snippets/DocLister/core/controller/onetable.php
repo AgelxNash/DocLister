@@ -49,7 +49,6 @@ class onetableDocLister extends DocLister
         }
         $type = $this->getCFGDef('idType', 'parents');
         $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
-
         return $this->_docs;
     }
 
@@ -145,10 +144,10 @@ class onetableDocLister extends DocLister
         * @var $extPrepare prepare_DL_Extender
         */
         $extPrepare = $this->getExtender('prepare');
-		
+
         foreach ($data as $num => $item) {
 			$row = $item;
-		
+
             switch (true) {
                 case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
                 {
@@ -162,7 +161,7 @@ class onetableDocLister extends DocLister
                     //without break
                 }
             }
-			
+
 			if ($extPrepare) {
                 $row = $extPrepare->init($this, array('data' => $row));
                 if (is_bool($row) && $row === false) {
