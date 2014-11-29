@@ -1,7 +1,9 @@
 ## 2.0.21 (29.11.2014)
 * [Add] Добавлен класс \Helpers\Collection для работы с коллекциями
+* [Add] Добавлена поддержка callback'a в методе MODxAPI::toJson()
 * [Fix] Баг в \Helpers\FS::getInexistantFilename() (Issue #106)
 * [Fix] Отсутствие ID записи в modResource::toArray() (Issue #104)
+* [Fix] Исправлена проверка возникновения ошибок при запаковке данных в методе MODxAPI::toJson()
 * [Refactor] Доработан алгоритм метода \Helpers\FS::takeFileMIME()
 
 ## 2.0.20 (28.11.2014)

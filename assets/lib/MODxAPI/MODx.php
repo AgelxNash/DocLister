@@ -229,8 +229,13 @@ abstract class MODxAPI extends MODxAPIhelpers
     {
         try {
             $data = $this->toArray();
+            if (isset($callback) && is_callable($callback)) {
+                $data = call_user_func_array($callback, array($data));
+            } else {
+                if (isset($callback)) throw new Exception("Can't call callback JSON pre pack <pre>" . print_r($callback, 1) . "</pre>");
+            }
             $json = json_encode($data);
-            if (!$this->jsonError($data, $json)) {
+            if ($this->jsonError($data, $json)) {
                 $json = false;
                 throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
             }
