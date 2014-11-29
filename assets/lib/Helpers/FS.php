@@ -93,17 +93,56 @@ class FS{
         return (!empty($f) && is_dir(MODX_BASE_PATH . $f) && is_readable(MODX_BASE_PATH . $f));
     }
 
+	/**
+	 * Если класс finfo и функция mime_content_type не доступны, то происходит сверка типов:
+	 * 		- image/jpeg
+	 *		- image/png
+	 *		- image/gif
+	 * Для всех остальных файлов будет присвоен тип application/octet-stream
+	 *
+     * @param $fname Имя файла
+     * @return string MIME тип файла
+     */
 	public function takeFileMIME($file){
-		$out = '';
+		$out = null;
         $path = $this->relativePath($file);
 		if($this->checkFile($path)){
-			$finfo = finfo_open(FILEINFO_MIME_TYPE);
-			$out = finfo_file($finfo, MODX_BASE_PATH.$path);
-			finfo_close($finfo);
+			$fname = MODX_BASE_PATH.$path;
+			switch(true){
+				/** need fileinfo extension */
+				case (extension_loaded('fileinfo') && class_exists('\finfo')):{
+					$fi = new \finfo(FILEINFO_MIME_TYPE);
+					if ($fi) {
+						$out = $fi->file($fname);
+					}
+					break;
+				}
+				case function_exists('mime_content_type'):{
+					list($out) = explode(';', @mime_content_type($fname));
+					break;
+				}
+				default:{
+					/**
+					 * @see: http://www.php.net/manual/ru/function.finfo-open.php#112617
+					 */
+					$fh=fopen($fname,'rb');
+					if ($fh) {
+						$bytes6=fread($fh,6);
+						fclose($fh);
+						switch(true){
+							case ($bytes6===false): break;
+							case (substr($bytes6,0,3)=="\xff\xd8\xff"): $out = 'image/jpeg'; break;
+							case ($bytes6=="\x89PNG\x0d\x0a"): $out = 'image/png'; break;
+							case ($bytes6=="GIF87a" || $bytes6=="GIF89a"): $out = 'image/gif'; break;
+							default: $out = 'application/octet-stream'; break;
+						}
+					}
+				}
+			}
 		}
 		return $out;
 	}
-
+	
     public function makeDir($path, $perm = 0755){
         $flag = false;
         if (!$this->checkDir($path)){
