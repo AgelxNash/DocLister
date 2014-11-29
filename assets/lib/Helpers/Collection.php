@@ -160,7 +160,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         return in_array($element, $this->data, true);
     }
 
-    public function exists(Closure $p)
+    public function exists(\Closure $p)
     {
         foreach ($this->data as $key => $element) {
             if ($p($key, $element)) {

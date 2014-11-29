@@ -63,6 +63,7 @@ class modUsers extends MODxAPI
 
     public function edit($id)
     {
+        $id = is_scalar($id) ? trim($id) : '';
         if ($this->getID() != $id) {
             $this->close();
             $this->newDoc = false;

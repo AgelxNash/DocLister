@@ -67,10 +67,20 @@ class modResource extends MODxAPI
     /** @var array связи ТВ и шаблонов */
     private $tvTpl = array();
 
+    /**
+     * Массив администраторов
+     * @var DLCollection
+     */
+    private $managerUsers = null;
+
     public function __construct($modx, $debug = false)
     {
         parent::__construct($modx, $debug);
         $this->get_TV();
+        $uTable = $this->makeTable("manager_users");
+        $aTable = $this->makeTable("user_attributes");
+        $query = "SELECT `u`.`id`, `a`.`email`, `u`.`username`  FROM ".$aTable." as `a` LEFT JOIN ".$uTable." as `u` ON `u`.`id`=`a`.`internalKey`";
+        $this->managerUsers = new DLCollection($modx, $this->query($query));
     }
 
     public function toArrayMain()
@@ -111,6 +121,10 @@ class modResource extends MODxAPI
         $unpub = ($this->get('unpub_date') == 0 || $this->get('unpub_date') > time());
         $del = ($this->get('deleted') == 0 && ($this->get('deletedon') == 0 || $this->get('deletedon') > time()));
         return ($pub && $unpub && $del);
+    }
+    public function touch(){
+        $this->set('editedon', time());
+        return $this;
     }
 
     public function renderTV($tvname){
@@ -155,23 +169,133 @@ class modResource extends MODxAPI
                     $value = $this->setTemplate($value);
                     break;
                 }
+                case 'published':{
+                    $value = (int)$value;
+                    $value = $value ? 1 : 0;
+                    if($value){
+                        $this->field['publishedon'] = time() + $this->modxConfig('server_offset_time');
+                    }
+                    break;
+                }
+                case 'publishedon':{
+                    $value = $this->getTime($value);
+                    if($value){
+                        $this->field['published'] = 1;
+                    }else{
+                        $this->field['published'] = 0;
+                    }
+                    break;
+                }
+                case 'pub_date':{
+                    $value = $this->getTime($value);
+                    if($value > 0 && time() + $this->modxConfig('server_offset_time') > $value){
+                        $this->field['published'] = 1;
+                        $this->field['publishedon'] = $value;
+                    }
+                    break;
+                }
+                case 'unpub_date':{
+                    $value = $this->getTime($value);
+                    if($value > 0 && time() + $this->modxConfig('server_offset_time') > $value){
+                        $this->field['published'] = 0;
+                        $this->field['publishedon'] = 0;
+                    }
+                    break;
+                }
+                case 'deleted':{
+                    $value = (int)$value;
+                    $value = $value ? 1 : 0;
+                    if($value){
+                        $this->field['deletedon'] = time() + $this->modxConfig('server_offset_time');
+                    }else{
+                        $this->field['deletedon'] = 0;
+                    }
+                    break;
+                }
+                case 'deletedon':{
+                    $value = $this->getTime($value);
+                    $this->field['deleted'] = 1;
+                    break;
+                }
+                case 'editedon':
+                case 'createdon':{
+                    $value = $this->getTime($value);
+                    break;
+                }
+                case 'publishedby':
+                case 'editedby':
+                case 'createdby':
+                case 'deletedby':{
+                    $value = $this->getUser($value, $this->default_field[$key]);
+                    break;
+                }
             }
             $this->field[$key] = $value;
         }
         return $this;
     }
 
+    protected function getUser($value, $default = 0){
+        $currentAdmin = APIHelpers::getkey($_SESSION, 'mgrInternalKey', 0);
+        $value = (int)$value;
+        if(!empty($value)){
+            $by = $this->findUserBy($value);
+            $exists = $this->managerUsers->exists(function($key, $val) use ($by, $value){
+                return ($val->containsKey($by) && $val->get($by) === (string)$value);
+            });
+            if(!$exists){
+                $value = 0;
+            }
+        }
+        if(empty($value)){
+            $value = empty($currentAdmin) ? $default : $currentAdmin;
+        }
+        return $value;
+    }
+
+    protected function findUserBy($data)
+    {
+        switch (true) {
+            case (is_int($data) || ((int)$data > 0 && (string)intval($data) === $data)):
+                $find = 'id';
+                break;
+            case filter_var($data, FILTER_VALIDATE_EMAIL):
+                $find = 'email';
+                break;
+            case is_scalar($data):
+                $find = 'username';
+                break;
+            default:
+                $find = false;
+        }
+        return $find;
+    }
+
+    protected function getTime($value){
+        $value = trim($value);
+        if(!empty($value)){
+            if(!is_numeric($value)){
+                $value = (int)strtotime($value);
+            }
+            if(!empty($value)){
+                $value += $this->modxConfig('server_offset_time');
+            }
+        }
+        return $value;
+    }
     public function create($data = array())
     {
         parent::create($data);
-        if ($this->newDoc) {
-            $this->set('createdon', time());
-        }
+        $this->set('createdby', null)
+            ->set('editedby', null)
+            ->set('createdon', time())
+            ->touch();
         return $this;
     }
 
     public function edit($id)
     {
+        $id = is_scalar($id) ? trim($id) : '';
         if ($this->getID() != $id) {
             $this->close();
             $this->newDoc = false;
@@ -186,6 +310,7 @@ class modResource extends MODxAPI
                 $this->id = null;
             } else {
                 $this->id = $this->field['id'];
+                $this->set('editedby', null)->touch();
             }
             unset($this->field['id']);
         }
@@ -206,8 +331,7 @@ class modResource extends MODxAPI
             "mode" => $this->newDoc ? "new" : "upd",
             "id" => $this->id ? $this->id : ''
         ), $fire_events);
-
-        $fld = parent::toArray();
+        $fld = $this->toArray();
 
         foreach ($this->default_field as $key => $value) {
             if ($this->newDoc && $this->get($key) == '' && $this->get($key) !== $value) {
@@ -238,7 +362,7 @@ class modResource extends MODxAPI
                         break;
                     }
                 }
-                $this->set($key, $value);
+                $this->field[$key] = $value;
             }
             switch(true){
                 case $key == 'parent':{
@@ -247,8 +371,8 @@ class modResource extends MODxAPI
                     if($this->modx->db->getValue($q)!=1){
                         $parent = $value;
                     }
-                    $this->set($key, $parent);
-					$this->Uset($key);
+                    $this->field[$key] = $parent;
+                    $this->Uset($key);
                     break;
                 }
                 case ($key == 'alias_visible' && !$this->checkVersion('1.0.10', true)):{
@@ -270,9 +394,9 @@ class modResource extends MODxAPI
             }
             $this->query($SQL);
 
-		    if ($this->newDoc) {
-            	$this->id = $this->modx->db->getInsertId();
-		    }
+            if ($this->newDoc) {
+                $this->id = $this->modx->db->getInsertId();
+            }
 
             if ($parent > 0) {
                 $this->query("UPDATE {$this->makeTable('site_content')} SET `isfolder`='1' WHERE `id`='{$parent}'");
@@ -352,13 +476,13 @@ class modResource extends MODxAPI
                 ), $fire_events);
 
                 $id = $this->sanitarIn($_ids);
-				if(!empty($id)){
-					$this->query("DELETE from {$this->makeTable('site_content')} where `id` IN ({$id})");
-					$this->query("DELETE from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid` IN ({$id})");
-					$this->invokeEvent('OnEmptyTrash', array(
-						"ids" => $_ids
-					), $fire_events);
-				}
+                if(!empty($id)){
+                    $this->query("DELETE from {$this->makeTable('site_content')} where `id` IN ({$id})");
+                    $this->query("DELETE from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid` IN ({$id})");
+                    $this->invokeEvent('OnEmptyTrash', array(
+                        "ids" => $_ids
+                    ), $fire_events);
+                }
             } else throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
         } catch (Exception $e) {
             die($e->getMessage());
@@ -371,10 +495,10 @@ class modResource extends MODxAPI
     {
         $ignore = array(
             0, //empty document
-            (int)$this->modx->config['site_start'],
-            (int)$this->modx->config['error_page'],
-            (int)$this->modx->config['unauthorized_page'],
-            (int)$this->modx->config['site_unavailable_page']
+            (int)$this->modxConfig('site_start'),
+            (int)$this->modxConfig('error_page'),
+            (int)$this->modxConfig('unauthorized_page'),
+            (int)$this->modxConfig('site_unavailable_page')
         );
         $data = $this->query("SELECT DISTINCT setting_value FROM {$this->makeTable('web_user_settings')} WHERE `setting_name`='login_home' AND `setting_value`!=''");
         $data = $this->modx->db->makeArray($data);
@@ -474,7 +598,7 @@ class modResource extends MODxAPI
 
     private function getAlias()
     {
-        if ($this->modx->config['friendly_urls'] && $this->modx->config['automatic_alias'] && $this->get('alias') == '') {
+        if ($this->modxConfig('friendly_urls') && $this->modxConfig('automatic_alias') && $this->get('alias') == '') {
             $alias = strtr($this->get('pagetitle'), $this->table);
         } else {
             if ($this->get('alias') != '') {

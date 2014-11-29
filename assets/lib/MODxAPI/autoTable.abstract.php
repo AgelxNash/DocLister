@@ -28,6 +28,7 @@ abstract class autoTable extends MODxAPI
 
     public function edit($id)
     {
+        $id = is_scalar($id) ? trim($id) : '';
         if ($this->getID() != $id) {
             $this->newDoc = false;
             $this->id = null;

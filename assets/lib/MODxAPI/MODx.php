@@ -1,6 +1,7 @@
 <?php
 include_once(MODX_BASE_PATH.'assets/lib/APIHelpers.class.php');
 include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/jsonHelper.class.php');
+include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/DLCollection.php');
 
 abstract class MODxAPI extends MODxAPIhelpers
 {
@@ -59,7 +60,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return empty($SQL) ? null : $this->modx->db->query($SQL);
     }
-	final public function escape($value){
+    final public function escape($value){
         if(!is_scalar($value)){
             $value = '';
         }else{
@@ -283,9 +284,9 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $out;
     }
-	final public function fieldPKName(){
-		return $this->pkName;
-	}
+    final public function fieldPKName(){
+        return $this->pkName;
+    }
     final public function makeTable($table)
     {
         //Без использования APIHelpers::getkey(). Иначе getFullTableName будет всегда выполняться

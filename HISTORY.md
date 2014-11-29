@@ -5,6 +5,7 @@
 * [Fix] Отсутствие ID записи в modResource::toArray() (Issue #104)
 * [Fix] Исправлена проверка возникновения ошибок при запаковке данных в методе MODxAPI::toJson()
 * [Fix] Параметры по умолчанию для сниппета getPageID
+* [Refactor] Обработка дат в modResource (Issue #64)
 * [Refactor] Доработан алгоритм метода \Helpers\FS::takeFileMIME()
 * [Refactor] Загрузка конфигов из произвольной папки (Issue #103)
 
