@@ -98,7 +98,11 @@ class modResource extends MODxAPI
     }
 
     public function toArray($prefix = '', $suffix = '', $sep = '_', $render = true){
-        $out = array_merge($this->toArrayMain(), $this->toArrayTV($render));
+        $out = array_merge(
+            $this->toArrayMain(),
+            $this->toArrayTV($render),
+            array($this->fieldPKName() => $this->getID())
+        );
         return \APIhelpers::renameKeyArr($out, $prefix, $suffix, $sep);
     }
     public function isWebShow()
@@ -116,7 +120,10 @@ class modResource extends MODxAPI
             include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
             $tvval = $this->get($tvname);
             $param = APIHelpers::getkey($this->tvd, $tvname, array());
-            $out = getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $this->getID(), '');
+            $display = APIHelpers::getkey($param, 'display', '');
+            $display_params = APIHelpers::getkey($param, 'display_params', '');
+            $type = APIHelpers::getkey($param, 'type', '');
+            $out = getTVDisplayFormat($tvname, $tvval, $display, $display_params, $type, $this->getID(), '');
         }
         return $out;
     }

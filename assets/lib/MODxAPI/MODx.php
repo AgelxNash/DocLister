@@ -268,7 +268,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         $out = array();
         $fields = $this->field;
-        $fields[$this->pkName] = $this->getID();
+        $fields[$this->fieldPKName()] = $this->getID();
         if ($tpl != $plh) {
             foreach ($fields as $key => $value) {
                 $out[str_replace($plh, $key, $tpl)] = $value;
