@@ -320,7 +320,6 @@ class APIhelpers
         } else {
             $InsertPrefix = ($prefix != '') ? ($prefix . $addPS) : '';
             $InsertSuffix = ($suffix != '') ? ($addPS. $suffix) : '';
-
             foreach ($data as $key => $item) {
                 $key = $InsertPrefix . $key;
                 $val = null;

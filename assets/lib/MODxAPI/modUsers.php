@@ -40,7 +40,7 @@ class modUsers extends MODxAPI
 
     public function issetField($key)
     {
-        return (in_array($key, $this->default_field['user']) || in_array($key, $this->default_field['attribute']) || in_array($key, $this->default_field['hidden']));
+        return (array_key_exists($key, $this->default_field['user']) || array_key_exists($key, $this->default_field['attribute']) || array_key_exists($key, $this->default_field['hidden']));
     }
 
     protected function findUser($data)
@@ -73,10 +73,10 @@ class modUsers extends MODxAPI
             } //@TODO: log error
 
             $result = $this->query("
-				SELECT * from {$this->makeTable('web_user_attributes')} as attribute
-				LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
-				WHERE {$find}='{$this->escape($id)}'
-			");
+                SELECT * from {$this->makeTable('web_user_attributes')} as attribute
+                LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
+                WHERE {$find}='{$this->escape($id)}'
+            ");
             $this->field = $this->modx->db->getRow($result);
 
             $this->id = empty($this->field['internalKey']) ? null : $this->get('internalKey');
@@ -203,8 +203,8 @@ class modUsers extends MODxAPI
         if (!$this->getID() && $id) $this->edit($id);
         if ($this->getID()) {
             //$this->logOut($cookieName);
-            $this->SessionHandler('start', $cookieName, $fulltime);
             $flag = true;
+            $this->SessionHandler('start', $cookieName, $fulltime);
         }
         return $flag;
     }

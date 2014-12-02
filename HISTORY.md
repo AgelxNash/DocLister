@@ -1,3 +1,15 @@
+## 2.1.1 (02.12.2014)
+* [Add] Добавлен новый сниппет DLUsers и зависящий от него плагин DLLogout
+* [Add] Добавлены методы show и toArray() в классе \Helpers\Collection
+* [Fix] Исправлено имя ключа массива в методе \Helpers\Collection::add()
+* [Fix] Перепутаны местами переменные в цикле метода e_DL_Extender::run()
+* [Refactor] FS::makeDir теперь возвращает true если директория существует (Issue #114)
+* [Refactor] Переименован файл с классом DLCollection
+* [Refactor] Исправлена праверка существования поля в методе modResource::issetField()
+* [Refactor] Исправлена проверка существования поля в методе modUsers::issetField()
+* [Refactor] Пересмотрен принцип загрузки экстендера e в DocLister
+* [Refactor] Экстендер e теперь по умолчанию пытается обработать title поле
+
 ## 2.1.0 (30.11.2014)
 * [Add] Добавлен класс \Helpers\Collection для работы с коллекциями
 * [Add] Добавлена поддержка callback'a в методе MODxAPI::toJson()

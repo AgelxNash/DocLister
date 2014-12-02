@@ -27,11 +27,6 @@ require_once(dirname(dirname(__FILE__)) . "/lib/xnop.class.php");
 abstract class DocLister
 {
     /**
-     * Текущая версия ядра DocLister
-     */
-    const VERSION = '2.1.0';
-
-    /**
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
      */
     const AliasRequest = 'q';
@@ -110,12 +105,12 @@ abstract class DocLister
      */
     protected $idField = 'id';
 
-	/**
-	* Parent Key основной таблицы
+    /**
+    * Parent Key основной таблицы
     * @var string
     * @access protected
-	*/
-	protected $parentField = 'parent';
+    */
+    protected $parentField = 'parent';
     /**
      * Дополнительные условия для SQL запросов
      * @var array
@@ -238,9 +233,9 @@ abstract class DocLister
             }
             $this->setConfig($cfg);
 
-			$this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
-			$this->idField = $this->getCFGDef('idField', 'id');
-			$this->parentField = $this->getCFGDef('parentField', 'parent');
+            $this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
+            $this->idField = $this->getCFGDef('idField', 'id');
+            $this->parentField = $this->getCFGDef('parentField', 'parent');
 
             $this->setIDs($IDs);
         }
@@ -948,52 +943,51 @@ abstract class DocLister
         }
         return $out;
     }
-	/**
-	* Единые обработки массива с данными о документе для всех контроллеров
-	*
-	* @param array $data массив с данными о текущем документе
-	* @param int $i номер итерации в цикле
-	* @return array массив с данными которые можно использовать в цикле render метода
-	*/
-	protected function uniformPrepare(&$data, $i=0){
-		$class = array();
+    /**
+    * Единые обработки массива с данными о документе для всех контроллеров
+    *
+    * @param array $data массив с данными о текущем документе
+    * @param int $i номер итерации в цикле
+    * @return array массив с данными которые можно использовать в цикле render метода
+    */
+    protected function uniformPrepare(&$data, $i=0){
+        $class = array();
 
-		$iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
-		$tmp = strtolower($iterationName);
+        $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
+        $tmp = strtolower($iterationName);
         $class[] = $this->getCFGDef($tmp.'Class', $tmp);
 
-		$this->renderTPL = $this->getCFGDef('tplId' . $i, $this->renderTPL);
-		$this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
+        $this->renderTPL = $this->getCFGDef('tplId' . $i, $this->renderTPL);
+        $this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
 
         $data[$this->getCFGDef("sysKey", "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display', 0) * ($this->extPaginate->currentPage() - 1)) : $i;
 
-		if ($i == 1) {
-			$this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
+        if ($i == 1) {
+            $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
             $class[] = $this->getCFGDef('firstClass', 'first');
         }
-		if ($i == count($this->_docs)) {
-			$this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
+        if ($i == count($this->_docs)) {
+            $this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
             $class[] = $this->getCFGDef('lastClass', 'last');
         }
-		if ($this->modx->documentIdentifier == $data['id']) {
-			$this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
+        if ($this->modx->documentIdentifier == $data['id']) {
+            $this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
             $data[$this->getCFGDef("sysKey", "dl") . '.active'] = 1; //[+active+] - 1 if $modx->documentIdentifer equal ID this element
             $class[] = $this->getCFGDef('currentClass', 'current');
         } else {
-			$data[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
+            $data[$this->getCFGDef("sysKey", "dl") . '.active'] = 0;
         }
 
-		$class = implode(" ", $class);
+        $class = implode(" ", $class);
         $data[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 
         /**
         * @var $extE e_DL_Extender
         */
-        $extE = $this->getExtender('e', false, true);
-        $extE->init($this, compact('data'));
-
-		return compact('class', 'iterationName');
-	}
+        $extE = $this->getExtender('e', true, true);
+        $data = $extE->init($this, compact('data'));
+        return compact('class', 'iterationName');
+    }
     /**
      * Формирование JSON ответа
      *
@@ -1147,7 +1141,7 @@ abstract class DocLister
      */
     final public function setIDs($IDs)
     {
-		$this->debug->debug('set ID list ' . $this->debug->dumpData($IDs), 'setIDs', 2);
+        $this->debug->debug('set ID list ' . $this->debug->dumpData($IDs), 'setIDs', 2);
         $IDs = $this->cleanIDs($IDs);
         $type = $this->getCFGDef('idType', 'parents');
         $depth = $this->getCFGDef('depth', '');
@@ -1416,14 +1410,14 @@ abstract class DocLister
         return isset($this->idField) ? $this->idField : 'id';
     }
 
-	/**
-	* Получение Parent key
-	* По умолчанию это parent. Переопределить можно в контроллере присвоив другое значение переменной parentField
-	* @return string Parent Key основной таблицы
-	*/
-	public function getParentField(){
-		return isset($this->parentField) ? $this->parentField : '';
-	}
+    /**
+    * Получение Parent key
+    * По умолчанию это parent. Переопределить можно в контроллере присвоив другое значение переменной parentField
+    * @return string Parent Key основной таблицы
+    */
+    public function getParentField(){
+        return isset($this->parentField) ? $this->parentField : '';
+    }
     /**
      * Разбор фильтров
      * OR(AND(filter:field:operator:value;filter2:field:oerpator:value);(...)), etc.

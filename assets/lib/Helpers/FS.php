@@ -3,14 +3,14 @@
 namespace Helpers;
 
 class FS{
-	/**
+    /**
      * @var cached reference to singleton instance
      */
     protected static $instance;
 
-	private $_fileInfo = array();
+    private $_fileInfo = array();
 
-	/**
+    /**
      * gets the instance via lazy initialization (created on first usage)
      *
      * @return self
@@ -47,7 +47,7 @@ class FS{
     {
     }
 
-	/**
+    /**
      * Чтобы не дергать постоянно файл который обрабатываем
      *
      * @access private
@@ -55,11 +55,11 @@ class FS{
      * @return string информация из pathinfo о обрабатываемом файле input
      */
     private function _pathinfo($file, $mode){
-    	if(!is_scalar($file) && !is_scalar($mode)){
-    		$file = $mode = '';
-		}
-		$flag = !(empty($file) || empty($mode));
-		$f = MODX_BASE_PATH . $this->relativePath($file);
+        if(!is_scalar($file) && !is_scalar($mode)){
+            $file = $mode = '';
+        }
+        $flag = !(empty($file) || empty($mode));
+        $f = MODX_BASE_PATH . $this->relativePath($file);
         if($flag && !isset($this->_fileInfo[$f], $this->_fileInfo[$f][$mode])){
             $this->_fileInfo[$f] = pathinfo($f);
         }
@@ -68,86 +68,87 @@ class FS{
     }
 
     public function takeFileDir($file){
-    	return $this->_pathinfo($file, 'dirname');
+        return $this->_pathinfo($file, 'dirname');
     }
 
     public function takeFileBasename($file){ //file name with extension
-    	return $this->_pathinfo($file, 'basename');
+        return $this->_pathinfo($file, 'basename');
     }
 
     public function takeFileName($file){
-    	return $this->_pathinfo($file, 'filename');
+        return $this->_pathinfo($file, 'filename');
     }
 
-	public function takeFileExt($file){
-		return strtolower($this->_pathinfo($file, 'extension'));
-	}
+    public function takeFileExt($file){
+        return strtolower($this->_pathinfo($file, 'extension'));
+    }
 
-	public function checkFile($file){
-		$f = is_scalar($file) ? MODX_BASE_PATH . $this->relativePath($file) : '';
-		return (!empty($f) && is_file($f) && is_readable($f));
-	}
+    public function checkFile($file){
+        $f = is_scalar($file) ? MODX_BASE_PATH . $this->relativePath($file) : '';
+        return (!empty($f) && is_file($f) && is_readable($f));
+    }
 
     public function checkDir($path){
         $f = is_scalar($path) ? $this->relativePath($path) : '';
         return (!empty($f) && is_dir(MODX_BASE_PATH . $f) && is_readable(MODX_BASE_PATH . $f));
     }
 
-	/**
-	 * Если класс finfo и функция mime_content_type не доступны, то происходит сверка типов:
-	 * 		- image/jpeg
-	 *		- image/png
-	 *		- image/gif
-	 * Для всех остальных файлов будет присвоен тип application/octet-stream
-	 *
+    /**
+     * Если класс finfo и функция mime_content_type не доступны, то происходит сверка типов:
+     *      - image/jpeg
+     *      - image/png
+     *      - image/gif
+     * Для всех остальных файлов будет присвоен тип application/octet-stream
+     *
      * @param $fname Имя файла
      * @return string MIME тип файла
      */
-	public function takeFileMIME($file){
-		$out = null;
+    public function takeFileMIME($file){
+        $out = null;
         $path = $this->relativePath($file);
-		if($this->checkFile($path)){
-			$fname = MODX_BASE_PATH.$path;
-			switch(true){
-				/** need fileinfo extension */
-				case (extension_loaded('fileinfo') && class_exists('\finfo')):{
-					$fi = new \finfo(FILEINFO_MIME_TYPE);
-					if ($fi) {
-						$out = $fi->file($fname);
-					}
-					break;
-				}
-				case function_exists('mime_content_type'):{
-					list($out) = explode(';', @mime_content_type($fname));
-					break;
-				}
-				default:{
-					/**
-					 * @see: http://www.php.net/manual/ru/function.finfo-open.php#112617
-					 */
-					$fh=fopen($fname,'rb');
-					if ($fh) {
-						$bytes6=fread($fh,6);
-						fclose($fh);
-						switch(true){
-							case ($bytes6===false): break;
-							case (substr($bytes6,0,3)=="\xff\xd8\xff"): $out = 'image/jpeg'; break;
-							case ($bytes6=="\x89PNG\x0d\x0a"): $out = 'image/png'; break;
-							case ($bytes6=="GIF87a" || $bytes6=="GIF89a"): $out = 'image/gif'; break;
-							default: $out = 'application/octet-stream'; break;
-						}
-					}
-				}
-			}
-		}
-		return $out;
-	}
+        if($this->checkFile($path)){
+            $fname = MODX_BASE_PATH.$path;
+            switch(true){
+                /** need fileinfo extension */
+                case (extension_loaded('fileinfo') && class_exists('\finfo')):{
+                    $fi = new \finfo(FILEINFO_MIME_TYPE);
+                    if ($fi) {
+                        $out = $fi->file($fname);
+                    }
+                    break;
+                }
+                case function_exists('mime_content_type'):{
+                    list($out) = explode(';', @mime_content_type($fname));
+                    break;
+                }
+                default:{
+                    /**
+                     * @see: http://www.php.net/manual/ru/function.finfo-open.php#112617
+                     */
+                    $fh=fopen($fname,'rb');
+                    if ($fh) {
+                        $bytes6=fread($fh,6);
+                        fclose($fh);
+                        switch(true){
+                            case ($bytes6===false): break;
+                            case (substr($bytes6,0,3)=="\xff\xd8\xff"): $out = 'image/jpeg'; break;
+                            case ($bytes6=="\x89PNG\x0d\x0a"): $out = 'image/png'; break;
+                            case ($bytes6=="GIF87a" || $bytes6=="GIF89a"): $out = 'image/gif'; break;
+                            default: $out = 'application/octet-stream'; break;
+                        }
+                    }
+                }
+            }
+        }
+        return $out;
+    }
 
     public function makeDir($path, $perm = 0755){
-        $flag = false;
         if (!$this->checkDir($path)){
             $path = MODX_BASE_PATH . $this->relativePath($path);
             $flag = mkdir($path, $this->toOct($perm), true);
+        }else{
+            $flag = true;
         }
         return $flag;
     }

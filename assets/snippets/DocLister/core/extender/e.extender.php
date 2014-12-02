@@ -17,13 +17,13 @@ class e_DL_Extender extends extDocLister
     protected function run()
     {
         $out = $this->getCFGDef('data', array());
-        if (($eFields = $this->DocLister->getCFGDef('e', '')) != '') {
+        if (($eFields = $this->DocLister->getCFGDef('e', 'title')) != '') {
             if(is_scalar($eFields)){
                 $eFields = explode(",", $eFields);
             }
             if(is_array($eFields)){
-            	foreach($field as $eFields){
-            		$val = APIHelpers::getkey($data, $field, '');
+                foreach($eFields as $field){
+                    $val = APIHelpers::getkey($out, $field, '');
                     $out['e.'.$field] = APIHelpers::e($val);
                 }
             }

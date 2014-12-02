@@ -19,8 +19,8 @@ if (!defined('MODX_BASE_PATH')) {
 class onetableDocLister extends DocLister
 {
     protected $table = 'site_content';
-	protected $idField = 'id';
-	protected $parentField = 'parent';
+    protected $idField = 'id';
+    protected $parentField = 'parent';
     /**
      * @absctract
      */
@@ -85,7 +85,7 @@ class onetableDocLister extends DocLister
                 $extPrepare = $this->getExtender('prepare');
 
                 foreach ($this->_docs as $item) {
-					$this->renderTPL = $tpl;
+                    $this->renderTPL = $tpl;
                     if ($extUser) {
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
@@ -101,9 +101,9 @@ class onetableDocLister extends DocLister
                         $item[$this->getCFGDef("sysKey", "dl") . '.date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $date);
                     }
 
-					$findTpl = $this->renderTPL;
+                    $findTpl = $this->renderTPL;
                     extract($this->uniformPrepare($item, $i), EXTR_SKIP);
-					if ($this->renderTPL == '') {
+                    if ($this->renderTPL == '') {
                         $this->renderTPL = $findTpl;
                     }
 
@@ -140,13 +140,13 @@ class onetableDocLister extends DocLister
          */
         $extSummary = $this->getExtender('summary');
 
-		/**
+        /**
         * @var $extPrepare prepare_DL_Extender
         */
         $extPrepare = $this->getExtender('prepare');
 
         foreach ($data as $num => $item) {
-			$row = $item;
+            $row = $item;
 
             switch (true) {
                 case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
@@ -162,7 +162,7 @@ class onetableDocLister extends DocLister
                 }
             }
 
-			if ($extPrepare) {
+            if ($extPrepare) {
                 $row = $extPrepare->init($this, array('data' => $row));
                 if (is_bool($row) && $row === false) {
                     continue;
@@ -204,7 +204,7 @@ class onetableDocLister extends DocLister
         return $out;
     }
 
-	protected function getChildrenList()
+    protected function getChildrenList()
     {
         $where = array();
 
@@ -218,7 +218,7 @@ class onetableDocLister extends DocLister
         $tmpWhere = null;
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $tmpWhere = "`{$this->getParentField()}` IN (" . $sanitarInIDs . ")";
-		    $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND {$this->getPK()} NOT IN(" . $sanitarInIDs . ")");
+            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND {$this->getPK()} NOT IN(" . $sanitarInIDs . ")");
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
@@ -257,40 +257,40 @@ class onetableDocLister extends DocLister
             if ($where != '') {
                 $where = array($where);
             }else{
-				$where = array();
-			}
+                $where = array();
+            }
             if ($sanitarInIDs != "''") {
-				if ($sanitarInIDs != "''") {
-					switch ($this->getCFGDef('idType', 'parents')) {
-						case 'parents':
-						{
-							if ($this->getCFGDef('showParent', '0')) {
-								$tmpWhere = "(`{$this->getParentField()}` IN ({$sanitarInIDs}) OR `{$this->getPK()}` IN({$sanitarInIDs}))";
-							} else {
-								$tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs}) AND `{$this->getPK()}` NOT IN({$sanitarInIDs})";
-							}
-							if (($addDocs = $this->getCFGDef('documents', '')) != '') {
-								$addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-								$whereArr[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
-							} else {
-								$where[] = $tmpWhere;
-							}
+                if ($sanitarInIDs != "''") {
+                    switch ($this->getCFGDef('idType', 'parents')) {
+                        case 'parents':
+                        {
+                            if ($this->getCFGDef('showParent', '0')) {
+                                $tmpWhere = "(`{$this->getParentField()}` IN ({$sanitarInIDs}) OR `{$this->getPK()}` IN({$sanitarInIDs}))";
+                            } else {
+                                $tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs}) AND `{$this->getPK()}` NOT IN({$sanitarInIDs})";
+                            }
+                            if (($addDocs = $this->getCFGDef('documents', '')) != '') {
+                                $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
+                                $whereArr[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
+                            } else {
+                                $where[] = $tmpWhere;
+                            }
 
-							break;
-						}
-						case 'documents':
-						{
-							$where[] = "`{$this->getPK()}` IN({$sanitarInIDs})";
-							break;
-						}
-					}
-				}
+                            break;
+                        }
+                        case 'documents':
+                        {
+                            $where[] = "`{$this->getPK()}` IN({$sanitarInIDs})";
+                            break;
+                        }
+                    }
+                }
             }
             if (!empty($where)) {
                 $where = "WHERE " . implode(" AND ", $where);
             }else{
-				$where = '';
-			}
+                $where = '';
+            }
 
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group}) as `tmp`");
@@ -302,10 +302,10 @@ class onetableDocLister extends DocLister
 
     public function getChildrenFolder($id)
     {
-		$sanitarInIDs = $this->sanitarIn($id);
+        $sanitarInIDs = $this->sanitarIn($id);
 
         $tmp = $this->getCFGDef('addWhereFolder', '');
-		$where = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
+        $where = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
         if (!empty($tmp)) {
             $where .= " AND " . $tmp;
         }

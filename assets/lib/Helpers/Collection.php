@@ -187,4 +187,8 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     {
         return array_values($this->data);
     }
+
+    public function toArray(){
+        return $this->data;
+    }
 }

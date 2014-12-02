@@ -535,7 +535,7 @@ class modResource extends MODxAPI
 
     public function issetField($key)
     {
-        return (isset($this->default_field[$key]) || isset($this->tv[$key]));
+        return (array_key_exists($key, $this->default_field) || array_key_exists($key, $this->tv));
     }
 
     protected function get_TV($reload = false)

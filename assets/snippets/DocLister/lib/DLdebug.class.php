@@ -27,11 +27,11 @@ class DLdebug
         }
 
     }
-	
-	public function getLog(){
-		return $this->_log;
-	}
-	
+
+    public function getLog(){
+        return $this->_log;
+    }
+
     public function countLog(){
         return count($this->_log);
     }

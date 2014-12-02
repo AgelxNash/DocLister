@@ -168,19 +168,19 @@ class DLTemplate
                     }
                     break;
                 }
-				case '@RENDERPAGE':{
-					$tpl = $this->renderDoc($subTmp, false);
-					break;
-				}
+                case '@RENDERPAGE':{
+                    $tpl = $this->renderDoc($subTmp, false);
+                    break;
+                }
 
-				case '@LOADPAGE':{
-					$tpl = $this->renderDoc($subTmp, true);
-					break;
-				}
-				case '@TEMPLATE':{
-					$tpl = $this->getTemplate($subTmp);
-					break;
-				}
+                case '@LOADPAGE':{
+                    $tpl = $this->renderDoc($subTmp, true);
+                    break;
+                }
+                case '@TEMPLATE':{
+                    $tpl = $this->getTemplate($subTmp);
+                    break;
+                }
                 default:
                     {
                     $tpl = $this->modx->getChunk($name);
@@ -194,68 +194,68 @@ class DLTemplate
         }
         return $tpl;
     }
-	/**
-	* Рендер документа с подстановкой плейсхолдеров и выполнением сниппетов
-	*
-	* @param int $id ID документа
-	* @param bool $events Во время рендера документа стоит ли вызывать события OnLoadWebDocument и OnLoadDocumentObject (внутри метода getDocumentObject).
-	* @param mixed $tpl Шаблон с которым необходимо отрендерить документ. Возможные значения:
-	*						null - Использовать шаблон который назначен документу
-	*						int(0-n) - Получить шаблон из базы данных с указанным ID и применить его к документу
-	*						string - Применить шаблон указанный в строке к документу
-	* @return string
-	*
-	* Событие OnLoadWebDocument дополнительно передает параметры:
-	*		- с источиком от куда произошел вызов события
-	*		- оригинальный экземпляр класса DocumentParser
-	*/
-	public function renderDoc($id, $events = false, $tpl = null){
-		if((int)$id <= 0) return '';
+    /**
+    * Рендер документа с подстановкой плейсхолдеров и выполнением сниппетов
+    *
+    * @param int $id ID документа
+    * @param bool $events Во время рендера документа стоит ли вызывать события OnLoadWebDocument и OnLoadDocumentObject (внутри метода getDocumentObject).
+    * @param mixed $tpl Шаблон с которым необходимо отрендерить документ. Возможные значения:
+    *                       null - Использовать шаблон который назначен документу
+    *                       int(0-n) - Получить шаблон из базы данных с указанным ID и применить его к документу
+    *                       string - Применить шаблон указанный в строке к документу
+    * @return string
+    *
+    * Событие OnLoadWebDocument дополнительно передает параметры:
+    *       - с источиком от куда произошел вызов события
+    *       - оригинальный экземпляр класса DocumentParser
+    */
+    public function renderDoc($id, $events = false, $tpl = null){
+        if((int)$id <= 0) return '';
 
-		$m = clone $this->modx; //Чтобы была возможность вызывать события
-		$m->documentObject = $m->getDocumentObject('id', (int)$id , $events ? 'prepareResponse' : null);
-		if ($m->documentObject['type'] == "reference") {
-			if (is_numeric($m->documentObject['content']) && $m->documentObject['content'] > 0) {
-				$m->documentObject['content'] = $this->renderDoc($m->documentObject['content'], $events);
-			}
-		}
-		switch(true){
-			case is_integer($tpl):{
-				$tpl = $this->getTemplate($tpl);
-				break;
-			}
-			case is_string($tpl):{
-				break;
-			}
-			case is_null($tpl):
-			default:{
-				$tpl = $this->getTemplate($m->documentObject['template']);
-			}
-		}
-		$m->documentContent = $tpl;
-		if($events){
-			$m->invokeEvent("OnLoadWebDocument", array(
-				'source' => 'DLTemplate',
-				'mainModx' => $this->modx,
-			));
-		}
-		return $this->parseDocumentSource($m->documentContent, $m);
-	}
-
-	/**
-	* Получить содержимое шаблона с определенным номером
-	* @param int $id Номер шаблона
-	* @return string HTML код шаблона
-	*/
-	public function getTemplate($id){
-		if ($id > 0){
-			$tpl = $this->modx->db->getValue("SELECT `content` FROM {$this->modx->getFullTableName("site_templates")} WHERE `id` = '{$id}'");
+        $m = clone $this->modx; //Чтобы была возможность вызывать события
+        $m->documentObject = $m->getDocumentObject('id', (int)$id , $events ? 'prepareResponse' : null);
+        if ($m->documentObject['type'] == "reference") {
+            if (is_numeric($m->documentObject['content']) && $m->documentObject['content'] > 0) {
+                $m->documentObject['content'] = $this->renderDoc($m->documentObject['content'], $events);
+            }
         }
-		if(is_null($tpl)){
-			$tpl = '[*content*]';
-		}
-		return $tpl;
-	}
+        switch(true){
+            case is_integer($tpl):{
+                $tpl = $this->getTemplate($tpl);
+                break;
+            }
+            case is_string($tpl):{
+                break;
+            }
+            case is_null($tpl):
+            default:{
+                $tpl = $this->getTemplate($m->documentObject['template']);
+            }
+        }
+        $m->documentContent = $tpl;
+        if($events){
+            $m->invokeEvent("OnLoadWebDocument", array(
+                'source' => 'DLTemplate',
+                'mainModx' => $this->modx,
+            ));
+        }
+        return $this->parseDocumentSource($m->documentContent, $m);
+    }
+
+    /**
+    * Получить содержимое шаблона с определенным номером
+    * @param int $id Номер шаблона
+    * @return string HTML код шаблона
+    */
+    public function getTemplate($id){
+        if ($id > 0){
+            $tpl = $this->modx->db->getValue("SELECT `content` FROM {$this->modx->getFullTableName("site_templates")} WHERE `id` = '{$id}'");
+        }
+        if(is_null($tpl)){
+            $tpl = '[*content*]';
+        }
+        return $tpl;
+    }
     /**
      * refactor $modx->parseChunk();
      *
@@ -343,27 +343,27 @@ class DLTemplate
         return APIhelpers::renameKeyArr($data, $prefix, $suffix, $sep);
     }
 
-	public function parseDocumentSource($out, $modx = null)
+    public function parseDocumentSource($out, $modx = null)
     {
-		if(!is_object($modx)){
-			$modx = $this->modx;
-		}
-		$minPasses = empty ($modx->minParserPasses) ? 2 : $modx->minParserPasses;
-		$maxPasses = empty ($modx->maxParserPasses) ? 10 : $modx->maxParserPasses;
+        if(!is_object($modx)){
+            $modx = $this->modx;
+        }
+        $minPasses = empty ($modx->minParserPasses) ? 2 : $modx->minParserPasses;
+        $maxPasses = empty ($modx->maxParserPasses) ? 10 : $modx->maxParserPasses;
         $site_status = $modx->getConfig('site_status');
         $modx->config['site_status'] = 0;
-		for($i=1; $i<=$maxPasses; $i++){
-			$html = $out;
-			if(preg_match('/\[\!(.*)\!\]/us', $out)){
-				$out = str_replace(array('[!', '!]'), array('[[', ']]'), $out);
-			}
-			if($i <= $minPasses || $out != $html){
-				$out = $modx->parseDocumentSource($out);
-			}else{
-				break;
-			}
-		}
-		$out = $modx->rewriteUrls($out);
+        for($i=1; $i<=$maxPasses; $i++){
+            $html = $out;
+            if(preg_match('/\[\!(.*)\!\]/us', $out)){
+                $out = str_replace(array('[!', '!]'), array('[[', ']]'), $out);
+            }
+            if($i <= $minPasses || $out != $html){
+                $out = $modx->parseDocumentSource($out);
+            }else{
+                break;
+            }
+        }
+        $out = $modx->rewriteUrls($out);
         $modx->config['site_status'] = $site_status;
         return $out;
     }
