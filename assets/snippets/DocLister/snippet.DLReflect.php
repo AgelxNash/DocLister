@@ -207,7 +207,6 @@ if( ($rMonth->count() < $limitAfter) || empty($limitAfter)){
 }
 $showBefore += (($showAfter >= $limitAfter || $limitAfter>0) ? 0 : ($limitAfter - $showAfter));
 
-echo $showBefore.'-'.$showAfter;
 //Создаем новую коллекцию месяцев
 $outMonths = new DLCollection($modx);
 //Берем нужное число элементов с левой стороны
