@@ -1,8 +1,14 @@
 <?php
-if (!defined('MODX_BASE_PATH')) {
-    die('HACK???');
-}
-
+/** 
+* [[DLReflect? 
+*	&idType=`parents`
+*	&parents=`87`
+*	&monthSource=`tv`
+*	&monthField=`date`
+*	&limitBefore=`1`
+*	&limitAfter=`3`
+* ]] 
+*/
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLCollection.class.php');
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 if(!function_exists('validateMonth')){
@@ -133,8 +139,6 @@ $limitBefore = (int)APIHelpers::getkey($params, 'limitBefore', 0);
 $limitAfter = (int)APIHelpers::getkey($params, 'limitAfter', 0);
 $display = $limitBefore + 1 + $limitAfter;
 
-$limitAfter = $limitBefore = 0;
-
 $out = '';
 
 $DLParams = $params;
@@ -191,8 +195,9 @@ $lMonth = $lMonth->reverse();
 
 //Расчитываем сколько месяцев из какого списка взять
 $showBefore = ($lMonth->count() < $limitBefore || empty($limitBefore)) ? $lMonth->count() : $limitBefore;
-if($rMonth->count() < $limitAfter || empty($limitAfter)){
+if( ($rMonth->count() < $limitAfter) || empty($limitAfter)){
 	$showAfter = $rMonth->count();
+	$showBefore += !empty($limitAfter) ? ($limitAfter - $rMonth->count()) : 0;
 }else{
 	if($limitBefore > 0){
 		$showAfter = $limitAfter + ($limitBefore - $showBefore);
@@ -202,6 +207,7 @@ if($rMonth->count() < $limitAfter || empty($limitAfter)){
 }
 $showBefore += (($showAfter >= $limitAfter || $limitAfter>0) ? 0 : ($limitAfter - $showAfter));
 
+echo $showBefore.'-'.$showAfter;
 //Создаем новую коллекцию месяцев
 $outMonths = new DLCollection($modx);
 //Берем нужное число элементов с левой стороны

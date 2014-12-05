@@ -1,5 +1,6 @@
 ## 2.1.2 (06.12.2014)
 * [Add] Добавлен сниппет DLReflect
+* [Add] Добавлен сниппет DLMonthFilter
 * [Add] Добавлен новый лексикон в DocLister со списком месяцев
 * [Fix] Исправлена работа с экстендером e
 * [Refactor] Доработан класс \Helpers\Collection
