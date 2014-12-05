@@ -75,7 +75,7 @@ class modUsers extends MODxAPI
             $result = $this->query("
                 SELECT * from {$this->makeTable('web_user_attributes')} as attribute
                 LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
-                WHERE {$find}='{$this->escape($id)}'
+                WHERE BINARY {$find}='{$this->escape($id)}'
             ");
             $this->field = $this->modx->db->getRow($result);
 

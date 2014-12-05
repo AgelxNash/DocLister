@@ -864,7 +864,6 @@ abstract class DocLister
         $this->debug->debugEnd("parseLang");
         return $tpl;
     }
-
     /**
      * refactor $modx->parseChunk();
      *
@@ -985,7 +984,11 @@ abstract class DocLister
         * @var $extE e_DL_Extender
         */
         $extE = $this->getExtender('e', true, true);
-        $data = $extE->init($this, compact('data'));
+        if($out = $extE->init($this, compact('data'))){
+            if(is_array($out)){
+                $data =  $out;
+            }
+        }
         return compact('class', 'iterationName');
     }
     /**
@@ -1111,6 +1114,7 @@ abstract class DocLister
         $classname = ($name != '') ? $name . "_DL_Extender" : "";
         if ($classname != '' && isset($this->extender[$name]) && $this->extender[$name] instanceof $classname) {
             $flag = true;
+
         } else {
             if (!class_exists($classname, false) && $classname != '') {
                 if (file_exists(dirname(__FILE__) . "/extender/" . $name . ".extender.inc")) {

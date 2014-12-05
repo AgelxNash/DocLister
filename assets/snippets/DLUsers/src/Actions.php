@@ -267,7 +267,7 @@ class Actions{
 			$POST = array_merge($POST, array(
 				'password' => \APIHelpers::getkey($_POST, $pwdField, ''),
 				'email' => \APIHelpers::getkey($_POST, $emailField, ''),
-				'remember' => (int)\APIHelpers::getkey($_POST, $rememberField, 0)
+				'remember' => (bool)((int)\APIHelpers::getkey($_POST, $rememberField, 0))
 			));
 			if(!empty($POST['email']) && is_scalar($POST['email']) && !$userObj->emailValidate($POST['email'], false)){
 				$openUser = $userObj->edit($POST['email']);

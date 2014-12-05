@@ -1,5 +1,11 @@
 <?php namespace Helpers;
 
+use Closure;
+
+/**
+* @TODO: Потырить методы из Laravel 
+* https://github.com/laravel/framework/blob/4.2/src/Illuminate/Support/Collection.php
+*/
 class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     protected $data = array();
 
@@ -13,15 +19,23 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     {
         return new \ArrayIterator($this->data);
     }
-    public function map(\Closure $func)
+    public function map(Closure $func)
     {
         return $this->create(array_map($func, $this->data));
     }
-    public function filter(\Closure $p)
+
+    /**
+     * Run a filter over each of the items.
+     *
+     * @param  Closure  $callback
+     * @return static
+     */
+    public function filter(Closure $callback)
     {
-        return $this->create(array_filter($this->data, $p));
+        return $this->create(array_filter($this->data, $callback));
     }
-    public function forAll(\Closure $p)
+
+    public function forAll(Closure $p)
     {
         foreach ($this->data as $key => $element) {
             if ( ! $p($key, $element)) {
@@ -30,7 +44,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         }
         return true;
     }
-    public function partition(\Closure $p)
+    public function partition(Closure $p)
     {
         $matches = $noMatches = array();
         foreach ($this->data as $key => $element) {
@@ -93,6 +107,9 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     public function key()
     {
         return key($this->data);
+    }
+    public function prev(){
+        return prev($this->data);
     }
 
     public function next()
@@ -164,7 +181,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         return in_array($element, $this->data, true);
     }
 
-    public function exists(\Closure $p)
+    public function exists(Closure $p)
     {
         foreach ($this->data as $key => $element) {
             if ($p($key, $element)) {
@@ -190,5 +207,81 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
 
     public function toArray(){
         return $this->data;
+    }
+
+    /**
+     * Reduce the collection to a single value.
+     *
+     * @param  callable  $callback
+     * @param  mixed     $initial
+     * @return mixed
+     */
+    public function reduce(Closure $callback, $initial = null)
+    {
+        return array_reduce($this->data, $callback, $initial);
+    }
+
+    /**
+     * Get the max value of a given key.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function max($key)
+    {
+        return $this->reduce(function($result, $item) use ($key)
+        {
+            return (is_null($result) || $item[$key] > $result) ? $item[$key] : $result;
+        });
+    }
+    /**
+     * Get the min value of a given key.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function min($key)
+    {
+        return $this->reduce(function($result, $item) use ($key)
+        {
+            return (is_null($result) || $item[$key] < $result) ? $item[$key] : $result;
+        });
+    }
+
+    /**
+     * Sort through each item with a callback.
+     *
+     * @param  Closure  $callback
+     * @return $this
+     */
+    public function sort(Closure $callback)
+    {
+        uasort($this->data, $callback);
+        return $this;
+    }
+
+    public function reindex(){
+        $this->data = array_values($this->data);
+        return $this;
+    }
+
+    /**
+     * Return only unique items from the collection array.
+     *
+     * @return static
+     */
+    public function unique()
+    {
+        return $this->create(array_unique($this->data));
+    }
+
+    /**
+     * Reverse items order.
+     *
+     * @return static
+     */
+    public function reverse()
+    {
+        return $this->create(array_reverse($this->data));
     }
 }
