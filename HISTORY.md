@@ -1,3 +1,8 @@
+## 2.1.3 (08.12.2014)
+* [Add] Добавлен сниппет DLBeforeAfter
+* [Add] В DLdebug добавлен новый метод clearLog
+* [Refactor] Исправлена сортировка документов по ТВ параметру дата в сниппетах DLReflect и DLMonthFilter
+
 ## 2.1.2 (06.12.2014)
 * [Add] Добавлен сниппет DLReflect
 * [Add] Добавлен сниппет DLMonthFilter

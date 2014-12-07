@@ -63,7 +63,7 @@ if(!validateMonth($tmpGet)){
 
 $m = $modx->db->escape($activeMonth);
 if($monthSource == 'tv'){
-	$params['sortType'] = 'TVDATETIME';
+	$params['tvSortType'] = 'TVDATETIME';
 	$params['addWhereList'] = "DATE_FORMAT(STR_TO_DATE(`dltv_".$monthField ."_1`.`value`,'%d-%m-%Y %H:%i:%s'), '%m-%Y')='".$m."'";
 }else{
 	$params['addWhereList'] = "DATE_FORMAT(FROM_UNIXTIME(".$monthField."), '%m-%Y')='".$m."'";

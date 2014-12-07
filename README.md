@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/agelxnash/doclister.png?label=ready&title=Ready)](https://waffle.io/agelxnash/doclister)
 ### DocLister for MODX Evolution
 Класс для вывода информации из таблиц по предопределенным правилам.
 Если нет правил, то данные отображаются без дополнительной обработки и связи. Т.е. все поля и значения совпадают с базой данных.
@@ -15,6 +14,9 @@
 * **DLFirstChar** - выборка документов и группировках в блоках по первой букве
 * **DLPrevNext** - цикличная навигация вперед/назад между соседними документами
 * **DLBuildMenu** - Построение меню не ограниченой вложенности
+* **DLReflect** - Построение списка месяцев
+* **DLMonthFilter** - Фильтрация документов по месяцам
+* **DLBeforeAfter** - Пагинация по прошедшим и предстоящим событиями с учетом текущей даты
 
 ### Полезные ссылки
 ---------
@@ -46,35 +48,4 @@
 		<strong>PayPal</strong>: agel_nash@xaker.ru<br />
 	</td>
   </tr>
-</table>
-
-### Отдельное спасибо
----------
-<table>
-<tr>
-<td valign="top">
-<h4>За помощь в разработке<br /><br /></h4>
-<ul>
-<li><a href="https://github.com/kabachello">@kabachello</a><br />
-фильтрация по TV-параметрам</li>
-<li><a href="https://github.com/Pathologic">@Pathologic</a><br />
-экстендер jotcount</li>
-</ul>
-</td>
-<td valign="top">
-<h4>За донат<br /><br /></h4>
-<ul>
-<li><a href="https://github.com/Pathologic">@Pathologic</a></li>
-<li><a href="http://modx.im/profile/Shin/">Shin</a></li>
-<li><a href="https://github.com/webber12">@webber12</a></li>
-<li><a href="http://blog.agel-nash.ru/user/diosmedia">Иван Смирнягин</a></li>
-</ul>
-</td>
-<td valign="top">
-<h4>За тестирование,<br />багрепорты и идеи</h4>
-<ul>
-<li><a href="https://github.com/webber12">@webber12</a></li>
-</ul>
-</td>
-</tr>
 </table>

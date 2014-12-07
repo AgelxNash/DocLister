@@ -40,7 +40,7 @@ if (class_exists($classname, false) && $classname != 'DocLister') {
     }
 
     if ($DocLister->getCFGDef('debug', 0)) {
-        if (isset($modx->Event->params['api'])) {
+        if ($DocLister->getCFGDef("api", 0)) {
             $modx->setPlaceholder($DocLister->getCFGDef("sysKey", "dl") . ".debug", $debug);
         } else {
             $out = ($DocLister->getCFGDef('debug') > 0) ? $debug . $out : $out . $debug;

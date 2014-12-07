@@ -1,13 +1,13 @@
 <?php
-/** 
-* [[DLReflect? 
+/**
+* [[DLReflect?
 *	&idType=`parents`
 *	&parents=`87`
 *	&monthSource=`tv`
 *	&monthField=`date`
 *	&limitBefore=`1`
 *	&limitAfter=`3`
-* ]] 
+* ]]
 */
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLCollection.class.php');
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
@@ -28,14 +28,14 @@ $params = is_array($modx->event->params) ? $modx->event->params : array();
 
 $debug = APIHelpers::getkey($params, 'debug', 0);
 /**
-* wrapTPL: Шаблон обертка для списка месяцев. Поддерживается плейсхолдеры: 
+* wrapTPL: Шаблон обертка для списка месяцев. Поддерживается плейсхолдеры:
 *		[+wrap+] - Список месяцев
 *		[+years+] - Всего месяцев
 *		[+displayYears] - Отображено месяцев в списке
 */
 $wrapTPL = APIHelpers::getkey($params, 'wrapTPL', '@CODE: <div class="month-list"><ul>[+wrap+]</ul></div>');
 /**
-* monthTPL: Шаблон месяца. Поддерживается плейсхолдеры: 
+* monthTPL: Шаблон месяца. Поддерживается плейсхолдеры:
 *		[+url+] - ссылка на страницу где настроена фильтрация по документам за выбранный месяц
 *		[+monthName+] - Название месяца
 *		[+monthNum+] - Номер месяца с ведущим нулем (01, 02, 03, ..., 12)
@@ -45,7 +45,7 @@ $wrapTPL = APIHelpers::getkey($params, 'wrapTPL', '@CODE: <div class="month-list
 */
 $monthTPL = APIHelpers::getkey($params, 'monthTPL', '@CODE: <li><a href="[+url+]" title="[+monthName+] [+year+]">[+monthName+] [+year+]</a></li>');
 /**
-* activeMonthTPL: Шаблон месяца. 
+* activeMonthTPL: Шаблон месяца.
 * Поддерживается такие же плейсхолдеры, как и в шаблоне monthTPL
 */
 $activeMonthTPL = APIHelpers::getkey($params, 'activeMonthTPL', '@CODE: <li><span>[+monthName+] [+year+]</span></li>');
@@ -66,8 +66,8 @@ if(!validateMonth($currentMonth)){
 * appendCurrentMonth
 *		Если в спске месяцев не встречается указанный через параметр currentMonth, то
 *		этот параметр определяет - стоит ли добавлять ли его или нет
-* Возможные значения: 
-*		0 - не добавлять, 
+* Возможные значения:
+*		0 - не добавлять,
 * 		1 - добавлять
 * Этот параметр тесно связан с параметром activeMonth
 */
@@ -97,7 +97,7 @@ if(!validateMonth($tmpGet)){
 
 /**
 * monthSource
-*		Источник даты. 
+*		Источник даты.
 * Возможные значения:
 *	tv: ТВ параметр
 *	content или любое другое значение: Основные параметры документа
@@ -106,7 +106,7 @@ $monthSource = APIHelpers::getkey($params, 'monthSource', 'content');
 
 /**
 * monthField
-*		Имя поля из которого берется дата документа. 
+*		Имя поля из которого берется дата документа.
 * Возможные значения:
 *		Любое имя существующего ТВ параметра или поля документа
 * Значение по умолчанию:
@@ -147,7 +147,7 @@ $DLParams['api'] = 'id';
 $DLParams['orderBy'] = $monthField;
 $DLParams['saveDLObject'] = 'DLAPI';
 if($monthSource == 'tv'){
-	$DLParams['sortType'] = 'TVDATETIME';
+	$DLParams['tvSortType'] = 'TVDATETIME';
 	$DLParams['selectFields'] = "DATE_FORMAT(STR_TO_DATE(`dltv_".$monthField ."_1`.`value`,'%d-%m-%Y %H:%i:%s'), '%m-%Y') as `id`";
 }else{
 	$DLParams['orderBy'] = $monthField;
@@ -189,7 +189,7 @@ list($lMonth, $rMonth) = $totalMonths->partition(function($key, $val) use($activ
     return $aDate->getTimestamp() < $bDate->getTimestamp();
 });
 //Удаляем текущий активный месяц из списка месяцев идущих за текущим
-$rMonth->reindex()->remove(0); 
+$rMonth->reindex()->remove(0);
 //Разворачиваем в обратном порядке список месяцев до текущего месяца
 $lMonth = $lMonth->reverse();
 

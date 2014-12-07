@@ -31,7 +31,10 @@ class DLdebug
     public function getLog(){
         return $this->_log;
     }
-
+    public function clearLog(){
+        $this->_log = array();
+        return $this;
+    }
     public function countLog(){
         return count($this->_log);
     }
