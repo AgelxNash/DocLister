@@ -5,10 +5,10 @@ if(!function_exists('validateMonth')){
 		$flag = false;
 		if(is_string($val)){
 			$val = explode("-", $val, 3);
-			$flag = (count($val)==3 && is_array($val) && strlen($val[2])==2 && strlen($val[1])==2 && strlen($val[0])==4); //Валидация содержимого массива
-			$flag = ($flag && (int)$val[2]>0 && (int)$val[2]<=31); //Валидация дня
-			$flag = ($flag && (int)$val[1]>0 && (int)$val[1]<=12); //Валидация месяца
-			$flag = ($flag && (int)$val[0]>1900 && (int)$val[0]<=2100); //Валидация года
+			$flag = (count($val)==3 && is_array($val) && strlen($val[2])==2 && strlen($val[1])==2 && strlen($val[0])==4); //Р’Р°Р»РёРґР°С†РёСЏ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ РјР°СЃСЃРёРІР°
+			$flag = ($flag && (int)$val[2]>0 && (int)$val[2]<=31); //Р’Р°Р»РёРґР°С†РёСЏ РґРЅСЏ
+			$flag = ($flag && (int)$val[1]>0 && (int)$val[1]<=12); //Р’Р°Р»РёРґР°С†РёСЏ РјРµСЃСЏС†Р°
+			$flag = ($flag && (int)$val[0]>1900 && (int)$val[0]<=2100); //Р’Р°Р»РёРґР°С†РёСЏ РіРѕРґР°
 		}
 		return $flag;
 	}
@@ -45,7 +45,7 @@ $dateSource = APIHelpers::getkey($params, 'dateSource', 'content');
 $dateField = APIHelpers::getkey($params, 'dateField', 'if(pub_date=0,createdon,pub_date)');
 
 $tmp = date("Y-m-d H:i:s");
-$currentDay = APIHelpers::getkey($params, 'currentDay', $tmp); // Текущий день
+$currentDay = APIHelpers::getkey($params, 'currentDay', $tmp); // РўРµРєСѓС‰РёР№ РґРµРЅСЊ
 if(!validateDate($currentDay)){
 	$currentDay = $tmp;
 }
@@ -54,7 +54,7 @@ $start = (int)APIHelpers::getkey($_GET, 'start', '0');
 $elements = array(
 	'offset' => $start
 );
-//Если положительное значение, то нужы события предстоящие. Если отрицательное - прошедшее
+//Р•СЃР»Рё РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ, С‚Рѕ РЅСѓР¶С‹ СЃРѕР±С‹С‚РёСЏ РїСЂРµРґСЃС‚РѕСЏС‰РёРµ. Р•СЃР»Рё РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕРµ - РїСЂРѕС€РµРґС€РµРµ
 $rule = ( $start >= 0 ) ? 'after' : 'before';
 $noRule = ( $start >= 0 ) ? 'before' : 'after';
 if($start < 0){
@@ -146,7 +146,7 @@ $pageParams = array(
 );
 
 if(!is_null($beforeStart)){
-	$tpl = $DLObj->getCFGDef('TplPrevP', '@CODE: <a href="[+url+]">Назад</a>');
+	$tpl = $DLObj->getCFGDef('TplPrevP', '@CODE: <a href="[+url+]">РќР°Р·Р°Рґ</a>');
 	$beforePage = $DLObj->parseChunk($tpl, array_merge($pageParams, array(
 		'url' => buildUrl($DLObj->getUrl(), $beforeStart),
 		'offset' => $beforeStart,
@@ -155,7 +155,7 @@ if(!is_null($beforeStart)){
 	)));
 }else{
 	if($DLObj->getCFGDef("PrevNextAlwaysShow", 0)){
-		$tpl = $DLObj->getCFGDef('TplPrevI', '@CODE: Назад');
+		$tpl = $DLObj->getCFGDef('TplPrevI', '@CODE: РќР°Р·Р°Рґ');
 		$beforePage = $DLObj->parseChunk($tpl, array_merge($pageParams, array(
 			'elements' => $elements['before'],
 			'pages' => ceil($elements['before'] / $elements['display'])
@@ -165,7 +165,7 @@ if(!is_null($beforeStart)){
 $modx->setPlaceholder('pages.before', $beforePage);
 
 if(!is_null($afterStart)){
-	$tpl = $DLObj->getCFGDef('TplNextP', '@CODE: <a href="[+url+]">Далее</a>');
+	$tpl = $DLObj->getCFGDef('TplNextP', '@CODE: <a href="[+url+]">Р”Р°Р»РµРµ</a>');
 	$afterPage = $DLObj->parseChunk($tpl, array_merge($pageParams, array(
 		'url' => buildUrl($DLObj->getUrl(), $afterStart),
 		'offset' => $afterStart,
@@ -174,7 +174,7 @@ if(!is_null($afterStart)){
 	)));
 }else{
 	if($DLObj->getCFGDef("PrevNextAlwaysShow", 0)){
-		$tpl = $DLObj->getCFGDef('TplNextI', '@CODE: Далее');
+		$tpl = $DLObj->getCFGDef('TplNextI', '@CODE: Р”Р°Р»РµРµ');
 		$afterPage = $DLObj->parseChunk($tpl, array_merge($pageParams, array(
 			'elements' => $elements['after'],
 			'pages' => ceil($elements['before'] / $elements['display'])
