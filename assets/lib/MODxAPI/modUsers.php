@@ -40,7 +40,7 @@ class modUsers extends MODxAPI
 
     public function issetField($key)
     {
-        return (array_key_exists($key, $this->default_field['user']) || array_key_exists($key, $this->default_field['attribute']) || array_key_exists($key, $this->default_field['hidden']));
+        return (array_key_exists($key, $this->default_field['user']) || array_key_exists($key, $this->default_field['attribute']) || in_array($key, $this->default_field['hidden']));
     }
 
     protected function findUser($data)
@@ -129,7 +129,10 @@ class modUsers extends MODxAPI
         ),$fire_events);*/
 
         $fld = $this->toArray();
-        foreach ($this->default_field['user'] as $key) {
+        foreach ($this->default_field['user'] as $key => $value) {
+            if ($this->newDoc && $this->get($key) == '' && $this->get($key) !== $value) {
+                $this->field[$key] = $value;
+            }
             $this->Uset($key, 'user');
             unset($fld[$key]);
         }
@@ -147,7 +150,10 @@ class modUsers extends MODxAPI
         }
 
 
-        foreach ($this->default_field['attribute'] as $key) {
+        foreach ($this->default_field['attribute'] as $key => $value) {
+            if ($this->newDoc && $this->get($key) == '' && $this->get($key) !== $value) {
+                $this->field[$key] = $value;
+            }
             $this->Uset($key, 'attribute');
             unset($fld[$key]);
         }

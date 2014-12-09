@@ -92,7 +92,7 @@ class paginate_DL_Extender extends extDocLister
                 $to = ($this->_pages['current'] == $this->_pages['total']) ? $from - 1 + $tmp - ($this->_pages['current'] - 1) * $display : $from - 1 + $display;
                 $this->DocLister->toPlaceholders($to, 1, "to");
             } else {
-                $this->modx->sendRedirect($this->getUrl($this->getRequestName('page')));
+                $this->modx->sendRedirect($this->getUrl('page'));
             }
         }
         return APIHelpers::getkey($this->_pages, $name, $this->_pages);
