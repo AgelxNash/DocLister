@@ -11,36 +11,36 @@ class modResource extends MODxAPI
         'description' => '',
         'alias' => '',
         'link_attributes' => '',
-        'published' => '1',
-        'pub_date' => '0',
-        'unpub_date' => '0',
-        'parent' => '0',
-        'isfolder' => '0',
+        'published' => 1,
+        'pub_date' => 0,
+        'unpub_date' => 0,
+        'parent' => 0,
+        'isfolder' => 0,
         'introtext' => '',
         'content' => '',
-        'richtext' => '1',
-        'template' => '0',
-        'menuindex' => '0',
-        'searchable' => '1',
-        'cacheable' => '1',
-        'createdon' => '0',
-        'createdby' => '0',
-        'editedon' => '0',
-        'editedby' => '0',
-        'deleted' => '0',
-        'deletedon' => '0',
-        'deletedby' => '0',
-        'publishedon' => '0',
-        'publishedby' => '0',
+        'richtext' => 1,
+        'template' => 0,
+        'menuindex' => 0,
+        'searchable' => 1,
+        'cacheable' => 1,
+        'createdon' => 0,
+        'createdby' => 0,
+        'editedon' => 0,
+        'editedby' => 0,
+        'deleted' => 0,
+        'deletedon' => 0,
+        'deletedby' => 0,
+        'publishedon' => 0,
+        'publishedby' => 0,
         'menutitle' => '',
-        'donthit' => '0',
-        'haskeywords' => '0',
-        'hasmetatags' => '0',
-        'privateweb' => '0',
-        'privatemgr' => '0',
-        'content_dispo' => '0',
-        'hidemenu' => '0',
-        'alias_visible' => '1'
+        'donthit' => 0,
+        'haskeywords' => 0,
+        'hasmetatags' => 0,
+        'privateweb' => 0,
+        'privatemgr' => 0,
+        'content_dispo' => 0,
+        'hidemenu' => 0,
+        'alias_visible' => 1
     );
     private $table = array('"' => '_', "'" => '_', ' ' => '_', '.' => '_', ',' => '_', 'а' => 'a', 'б' => 'b', 'в' => 'v',
         'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'zh', 'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k',
@@ -212,7 +212,12 @@ class modResource extends MODxAPI
                 }
                 case 'deletedon':{
                     $value = $this->getTime($value);
-                    $this->field['deleted'] = 1;
+                    if($value > 0 && time() + $this->modxConfig('server_offset_time') < $value){
+                        $value = 0;
+                    }
+                    if($value){
+                        $this->field['deleted'] = 1;
+                    }
                     break;
                 }
                 case 'editedon':
