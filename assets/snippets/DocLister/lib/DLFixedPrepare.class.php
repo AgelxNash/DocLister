@@ -9,6 +9,7 @@ if(!class_exists("DLFixedPrepare", false)){
 				$params['currentDepth'] = $_DL->getCfgDef('currentDepth', 1) + 1;
 				$params['parents'] = $data['id'];
 				$params['idType'] = 'parents';
+				$params['documents'] = '';
 				$data['dl.submenu'] = $modx->runSnippet('DLBuildMenu', $params);
 			} else {
 				$data['dl.submenu'] = '';
@@ -21,11 +22,11 @@ if(!class_exists("DLFixedPrepare", false)){
 			}
 			$isActive = ((is_array($parentIDs) && in_array($data['id'], $parentIDs)) || $data['id'] == $modx->documentObject['id']);
 			if($isActive){
-				$data['dl.class'] = 'active';
+				$data['dl.class'] .= ' active';
 			}
 
-			if(strpos($data['dl.class'], 'current')!==false){
-				$data['dl.class'] = str_replace($data['dl.class'], 'current', 'current active');
+			if(strpos($data['dl.class'], 'current')!==false && strpos($data['dl.class'], ' active')===false){
+				$data['dl.class'] = str_replace('current', 'current active', $data['dl.class']);
 			}
 
 			$tpl = empty($data['dl.submenu']) ? 'noChildrenRowTPL' : 'mainRowTpl';
