@@ -220,6 +220,11 @@ class site_contentDocLister extends DocLister
         */
         $extPrepare = $this->getExtender('prepare');
 
+        /**
+        * @var $extE e_DL_Extender
+        */
+        $extE = $this->getExtender('e', true, true);
+
         foreach ($data as $num => $item) {
             $row = $item;
             switch (true) {
@@ -234,6 +239,24 @@ class site_contentDocLister extends DocLister
                     $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
                     //without break
                 }
+                case (array('1') == $fields || in_array(array('menutitle', 'pagetitle'), $fields)):
+                {
+                    $row['title'] = ($row['menutitle'] == '' ? $row['pagetitle'] : $row['menutitle']);
+                }
+                case ((array('1') == $fields || in_array(array('content', 'type'), $fields)) && $this->getCFGDef('makeUrl', 1)):
+                {
+                    if($row['type'] == 'reference'){
+                        $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl($row['content'], '', '', $this->getCFGDef('urlScheme', '')) : $row['content'];
+                    }else{
+                        $row['url'] = $this->modx->makeUrl($row['id'], '', '', $this->getCFGDef('urlScheme', ''));
+                    }
+                }
+            }
+
+            if($extE && $tmp = $extE->init($this, array('data' => $row))){
+                if(is_array($tmp)){
+                    $row = $tmp;
+                }
             }
 
             if ($extPrepare) {
@@ -244,7 +267,6 @@ class site_contentDocLister extends DocLister
             }
             $out[$num] = $row;
         }
-
         return parent::getJSON($data, $fields, $out);
     }
 

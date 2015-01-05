@@ -145,6 +145,11 @@ class onetableDocLister extends DocLister
         */
         $extPrepare = $this->getExtender('prepare');
 
+        /**
+        * @var $extE e_DL_Extender
+        */
+        $extE = $this->getExtender('e', true, true);
+
         foreach ($data as $num => $item) {
             $row = $item;
 
@@ -159,6 +164,12 @@ class onetableDocLister extends DocLister
                     $tmp = (isset($this->_docs[$num][$date]) && $date != 'createdon' && $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
                     $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
                     //without break
+                }
+            }
+
+            if($extE && $tmp = $extE->init($this, array('data' => $row))){
+                if(is_array($tmp)){
+                    $row =  $tmp;
                 }
             }
 
