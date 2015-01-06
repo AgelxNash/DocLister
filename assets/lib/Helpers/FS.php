@@ -93,6 +93,19 @@ class FS{
         return (!empty($f) && is_dir(MODX_BASE_PATH . $f) && is_readable(MODX_BASE_PATH . $f));
     }
 
+    public function fileSize($file, $format = false){
+        $out = 0;
+        if($this->checkFile($file)){
+            $out = filesize(MODX_BASE_PATH . $this->relativePath($file));
+        }
+        if($format){
+            $types = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+            $size = $out > 0 ? floor(log($out, 1024)) : 0;
+            $out = number_format($out / pow(1024, $size), 2, '.', ',') . ' ' . $types[$size];
+        }
+        return $out;
+    }
+
     /**
      * Если класс finfo и функция mime_content_type не доступны, то происходит сверка типов:
      *      - image/jpeg

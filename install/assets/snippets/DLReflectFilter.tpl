@@ -1,8 +1,8 @@
 //<?php
 /**
- * DLReflect
+ * DLReflectFilter
  *
- * Построение списка дат для фильтрации по ним документов
+ * Фильтрация документов по датам которые были выведены сниппетом DLReflect
  *
  * @category 	snippet
  * @version 	2
@@ -12,4 +12,4 @@
  * @internal    @installset base, sample
  */
 
-return require MODX_BASE_PATH.'assets/snippets/DocLister/snippet.DLReflect.php';
+return require MODX_BASE_PATH.'assets/snippets/DocLister/snippet.DLReflectFilter.php';

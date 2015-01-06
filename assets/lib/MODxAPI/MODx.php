@@ -301,7 +301,9 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         $out = array();
         foreach ($data as $item) {
-            $out[] = $this->escape($item);
+            if($item !== ''){
+                $out[] = $this->escape($item);
+            }
         }
         $out = empty($out) ? '' : "'" . implode("','", $out) . "'";
         return $out;

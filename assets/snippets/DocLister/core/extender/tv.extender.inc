@@ -61,6 +61,7 @@ class tv_DL_Extender extends extDocLister
 
     public function getTVList($IDs, $tvlist)
     {
+        $out = array();
         $tv = $this->getTVid($tvlist);
         $tvId = array_keys($tv);
         $tbl_site_tmplvar_contentvalues = $this->DocLister->getTable($this->tvValuesTable());
@@ -69,7 +70,6 @@ class tv_DL_Extender extends extDocLister
         $where = "contentid IN({$sanitarInIDs}) AND tmplvarid IN({$implodeTvId})";
         $rs = $this->DocLister->dbQuery("SELECT tmplvarid,value,contentid FROM {$tbl_site_tmplvar_contentvalues} WHERE {$where}");
         $rows = $this->modx->db->makeArray($rs);
-        $out = array();
         $tvPrefix = $this->_TVprefix;
 
         foreach ($rows as $item) {

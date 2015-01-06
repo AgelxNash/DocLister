@@ -3,7 +3,7 @@
 use Closure;
 
 /**
-* @TODO: Потырить методы из Laravel 
+* @TODO: Потырить методы из Laravel
 * https://github.com/laravel/framework/blob/4.2/src/Illuminate/Support/Collection.php
 */
 class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{

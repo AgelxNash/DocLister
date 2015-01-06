@@ -683,7 +683,9 @@ abstract class DocLister
         }
         $out = array();
         foreach ($data as $item) {
-            $out[] = $this->modx->db->escape($item);
+            if($item !== ''){
+                $out[] = $this->modx->db->escape($item);
+            }
         }
         $q = $quote ? "'" : "";
         $out = $q . implode($q . "," . $q, $out) . $q;

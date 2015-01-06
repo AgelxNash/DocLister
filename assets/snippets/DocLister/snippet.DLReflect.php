@@ -3,109 +3,121 @@
 * [[DLReflect?
 *	&idType=`parents`
 *	&parents=`87`
-*	&monthSource=`tv`
-*	&monthField=`date`
+*	&reflectType=`year`
+*	&reflectSource=`tv`
+*	&reflectField=`date`
 *	&limitBefore=`1`
 *	&limitAfter=`3`
 * ]]
 */
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLCollection.class.php');
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
-if(!function_exists('validateMonth')){
-	function validateMonth($val){
-		$flag = false;
-		if(is_string($val)){
-			$val = explode("-", $val, 2);
-			$flag = (count($val) && is_array($val) && strlen($val[0])==2 && strlen($val[1])==4); //Валидация содержимого массива
-			$flag = ($flag && (int)$val[0]>0 && (int)$val[0]<=12); //Валидация месяца
-			$flag = ($flag && (int)$val[1]>1900 && (int)$val[1]<=2100); //Валидация года
-		}
-		return $flag;
-	}
-}
+include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLReflect.class.php');
 
 $params = is_array($modx->event->params) ? $modx->event->params : array();
 
 $debug = APIHelpers::getkey($params, 'debug', 0);
-/**
-* wrapTPL: Шаблон обертка для списка месяцев. Поддерживается плейсхолдеры:
-*		[+wrap+] - Список месяцев
-*		[+years+] - Всего месяцев
-*		[+displayYears] - Отображено месяцев в списке
-*/
-$wrapTPL = APIHelpers::getkey($params, 'wrapTPL', '@CODE: <div class="month-list"><ul>[+wrap+]</ul></div>');
-/**
-* monthTPL: Шаблон месяца. Поддерживается плейсхолдеры:
-*		[+url+] - ссылка на страницу где настроена фильтрация по документам за выбранный месяц
-*		[+monthName+] - Название месяца
-*		[+monthNum+] - Номер месяца с ведущим нулем (01, 02, 03, ..., 12)
-*		[+year+] - Год
-*		[+years+] - Общее число месяцев которое возможно отобразить в списке
-*		[+displayYears] - Число месяцев отображаемое в общем списке
-*/
-$monthTPL = APIHelpers::getkey($params, 'monthTPL', '@CODE: <li><a href="[+url+]" title="[+monthName+] [+year+]">[+monthName+] [+year+]</a></li>');
-/**
-* activeMonthTPL: Шаблон месяца.
-* Поддерживается такие же плейсхолдеры, как и в шаблоне monthTPL
-*/
-$activeMonthTPL = APIHelpers::getkey($params, 'activeMonthTPL', '@CODE: <li><span>[+monthName+] [+year+]</span></li>');
 
-$tmp = date("m-Y");
 /**
-* currentMonth: Текущий месяц в формате 00-0000, где:
-*		00 - Номер месяца с ведущим нулем (01, 02, 03, ..., 12)
-*		0000 - Год
-* Если не указан в параметре, то генерируется автоматически текущий месяц
+ * reflectType
+ * 		Тип фильтрации. Возможные значения:
+ * 			month - по месяцам (значение по умолчанию)
+ * 		 	year - по годам
+ */
+$reflectType = APIHelpers::getkey($params, 'reflectType', 'month');
+if( ! in_array($reflectType, array('year', 'month'))){
+	return '';
+}
+
+$wrapTPL = APIHelpers::getkey($params, 'wrapTPL', '@CODE: <div class="reflect-list"><ul>[+wrap+]</ul></div>');
+/**
+* reflectTPL
+* 		Шаблон даты. Поддерживается плейсхолдеры:
+*		 	[+url+] - ссылка на страницу где настроена фильтрация по документам за выбранную дату
+*		  	[+monthName+] - Название месяца. Плейсхолдер доступен только в режиме reflectType = month
+*		   	[+monthNum+] - Номер месяца с ведущим нулем (01, 02, 03, ..., 12). Плейсхолдер доступен только в режиме reflectType = month
+*		    [+year+] - Год
+*		    [+title+] - Дата (числовое представление месяц + год или просто год в зависиомсти от reflectType)
+*		    [+reflects+] - Общее число уникальных дат, которые возможно отобразить в списке
+*		    [+displayReflects+] - Число уникальных дат отображаемых в общем списке
 */
-$currentMonth = APIHelpers::getkey($params, 'currentMonth', $tmp); // Текущий месяц
-if(!validateMonth($currentMonth)){
-	$currentMonth = $tmp;
+$reflectTPL = APIHelpers::getkey($params, 'reflectTPL', '@CODE: <li><a href="[+url+]" title="[+title+]">[+title+]</a></li>');
+/**
+* activeReflectTPL
+* 		Шаблон активной даты.
+*   	Поддерживается такие же плейсхолдеры, как и в шаблоне reflectTPL
+*/
+$activeReflectTPL = APIHelpers::getkey($params, 'activeReflectTPL', '@CODE: <li><span>[+title+]</span></li>');
+
+list($dateFormat, $sqlDateFormat, $reflectValidator) = DLReflect::switchReflect($reflectType, function(){
+	return array('m-Y', '%m-%Y', array('DLReflect', 'validateMonth'));
+}, function(){
+	return array('Y', '%Y', array('DLReflect', 'validateYear'));
+});
+$tmp = $originalDate = date($dateFormat);
+
+/**
+* currentReflect
+* 		Текущая дата (месяц в формате 00-0000 или год в формате 0000), где:
+*		 	00 - Номер месяца с ведущим нулем (01, 02, 03, ..., 12)
+*		  	0000 - Год
+*     	Если не указан в параметре, то генерируется автоматически текущая дата
+*/
+$currentReflect = APIHelpers::getkey($params, 'currentReflect', $tmp);
+if( ! call_user_func($reflectValidator, $currentYear)){
+	$currentReflect = $tmp;
+}
+$originalCurrentReflect = $currentReflect;
+
+$selectCurrentReflect = APIHelpers::getkey($params, 'selectCurrentReflect', 1);
+if(!$selectCurrentReflect && $currentReflect == $tmp){
+	$currentReflect = null;
 }
 
 /**
-* appendCurrentMonth
-*		Если в спске месяцев не встречается указанный через параметр currentMonth, то
-*		этот параметр определяет - стоит ли добавлять ли его или нет
+* appendCurrentReflect
+*		Если в списке дат не встречается указанная через параметр currentReflect, то
+*		этот параметр определяет - стоит ли добавлять дату или нет
 * Возможные значения:
 *		0 - не добавлять,
 * 		1 - добавлять
-* Этот параметр тесно связан с параметром activeMonth
+* Этот параметр тесно связан с параметром activeReflect
 */
-$appendCurrentMonth = APIHelpers::getkey($params, 'appendCurrentMonth', 1);
+$appendCurrentReflect = APIHelpers::getkey($params, 'appendCurrentReflect', 1);
 
 /**
-* activeMonth
-*		Месяц который выбрал пользователь.
+* activeReflect
+*		Дата которую выбрал пользователь.
 *
-*		Если параметр не задан, то в качестве значения по умолчанию используется значение параметра currentMonth
-*		При наличии ГЕТ параметра month, приоритет отдается ему
+*		Если параметр не задан, то в качестве значения по умолчанию используется значение параметра currentReflect
+*		При наличии ГЕТ параметра month/year (в зависимости от значения параметра reflectType), приоритет отдается ему
 *
-* 		При отсутствии выбранного месяца в общем списке месяцев и совпадении значений параметров currentMonth и activeMonth,
-*		месяц будет автоматически добавлен в общий список. Тем самым значение параметра appendCurrentMonth будет расцениваться как 1
-* Возможные значения: Текущий месяц в формате 00-0000
+* 		При отсутствии выбранной даты в общем списке дат и совпадении значений параметров currentReflect и activeReflect,
+*		дата будет автоматически добавлена в общий список. Тем самым значение параметра appendCurrentReflect будет расцениваться как 1
+* Возможные значения: Текущая дата (месяц в формате 00-0000 или год в формате 0000)
 */
-$tmp = APIHelpers::getkey($params, 'activeMonth', $currentMonth);
-$tmpGet = APIHelpers::getkey($_GET, 'month', $tmp);
-if(!validateMonth($tmpGet)){
-	$activeMonth = $tmp;
-	if(!validateMonth($activeMonth)){
-		$activeMonth = $currentMonth;
+$tmp = APIHelpers::getkey($params, 'activeReflect', $currentReflect);
+$tmpGet = APIHelpers::getkey($_GET, $reflectType, $tmp);
+if( ! call_user_func($reflectValidator, $tmpGet)){
+	$activeReflect = $tmp;
+	if( ! call_user_func($reflectValidator, $activeReflect)){
+		$activeReflect = $currentReflect;
 	}
 }else{
-	$activeMonth = $tmpGet;
+	$activeReflect = $tmpGet;
 }
 
 /**
-* monthSource
+* reflectSource
 *		Источник даты.
 * Возможные значения:
 *	tv: ТВ параметр
 *	content или любое другое значение: Основные параметры документа
 */
-$monthSource = APIHelpers::getkey($params, 'monthSource', 'content');
+$reflectSource = APIHelpers::getkey($params, 'reflectSource', 'content');
 
 /**
-* monthField
+* reflectField
 *		Имя поля из которого берется дата документа.
 * Возможные значения:
 *		Любое имя существующего ТВ параметра или поля документа
@@ -113,7 +125,7 @@ $monthSource = APIHelpers::getkey($params, 'monthSource', 'content');
 *		Если не указана дата публикации, то использовать дату создания документа
 *		Актуально только для таблицы site_content
 */
-$monthField = APIHelpers::getkey($params, 'monthField', 'if(pub_date=0,createdon,pub_date)');
+$reflectField = APIHelpers::getkey($params, 'reflectField', 'if(pub_date=0,createdon,pub_date)');
 
 /**
 * targetID
@@ -144,60 +156,69 @@ $out = '';
 $DLParams = $params;
 $DLParams['debug'] = $debug;
 $DLParams['api'] = 'id';
-$DLParams['orderBy'] = $monthField;
+$DLParams['orderBy'] = $reflectField;
 $DLParams['saveDLObject'] = 'DLAPI';
-if($monthSource == 'tv'){
+if($reflectSource == 'tv'){
 	$DLParams['tvSortType'] = 'TVDATETIME';
-	$DLParams['selectFields'] = "DATE_FORMAT(STR_TO_DATE(`dltv_".$monthField ."_1`.`value`,'%d-%m-%Y %H:%i:%s'), '%m-%Y') as `id`";
+	$DLParams['selectFields'] = "DATE_FORMAT(STR_TO_DATE(`dltv_".$reflectField ."_1`.`value`,'%d-%m-%Y %H:%i:%s'), '".$sqlDateFormat."') as `id`";
 }else{
-	$DLParams['orderBy'] = $monthField;
-	$DLParams['selectFields'] = "DATE_FORMAT(FROM_UNIXTIME(".$monthField."), '%m-%Y') as `id`";
+	$DLParams['orderBy'] = $reflectField;
+	$DLParams['selectFields'] = "DATE_FORMAT(FROM_UNIXTIME(".$reflectField."), '".$sqlDateFormat."') as `id`";
 }
-$totalMonths = $modx->runSnippet('DocLister', $DLParams);
-
+$totalReflects = $modx->runSnippet('DocLister', $DLParams);
 //Получаем объект DocLister'a
 $DLAPI = $modx->getPlaceholder('DLAPI');
-//Загружаем лексикон с месяцами
-$DLAPI->loadLang('months');
+
+if($reflectType == 'month'){
+	//Загружаем лексикон с месяцами
+	$DLAPI->loadLang('months');
+}
 
 //Разбираем API ответ от DocLister'a
-$totalMonths = json_decode($totalMonths, true);
-if(is_null($totalMonths)){
-	$totalMonths = array();
+$totalReflects = json_decode($totalReflects, true);
+if(is_null($totalReflects)){
+	$totalReflects = array();
 }
-$totalMonths = new DLCollection($modx, $totalMonths);
-
-/** Добавляем активный месяц в коллекцию */
-$totalMonths->add(array('id' => $activeMonth), $activeMonth);
-
-/** Добавляем текущий месяц в коллекцию */
-if($appendCurrentMonthnth){
-	$totalMonths->add(array('id' => $currentMonth), $currentMonth);
+$totalReflects = new DLCollection($modx, $totalReflects);
+$totalReflects = $totalReflects->filter(function($el){
+	return !empty($el['id']);
+});
+/** Добавляем активную дату в коллекцию */
+if( ! is_null($activeReflect) ){
+	$totalReflects->add(array('id' => $activeReflect), $activeReflect);
 }
+$hasCurrentReflect = ($totalReflects->indexOf(array('id' => $originalCurrentReflect)) !== false);
 
-/** Сортируем месяца по возрастанию */
-$totalMonths->sort(function($a, $b){
-	$aDate = DateTime::createFromFormat("m-Y", $a['id']);
-    $bDate = DateTime::createFromFormat("m-Y", $b['id']);
+/** Добавляем текущую дату в коллекцию */
+if($appendCurrentReflect){
+	$totalReflects->add(array('id' => $originalCurrentReflect), $originalCurrentReflect);
+}
+/** Сортируем даты по возрастанию */
+$totalReflects->sort(function($a, $b) use($dateFormat){
+	$aDate = DateTime::createFromFormat($dateFormat, $a['id']);
+    $bDate = DateTime::createFromFormat($dateFormat, $b['id']);
     return $aDate->getTimestamp() - $bDate->getTimestamp();
 })->reindex();
 
-/** Разделяем коллекцию месяцев на 2 части (до текущего месяца и после) */
-list($lMonth, $rMonth) = $totalMonths->partition(function($key, $val) use($activeMonth){
-	$aDate = DateTime::createFromFormat("m-Y", $val['id']);
-    $bDate = DateTime::createFromFormat("m-Y", $activeMonth);
+/** Разделяем коллекцию дат на 2 части (до текущей даты и после) */
+list($lReflect, $rReflect) = $totalReflects->partition(function($key, $val) use($activeReflect, $originalDate, $dateFormat){
+	$aDate = DateTime::createFromFormat($dateFormat, $val['id']);
+	$activeReflect = is_null($activeReflect) ? $originalDate : $activeReflect;
+    $bDate = DateTime::createFromFormat($dateFormat, $activeReflect);
     return $aDate->getTimestamp() < $bDate->getTimestamp();
 });
-//Удаляем текущий активный месяц из списка месяцев идущих за текущим
-$rMonth->reindex()->remove(0);
-//Разворачиваем в обратном порядке список месяцев до текущего месяца
-$lMonth = $lMonth->reverse();
+//Удаляем текущую активную дату из списка дат идущих за текущим
+if($rReflect->indexOf(array('id' => $originalCurrentReflect)) !== false){
+	$rReflect->reindex()->remove(0);
+}
+//Разворачиваем в обратном порядке список дат до текущей даты
+$lReflect = $lReflect->reverse();
 
-//Расчитываем сколько месяцев из какого списка взять
-$showBefore = ($lMonth->count() < $limitBefore || empty($limitBefore)) ? $lMonth->count() : $limitBefore;
-if( ($rMonth->count() < $limitAfter) || empty($limitAfter)){
-	$showAfter = $rMonth->count();
-	$showBefore += !empty($limitAfter) ? ($limitAfter - $rMonth->count()) : 0;
+//Расчитываем сколько дат из какого списка взять
+$showBefore = ($lReflect->count() < $limitBefore || empty($limitBefore)) ? $lReflect->count() : $limitBefore;
+if( ($rReflect->count() < $limitAfter) || empty($limitAfter)){
+	$showAfter = $rReflect->count();
+	$showBefore += !empty($limitAfter) ? ($limitAfter - $rReflect->count()) : 0;
 }else{
 	if($limitBefore > 0){
 		$showAfter = $limitAfter + ($limitBefore - $showBefore);
@@ -207,52 +228,79 @@ if( ($rMonth->count() < $limitAfter) || empty($limitAfter)){
 }
 $showBefore += (($showAfter >= $limitAfter || $limitAfter>0) ? 0 : ($limitAfter - $showAfter));
 
-//Создаем новую коллекцию месяцев
-$outMonths = new DLCollection($modx);
+//Создаем новую коллекцию дат
+$outReflects = new DLCollection($modx);
 //Берем нужное число элементов с левой стороны
 $i=0;
-foreach($lMonth as $item){
+foreach($lReflect as $item){
 	if((++$i) > $showBefore) break;
-	$outMonths->add($item['id']);
+	$outReflects->add($item['id']);
 }
-
-//Добавляем текущий месяц
-$outMonths->add($activeMonth);
+//Добавляем текущую дату
+if(is_null($activeReflect)){
+	if(($hasCurrentReflect && !$selectCurrentReflect) || $appendCurrentReflect){
+		$outReflects->add($originalCurrentReflect);
+	}
+}else{
+	$outReflects->add($activeReflect);
+}
 
 //Берем оставшее число позиций с правой стороны
 $i=0;
-foreach($rMonth as $item){
+foreach($rReflect as $item){
 	if((++$i) > $showAfter) break;
-	$outMonths->add($item['id']);
+	$outReflects->add($item['id']);
 }
 
-//Сортируем результатирующий список по возрастанию
-$outMonths->sort(function($a, $b){
-	$aDate = DateTime::createFromFormat("m-Y", $a);
-    $bDate = DateTime::createFromFormat("m-Y", $b);
-    return $aDate->getTimestamp() - $bDate->getTimestamp();
-})->reindex();
+$sortDir = APIHelpers::getkey($params, 'sortDir', 'ASC');
+//Сортируем результатирующий список
+$outReflects = $outReflects->sort(function($a, $b) use ($sortDir, $dateFormat){
+	$aDate = DateTime::createFromFormat($dateFormat, $a);
+    $bDate = DateTime::createFromFormat($dateFormat, $b);
+    $out = false;
+    switch($sortDir){
+    	case 'ASC':{
+    		$out = $aDate->getTimestamp() - $bDate->getTimestamp();
+    		break;
+    	}
+    	case 'DESC':{
+    		$out = $bDate->getTimestamp() - $aDate->getTimestamp();
+    		break;
+    	}
+    }
+    return $out;
+})->reindex()->unique();
 
-//Применяем шаблон к каждому отображаемому месяцу
-foreach($outMonths as $month){
-	$tpl = $activeMonth == $month ? $activeMonthTPL : $monthTPL;
-	list($vMonth, $vYear) = explode('-', $month, 2);
-	$data = array(
-		'url' => $modx->makeUrl($targetID, '', http_build_query(array('month'=>$month))),
-		'monthNum' => $vMonth,
-		'monthName' => $DLAPI->getMsg('months.'.(int)$vMonth),
-		'year' => $vYear,
-		'years' => $totalMonths->count(),
-		'displayYears' => $outMonths->count()
-	);
+//Применяем шаблон к каждой отображаемой дате
+foreach($outReflects as $reflectItem){
+	$tpl = (!is_null($activeReflect) && $activeReflect == $reflectItem) ? $activeReflectTPL : $reflectTPL;
+
+	$data = DLReflect::switchReflect($reflectType, function() use($reflectItem, $DLAPI){
+		list($vMonth, $vYear) = explode('-', $reflectItem, 2);
+		return array(
+			'monthNum' => $vMonth,
+			'monthName' => $DLAPI->getMsg('months.'.(int)$vMonth),
+			'year' => $vYear,
+		);
+	}, function() use($reflectItem){
+		return array(
+			'year' => $reflectItem
+		);
+	});
+	$data = array_merge(array(
+		'title' => $reflectItem,
+		'url' => $modx->makeUrl($targetID, '', http_build_query(array($reflectType => $reflectItem))),
+		'reflects' => $totalReflects->count(),
+		'displayReflects' => $outReflects->count()
+	), $data);
 	$out .= $DLAPI->parseChunk($tpl, $data);
 }
 
-//Заворачиваем в шаблон обертку весь список месяцев
+//Заворачиваем в шаблон обертку весь список дат
 $out = $DLAPI->parseChunk($wrapTPL, array(
 	'wrap' => $out,
-	'years' => $totalMonths->count(),
-	'displayYears' => $outMonths->count()
+	'reflects' => $totalReflects->count(),
+	'displayReflects' => $outReflects->count()
 ));
 
 //Ну и выводим стек отладки если это нужно
