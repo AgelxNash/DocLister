@@ -49,6 +49,7 @@ abstract class autoTable extends MODxAPI
 
     public function save($fire_events = null, $clearCache = false)
     {
+        $result = false;
         $fld = $this->encodeFields()->toArray();
         foreach ($this->default_field as $key => $value) {
             if ($this->newDoc && $this->get($key) === null && $this->get($key) !== $value) {
@@ -61,18 +62,23 @@ abstract class autoTable extends MODxAPI
         }
         if (!empty($this->set)) {
             if ($this->newDoc) {
-                $SQL = "INSERT into {$this->makeTable($this->table)} SET " . implode(', ', $this->set);
+                $SQL = "INSERT IGNORE INTO {$this->makeTable($this->table)} SET " . implode(', ', $this->set);
             } else {
-                $SQL = ($this->getID() === null) ? null : "UPDATE {$this->makeTable($this->table)} SET " . implode(', ', $this->set) . " WHERE `" . $this->pkName . "` = " . $this->getID();
+                $SQL = ($this->getID() === null) ? null : "UPDATE IGNORE {$this->makeTable($this->table)} SET " . implode(', ', $this->set) . " WHERE `" . $this->pkName . "` = " . $this->getID();
             }
-            $this->query($SQL);
+            $result = $this->query($SQL);
         }
-
-        if ($this->newDoc && !empty($SQL)) $this->id = $this->modx->db->getInsertId();
-        if ($clearCache) {
-            $this->clearCache($fire_events);
+        if($result && $this->modx->db->getAffectedRows() > 0 ){
+            if ($this->newDoc && !empty($SQL)) $this->id = $this->modx->db->getInsertId();
+            if ($clearCache) {
+                $this->clearCache($fire_events);
+            }
+            $result = $this->id;
+        }else{
+            $this->log['SqlError'] = $SQL;
+            $result = false;
         }
-        return $this->id;
+        return $result;
     }
 
     public function delete($ids, $fire_events = null)

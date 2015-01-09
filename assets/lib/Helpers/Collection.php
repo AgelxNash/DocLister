@@ -260,6 +260,16 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         return $this;
     }
 
+    /**
+     * @param  Closure  $callback
+     * @return $this
+     */
+    public function ksort(Closure $callback)
+    {
+        uksort($this->data, $callback);
+        return $this;
+    }
+
     public function reindex(){
         $this->data = array_values($this->data);
         return $this;

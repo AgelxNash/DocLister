@@ -71,7 +71,6 @@ abstract class MODxAPI extends MODxAPIhelpers
             $value = $this->modx->db->escape($value);
         }
         return $value;
-        return empty($SQL) ? null : $this->modx->db->query($SQL);
      }
     final public function invokeEvent($name, $data = array(), $flag = false)
     {

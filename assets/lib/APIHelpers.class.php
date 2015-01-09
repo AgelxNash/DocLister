@@ -223,11 +223,27 @@ class APIhelpers
 
     public static function sanitarTag($data, $charset = 'UTF-8')
     {
-        return is_scalar($data) ? str_replace(
-            array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D', '`', '%60'),
-            array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;', '&#96;', '&#96;'),
-            self::e($data, $charset)
-        ) : '';
+        switch(true){
+            case is_scalar($data):{
+                $out = str_replace(
+                    array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D', '`', '%60'),
+                    array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;', '&#96;', '&#96;'),
+                    self::e($data, $charset)
+                );
+                break;
+            }
+            case is_array($data):{
+                $out = $data;
+                foreach($out as $key => &$val){
+                    $val = self::sanitarTag($val, $charset);
+                }
+                break;
+            }
+            default:{
+                $out = '';
+            }
+        }
+        return $out;
     }
 
     public static function e($text, $charset = 'UTF-8'){
