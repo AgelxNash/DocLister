@@ -13,11 +13,12 @@ abstract class MODxAPI extends MODxAPIhelpers
     protected $set = array();
     protected $newDoc = false;
     protected $pkName = 'id';
+	protected $ignoreError = '';
     protected $_debug = false;
     protected $_query = array();
     protected $jsonFields = array();
     private $_decodedFields = array();
-
+    
     public function __construct($modx, $debug = false)
     {
         try {
@@ -120,7 +121,15 @@ abstract class MODxAPI extends MODxAPIhelpers
 
         $this->invokeEvent('OnSiteRefresh', array(), $fire_events);
     }
-
+	
+	public function useIgnore($flag = false){
+		$this->ignoreError = $flag ? 'IGNORE' : '';
+		return $this;
+	}
+	public function hasIgnore(){
+		return (bool)$this->ignoreError;
+	}
+	
     public function set($key, $value)
     {
         if ((is_scalar($value) || $this->isJsonField($key)) && is_scalar($key) && !empty($key)) {

@@ -62,22 +62,22 @@ abstract class autoTable extends MODxAPI
         }
         if (!empty($this->set)) {
             if ($this->newDoc) {
-                $SQL = "INSERT IGNORE INTO {$this->makeTable($this->table)} SET " . implode(', ', $this->set);
+                $SQL = "INSERT {$this->ignoreError} INTO {$this->makeTable($this->table)} SET " . implode(', ', $this->set);
             } else {
-                $SQL = ($this->getID() === null) ? null : "UPDATE IGNORE {$this->makeTable($this->table)} SET " . implode(', ', $this->set) . " WHERE `" . $this->pkName . "` = " . $this->getID();
+                $SQL = ($this->getID() === null) ? null : "UPDATE {$this->ignoreError} {$this->makeTable($this->table)} SET " . implode(', ', $this->set) . " WHERE `" . $this->pkName . "` = " . $this->getID();
             }
             $result = $this->query($SQL);
         }
-        if($result && $this->modx->db->getAffectedRows() > 0 ){
-            if ($this->newDoc && !empty($SQL)) $this->id = $this->modx->db->getInsertId();
-            if ($clearCache) {
-                $this->clearCache($fire_events);
-            }
-            $result = $this->id;
-        }else{
-            $this->log['SqlError'] = $SQL;
-            $result = false;
-        }
+			if($result && $this->modx->db->getAffectedRows() >= 0 ){
+				if ($this->newDoc && !empty($SQL)) $this->id = $this->modx->db->getInsertId();
+				if ($clearCache) {
+					$this->clearCache($fire_events);
+				}
+				$result = $this->id;
+			}else{
+				$this->log['SqlError'] = $SQL;
+				$result = false;
+			}
         return $result;
     }
 
