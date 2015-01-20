@@ -267,7 +267,7 @@ class site_contentDocLister extends DocLister
             }
             $out[$num] = $row;
         }
-        return parent::getJSON($data, $fields, $out);
+        return parent::getJSON($out, $fields, $out);
     }
 
     /**
