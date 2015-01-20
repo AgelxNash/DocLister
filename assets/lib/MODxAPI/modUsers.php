@@ -130,7 +130,11 @@ class modUsers extends MODxAPI
 
         $fld = $this->toArray();
         foreach ($this->default_field['user'] as $key => $value) {
-            if ($this->newDoc && $this->get($key) == '' && $this->get($key) !== $value) {
+            $tmp = $this->get($key);
+            if ($this->newDoc && ( !is_int($tmp) && $tmp=='')) {
+				if($tmp == $value){
+					//take default value from global config
+				}
                 $this->field[$key] = $value;
             }
             $this->Uset($key, 'user');
@@ -151,7 +155,11 @@ class modUsers extends MODxAPI
 
 
         foreach ($this->default_field['attribute'] as $key => $value) {
-            if ($this->newDoc && $this->get($key) == '' && $this->get($key) !== $value) {
+            $tmp = $this->get($key);
+            if ($this->newDoc && ( !is_int($tmp) && $tmp=='')) {
+				if($tmp == $value){
+					//take default value from global config
+				}
                 $this->field[$key] = $value;
             }
             $this->Uset($key, 'attribute');

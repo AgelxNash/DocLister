@@ -336,34 +336,37 @@ class modResource extends MODxAPI
         ), $fire_events);
 
         $fld = $this->toArray(null, null, null, false);
-
+	
         foreach ($this->default_field as $key => $value) {
-            if ($this->newDoc && $this->get($key) == '' && $this->get($key) !== $value) {
-                switch ($key) {
-                    case 'cacheable':
-                    {
-                        $value = $this->modxConfig('cache_default');
-                        break;
-                    }
-                    case 'template':
-                    {
-                        $value = $value = $this->modxConfig('default_template');
-                        break;
-                    }
-                    case 'published':
-                    {
-                        $value = $this->modxConfig('publish_default');
-                        break;
-                    }
-                    case 'searchable':
-                    {
-                        $value = $this->modxConfig('search_default');
-                        break;
-                    }
-                    case 'donthit':
-                    {
-                        $value = $this->modxConfig('track_visitors');
-                        break;
+            $tmp = $this->get($key);
+            if ($this->newDoc && ( !is_int($tmp) && $tmp=='')) {
+                if($tmp == $value){
+                    switch ($key) {
+                        case 'cacheable':
+                        {
+                            $value = $this->modxConfig('cache_default');
+                            break;
+                        }
+                        case 'template':
+                        {
+                            $value = $value = $this->modxConfig('default_template');
+                            break;
+                        }
+                        case 'published':
+                        {
+                            $value = $this->modxConfig('publish_default');
+                            break;
+                        }
+                        case 'searchable':
+                        {
+                            $value = $this->modxConfig('search_default');
+                            break;
+                        }
+                        case 'donthit':
+                        {
+                            $value = $this->modxConfig('track_visitors');
+                            break;
+                        }
                     }
                 }
                 $this->field[$key] = $value;
