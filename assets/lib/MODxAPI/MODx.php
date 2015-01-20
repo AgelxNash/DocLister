@@ -122,7 +122,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         $this->invokeEvent('OnSiteRefresh', array(), $fire_events);
     }
 	
-	public function useIgnore($flag = false){
+	public function useIgnore($flag = true){
 		$this->ignoreError = $flag ? 'IGNORE' : '';
 		return $this;
 	}
