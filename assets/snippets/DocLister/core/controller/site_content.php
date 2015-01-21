@@ -150,7 +150,7 @@ class site_contentDocLister extends DocLister
                     $item['summary'] = $extSummary ? $this->getSummary($item, $extSummary, 'introtext', 'content') : '';
 
                     if ($extJotCount) {
-                        $item['jotcount'] = APIHelpers::gekey($comments, $item['id'], 0);
+                        $item['jotcount'] = APIHelpers::getKey($comments, $item['id'], 0);
                     }
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
