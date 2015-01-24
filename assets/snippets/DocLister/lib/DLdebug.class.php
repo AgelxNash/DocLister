@@ -145,6 +145,7 @@ class DLdebug
                     background: none;
                     margin: 0;
                     padding: 0;
+                    width:100%;
                 }
                 .dlDebug > ul > li:first-child {
                     border-top: 0 !important;
