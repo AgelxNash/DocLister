@@ -315,9 +315,13 @@ class shopkeeperDocLister extends site_contentDocLister
         $sort = $this->SortOrderSQL("c.createdon");
         list($from, $sort) = $this->injectSortByTV($tbl_site_content . ' ' . $this->_filters['join'], $sort);
 
-        $tmpWhere = "c.parent IN (" . $this->sanitarIn($this->IDs) . ")";
-        $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND c.id NOT IN(" . $this->sanitarIn($this->IDs) . ")");
+        $sanitarInIDs = $this->sanitarIn($this->IDs);
+        $tmpWhere = null;
 
+        if ($sanitarInIDs != "''") {
+            $tmpWhere = "c.parent IN (" .  $sanitarInIDs . ")";
+            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND c.id NOT IN(" .  $sanitarInIDs . ")");
+        }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
             $tmpWhere = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";

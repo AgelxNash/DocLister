@@ -227,7 +227,7 @@ class onetableDocLister extends DocLister
         $sanitarInIDs = $this->sanitarIn($this->IDs);
 
         $tmpWhere = null;
-        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+        if ($sanitarInIDs != "''") {
             $tmpWhere = "`{$this->getParentField()}` IN (" . $sanitarInIDs . ")";
             $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND {$this->getPK()} NOT IN(" . $sanitarInIDs . ")");
         }

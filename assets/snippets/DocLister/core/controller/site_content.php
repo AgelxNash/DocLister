@@ -461,7 +461,7 @@ class site_contentDocLister extends DocLister
         $sanitarInIDs = $this->sanitarIn($this->IDs);
 
         $tmpWhere = null;
-        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+        if ($sanitarInIDs != "''") {
             $tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
             $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND c.id NOT IN(" . $sanitarInIDs . ")");
         }
