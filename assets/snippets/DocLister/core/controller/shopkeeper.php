@@ -324,7 +324,11 @@ class shopkeeperDocLister extends site_contentDocLister
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-            $tmpWhere = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
+            if(empty($tmpWhere)){
+                $tmpWhere = "c.id IN({$addDocs})";
+            }else{
+                $tmpWhere = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
+            }
         }
         $where = "WHERE {$where} {$tmpWhere}";
         if (!$this->getCFGDef('showNoPublish', 0)) {
