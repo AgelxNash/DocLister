@@ -709,7 +709,7 @@ abstract class DocLister
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
         }
         if (file_exists(dirname(dirname(__FILE__)) . "/lang/" . $lang . ".php")) {
-            $tmp = include_once(dirname(__FILE__) . "/lang/" . $lang . ".php");
+            $tmp = include(dirname(__FILE__) . "/lang/" . $lang . ".php");
             $this->_customLang = is_array($tmp) ? $tmp : array();
         }
         return $this->_customLang;
@@ -735,7 +735,7 @@ abstract class DocLister
         }
         foreach ($name as $n) {
             if (file_exists(dirname(__FILE__) . "/lang/" . $lang . "/" . $n . ".inc.php")) {
-                $tmp = include_once(dirname(__FILE__) . "/lang/" . $lang . "/" . $n . ".inc.php");
+                $tmp = include(dirname(__FILE__) . "/lang/" . $lang . "/" . $n . ".inc.php");
                 if (is_array($tmp)) {
                     /**
                      * Переименовыываем элементы массива из array('test'=>'data') в array('name.test'=>'data')

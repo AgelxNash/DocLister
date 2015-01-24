@@ -16,12 +16,12 @@ $_parents = array();
 if (!isset($hideMain) || (int)$hideMain == 0) {
     $_parents[] = $modx->config['site_start'];
 }
-
-$tmp = $modx->getParentIds($modx->documentObject['id']);
+$id = isset($id) ? $id : $modx->documentObject['id'];
+$tmp = $modx->getParentIds($id);
 $_parents = array_merge($_parents, array_reverse(array_values($tmp)));
 
 if (isset($showCurrent) && (int)$showCurrent > 0) {
-    $_parents[] = $modx->documentObject['id'];
+    $_parents[] = $id;
 }
 
 if (!empty($_parents)) {
