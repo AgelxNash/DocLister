@@ -96,7 +96,7 @@ class shopkeeperDocLister extends site_contentDocLister
                     $item['summary'] = $extSummary ? $this->getSummary($item, $extSummary, '', 'content') : '';
 
 					if ($extJotCount) {
-                        $item['jotcount'] = APIHelpers::gekey($comments, $item['id'], 0);
+                        $item['jotcount'] = APIHelpers::getkey($comments, $item['id'], 0);
                     }
 
                     $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
