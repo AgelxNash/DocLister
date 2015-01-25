@@ -313,8 +313,8 @@ class shopkeeperDocLister extends site_contentDocLister
         $tmpWhere = null;
 
         if ($sanitarInIDs != "''") {
-            $tmpWhere = "c.parent IN (" .  $sanitarInIDs . ")";
-            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND c.id NOT IN(" .  $sanitarInIDs . ")");
+            $tmpWhere = "(c.parent IN (" .  $sanitarInIDs . ")";
+            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? " OR c.id IN({$sanitarInIDs}))" : " AND c.id NOT IN(" .  $sanitarInIDs . "))");
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));

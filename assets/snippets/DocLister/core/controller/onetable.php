@@ -228,8 +228,8 @@ class onetableDocLister extends DocLister
 
         $tmpWhere = null;
         if ($sanitarInIDs != "''") {
-            $tmpWhere = "`{$this->getParentField()}` IN (" . $sanitarInIDs . ")";
-            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? "" : " AND {$this->getPK()} NOT IN(" . $sanitarInIDs . ")");
+            $tmpWhere = "(`{$this->getParentField()}` IN (" . $sanitarInIDs . ")";
+            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? " OR `{$this->getPK()}` IN({$sanitarInIDs}))" : " AND {$this->getPK()} NOT IN(" . $sanitarInIDs . "))");
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
