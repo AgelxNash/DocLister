@@ -30,7 +30,15 @@ if(!class_exists("DLFixedPrepare", false)){
 			}
 
 			$tpl = empty($data['dl.submenu']) ? 'noChildrenRowTPL' : 'mainRowTpl';
+
 			$_DL->renderTPL = $_DL->getCfgDef($tpl);
+			if(strpos($data['dl.class'], 'current')!==false){
+				$_DL->renderTPL = $_DL->getCfgDef('TplCurrent', $_DL->renderTPL);
+				$_DL->renderTPL = $_DL->getCfgDef('TplCurrent'.$data['dl.currentDepth'], $_DL->renderTPL);
+				if(empty($data['dl.submenu'])){
+					$_DL->renderTPL = $_DL->getCfgDef('TplCurrentNoChildren'.$data['dl.currentDepth'], $_DL->renderTPL);
+				}
+			}
 			return $data;
 		}
 
