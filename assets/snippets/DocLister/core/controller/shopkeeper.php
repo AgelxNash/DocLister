@@ -26,13 +26,7 @@ class shopkeeperDocLister extends site_contentDocLister
     public function getUrl($id = 0)
     {
         $id = $id > 0 ? $id : $this->modx->documentIdentifier;
-        /**
-         * Экземпляр экстендера REQUEST
-         *
-         * @var $request null|request_DL_Extender
-         */
-        $request = $this->getExtender('request');
-        $link = $request ? $request : $this->getRequest();
+        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();
         if($id == $this->modx->config['site_start']){
             $url = $this->modx->config['site_url'].($link != '' ? "?{$link}" : "");
         }else{
