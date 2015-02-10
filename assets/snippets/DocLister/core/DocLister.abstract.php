@@ -256,40 +256,51 @@ abstract class DocLister
 
     /**
      * Разбиение фильтра на субфильтры с учётом вложенности
+	 * @param string $str строка с фильтром
      * @return array массив субфильтров
      */
 	public function smartSplit($str){
 		$res = array();
-		$arr = str_split($str);
 		$cur = '';
 		$open = 0;
-		foreach($arr as $e){
-			if ($e == ')'){
-				$open--;
-				if($open == 0){
-					$res[] = $cur.')';
-					$cur = '';
-				} else {
+		$strlen = mb_strlen($str, 'UTF-8');
+		for($i=0;$i<=$strlen;$i++){
+			$e = mb_substr($str, $i, 1, 'UTF-8');
+			switch($e){
+				case ')': {
+					$open--;
+					if($open == 0){
+						$res[] = $cur.')';
+						$cur = '';
+					} else {
+						$cur .= $e;
+					}
+					break;
+				}
+				case '(':{
+					$open++;
+					$cur .= $e;
+					break;
+				}
+				case ';':{
+					if($open == 0){
+						$res[] = $cur;
+						$cur = '';
+					} else {
+						$cur .= $e;
+					}
+					break;
+				}
+				default:{
 					$cur .= $e;
 				}
-			} else if ($e == '('){
-				$open++;
-				$cur .= $e;
-			} else if ($e == ';'){
-				if($open == 0){
-					$res[] = $cur;
-					$cur = '';
-				} else {
-					$cur .= $e;
-				}
-			} else {
-				$cur .= $e;
 			}
 		}
-		if ($cur AND trim($cur,')') != ''){
+		$cur = preg_replace("/(\))$/u", '', $cur);
+		if ($cur != ''){
 			$res[] = $cur;
 		}
-		return $res;		
+		return $res;
 	}
 
     /**
