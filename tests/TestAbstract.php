@@ -1,160 +1,32 @@
 <?php namespace DocLister\Tests;
 
-class FiltersTest extends DLAbstract {
-	public function testEmptyFilterSuccess()
+class TestAbstract extends \PHPUnit_Framework_TestCase {
+	public function getMethod($class, $method)
 	{
-		$out = null;
+		$reflection = new \ReflectionClass($class);
+		$method = $reflection->getMethod($method);
+		$method->setAccessible(true);
 
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, '');
-
-		$this->assertEquals($out, $filters);
+		return $method;
 	}
-	public function testOneFilterSuccess(){
-		$this->modx->_TVnames = array(
-			'example' => 1
-		);
-		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
-			'where' => "`dltv_example_1`.`value` != 'asd'"
-		);
 
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'tv:example:isnot:asd');
-
-		$this->assertEquals($out, $filters);
-	}
-	public function testOneGroupFilterSuccess(){
-		$this->modx->_TVnames = array(
-			'example' => 1
-		);
-		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
-			'where' => "(`dltv_example_1`.`value` != 'asd')"
-		);
-
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'AND(tv:example:isnot:asd)');
-
-		$this->assertEquals($out, $filters);
-	}
-	public function testTwoFilterSuccess()
+	public function getProperty($class, $property)
 	{
-		$this->modx->_TVnames = array(
-			'testA' => 1,
-			'testB' => 2
-		);
-		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_testA_1` ON `dltv_testA_1`.`contentid`=`c`.`id` AND `dltv_testA_1`.`tmplvarid`=1 LEFT JOIN site_tmplvar_contentvalues as `dltv_testB_2` ON `dltv_testB_2`.`contentid`=`c`.`id` AND `dltv_testB_2`.`tmplvarid`=2",
-			'where' => "(`dltv_testA_1`.`value` != 'asd' AND `dltv_testB_2`.`value` != 'qwe')"
-		);
+		$reflection = new \ReflectionClass($class);
 
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'AND(tv:testA:isnot:asd;tv:testB:isnot:qwe)');
+		$property = $reflection->getProperty($property);
+		$property->setAccessible(true);
 
-		$this->assertEquals($out, $filters);
+		return $property->getValue($this->testClass);
 	}
-	public function testOneLikeFilterSuccess(){
-		$this->modx->_TVnames = array(
-			'example' => 1
-		);
-		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
-			'where' => "`dltv_example_1`.`value` LIKE '%asd=%qwe==%' ESCAPE '='"
-		);
 
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'tv:example:like:asd%qwe=');
+	public function setProperty($class, $property, $value)
+	{
+		$reflection = new \ReflectionClass($class);
 
-		$this->assertEquals($out, $filters);
-	}
-	public function testORFilterFilterSuccess(){
-		$this->modx->_TVnames = array(
-			'color' => 1
-		);
-		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
-			'where' => "(`dltv_color_1`.`value` = 'черный' OR `dltv_color_1`.`value` = 'белый' OR `dltv_color_1`.`value` = 'красный')"
-		);
+		$property = $reflection->getProperty($property);
+		$property->setAccessible(true);
 
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'OR(tv:color:eq:черный;tv:color:eq:белый;tv:color:eq:красный)');
-
-		$this->assertEquals($out, $filters);
-	}
-	public function testContainsOneFilterFilterSuccess(){
-		$this->modx->_TVnames = array(
-			'color' => 1
-		);
-		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
-			'where' => "(`dltv_color_1`.`value` LIKE '%белый%' ESCAPE '=' OR `dltv_color_1`.`value` LIKE '%синий%' ESCAPE '=' OR `dltv_color_1`.`value` LIKE '%красный%' ESCAPE '=')"
-		);
-
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'tv:color:containsOne:белый,синий,красный');
-
-		$this->assertEquals($out, $filters);
-	}
-	public function testInFilterFilterSuccess(){
-		$this->modx->_TVnames = array(
-			'color' => 1
-		);
-		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
-			'where' => "`dltv_color_1`.`value` IN('белый','синий','красный')"
-		);
-
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'tv:color:in:белый,синий,красный');
-
-		$this->assertEquals($out, $filters);
-	}
-	public function testTVDFilterFilterSuccess(){
-		$this->modx->_TVnames = array(
-			'color' => 1
-		);
-		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1 LEFT JOIN site_tmplvars as `d_dltv_color_1` on d_dltv_color_1.id = 1",
-			'where' => "IFNULL(`dltv_color_1`.`value`, `d_dltv_color_1`.`default_text`) = 'белый'"
-		);
-
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'tvd:color:is:белый');
-
-		$this->assertEquals($out, $filters);
-	}
-	public function testContentFilterFilterSuccess(){
-		$out = array(
-			'join' => "",
-			'where' => "`hidemenu` = '1'"
-		);
-
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'content:hidemenu:is:1');
-
-		$this->assertEquals($out, $filters);
-	}
-	public function testEasyMultiFilterFilterSuccess(){
-		$out = array(
-			'join' => "",
-			'where' => "(`hidemenu` = '1' AND (`template` IN('2','3') OR `pagetitle` = 'example'))"
-		);
-
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'AND(content:hidemenu:is:1;OR(content:template:in:2,3;content:pagetitle:is:example))');
-
-		$this->assertEquals($out, $filters);
-	}
-	public function testHardMultiFilterFilterSuccess(){
-		$out = array(
-			'join' => "",
-			'where' => "((`hidemenu` = '1' OR `template` IN('2','3')) AND ((`pagetitle` = 'example' OR `longtitle` LIKE '%test%' ESCAPE '=')))"
-		);
-
-		$method = $this->getMethod($this->DL, "getFilters");
-		$filters = $method->invoke($this->DL, 'AND(OR(content:hidemenu:is:1;content:template:in:2,3);AND(OR(content:pagetitle:is:example;content:longtitle:like:test))');
-
-		$this->assertEquals($out, $filters);
+		return $property->setValue($this->testClass, $value);
 	}
 }

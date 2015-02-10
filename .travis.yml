@@ -7,7 +7,7 @@ php:
 
 before_install: composer self-update
 
-install: composer install
+install: composer install --dev
 
 script: phpunit
 
