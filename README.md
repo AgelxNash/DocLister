@@ -1,4 +1,6 @@
 ### DocLister for MODX Evolution
+[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
+
 Класс для вывода информации из таблиц по предопределенным правилам.
 Если нет правил, то данные отображаются без дополнительной обработки и связи. Т.е. все поля и значения совпадают с базой данных.
 
