@@ -255,6 +255,44 @@ abstract class DocLister
     }
 
     /**
+     * Разбиение фильтра на субфильтры с учётом вложенности
+     * @return array массив субфильтров
+     */
+	public function smartSplit($str){
+		$res = array();
+		$arr = str_split($str);
+		$cur = '';
+		$open = 0;
+		foreach($arr as $e){
+			if ($e == ')'){
+				$open--;
+				if($open == 0){
+					$res[] = $cur.')';
+					$cur = '';
+				} else {
+					$cur .= $e;
+				}
+			} else if ($e == '('){
+				$open++;
+				$cur .= $e;
+			} else if ($e == ';'){
+				if($open == 0){
+					$res[] = $cur;
+					$cur = '';
+				} else {
+					$cur .= $e;
+				}
+			} else {
+				$cur .= $e;
+			}
+		}
+		if ($cur AND trim($cur,')') != ''){
+			$res[] = $cur;
+		}
+		return $res;		
+	}
+
+    /**
      * Трансформация объекта в строку
      * @return string последний ответ от DocLister'а
      */
@@ -1439,14 +1477,11 @@ abstract class DocLister
         if (!$filter_string) return;
         $output = array('join' => '', 'where' => '');
         $logic_op_found = false;
-        if (substr($filter_string, -1) == ')') {
-            $filter_string = mb_substr($filter_string, 0, -1, "UTF-8");
-        }
         foreach ($this->_logic_ops as $op => $sql) {
             if (strpos($filter_string, $op) === 0) {
                 $logic_op_found = true;
                 $subfilters = mb_substr($filter_string, strlen($op) + 1, mb_strlen($filter_string, "UTF-8"), "UTF-8");
-                $subfilters = explode(';', rtrim($subfilters, ";"));
+                $subfilters = $this->smartSplit($subfilters);
                 foreach ($subfilters as $subfilter) {
                     $subfilter = $this->getFilters(trim($subfilter));
                     if (!$subfilter) continue;
