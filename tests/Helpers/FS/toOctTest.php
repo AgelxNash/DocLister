@@ -8,23 +8,51 @@ class toOctTest extends \PHPUnit_Framework_TestCase {
 	public function setUp(){
 		$this->FS = FS::getInstance();
 	}
-	public function test8StringTo8Success(){
-		$this->assertNotEquals(0755, '0755');
+	public function test8StringTo8Success644(){
+		$this->assertEquals(0644, $this->FS->toOct('0644'));
+	}
+
+	public function test8to8Success644(){
+		$this->assertEquals(0644, $this->FS->toOct(0644));
+	}
+
+	public function test10to8Error644(){
+		$this->assertNotEquals(0644, $this->FS->toOct(644));
+	}
+
+	public function test10StringTo8Success644(){
+		$this->assertEquals(0644, $this->FS->toOct('644'));
+	}
+
+	public function test8StringTo8Success755(){
 		$this->assertEquals(0755, $this->FS->toOct('0755'));
 	}
 
-	public function test8to8Success(){
-		$this->assertEquals(0755, 0755);
+	public function test8to8Success755(){
 		$this->assertEquals(0755, $this->FS->toOct(0755));
 	}
 
-	public function test10to8Success(){
-		$this->assertNotEquals(0755, 755);
-		$this->assertEquals(0755, $this->FS->toOct(755));
+	public function test10to8Error755(){
+		$this->assertNotEquals(0755, $this->FS->toOct(755));
 	}
 
-	public function test10StringTo8Success(){
-		$this->assertNotEquals(0755, '755');
+	public function test10StringTo8Success755(){
 		$this->assertEquals(0755, $this->FS->toOct('755'));
+	}
+
+	public function test8StringTo8Success400(){
+		$this->assertEquals(0400, $this->FS->toOct('0400'));
+	}
+
+	public function test8to8Success400(){
+		$this->assertEquals(0400, $this->FS->toOct(0400));
+	}
+
+	public function test10to8Error400(){
+		$this->assertNotEquals(0400, $this->FS->toOct(400));
+	}
+
+	public function test10StringTo8Success400(){
+		$this->assertEquals(0400, $this->FS->toOct('400'));
 	}
 }
