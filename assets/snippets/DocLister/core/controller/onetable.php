@@ -286,7 +286,7 @@ class onetableDocLister extends DocLister
                             }
                             if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                                 $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-                                $whereArr[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
+                                $where[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
                             } else {
                                 $where[] = $tmpWhere;
                             }
