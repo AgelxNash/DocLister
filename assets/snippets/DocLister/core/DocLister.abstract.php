@@ -662,10 +662,19 @@ abstract class DocLister
         return $out;
     }
 
+	/**
+     * Получение всего списка настроек
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->_cfg;
+    }
+	
     /**
      * Сохранение настроек вызова сниппета
      * @param array $cfg массив настроек
-     * @return boolean результат сохранения настроек
+     * @return int результат сохранения настроек
      */
     public function setConfig($cfg)
     {
@@ -676,6 +685,20 @@ abstract class DocLister
             $ret = false;
         }
         return $ret;
+    }
+	
+	/**
+     * Полная перезапись настроек вызова сниппета
+     * @param array $cfg массив настроек
+     * @return int Общее число новых настроек
+     */
+    public function replaceConfig($cfg)
+    {
+        if (!is_array($cfg)) {
+			$cfg = array();
+        }
+		$this->_cfg = $cfg;
+        return count($this->_cfg);
     }
 
     /**
