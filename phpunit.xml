@@ -18,5 +18,7 @@
     <php>
         <includePath>.</includePath>
         <const name="MODX_BASE_PATH" value="./"/>
+        <const name="MODX_SITE_URL" value="http://example.com/" />
+        <server name="REQUEST_URI" value="/index.php?q=news" />
     </php>
 </phpunit>

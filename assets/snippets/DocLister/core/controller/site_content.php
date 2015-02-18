@@ -294,11 +294,21 @@ class site_contentDocLister extends DocLister
                 switch ($this->getCFGDef('idType', 'parents')) {
                     case 'parents':
                     {
-                        if ($this->getCFGDef('showParent', '0')) {
-                            $tmpWhere = "(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
-                        } else {
-                            $tmpWhere = "c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
-                        }
+						switch($this->getCFGDef('showParent', '0')){
+							case '-1':{
+								$tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
+								break;
+							}
+							case 0:{
+								$tmpWhere = "c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
+								break;
+							}
+							case 1:
+							default: {
+								$tmpWhere = "(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
+							break;
+							}
+						}
                         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
                             $whereArr[] = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
@@ -456,8 +466,21 @@ class site_contentDocLister extends DocLister
 
         $tmpWhere = null;
         if ($sanitarInIDs != "''") {
-            $tmpWhere = "(c.parent IN (" . $sanitarInIDs . ")";
-            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? " OR c.id IN({$sanitarInIDs}))" : " AND c.id NOT IN(" . $sanitarInIDs . "))");
+            switch($this->getCFGDef('showParent', '0')){
+				case '-1':{
+					$tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
+					break;
+				}
+				case 0:{
+					$tmpWhere = "c.parent IN (" . $sanitarInIDs . ") AND c.id NOT IN(" . $sanitarInIDs . ")";
+					break;
+				}
+				case 1:
+				default: {
+					$tmpWhere = "(c.parent IN (" . $sanitarInIDs . ") OR c.id IN({$sanitarInIDs}))";
+					break;
+				}
+			}
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));

@@ -171,11 +171,21 @@ class shopkeeperDocLister extends site_contentDocLister
                 switch ($this->getCFGDef('idType', 'parents')) {
                     case 'parents':
                     {
-                        if ($this->getCFGDef('showParent', '0')) {
-                            $tmpWhere = "(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
-                        } else {
-                            $tmpWhere = "c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
-                        }
+						switch($this->getCFGDef('showParent', '0')){
+							case '-1':{
+								$tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
+								break;
+							}
+							case 0:{
+								$tmpWhere = "c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
+								break;
+							}
+							case 1:
+							default: {
+								$tmpWhere = "(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
+							break;
+							}
+						}
                         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
                             $whereArr[] = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
@@ -294,52 +304,76 @@ class shopkeeperDocLister extends site_contentDocLister
 
     protected function getChildrenList()
     {
-        $where = $this->getCFGDef('addWhereList', '');
-        $where = sqlHelper::trimLogicalOp($where);
+		$where = array();
 
-        $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
-        $where = sqlHelper::trimLogicalOp($where);
+		$tmpWhere = $this->getCFGDef('addWhereList', '');
+		$tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
+		if (!empty($tmpWhere)) {
+			$where[] = $tmpWhere;
+		}
 
-        if ($where != '') {
-            $where .= " AND ";
-        }
+		$tmpWhere = sqlHelper::trimLogicalOp($this->_filters['where']);
+		if (!empty($tmpWhere)) {
+			$where[] = $tmpWhere;
+		}
 
         $tbl_site_content = $this->getTable('catalog', 'c');
 
         $sort = $this->SortOrderSQL("c.createdon");
         list($from, $sort) = $this->injectSortByTV($tbl_site_content . ' ' . $this->_filters['join'], $sort);
-
         $sanitarInIDs = $this->sanitarIn($this->IDs);
+
         $tmpWhere = null;
 
-        if ($sanitarInIDs != "''") {
-            $tmpWhere = "(c.parent IN (" .  $sanitarInIDs . ")";
-            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? " OR c.id IN({$sanitarInIDs}))" : " AND c.id NOT IN(" .  $sanitarInIDs . "))");
-        }
-        if (($addDocs = $this->getCFGDef('documents', '')) != '') {
-            $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-            if(empty($tmpWhere)){
-                $tmpWhere = "c.id IN({$addDocs})";
-            }else{
-                $tmpWhere = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
-            }
-        }
-        $where = "WHERE {$where} {$tmpWhere}";
-        if (!$this->getCFGDef('showNoPublish', 0)) {
-            $where .= " AND c.published=1";
-        }
+		if ($sanitarInIDs != "''") {
+			switch($this->getCFGDef('showParent', '0')){
+				case '-1':{
+					$tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
+					break;
+				}
+				case 0:{
+					$tmpWhere = "c.parent IN (" . $sanitarInIDs . ") AND c.id NOT IN(" . $sanitarInIDs . ")";
+					break;
+				}
+				case 1:
+				default: {
+				$tmpWhere = "(c.parent IN (" . $sanitarInIDs . ") OR c.id IN({$sanitarInIDs}))";
+				break;
+				}
+			}
+		}
+		if (($addDocs = $this->getCFGDef('documents', '')) != '') {
+			$addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
+			if(empty($tmpWhere)){
+				$tmpWhere = "c.id IN({$addDocs})";
+			}else{
+				$tmpWhere = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
+			}
+		}
+		if (!empty($tmpWhere)) {
+			$where[] = $tmpWhere;
+		}
+		if (!$this->getCFGDef('showNoPublish', 0)) {
+			$where[] = "c.published=1";
+		}
+		if (!empty($where)) {
+			$where = "WHERE " . implode(" AND ", $where);
+		} else {
+			$where = '';
+		}
         $fields = $this->getCFGDef('selectFields', 'c.*');
+		$group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
+		$sql = $this->dbQuery("SELECT {$fields} FROM " . $from . " " . $where . " " .
+			$group . " ".
+			$sort . " " .
+			$this->LimitSQL($this->getCFGDef('queryLimit', 0))
+		);
 
-        $sql = $this->dbQuery("SELECT DISTINCT " . $fields . " FROM " . $from . " " . $where . " " .
-            $sort . " " .
-            $this->LimitSQL($this->getCFGDef('queryLimit', 0))
-        );
-
-        $rows = $this->modx->db->makeArray($sql);
-        $out = array();
-        foreach ($rows as $item) {
-            $out[$item['id']] = $item;
-        }
-        return $out;
+		$rows = $this->modx->db->makeArray($sql);
+		$out = array();
+		foreach ($rows as $item) {
+			$out[$item['id']] = $item;
+		}
+		return $out;
     }
 }

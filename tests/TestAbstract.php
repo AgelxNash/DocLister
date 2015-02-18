@@ -14,19 +14,21 @@ class TestAbstract extends \PHPUnit_Framework_TestCase {
 	{
 		$reflection = new \ReflectionClass($class);
 
+		/** @var \ReflectionProperty $property */
 		$property = $reflection->getProperty($property);
 		$property->setAccessible(true);
 
-		return $property->getValue($this->testClass);
+		return $property->getValue($class);
 	}
 
 	public function setProperty($class, $property, $value)
 	{
 		$reflection = new \ReflectionClass($class);
 
+		/** @var \ReflectionProperty $property */
 		$property = $reflection->getProperty($property);
 		$property->setAccessible(true);
 
-		return $property->setValue($this->testClass, $value);
+		$property->setValue($class, $value);
 	}
 }

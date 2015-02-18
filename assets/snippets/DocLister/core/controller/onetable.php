@@ -229,7 +229,21 @@ class onetableDocLister extends DocLister
         $tmpWhere = null;
         if ($sanitarInIDs != "''") {
             $tmpWhere = "(`{$this->getParentField()}` IN (" . $sanitarInIDs . ")";
-            $tmpWhere .= (($this->getCFGDef('showParent', '0')) ? " OR `{$this->getPK()}` IN({$sanitarInIDs}))" : " AND {$this->getPK()} NOT IN(" . $sanitarInIDs . "))");
+            switch($this->getCFGDef('showParent', '0')){
+				case -1:{
+					$tmpWhere .= ")";
+					break;
+				}
+				case 0:{
+					$tmpWhere .= " AND `{$this->getPK()}` NOT IN(" . $sanitarInIDs . "))";
+					break;
+				}
+				case 1:
+				default:{
+					$tmpWhere .= " OR `{$this->getPK()}` IN({$sanitarInIDs}))";
+					break;
+				}
+			}
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
@@ -279,14 +293,24 @@ class onetableDocLister extends DocLister
                     switch ($this->getCFGDef('idType', 'parents')) {
                         case 'parents':
                         {
-                            if ($this->getCFGDef('showParent', '0')) {
-                                $tmpWhere = "(`{$this->getParentField()}` IN ({$sanitarInIDs}) OR `{$this->getPK()}` IN({$sanitarInIDs}))";
-                            } else {
-                                $tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs}) AND `{$this->getPK()}` NOT IN({$sanitarInIDs})";
-                            }
+							switch($this->getCFGDef('showParent', '0')){
+								case '-1':{
+									$tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
+									break;
+								}
+								case 0:{
+									$tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs}) AND `{$this->getPK()}` NOT IN({$sanitarInIDs})";
+									break;
+								}
+								case 1:
+								default:{
+									$tmpWhere = "(`{$this->getParentField()}` IN ({$sanitarInIDs}) OR `{$this->getPK()}` IN({$sanitarInIDs}))";
+									break;
+								}
+							}
                             if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                                 $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-                                $whereArr[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
+                                $where[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
                             } else {
                                 $where[] = $tmpWhere;
                             }

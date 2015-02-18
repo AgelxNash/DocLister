@@ -85,7 +85,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     }
     public function get($id){
         $out = null;
-        if(is_scalar($id) && $id!='' && isset($this->data[$id])){
+        if(is_scalar($id) && $id!=='' && $this->containsKey($id)){
             $out = $this->data[$id];
         }
         return $out;

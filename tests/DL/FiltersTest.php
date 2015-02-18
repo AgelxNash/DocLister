@@ -1,4 +1,4 @@
-<?php namespace DocLister\Tests;
+<?php namespace DocLister\Tests\DL;
 
 class FiltersTest extends DLAbstract {
 	public function testEmptyFilterSuccess()
@@ -54,7 +54,6 @@ class FiltersTest extends DLAbstract {
 
 		$this->assertEquals($out, $filters);
 	}
-
 	public function testOneLikeFilterSuccess(){
 		$this->modx->_TVnames = array(
 			'example' => 1
@@ -69,7 +68,6 @@ class FiltersTest extends DLAbstract {
 
 		$this->assertEquals($out, $filters);
 	}
-
 	public function testORFilterFilterSuccess(){
 		$this->modx->_TVnames = array(
 			'color' => 1
@@ -84,7 +82,6 @@ class FiltersTest extends DLAbstract {
 
 		$this->assertEquals($out, $filters);
 	}
-
 	public function testContainsOneFilterFilterSuccess(){
 		$this->modx->_TVnames = array(
 			'color' => 1
@@ -99,7 +96,6 @@ class FiltersTest extends DLAbstract {
 
 		$this->assertEquals($out, $filters);
 	}
-
 	public function testInFilterFilterSuccess(){
 		$this->modx->_TVnames = array(
 			'color' => 1
@@ -114,7 +110,6 @@ class FiltersTest extends DLAbstract {
 
 		$this->assertEquals($out, $filters);
 	}
-
 	public function testTVDFilterFilterSuccess(){
 		$this->modx->_TVnames = array(
 			'color' => 1
@@ -129,7 +124,6 @@ class FiltersTest extends DLAbstract {
 
 		$this->assertEquals($out, $filters);
 	}
-
 	public function testContentFilterFilterSuccess(){
 		$this->modx->_TVnames = array(
 			'color' => 1

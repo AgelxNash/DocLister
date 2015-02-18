@@ -38,9 +38,52 @@ abstract class ModxAbstract extends TestAbstract {
 			->will($this->returnArgument(0));
 
 		$modx->db = $this->mockDBAPI();
+
+		$modx->documentObject = array(
+			'id' => 1,
+			'type' => 'document',
+			'contentType' => 'text/html',
+			'pagetitle' => 'New document',
+			'longtitle' => '',
+			'description' => '',
+			'alias' => '',
+			'link_attributes' => '',
+			'published' => 1,
+			'pub_date' => 0,
+			'unpub_date' => 0,
+			'parent' => 0,
+			'isfolder' => 0,
+			'introtext' => '',
+			'content' => '',
+			'richtext' => 1,
+			'template' => 0,
+			'menuindex' => 0,
+			'searchable' => 1,
+			'cacheable' => 1,
+			'createdon' => 0,
+			'createdby' => 0,
+			'editedon' => 0,
+			'editedby' => 0,
+			'deleted' => 0,
+			'deletedon' => 0,
+			'deletedby' => 0,
+			'publishedon' => 0,
+			'publishedby' => 0,
+			'menutitle' => '',
+			'donthit' => 0,
+			'haskeywords' => 0,
+			'hasmetatags' => 0,
+			'privateweb' => 0,
+			'privatemgr' => 0,
+			'content_dispo' => 0,
+			'hidemenu' => 0,
+			'alias_visible' => 1
+		);
+		$modx->documentIdentifier = 1;
 		$modx->config = array_merge(array(
 			'manager_language' => 'russian-UTF8',
-			'site_start' => 1
+			'site_start' => 1,
+			'site_url' => 'http://example.com/',
 		), $config);
 
 		return $modx;
