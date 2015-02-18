@@ -6,6 +6,7 @@ abstract class DLAbstract extends ModxAbstract {
 	/** @var \DocLister */
 	protected $DL = null;
 
+
  	public function setUp(){
 		parent::setUp();
 
@@ -47,5 +48,16 @@ abstract class DLAbstract extends ModxAbstract {
 			->will($this->returnArgument(0));
 
 		return $DL;
+	}
+
+	protected function fixDebugSQL($data){
+		if(is_array($data)){
+			foreach($data as &$val){
+				$val = $this->fixDebugSQL($val);
+			}
+		}else{
+			$data = preg_replace('/\s+/', ' ', $data);
+		}
+		return $data;
 	}
 }
