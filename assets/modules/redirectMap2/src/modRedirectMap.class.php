@@ -15,11 +15,6 @@ class modRedirectMap extends \autoTable
         'full_request' => 0,
     );
 
-    public function __construct(\DocumentParser $modx)
-    {
-        $this->modx = $modx;
-    }
-
     public function isUniq($uri)
     {
         $oldURI = $this->get('uri');
