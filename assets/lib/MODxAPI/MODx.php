@@ -109,17 +109,45 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $path;
     }
 
-    final public function clearCache($fire_events = null)
+    final public function clearCache($fire_events = null, $custom = false)
     {
-        $this->modx->clearCache();
-        include_once(MODX_MANAGER_PATH . 'processors/cache_sync.class.processor.php');
-        $sync = new synccache();
-        $path = $this->getCachePath(true);
-        $sync->setCachepath($path);
-        $sync->setReport(false);
-        $sync->emptyCache();
-
-        $this->invokeEvent('OnSiteRefresh', array(), $fire_events);
+		$IDs = array();
+		if($custom === false) {
+			$this->modx->clearCache();
+			include_once(MODX_MANAGER_PATH . 'processors/cache_sync.class.processor.php');
+			$sync = new synccache();
+			$path = $this->getCachePath(true);
+			$sync->setCachepath($path);
+			$sync->setReport(false);
+			$sync->emptyCache();
+		}else {
+			if(is_scalar($custom)){
+				$custom = array($custom);
+			}
+			$files = array();
+			switch ($this->modx->config['cache_type']) {
+				case 2: {
+					$cacheFile = "_*.pageCache.php";
+					break;
+				}
+				default: {
+					$cacheFile = ".pageCache.php";
+				}
+			}
+			if(is_array($custom)) {
+				foreach($custom as $id) {
+					$tmp = glob(MODX_BASE_PATH."assets/cache/docid_" . $id . $cacheFile);
+					foreach($tmp as $file){
+						if(is_readable($file)){
+							unlink($file);
+						}
+						$IDs[] = $id;
+					}
+				}
+			}
+			clearstatcache();
+		}
+        $this->invokeEvent('OnSiteRefresh', array('IDs' => $IDs), $fire_events);
     }
 	
 	public function useIgnore($flag = true){
