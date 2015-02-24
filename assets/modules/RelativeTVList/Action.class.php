@@ -1,15 +1,12 @@
 <?php namespace DLCity;
-class Action
+class Action extends \Module\Action
 {
-    protected static $modx = null;
-    public static $TPL = null;
     protected static $_mode = null;
 
-    public static function init(\DocumentParser $modx, Template $tpl)
+	public static function init(\DocumentParser $modx, \Module\Template $tpl, \MODxAPI $classTable)
     {
-        self::$modx = $modx;
-        self::$TPL = \DLCity\Template::showLog();
-        self::$_mode = \DLCity\Helper::getMode();
+        parent::init($modx, $tpl, $classTable);
+        self::$_mode = Helper::getMode();
     }
 
     protected static function checkObj($id)
@@ -18,7 +15,7 @@ class Action
         return (self::$modx->db->getRecordCount($q) == 1);
     }
 
-    protected static function getValue($field, $id)
+    protected static function _getValue($field, $id)
     {
         $q = self::$modx->db->select($field, self::$modx->getFullTableName(self::$_mode), "id = " . $id);
         return self::$modx->db->getValue($q);
@@ -26,6 +23,7 @@ class Action
 
     public static function add()
     {
+		$data = array();
         if (!empty($_POST['dataname']) && is_scalar($_POST['dataname'])) {
             $insert = array(
                 'name' => self::$modx->db->escape($_POST['dataname']),
@@ -43,7 +41,7 @@ class Action
                 }
                 case 'street':
                 {
-                    $insert['parent_id'] = (int)\DLCity\Template::getParam('dataID', $_REQUEST);
+                    $insert['parent_id'] = (int)Template::getParam('dataID', $_REQUEST);
                     $sql = "SELECT count(id) FROM " . self::$modx->getFullTableName(self::$_mode) . " WHERE `name`='" . self::$modx->db->escape($_POST['dataname']) . "' AND parent_id='" . $insert['parent_id'] . "'";
                     if (self::$modx->db->getValue($sql) > 0) {
                         $insert = array();
@@ -73,7 +71,8 @@ class Action
 
     public static function delete()
     {
-        $dataID = (int)\DLCity\Template::getParam('editID', $_REQUEST);
+		$data = array();
+        $dataID = (int)Template::getParam('editID', $_REQUEST);
         if (!empty($dataID)) {
             switch (self::$_mode) {
                 case 'city':
@@ -102,13 +101,14 @@ class Action
 
     public static function edit()
     {
-        $dataID = (int)\DLCity\Template::getParam('editID', $_REQUEST);
+		$data = array();
+        $dataID = (int)Template::getParam('editID', $_REQUEST);
         if (self::checkObj($dataID)) {
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $q = self::$modx->db->update(
                     array(
-                        'name' => self::$modx->db->escape(\DLCity\Template::getParam('dataname', $_POST)),
-                        'hide' => (int)\DLCity\Template::getParam('hide', $_POST)
+                        'name' => self::$modx->db->escape(Template::getParam('dataname', $_POST)),
+                        'hide' => (int)Template::getParam('hide', $_POST)
                     ),
                     self::$modx->getFullTableName(self::$_mode),
                     "id = " . $dataID
@@ -127,10 +127,11 @@ class Action
 
     public static function display()
     {
-        $dataID = (int)\DLCity\Template::getParam('editID', $_REQUEST);
+		$data = array();
+        $dataID = (int)Template::getParam('editID', $_REQUEST);
         if ($dataID > 0 && self::checkObj($dataID)) {
             $q = self::$modx->db->update(array(
-                    'hide' => !self::getValue('hide', $dataID),
+                    'hide' => !self::_getValue('hide', $dataID),
                 ), self::$modx->getFullTableName(self::$_mode), "id = " . $dataID);
             $data['log'] = $q ? 'Информация обновлена' : 'Не удалось обновить информацию';
         } else {

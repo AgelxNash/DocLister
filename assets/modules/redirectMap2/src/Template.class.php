@@ -1,121 +1,7 @@
 <?php namespace RedirectMap;
 
-class Template
+class Template extends \Module\Template
 {
-    protected $_modx = null;
-    protected $_tplFolder = null;
-
-    const TPL_EXT = 'html';
-
-    public $vars = array(
-        'modx_lang_attribute',
-        'modx_textdir',
-        'manager_theme',
-        'modx_manager_charset',
-        '_lang',
-        '_style',
-        'e',
-        'SystemAlertMsgQueque',
-        'incPath',
-        'content'
-    );
-    protected static $_ajax = false;
-
-    public function __construct(\DocumentParser $modx, $ajax = false)
-    {
-        $this->_modx = $modx;
-        self::$_ajax = (boolean)$ajax;
-        $this->loadVars();
-        $this->_tplFolder = dirname(dirname(__FILE__)) . "/template/";
-    }
-
-    public static function isAjax()
-    {
-        return self::$_ajax;
-    }
-
-    public function showHeader()
-    {
-        return $this->_getMainTpl('header.inc.php');
-    }
-
-    protected function _getMainTpl($name)
-    {
-        $content = '';
-        if (!self::isAjax()) {
-
-            ob_start();
-            extract($this->vars);
-            if (file_exists($incPath . $name)) {
-                include($incPath . $name);
-                $content = ob_get_contents();
-            }
-            ob_end_clean();
-        }
-        return $content;
-    }
-
-    public function loadVars()
-    {
-        $vars = array();
-        foreach ($this->vars as $item) {
-            global $$item;
-            $vars[$item] = $$item;
-        }
-        $this->vars = $vars;
-        $this->vars['tplClass'] = $this;
-        $this->vars['modx'] = $this->_modx;
-    }
-
-    public function showFooter()
-    {
-        return $this->_getMainTpl('footer.inc.php');
-    }
-
-    public function showBody($TplName, array $tplParams = array())
-    {
-        ob_start();
-        if (file_exists($this->_tplFolder . $TplName . "." . self::TPL_EXT)) {
-            extract($this->vars);
-            include($this->_tplFolder . $TplName . "." . self::TPL_EXT);
-        }
-        $content = ob_get_contents();
-        ob_end_clean();
-        return $content;
-    }
-
-    public static function getParam($key, array $param = array(), $default = null)
-    {
-        return isset($param[$key]) ? $param[$key] : $default;
-    }
-
-    public function makeUrl($action, array $data = array(), $full = false)
-    {
-        $action = is_scalar($action) ? $action : '';
-        $content = self::getParam('content', $this->vars, array());
-        $data = array_merge(
-            array(
-                'mode' => Helper::getMode()
-            ),
-            $data,
-            array(
-                'a' => 112,
-                'action' => $action,
-                'id' => self::getParam('id', $content, 0)
-            )
-        );
-        $out = implode("?", array($this->_modx->getManagerPath(), http_build_query($data)));
-        if ($full) {
-            $out = $this->_modx->getConfig('site_url') . ltrim($out, '/');
-        }
-        return $out;
-    }
-
-    public static function showLog()
-    {
-        return self::isAjax() ? 'log' : 'main';
-    }
-
     public function Lists()
     {
         $out = '';
@@ -147,7 +33,7 @@ class Template
          * По какому полю вести сортировку
          */
         $key = $this->getParam('by', $_GET, 'page');
-        $modSeo = new modRedirectMap($this->_modx);
+        $modSeo = Action::getClassTable();
         if (!$modSeo->issetField($key)) {
             $key = 'uri';
         }
@@ -165,7 +51,7 @@ class Template
         if (!empty($data)) {
             $out = $this->_modx->runSnippet('DocLister', array_merge(array(
                 'controller' => 'onetable',
-                'table' => 'redirect_map',
+                'table' => Action::TABLE(),
                 'tpl' => '@CODE: ' . $this->showBody('table/body'),
                 'ownerTPL' => '@CODE: ' . $this->showBody('table/wrap'),
                 'altItemClass' => 'gridAltItem',

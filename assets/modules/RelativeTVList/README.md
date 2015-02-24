@@ -14,7 +14,7 @@ return require MODX_BASE_PATH.'assets/modules/RelativeTVList/CityList.snippet.ph
 4) Создаем **сниппет StreetList** с кодом
 ```php
 <?php
-return require MODX_BASE_PATH.'assets/modules/DLCity/StreetList.snippet.php';
+return require MODX_BASE_PATH.'assets/modules/RelativeTVList/StreetList.snippet.php';
 ```
 5) Создаем **TV параметр City** с типом ввода Custom Input и возможными значениями 
 ```php

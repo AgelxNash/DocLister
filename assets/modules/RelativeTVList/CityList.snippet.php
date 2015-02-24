@@ -28,7 +28,7 @@ $wrap = $modx->runSnippet("DocLister", array(
 ));
 return "<script>
 	function loadStreet(el){
-		var getStreet = new Ajax('/assets/modules/DLCity/StreetList.php', {method:'post', postBody:'city='+el.value, onComplete:showStreet});
+		var getStreet = new Ajax('/assets/modules/RelativeTVList/StreetList.php', {method:'post', postBody:'city='+el.value, onComplete:showStreet});
 		getStreet.request();
 	}
 </script><select id=\"tv[+field_id+]\" name=\"tv[+field_id+]\" size=\"1\" onchange=\"loadStreet(this);documentDirty=true;\">" . $wrap . "</select>";
