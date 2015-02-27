@@ -140,19 +140,19 @@ abstract class filterDocLister
                 break;
             case '>':
             case 'gt':
-                $output .= ' > ' . floatval($value);
+                $output .= ' > ' . str_replace(',','.',floatval($value));
                 break;
             case '<':
             case 'lt':
-                $output .= ' < ' . floatval($value);
+                $output .= ' < ' . str_replace(',','.',floatval($value));
                 break;
             case '<=':
             case 'elt':
-                $output .= ' <= ' . floatval($value);
+                $output .= ' <= ' . str_replace(',','.',floatval($value));
                 break;
             case '>=':
             case 'egt':
-                $output .= ' >= ' . floatval($value);
+                $output .= ' >= ' . str_replace(',','.',floatval($value));
                 break;
             case '%':
             case 'like':
