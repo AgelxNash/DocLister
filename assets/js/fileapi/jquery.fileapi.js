@@ -12,6 +12,7 @@
 		  noop = $.noop
 		, oldJQ = !$.fn.prop
 		, propFn = oldJQ ? 'attr' : 'prop'
+		, removePropFn = oldJQ ? 'removeAttr' : 'removeProp'
 
 		, _dataAttr = 'data-fileapi'
 		, _dataFileId = 'data-fileapi-id'
@@ -213,15 +214,13 @@
 		if( $.isArray(options.files) ){
 			this.files = $.map(options.files, function (file){
 				if( $.type(file) === 'string' ){
-					file = {
-						  src: file
-						, name: file.split('/').pop()
-						// @todo: use FileAPI.getMimeType (v2.1+)
-						, type: /jpe?g|png|bmp|gif|tiff?/i.test(file) && 'image/'+file.split('.').pop()
-						, size: 0
-					};
+					file = { src: file, size: 0 };
 				}
+
+				file.name = file.name || file.src.split('/').pop();
+				file.type = file.type || /\.(jpe?g|png|bmp|gif|tiff?)/i.test(file.src) && 'image/' + file.src.split('.').pop(); // @todo: use FileAPI.getMimeType (v2.1+)
 				file.complete = true;
+
 				return file;
 			});
 
@@ -258,15 +257,15 @@
 			if( imageSize || filterFn ){
 				api.filterFiles(files, function (file, info){
 					if( info && imageSize ){
-						_checkFileByCriteria(file, 'minWidth', imageSize.minWidth, info.width);
-						_checkFileByCriteria(file, 'minHeight', imageSize.minHeight, info.height);
-						_checkFileByCriteria(file, 'maxWidth', imageSize.maxWidth, info.width);
-						_checkFileByCriteria(file, 'maxHeight', imageSize.maxHeight, info.height);
+						_checkFileByCriteria(file, 'minWidth', imageSize, info);
+						_checkFileByCriteria(file, 'minHeight', imageSize, info);
+						_checkFileByCriteria(file, 'maxWidth', imageSize, info);
+						_checkFileByCriteria(file, 'maxHeight', imageSize, info);
 					}
 
 					_checkFileByCriteria(file, 'maxSize', maxSize, file.size);
 
-					return	!file.errors && (!filterFn || filterFn(file, info));
+					return !file.errors && (!filterFn || filterFn(file, info));
 				}, function (success, rejected){
 					_extractFilesOverLimit(maxFiles, countFiles, success, rejected);
 
@@ -421,13 +420,16 @@
 		},
 
 		_getUploadEvent: function (xhr, extra){
+			xhr = this.xhr || xhr;
+
 			var evt = {
 				  xhr: xhr
 				, file: this.xhr.currentFile
 				, files: this.xhr.files
 				, widget: this
 			};
-			return	_extend(evt, extra);
+
+			return _extend(evt, extra);
 		},
 
 		_emitUploadEvent: function (prefix, file, xhr){
@@ -502,7 +504,7 @@
 
 			if( deg || crop || resize ){
 				var trans = $.extend(true, {}, opts.imageTransform || {});
-				deg = deg || (this.options.imageAutoOrientation ? 'auto' : void 0);
+				deg = (deg != null) ? deg : (this.options.imageAutoOrientation ? 'auto' : void 0);
 
 				if( $.isEmptyObject(trans) || _isOriginTransform(trans) ){
 					_extend(trans, resize);
@@ -556,7 +558,7 @@
 					if( type == 'upload' ){
 						$remove.hide();
 						$progress.width(0);
-					} else if( opts.onRemoveCompleted ){
+					} else if( opts.onFileRemoveCompleted ){
 						$remove.show();
 					}
 
@@ -579,7 +581,7 @@
 			}
 		},
 
-		_redraw: function (clear/**Boolean*/){
+		_redraw: function (clearFiles/**Boolean*/, clearPreview/**Boolean*/){
 			var
 				  files = this.files
 				, active = !!this.active
@@ -589,16 +591,16 @@
 				, size = 0
 				, $files = this.$files
 				, offset = $files.children().length
-				, preview = this.option('elements.file.preview')
-				, previewEl = this.option('elements.preview.el')
+				, preview = this.option('elements.preview')
+				, filePreview = this.option('elements.file.preview')
 			;
 
-			if( clear ){
+			if( clearFiles ){
 				this.$files.empty();
 			}
 
-			if( clear && previewEl && !this.queue.length ) {
-				this.$(previewEl).empty();
+			if( clearPreview && preview && preview.el && !this.queue.length ) {
+				this.$(preview.el).empty();
 			}
 
 			_each(files, function (file, i){
@@ -607,7 +609,10 @@
 				name.push(file.name);
 				size += file.complete ? 0 : file.size;
 
-				if( $files.length && !this.$file(uid).length ){
+				if( preview && preview.el ){
+					this._makeFilePreview(uid, file, preview, true);
+				}
+				else if( $files.length && !this.$file(uid).length ){
 					var
 						html = this.itemTplFn({
 							  $idx: offset + i
@@ -615,6 +620,7 @@
 							, name: file.name
 							, type: file.type
 							, size: file.size
+							, complete: !!file.complete
 							, sizeText: this._getFormatedSize(file.size)
 						})
 
@@ -629,8 +635,8 @@
 						this.$elem('file.complete.hide', $file).hide();
 					}
 
-					if( preview.el ){
-						this._makeFilePreview(uid, file, preview);
+					if( filePreview.el ){
+						this._makeFilePreview(uid, file, filePreview);
 					}
 				}
 			}, this);
@@ -741,17 +747,10 @@
 				var
 					  opts = this.options
 					, sortFn = opts.sortFn
-					, preview = opts.elements.preview
 				;
 
 				if( sortFn ){
 					files.sort(sortFn);
-				}
-
-				if( preview && !$.isPlainObject(preview.el) ){
-					_each(files, function (file){
-						this._makeFilePreview(api.uid(file), file, preview, true);
-					}, this);
 				}
 
 				if( this.xhr ){
@@ -867,11 +866,12 @@
 			switch( name ){
 				case 'accept':
 				case 'multiple':
+						this.$(':file')[nVal ? propFn : removePropFn](name, nVal);
+					break;
+
+
 				case 'paramName':
-						if( name == 'paramName' ){ name = 'name'; }
-						if( nVal ){
-							this.$(':file')[propFn](name, nVal);
-						}
+						nVal && this.$(':file')[propFn]('name', nVal);
 					break;
 			}
 		},
@@ -923,6 +923,7 @@
 						, prepare: _bind(this, this._onFileUploadPrepare)
 						, imageOriginal: opts.imageOriginal
 						, imageTransform: opts.imageTransform
+						, imageAutoOrientation: opts.imageAutoOrientation
 					}
 				;
 
@@ -1039,18 +1040,32 @@
 				, _rotate = this._rotate
 			;
 
-			if( /([+-])=/.test(deg) ){
-				_rotate[uid] = deg = (_rotate[uid] || 0) + (RegExp.$1 == '+' ? 1 : -1) * deg.substr(2);
-			} else {
-				_rotate[uid] = deg;
-			}
+			file = this._getFile(uid);
 
-			this._getFile(uid).rotate = deg;
+			api.getInfo(file, function (err, info) {
+				var orientation = info && info.exif && info.exif.Orientation,
+					startDeg = opts.imageAutoOrientation && api.Image.exifOrientation[orientation] || 0;
 
-			$el.css({
-				  '-webkit-transform': 'rotate('+deg+'deg)'
-				, '-moz-transform': 'rotate('+deg+'deg)'
-				, 'transform': 'rotate('+deg+'deg)'
+				if (_rotate[uid] == null) {
+					_rotate[uid] = startDeg || 0;
+				}
+
+				if( /([+-])=/.test(deg) ){
+					_rotate[uid] = deg = (_rotate[uid] + (RegExp.$1 == '+' ? 1 : -1) * deg.substr(2));
+				} else {
+					_rotate[uid] = deg;
+				}
+
+				// Store deg
+				file.rotate = deg;
+
+				// Fix exif.rotate.auto
+				deg -= startDeg;
+				$el.css({
+					  '-webkit-transform': 'rotate('+deg+'deg)'
+					, '-moz-transform': 'rotate('+deg+'deg)'
+					, 'transform': 'rotate('+deg+'deg)'
+				});
 			});
 		},
 
@@ -1074,7 +1089,8 @@
 			this.files		= []; // all files
 			this.uploaded	= []; // uploaded files
 
-			this._redraw(all === void 0 ? true : all);
+			all = all === void 0 ? true : all;
+			this._redraw(all, all);
 		},
 
 		dequeue: function (){
@@ -1118,9 +1134,14 @@
 	}
 
 
-	function _checkFileByCriteria(file, name, excepted, actual){
-		if( excepted ){
-			var val = excepted - actual, isMax = /max/.test(name);
+	function _checkFileByCriteria(file, name, imageSize, info){
+		if( imageSize && info ){
+			var excepted = imageSize > 0 ? imageSize : imageSize[name],
+				actual = info > 0 ? info : info[name.substr(3).toLowerCase()],
+				val = (excepted - actual),
+				isMax = /max/.test(name)
+			;
+
 			if( (isMax && val < 0) || (!isMax && val > 0) ){
 				if( !file.errors ){
 					file.errors = {};
@@ -1183,7 +1204,7 @@
 	};
 
 
-	$.fn.fileapi.version = '0.4.3';
+	$.fn.fileapi.version = '0.4.9';
 	$.fn.fileapi.tpl = function (text){
 		var index = 0;
 		var source = "__b+='";

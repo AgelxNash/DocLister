@@ -116,6 +116,21 @@ Sort function of selected files.
 Filter function of selected files, eg: `function (file, info){ return /^image/.test(file.type) && info.width > 320 }`.
 
 
+### imageTransform`:Object`
+Rules of changes the original image on the client (see [details](https://github.com/mailru/FileAPI#imagetransformobject)).
+```js
+imageTransform: {
+	// resize by max side
+	maxWidth: 800,
+	maxHeight: 600
+}
+```
+
+
+### imageOriginal`:Boolean`
+Sent to the server the original image or not, if defined imageTransform option.
+
+
 ### elements`:Object`
 ```js
 // Default options
@@ -199,11 +214,11 @@ $('...').fileapi({
 			// errors
 			var errors = data.other[0].errors;
 			if( errors ){
-				errors.maxSize;
-				errors.maxFiles;
-				errors.minWidth;
+				errors.maxSize; // File size exceeds the maximum size `@see maxSize`
+				errors.maxFiles; // Number of files selected exceeds the maximum `@see maxFiles`
+				errors.minWidth; // Width of the image is smaller than the specified `@see imageSize`
 				errors.minHeight;
-				errors.maxWidth;
+				errors.maxWidth; // Width of the image greater than the specified `@see imageSize`
 				errors.maxHeight;
 			}
 		}
@@ -357,11 +372,11 @@ $('#userpic').fileapi({
 $('#upload').fileapi({
 	multiple: true,
 
-	// Restores the list of files uploaded earlier.
+	// Restores the list of files uploaded earlier *** IE < 9 — NOT SUPPORTED ***
 	files: [{
 		src: "http://path/to/filename.png",
 		type: "image/png",
-		name: "filename.png"
+		name: "filename.png",
 		size: 31409,
 		data: { id: 999, token: "..." }
 	}],
@@ -470,6 +485,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 ## Changelog
+
+### 0.4.6
+ * FileAPI up to 2.0.9
+ * #12: `onRemoveCompleted` -> `onFileRemoveCompleted`
+ * #100: fixed `maxSize` option
+
+### 0.4.5
+ * #95: fixed `rotate` method
+ * #94: fixed `redraw` method
+
+### 0.4.4
+ * #93: `files` option and userpic
+ * #90: fixed rotate + imageAutoOrientation
+
 ### 0.4.3
  * #84: fixed modal.js
  * #82: clear(all: true)
