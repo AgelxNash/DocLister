@@ -18,7 +18,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     protected $_query = array();
     protected $jsonFields = array();
     private $_decodedFields = array();
-    
+
     public function __construct($modx, $debug = false)
     {
         try {
@@ -149,7 +149,25 @@ abstract class MODxAPI extends MODxAPIhelpers
 		}
         $this->invokeEvent('OnSiteRefresh', array('IDs' => $IDs), $fire_events);
     }
-	
+	public function switchObject($id){
+        switch(true){
+            //Если загружен другой объект - не тот, с которым мы хотим временно поработать
+            case ($this->getID() != $id && $id):{
+                $obj = clone $this;
+                $obj->edit($id);
+                break;
+            }
+            //Если уже загружен объект, с которым мы хотим временно поработать
+            case ($this->getID() == $id && $id):
+            //Если $id не указан, но уже загружен какой-то объект
+            case (!$id && $this->getID()):
+            default:{
+                $obj = $this;
+                break;
+            }
+        }
+        return $obj;
+    }
 	public function useIgnore($flag = true){
 		$this->ignoreError = $flag ? 'IGNORE' : '';
 		return $this;
@@ -157,7 +175,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 	public function hasIgnore(){
 		return (bool)$this->ignoreError;
 	}
-	
+
     public function set($key, $value)
     {
         if ((is_scalar($value) || $this->isJsonField($key)) && is_scalar($key) && !empty($key)) {

@@ -301,7 +301,9 @@ class modUsers extends MODxAPI
                     $_SESSION['webFailedlogins'] = $this->get('failedlogincount');
                     $_SESSION['webLastlogin'] = $this->get('lastlogin');
                     $_SESSION['webnrlogins'] = $this->get('logincount');
-                    $_SESSION['webUserGroupNames'] = '';
+					$_SESSION['webUsrConfigSet'] = array();
+                    $_SESSION['webUserGroupNames'] = $this->getUserGroups();
+                    $_SESSION['webDocgroups'] = $this->getDocumentGroups();
                     if ($remember) {
                         $cookieValue = md5($this->get('username')) . '|' . $this->get('password');
                         $cookieExpires = time() + (is_bool($remember) ? (60 * 60 * 24 * 365 * 5) : (int)$remember);
@@ -339,5 +341,44 @@ class modUsers extends MODxAPI
             }
         }
         return $this;
+    }
+	public function getDocumentGroups($userID = 0){
+        $out = array();
+		$user = $this->switchObject($userID);
+        if($user->getID()){
+    		$web_groups = $this->modx->getFullTableName('web_groups');
+    		$webgroup_access = $this->modx->getFullTableName('webgroup_access');
+
+    		$sql = "SELECT `uga`.`documentgroup` FROM {$web_groups} as `ug`
+                INNER JOIN {$webgroup_access} as `uga` ON `uga`.`webgroup`=`ug`.`webgroup`
+                WHERE `ug`.`webuser` = ".$this->getID();
+            $sql = $this->modx->db->makeArray($this->modx->db->query($sql));
+
+            foreach($sql as $row){
+                $out[] = $row['documentgroup'];
+            }
+        }
+        unset($user);
+        return $out;
+	}
+
+    public function getUserGroups($userID = 0){
+        $out = array();
+        $user = $this->switchObject($userID);
+        if($user->getID()){
+            $web_groups = $this->modx->getFullTableName('web_groups');
+            $webgroup_names = $this->modx->getFullTableName('webgroup_names');
+
+            $sql = "SELECT `ugn`.`name` FROM {$web_groups} as `ug`
+                INNER JOIN {$webgroup_names} as `ugn` ON `ugn`.`id`=`ug`.`webgroup`
+                WHERE `ug`.`webuser` = ".$this->getID();
+            $sql = $this->modx->db->makeArray($this->modx->db->query($sql));
+
+            foreach($sql as $row){
+                $out[] = $row['name'];
+            }
+        }
+        unset($user);
+        return $out;
     }
 }
