@@ -7,7 +7,8 @@ class DLCollection extends \Helpers\Collection{
     public function __construct($modx, $data = array()){
         $this->modx = $modx;
 		switch(true){
-			case is_resource($data):{
+			case is_resource($data):
+			case (is_object($data) && $data instanceof \mysqli_result): {
 				$this->fromQuery($data, false);
 				break;
 			}
