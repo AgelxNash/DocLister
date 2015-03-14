@@ -206,9 +206,9 @@ class DLpaginate
             if ($this->page) {
                 //anterior button
                 if ($this->page > 1) {
-                    $this->pagination .= $this->prevT ? str_replace('[+link+]', $this->get_pagenum_link($prev), $this->prevT) : ''; // "<a href=\"".$this->get_pagenum_link($prev)."\" class=\"prev\">$p</a>";
+                    $this->pagination .= $this->prevT ? str_replace(array('[+link+]', '[+num+]'), array($this->get_pagenum_link($prev), ($this->page-1)), $this->prevT) : ''; // "<a href=\"".$this->get_pagenum_link($prev)."\" class=\"prev\">$p</a>";
                 } else
-                    $this->pagination .= $this->prevI ? str_replace('[+link+]', $this->get_pagenum_link($prev), $this->prevI) : '';
+                    $this->pagination .= $this->prevI ? str_replace(array('[+link+]', '[+num+]'), array($this->get_pagenum_link($prev), 0), $this->prevI) : '';
                 //"<span class=\"disabled\">$p</span>";
 
             }
@@ -260,9 +260,9 @@ class DLpaginate
             if ($this->page) {
                 //siguiente button
                 if ($this->page < $counter - 1)
-                    $this->pagination .= $this->nextT ? str_replace('[+link+]', $this->get_pagenum_link($next), $this->nextT) : ''; //"<a href=\"".$this->get_pagenum_link($next)."\" class=\"next\">$n</a>";
+                    $this->pagination .= $this->nextT ? str_replace(array('[+link+]', '[+num+]'), array($this->get_pagenum_link($next), ($this->page+1)), $this->nextT) : ''; //"<a href=\"".$this->get_pagenum_link($next)."\" class=\"next\">$n</a>";
                 else
-                    $this->pagination .= $this->nextI ? str_replace('[+link+]', $this->get_pagenum_link($next), $this->nextI) : '';
+                    $this->pagination .= $this->nextI ? str_replace(array('[+link+]', '[+num+]'), array($this->get_pagenum_link($next), 0), $this->nextI) : '';
                 if ($this->showCounter) $this->pagination .= "<div class=\"pagination_data\">($this->total_pages Pages)</div>";
             }
         }
