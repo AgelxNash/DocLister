@@ -29,7 +29,8 @@ $out = array();
 
 $nopTitle = APIhelpers::getkey($p, 'addNopTitle');
 if($nopTitle){
-	$out[] = $nopTitle . '==';
+	$nopValue = APIhelpers::getkey($p, 'addNopValue');
+	$out[] = $nopTitle . '==' . $nopValue;
 }
 
 foreach ($json as $el) {
