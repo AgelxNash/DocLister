@@ -17,11 +17,13 @@ abstract class Plugin {
 	public $pluginEvents = array();
     public $_table = '';
 	protected $fs = null;
-	
+
 	public $DLTemplate = null;
 	public $lang_attribute = '';
 
-    /**
+	protected $checkTemplate = true;
+	protected $checkMM = true;
+	/**
      * @param $modx
      * @param string $lang_attribute
      * @param bool $debug
@@ -31,7 +33,7 @@ abstract class Plugin {
         $this->_table = $modx->getFullTableName($this->table);
         $this->lang_attribute = $lang_attribute;
         $this->params = $modx->event->params;
-        if (!isset($this->params['template']) && $modx->event->name != 'OnEmptyTrash') {
+        if ($this->checkTemplate && !isset($this->params['template']) && $modx->event->name != 'OnEmptyTrash') {
             $this->params['template'] = array_pop($modx->getDocument($this->params['id'],'template','all','all'));
         }
         $this->DLTemplate = \DLTemplate::getInstance($this->modx);
@@ -55,11 +57,14 @@ abstract class Plugin {
 			$this->registerEvents($this->pluginEvents);
         }
         $output = '';
+
     	$templates = isset($this->params['templates']) ? explode(',',$this->params['templates']) : false;
 		$roles = isset($this->params['roles']) ? explode(',',$this->params['roles']) : false;
-		if (!$templates || ($templates && !in_array($this->params['template'],$templates)) || ($roles && !in_array($_SESSION['mgrRole'],$roles))) return false;
+
+		$tplFlag = ($this->checkTemplate && !$templates || ($templates && !in_array($this->params['template'],$templates)));
+		if ($tplFlag || ($roles && !in_array($_SESSION['mgrRole'],$roles))) return false;
 		$plugins = $this->modx->pluginEvent;
-		if(array_search('ManagerManager',$plugins['OnDocFormRender']) === false && !isset($this->modx->loadedjscripts['jQuery'])) {
+		if(($this->checkMM && array_search('ManagerManager', $plugins['OnDocFormRender']) === false) && !isset($this->modx->loadedjscripts['jQuery'])) {
 			$output .= '<script type="text/javascript" src="'.$this->modx->config['site_url'].'assets/js/jquery/jquery-1.9.1.min.js"></script>';
             $this->modx->loadedjscripts['jQuery'] = array('version'=>'1.9.1');
             $output .='<script type="text/javascript">var jQuery = jQuery.noConflict(true);</script>';
