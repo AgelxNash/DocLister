@@ -1,5 +1,6 @@
 ## 2.1.16 (16.03.2015)
 * [Add] Новый параметр addNopValue к сниппету DLValueList
+* [Fix] Использование ignoreEmpty в связке с idType=parents в сниппете DocLister
 
 ## 2.1.15 (24.02.2015)
 * [Add] Сброс кеша определенного документа через MODxAPI

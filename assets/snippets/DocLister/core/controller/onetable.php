@@ -218,6 +218,7 @@ class onetableDocLister extends DocLister
     protected function getChildrenList()
     {
         $where = array();
+        $out = array();
 
         $tmpWhere = $this->getCFGDef('addWhereList', '');
         $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
@@ -263,15 +264,16 @@ class onetableDocLister extends DocLister
         }
         $fields = $this->getCFGDef('selectFields', '*');
         $group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
-        $sql = $this->dbQuery("SELECT {$fields} FROM " . $this->table . " " . $where . " " .
-            $group . " " .
-            $this->SortOrderSQL($this->getPK()) . " " .
-            $this->LimitSQL($this->getCFGDef('queryLimit', 0))
-        );
-        $rows = $this->modx->db->makeArray($sql);
-        $out = array();
-        foreach ($rows as $item) {
-            $out[$item[$this->getPK()]] = $item;
+        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+            $sql = $this->dbQuery("SELECT {$fields} FROM " . $this->table . " " . $where . " " .
+                $group . " " .
+                $this->SortOrderSQL($this->getPK()) . " " .
+                $this->LimitSQL($this->getCFGDef('queryLimit', 0))
+            );
+            $rows = $this->modx->db->makeArray($sql);
+            foreach ($rows as $item) {
+                $out[$item[$this->getPK()]] = $item;
+            }
         }
         return $out;
     }

@@ -446,6 +446,7 @@ class site_contentDocLister extends DocLister
     protected function getChildrenList()
     {
         $where = array();
+        $out = array();
 
         $tmpWhere = $this->getCFGDef('addWhereList', '');
         $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
@@ -503,15 +504,19 @@ class site_contentDocLister extends DocLister
         }
         $fields = $this->getCFGDef('selectFields', 'c.*');
         $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
-        $sql = $this->dbQuery("SELECT {$fields} FROM " . $from . " " . $where . " " .
-            $group . " ".
-            $sort . " " .
-            $this->LimitSQL($this->getCFGDef('queryLimit', 0))
-        );
-        $rows = $this->modx->db->makeArray($sql);
-        $out = array();
-        foreach ($rows as $item) {
-            $out[$item['id']] = $item;
+
+        if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+            $sql = $this->dbQuery("SELECT {$fields} FROM " . $from . " " . $where . " " .
+                $group . " ".
+                $sort . " " .
+                $this->LimitSQL($this->getCFGDef('queryLimit', 0))
+            );
+
+            $rows = $this->modx->db->makeArray($sql);
+
+            foreach ($rows as $item) {
+                $out[$item['id']] = $item;
+            }
         }
         return $out;
     }

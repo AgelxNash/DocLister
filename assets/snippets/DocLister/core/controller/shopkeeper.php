@@ -305,7 +305,8 @@ class shopkeeperDocLister extends site_contentDocLister
     protected function getChildrenList()
     {
 		$where = array();
-
+		$out = array();
+		
 		$tmpWhere = $this->getCFGDef('addWhereList', '');
 		$tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
 		if (!empty($tmpWhere)) {
@@ -363,16 +364,17 @@ class shopkeeperDocLister extends site_contentDocLister
 		}
         $fields = $this->getCFGDef('selectFields', 'c.*');
 		$group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
-		$sql = $this->dbQuery("SELECT {$fields} FROM " . $from . " " . $where . " " .
-			$group . " ".
-			$sort . " " .
-			$this->LimitSQL($this->getCFGDef('queryLimit', 0))
-		);
+		if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+			$sql = $this->dbQuery("SELECT {$fields} FROM " . $from . " " . $where . " " .
+				$group . " ".
+				$sort . " " .
+				$this->LimitSQL($this->getCFGDef('queryLimit', 0))
+			);
 
-		$rows = $this->modx->db->makeArray($sql);
-		$out = array();
-		foreach ($rows as $item) {
-			$out[$item['id']] = $item;
+			$rows = $this->modx->db->makeArray($sql);
+			foreach ($rows as $item) {
+				$out[$item['id']] = $item;
+			}
 		}
 		return $out;
     }
