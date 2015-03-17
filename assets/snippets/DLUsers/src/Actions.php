@@ -96,11 +96,16 @@ class Actions{
 		    			"username"      => $this->userObj->get('username')
 		    		));
 		    	}
-			    $go = str_replace(
-			    	array("?".$LogoutName, "&".$LogoutName),
-			    	array("", ""),
-			    	$_SERVER['REQUEST_URI']
-			    );
+
+			    $go = \APIHelpers::getkey($params, 'url', '');
+			    if(empty($go)){
+			    	$go = str_replace(
+			    		array("?".$LogoutName, "&".$LogoutName),
+			    		array("", ""),
+			    		$_SERVER['REQUEST_URI']
+			    	);
+			    }
+
 			    $start = $this->makeUrl($this->config['site_start']);
 			    if($start == $go){
 			        $go = $this->config['site_url'];
@@ -112,7 +117,6 @@ class Actions{
     			//Если юзер не авторизован, то показываем ему 404 ошибку
     			$this->modx->sendErrorPage();
     		}
-
 		}
 	    return true;
     }
@@ -141,7 +145,7 @@ class Actions{
     	$POST = array('backUrl' => $_SERVER['REQUEST_URI']);
 
     	$dataTPL = array();
-    	$error = '';
+    	$error = $errorCode = '';
 
     	$pwdField = \APIHelpers::getkey($params, 'pwdField', 'password');
 		$emailField = \APIHelpers::getkey($params, 'emailField', 'email');
@@ -164,14 +168,15 @@ class Actions{
 			if(empty($tpl)){
 				$tpl = $this->getTemplate('authForm');
 			}
-			$POST = $this->Auth($pwdField, $emailField, $rememberField, $POST['backUrl'], __METHOD__, $error);
+			$POST = $this->Auth($pwdField, $emailField, $rememberField, $POST['backUrl'], __METHOD__, $error, $errorCode, $params);
 	    	$dataTPL = array(
 				'backUrl' => \APIHelpers::getkey($POST, 'backUrl', ''),
 				'emailValue' => \APIHelpers::getkey($POST, 'email', ''),
 				'emailField' => $emailField,
 				'pwdField' => $pwdField,
 		    	'method' => strtolower(__METHOD__),
-				'error' => $error
+				'error' => $error,
+				'errorCode' => $errorCode
 			);
 			$authId = \APIHelpers::getkey($params, 'authId');
 			if(!empty($authId)){
@@ -190,7 +195,7 @@ class Actions{
 		$homeID = \APIHelpers::getkey($params, 'homeID');
 		$this->isAuthGoHome(array('id' => $homeID));
 
-		$error = '';
+		$error = $errorCode = '';
 		$POST = array('backUrl' => '');
 
 		$pwdField = \APIHelpers::getkey($params, 'pwdField', 'password');
@@ -209,7 +214,13 @@ class Actions{
 			 */
 			$refer = htmlspecialchars_decode($_SERVER['HTTP_REFERER'], ENT_QUOTES);
 		}else{
-			$refer = $request;
+			$selfHost = rtrim(str_replace("http://", "", $this->config['site_url']), '/');
+			if(empty( $request['host']) ||  $request['host']==$selfHost){
+				$query = !empty($uri['query']) ? '?'.$uri['query'] : '';
+			    $refer = !empty($uri['path']) ? $uri['path'].$query : '';
+			}else{
+				$refer = '';
+			}
 		}
 
 		if($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -248,17 +259,18 @@ class Actions{
 			}
 			$POST['backUrl'] = $this->makeUrl($homeID);
 		}
-		$POST = $this->Auth($pwdField, $emailField, $rememberField, $POST['backUrl'], __METHOD__, $error);
+		$POST = $this->Auth($pwdField, $emailField, $rememberField, $POST['backUrl'], __METHOD__, $error, $errorCode, $params);
 		return \DLTemplate::getInstance($this->modx)->parseChunk($tpl, array(
 		    'backUrl' => \APIHelpers::getkey($POST, 'backUrl', ''),
 			'emailValue' => \APIHelpers::getkey($POST, 'email', ''),
 			'emailField' => $emailField,
 		    'pwdField' => $pwdField,
 		    'method' => strtolower(__METHOD__),
-			'error' => $error
+			'error' => $error,
+			'errorCode' => $errorCode
 		));
 	}
-	protected function Auth($pwdField, $emailField, $rememberField, $backUrl, $method, &$error){
+	protected function Auth($pwdField, $emailField, $rememberField, $backUrl, $method, &$error, &$errorCode, $params = array()){
 		$POST = array(
 			'backUrl' => urlencode($backUrl)
 		);
@@ -271,13 +283,14 @@ class Actions{
 			));
 			if(!empty($POST['email']) && is_scalar($POST['email']) && !$userObj->emailValidate($POST['email'], false)){
 				$openUser = $userObj->edit($POST['email']);
+
 				$this->modx->invokeEvent("OnBeforeWebLogin", array(
 		            "username"		=> $POST['email'],
 		            "userpassword"	=> $POST['password'],
 		            "rememberme"	=> $POST['remember'],
 		            'userObj'		=> $userObj
 		        ));
-				if($userObj->getID() !== false && !$userObj->checkBlock($userObj->getID())){
+				if($userObj->getID() && !$userObj->checkBlock($userObj->getID())){
 					$pluginFlag = $this->modx->invokeEvent("OnWebAuthentication", array(
 	                    "userid"        => $userObj->getID(),
 	                    "username"      => $userObj->get('username'),
@@ -290,6 +303,11 @@ class Actions{
 							&&
 						$userObj->authUser($userObj->getID(), $POST['remember'])
 					){
+						$userObj->set('logincount', (int)$userObj->get('logincount') + 1);
+						$userObj->set('lastlogin', time());
+						$userObj->set('failedlogincount', 0);
+						$userObj->save(false, false);
+
 						$this->modx->invokeEvent("OnWebLogin", array(
 			                "userid"		=> $userObj->getID(),
 			                "username"		=> $userObj->get('username'),
@@ -298,6 +316,9 @@ class Actions{
 			            ));
 						$this->moveTo(array('url' => urldecode($POST['backUrl'])));
 					}else{
+						$userObj->set('failedlogincount', (int)$userObj->get('failedlogincount') + 1);
+						$userObj->save(false, false);
+
 						$error = 'error.incorrect_password';
 					}
 				}else{
@@ -309,7 +330,9 @@ class Actions{
 			}
 		}
 		if(!empty($error)){
-			$error = static::getLangMsg($error, \APIHelpers::getkey($params, $error, ''));
+			$errorCode = $error;
+			$error = \APIHelpers::getkey($params, $error, '');
+			$error = static::getLangMsg($error, $error);
 		}
 		return $POST;
 	}
@@ -370,7 +393,7 @@ class Actions{
 		$type = 'web';
 		$userID = $this->UserID(compact('type'));
 		if($userID>0){
-		    $id = \APIHelpers::getkey($params, 'id');
+			$id = \APIHelpers::getkey($params, 'homeID');
 		    if(empty($id)){
 				$id = $this->modx->getConfig('login_home', $this->config['site_start']);
 		    }
