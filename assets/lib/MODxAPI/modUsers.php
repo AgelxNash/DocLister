@@ -69,19 +69,19 @@ class modUsers extends MODxAPI
             $this->newDoc = false;
 
             if (!$find = $this->findUser($id)) {
-                return false;
-            } //@TODO: log error
+                $this->id = null;
+            }else {
+				$result = $this->query("
+					SELECT * from {$this->makeTable('web_user_attributes')} as attribute
+					LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
+					WHERE BINARY {$find}='{$this->escape($id)}'
+				");
+				$this->field = $this->modx->db->getRow($result);
 
-            $result = $this->query("
-                SELECT * from {$this->makeTable('web_user_attributes')} as attribute
-                LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
-                WHERE BINARY {$find}='{$this->escape($id)}'
-            ");
-            $this->field = $this->modx->db->getRow($result);
-
-            $this->id = empty($this->field['internalKey']) ? null : $this->get('internalKey');
-            unset($this->field['id']);
-            unset($this->field['internalKey']);
+				$this->id = empty($this->field['internalKey']) ? null : $this->get('internalKey');
+				unset($this->field['id']);
+				unset($this->field['internalKey']);
+			}
         }
         return $this;
     }
