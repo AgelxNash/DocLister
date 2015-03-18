@@ -22,7 +22,8 @@ abstract class Plugin {
 	public $lang_attribute = '';
 
 	protected $checkTemplate = true;
-	protected $checkMM = true;
+	protected $renderEvent = 'OnDocFormRender';
+	
 	/**
      * @param $modx
      * @param string $lang_attribute
@@ -64,7 +65,7 @@ abstract class Plugin {
 		$tplFlag = ($this->checkTemplate && !$templates || ($templates && !in_array($this->params['template'],$templates)));
 		if ($tplFlag || ($roles && !in_array($_SESSION['mgrRole'],$roles))) return false;
 		$plugins = $this->modx->pluginEvent;
-		if(($this->checkMM && array_search('ManagerManager', $plugins['OnDocFormRender']) === false) && !isset($this->modx->loadedjscripts['jQuery'])) {
+		if(($this->renderEvent!=='OnDocFormRender' || (array_search('ManagerManager', $plugins['OnDocFormRender']) === false)) && !isset($this->modx->loadedjscripts['jQuery'])) {
 			$output .= '<script type="text/javascript" src="'.$this->modx->config['site_url'].'assets/js/jquery/jquery-1.9.1.min.js"></script>';
             $this->modx->loadedjscripts['jQuery'] = array('version'=>'1.9.1');
             $output .='<script type="text/javascript">var jQuery = jQuery.noConflict(true);</script>';
