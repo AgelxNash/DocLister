@@ -230,10 +230,12 @@ class modUsers extends MODxAPI
             $tmp->edit($id);
         }
         $now = time();
-        $blockeduntil = $tmp->get('blockeduntil');
-        $blockedafter = $tmp->get('blockedafter');
-        $flag = $tmp->get('blocked') && ((!$blockeduntil && !$blockedafter) || ($blockeduntil && $now < $blockeduntil) || ($blockedafter && $now > $blockedafter));
-        unset($tmp);
+
+		$b = $tmp->get('blocked');
+        $bu = $tmp->get('blockeduntil');
+        $ba = $tmp->get('blockedafter');
+        $flag = (($b && !$bu && !$ba) || ($bu && $now < $bu) || ($ba && $now > $ba));
+		unset($tmp);
         return $flag;
     }
 
