@@ -229,9 +229,12 @@ class modUsers extends MODxAPI
         if ($id && $tmp->getID() != $id) {
             $tmp->edit($id);
         }
+        $now = time();
+        $blockeduntil = $tmp->get('blockeduntil');
+        $blockedafter = $tmp->get('blockedafter');
+        $flag = $tmp->get('blocked') && ((!$blockeduntil && !$blockedafter) || ($blockeduntil && $now < $blockeduntil) || ($blockedafter && $now > $blockedafter));
         unset($tmp);
-        //@TODO валидация блокировок
-        return false;
+        return $flag;
     }
 
     public function testAuth($id, $password, $blocker)
