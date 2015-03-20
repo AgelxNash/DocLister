@@ -47,7 +47,7 @@ class Actions{
 
 		$site_url = $this->modx->getConfig('site_url');
 		$site_start = $this->modx->getConfig('site_start', 1);
-		$error_page = $this->modx->getConfig('error_page', $error_page);
+		$error_page = $this->modx->getConfig('error_page', $site_start);
 		$unauthorized_page = $this->modx->getConfig('unauthorized_page', $error_page);
 
 		$this->config = compact('site_url', 'site_start', 'error_page', 'unauthorized_page');

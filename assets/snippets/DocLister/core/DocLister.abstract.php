@@ -22,6 +22,7 @@ include_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 require_once(dirname(dirname(__FILE__)) . "/lib/jsonHelper.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/sqlHelper.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/DLTemplate.class.php");
+require_once(dirname(dirname(__FILE__)) . "/lib/DLCollection.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/xnop.class.php");
 
 abstract class DocLister
@@ -1294,6 +1295,10 @@ abstract class DocLister
         return $out;
     }
 
+	public function docsCollection(){
+        return new DLCollection($this->modx, $this->_docs);
+    }
+	
     /**********************************************************
      ********************** SQL BLOCK *************************
      *********************************************************/
