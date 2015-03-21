@@ -1,6 +1,7 @@
 ## 2.1.17 (21.03.2015)
 * [Fix] Значение по умолчанию для error_page в конструкторе DLUsers\Actions
 * [Add] Новый метод DocLister::docsCollection
+* [Add] Пагинация в стиле Ditto (Issue #129)
 
 ## 2.1.16 (16.03.2015)
 * [Add] Новый параметр addNopValue к сниппету DLValueList

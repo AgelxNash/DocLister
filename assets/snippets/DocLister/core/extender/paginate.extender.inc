@@ -9,7 +9,9 @@ if (!defined('MODX_BASE_PATH')) {
  * @category extender
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- */
+ * @see http://mis-algoritmos.com/2007/05/27/digg-style-pagination-class
+*/
+include_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/DLpaginate.class.php");
 
 class paginate_DL_Extender extends extDocLister
 {
@@ -21,8 +23,6 @@ class paginate_DL_Extender extends extDocLister
      * Call method
      *
      * @return int total pages
-     *
-     * @todo paginate ditto mode
      */
     protected function run()
     {
@@ -30,34 +30,29 @@ class paginate_DL_Extender extends extDocLister
             $this->DocLister->setConfig(array('start' => 0));
         }
         $pages = 0;
-
+        $display = $this->DocLister->getCFGDef('display', 0);
         switch ($paginate) {
+            case 'offset': {
+                $requestName = $this->getRequestName('start');
+                $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? intval($_GET[$requestName]) : 0;
+                $this->_pages['current'] = ceil($start / $display) + 1;
+                $this->DocLister->setConfig(array('start' => $start));
+                break;
+            }
             case 'pages':
-            {
+            default: {
+                $paginate = 'pages';
                 $requestName = $this->getRequestName('page');
                 $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? (intval($_GET[$requestName]) - 1) : 0;
-                $this->DocLister->setConfig(array('start' => $start * $this->DocLister->getCFGDef('display', 0)));
                 $this->_pages['current'] = $start + 1;
-                $pages = $this->getListPages($paginate, 'total');
-                $this->DocLister->toPlaceholders($this->currentPage(), 1, "current");
-                $this->DocLister->toPlaceholders($this->renderPages("pages"), 1, "pages");
+                $this->DocLister->setConfig(array('start' => $start * $display));
                 break;
             }
-            case 'ditto':
-            {
-                /*if($id!=''){ $dittoID = $dittoID."_"; }
-                $start=isset($_GET[$dittoID.'start']) ? intval($_GET[$dittoID.'start']): 0;
-                $this->setConfig(array('start'=>$start));
-                $this->_pages['current']=1;
-                $pages=$this->getListPages($paginate,'total');
-                $this->toPlaceholders($this->renderPages("ditto",$dittoID),1,"pages");*/
-                break;
-            }
-            default:
-                {
-                }
         }
 
+        $pages = $this->getListPages($paginate, 'total');
+        $this->DocLister->toPlaceholders($this->currentPage(), 1, "current");
+        $this->DocLister->toPlaceholders($this->renderPages($paginate), 1, "pages");
         $this->DocLister->toPlaceholders(($this->currentPage() == 1 ? 1 : 0), 1, "isstart"); //[+isstart+] – is start page
         $this->DocLister->toPlaceholders(($this->currentPage() == $pages ? 1 : 0), 1, "isstop"); //[+isstop+] – is end page
         $this->DocLister->toPlaceholders($pages, 1, "totalPages"); // [+totalPages+] - total page.
@@ -75,7 +70,6 @@ class paginate_DL_Extender extends extDocLister
      */
     protected function getListPages($paginate, $name = '')
     {
-        $this->_pages['current'] = $this->currentPage();
         if ($paginate == '') {
             $this->_pages['total'] = 1;
         } else {
@@ -85,11 +79,11 @@ class paginate_DL_Extender extends extDocLister
 
             $display = $this->DocLister->getCFGDef('display', 0);
             $this->_pages['total'] = ceil($tmp / $display);
-            if ($this->_pages['current'] <= $this->_pages['total'] || $this->_pages['total'] == 0 || $this->DocLister->getCFGDef('noRedirect', 0)) {
+            if ($this->currentPage() <= $this->totalPage() || $this->totalPage() == 0 || $this->DocLister->getCFGDef('noRedirect', 0)) {
                 $this->DocLister->toPlaceholders($tmp, 1, "count");
-                $from = ($this->_pages['current'] - 1) * $display + 1;
+                $from = ($this->currentPage() - 1) * $display + 1;
                 $this->DocLister->toPlaceholders($from, 1, "from");
-                $to = ($this->_pages['current'] == $this->_pages['total']) ? $from - 1 + $tmp - ($this->_pages['current'] - 1) * $display : $from - 1 + $display;
+                $to = ($this->currentPage() == $this->totalPage()) ? $from - 1 + $tmp - ($this->currentPage() - 1) * $display : $from - 1 + $display;
                 $this->DocLister->toPlaceholders($to, 1, "to");
             } else {
                 $this->modx->sendRedirect($this->getUrl('page'));
@@ -116,58 +110,41 @@ class paginate_DL_Extender extends extDocLister
         return (int)APIHelpers::getkey($this->_pages, 'total', 1);
     }
 
-    /**
-     *
-     * @todo template list pages
-     * @todo add parameter of count pages to display
-     * @todo pagintion ditto style (in $_GET array set count offset documents)
-     * @todo update Digg pagination for compbility php 5.4
-     */
     private function renderPages($mode = '')
     {
         $out = '';
-        switch ($mode) {
-            case 'ditto':
-            {
-                $out = '';
+        $p = new DLpaginate;
+        $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE: <a href="[+link+]">[%paginate.next%] ></a>');
+        $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
+        $p->numberT = $this->DocLister->getChunkByParam('TplPage', '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
+        $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
+        $p->dotsT = $this->DocLister->getChunkByParam('TplDotsPage', '@CODE: ...');
+        $p->prevI = '';
+        $p->nextI = '';
+        if ($this->DocLister->getCFGDef("PrevNextAlwaysShow", 0) == '1') {
+            $p->nextI = $this->DocLister->getChunkByParam('TplNextI', '@CODE: [%paginate.next%] >');
+            $p->prevI = $this->DocLister->getChunkByParam('TplPrevI', '@CODE: < [%paginate.prev%]');
+        }
+        $p->mainTpl = $this->DocLister->getChunkByParam('TplWrapPaginate', '@CODE: <div class="[+class+]">[+wrap+]</div>');
+        $p->Items($this->totalPage());
+        $p->limit($this->DocLister->getCFGDef("pageLimit", 1)); //show page count
+        $p->adjacents($this->DocLister->getCFGDef("pageAdjacents", 4));
+        $p->target($this->getUrl());
+        $p->currentPage($this->currentPage());
+
+        switch (true) {
+            case ($mode == 'offset' && $this->totalPage() > 1): {
+                $p->setMode('offset', array(
+                    'display' => $this->DocLister->getCFGDef('display', 0)
+                ))->parameterName($this->getRequestName('start'));
                 break;
             }
-            default:
-                {
-                /**
-                 * @see http://mis-algoritmos.com/2007/05/27/digg-style-pagination-class
-                 */
-                $out = '';
-                $dir = dirname(dirname(dirname(__FILE__)));
-                if (file_exists($dir . "/lib/DLpaginate.class.php")) {
-                    include_once($dir . "/lib/DLpaginate.class.php");
-                    if (class_exists("DLpaginate", false) && $this->totalPage() > 1) {
-                        $p = new DLpaginate;
-                        $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE: <a href="[+link+]">[%paginate.next%] ></a>');
-                        $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
-                        $p->numberT = $this->DocLister->getChunkByParam('TplPage', '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
-                        $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
-                        $p->dotsT = $this->DocLister->getChunkByParam('TplDotsPage', '@CODE: ...');
-                        $p->prevI = '';
-                        $p->nextI = '';
-                        if ($this->DocLister->getCFGDef("PrevNextAlwaysShow", 0) == '1') {
-                            $p->nextI = $this->DocLister->getChunkByParam('TplNextI', '@CODE: [%paginate.next%] >');
-                            $p->prevI = $this->DocLister->getChunkByParam('TplPrevI', '@CODE: < [%paginate.prev%]');
-                        }
-                        $p->mainTpl = $this->DocLister->getChunkByParam('TplWrapPaginate', '@CODE: <div class="[+class+]">[+wrap+]</div>');
-                        $p->Items($this->totalPage());
-                        $p->limit($this->DocLister->getCFGDef("pageLimit", 1)); //show page count
-                        $p->adjacents($this->DocLister->getCFGDef("pageAdjacents", 4));
-                        $p->target($this->getUrl());
-                        $p->currentPage($this->currentPage());
-                        $p->parameterName($this->getRequestName('page'));
-                        $p->changeClass($this->DocLister->getCFGDef("PaginateClass", "paginate"));
-                        $out = $p->getOutput();
-                    }
-                }
-                }
+            case ($mode == 'pages' && $this->totalPage() > 1):{
+                $p->parameterName($this->getRequestName('page'));
+                break;
+            }
         }
-        return $out;
+        return $p->getOutput();
     }
 
     public function getUrl($requestName = '')
@@ -177,20 +154,15 @@ class paginate_DL_Extender extends extDocLister
         parse_str(html_entity_decode($params), $params);
         if ($requestName == '') {
             switch ($this->DocLister->getCFGDef('paginate', '')) {
-                case 'pages':
-                {
-                    $requestName = 'page';
-                    break;
-                }
-                case 'ditto':
-                {
+                case 'offset': {
                     $requestName = 'start';
                     break;
                 }
-                default:
-                    {
-
-                    }
+                case 'pages':
+                default: {
+                    $requestName = 'page';
+                    break;
+                }
             }
         }
         if ($requestName != '' && is_array($params)) {
