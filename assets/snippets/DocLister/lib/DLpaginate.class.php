@@ -201,8 +201,8 @@ class DLpaginate {
             $start = 0; //if no page var is given, set start to 0
 
         /* Setup page vars for display. */
-        $prev = $this->page - 1; //previous page is page - 1
-        $next = $this->page + 1; //next page is page + 1
+        $prev = ($this->page <= 1) ? 0 : $this->page - 1; //previous page is page - 1
+        $next = (($this->page == $this->total_pages) ? 0 : ($this->page + 1)); //next page is page + 1
         $lastpage = ceil($this->total_pages / $this->limit); //lastpage is = total pages / items per page, rounded up.
         $lpm1 = $lastpage - 1; //last page minus 1
 
