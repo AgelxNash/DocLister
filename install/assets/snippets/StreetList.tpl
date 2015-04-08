@@ -12,4 +12,4 @@
  * @internal    @installset base, sample
  */
 
-return require MODX_BASE_PATH.'assets/modules/DLCity/StreetList.snippet.php';
+return require MODX_BASE_PATH.'assets/modules/RelativeTVList/StreetList.snippet.php';
