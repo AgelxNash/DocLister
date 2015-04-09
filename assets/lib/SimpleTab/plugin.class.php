@@ -23,7 +23,9 @@ abstract class Plugin {
 
 	protected $checkTemplate = true;
 	protected $renderEvent = 'OnDocFormRender';
-	
+
+	protected $checkId = true;
+
 	/**
      * @param $modx
      * @param string $lang_attribute
@@ -63,7 +65,15 @@ abstract class Plugin {
 		$roles = isset($this->params['roles']) ? explode(',',$this->params['roles']) : false;
 
 		$tplFlag = ($this->checkTemplate && !$templates || ($templates && !in_array($this->params['template'],$templates)));
-		if ($tplFlag || ($roles && !in_array($_SESSION['mgrRole'],$roles))) return false;
+
+		$documents = isset($this->params['documents']) ? explode(',',$this->params['documents']) : false;
+		$docFlag = ($this->checkId && $tplFlag) ? !($documents && in_array($this->params['id'], $documents)) : $tplFlag;
+
+		$ignoreDocs = isset($this->params['ignoreDoc']) ? explode(',',$this->params['ignoreDoc']) : false;
+		$ignoreFlag = ($this->checkId && $ignoreDocs && in_array($this->params['id'], $ignoreDocs));
+
+		if ($docFlag || $ignoreFlag || ($roles && !in_array($_SESSION['mgrRole'],$roles))) return false;
+
 		$plugins = $this->modx->pluginEvent;
 		if(($this->renderEvent!=='OnDocFormRender' || (array_search('ManagerManager', $plugins['OnDocFormRender']) === false)) && !isset($this->modx->loadedjscripts['jQuery'])) {
 			$output .= '<script type="text/javascript" src="'.$this->modx->config['site_url'].'assets/js/jquery/jquery-1.9.1.min.js"></script>';
