@@ -13,6 +13,8 @@ class dataTable extends \autoTable {
     }
 
     protected function clearIndexes($ids, $rid) {
+        $ids = $this->cleanIDs($ids, ',', array(0));
+        $ids = $this->sanitarIn($ids);
         $table = $this->makeTable($this->table);
         $rows = $this->query("SELECT MIN(`{$this->indexName}`) FROM {$table} WHERE `{$this->pkName}` IN ({$ids})");
         $index = $this->modx->db->getValue($rows);
@@ -73,10 +75,14 @@ class dataTable extends \autoTable {
     }
 
     public function delete($ids, $fire_events = NULL) {
-        $this->clearIndexes($ids,$rid);
         $out = parent::delete($ids, $fire_events);
         $this->query("ALTER TABLE {$this->makeTable($this->table)} AUTO_INCREMENT = 1");
         return $out;
+    }
+
+    public function deleteAll ($ids, $rid, $fire_events = NULL) {
+        $this->clearIndexes($ids, $rid);
+        return $this->delete($ids, $fire_events);
     }
 
     public function fieldNames(){
@@ -105,19 +111,19 @@ class dataTable extends \autoTable {
         /* more refactoring  needed */
         if ($target[$this->indexName] < $source[$this->indexName]) {
             if (($point == 'top' && $orderDir == 'asc') || ($point == 'bottom' && $orderDir == 'desc')) {
-                $rows = $this->modx->db->update("`sf_index`=`sf_index`+1",$table,"`sf_index`>={$targetIndex} AND `sf_index`<{$sourceIndex} AND `sf_rid`={$rid}");
-                $rows = $this->modx->db->update("`sf_index`={$targetIndex}",$table,"`sf_id`={$sourceId}");             
+                $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`+1",$table,"`{$this->indexName}`>={$targetIndex} AND `{$this->indexName}`<{$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             } elseif (($point == 'bottom' && $orderDir == 'asc') || ($point == 'top' && $orderDir == 'desc')) {
-                $rows = $this->modx->db->update("`sf_index`=`sf_index`+1",$table,"`sf_index`>{$targetIndex} AND `sf_index`<{$sourceIndex} AND `sf_rid`={$rid}");
-                $rows = $this->modx->db->update("`sf_index`={(1+$targetIndex)}",$table,"`sf_id`={$sourceId}");             
+                $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`+1",$table,"`{$this->indexName}`>{$targetIndex} AND `{$this->indexName}`<{$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`={(1+$targetIndex)}",$table,"`{$this->pkName}`={$sourceId}");             
             }
         } else {
             if (($point == 'bottom' && $orderDir == 'asc') || ($point == 'top' && $orderDir == 'desc')) {
-                $rows = $this->modx->db->update("`sf_index`=`sf_index`-1",$table,"`sf_index`<={$targetIndex} AND `sf_index`>{$sourceIndex} AND `sf_rid`={$rid}");
-                $rows = $this->modx->db->update("`sf_index`={$targetIndex}",$table,"`sf_id`={$sourceId}");             
+                $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<={$targetIndex} AND `{$this->indexName}`>{$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             } elseif (($point == 'top' && $orderDir == 'asc') || ($point == 'bottom' && $orderDir == 'desc')) {
-                $rows = $this->modx->db->update("`sf_index`=`sf_index`-1",$table,"`sf_index`<{$targetIndex} AND `sf_index`>{$sourceIndex} AND `sf_rid`={$rid}");
-                $rows = $this->modx->db->update("`sf_index`={(-1+$targetIndex)}",$table,"`sf_id`={$sourceId}");                
+                $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<{$targetIndex} AND `{$this->indexName}`>{$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`={(-1+$targetIndex)}",$table,"`{$this->pkName}`={$sourceId}");                
             }
         }
         
