@@ -10,6 +10,21 @@ abstract class AbstractController {
     public $isExit = false;
     public $output = null;
     public $params = null;
+    public $dlParams = array(
+        "controller"    =>  "onetable",
+        "table"         =>  "",
+        'idField'       =>  "",
+        "api"           =>  1,
+        "idType"        =>  "documents",
+        'ignoreEmpty'   =>  1,
+        'JSONformat'    =>  "new",
+        'display'       =>  10,
+        'offset'        =>  0,
+        'sortBy'        =>  "",
+        'sortDir'       =>  "desc",
+
+
+    );
 
     protected $modx = null;
 
@@ -77,37 +92,27 @@ abstract class AbstractController {
             $this->isExit = true;
             return;
         }
-        $param = array(
-            "controller" 	=> 	"onetable",
-            "table" 		=> 	$this->data->tableName(),
-            'idField' 		=> 	$this->data->fieldPKName(),
-            "api" 			=> 	'1',
-            "idType"		=>	"documents",
-            'ignoreEmpty' 	=> 	"1",
-            'JSONformat' 	=> 	"new"
-        );
-        $display = 10;
-        $display = isset($_REQUEST['rows']) ? (int)$_REQUEST['rows'] : $display;
+        return $this->modx->runSnippet("DocLister", $this->dlParams);
+    }
+
+    public function dlInit() {
+        $this->dlParams['table'] = $this->data->tableName();
+        $this->dlParams['idField'] = $this->data->fieldPKName();
+        $this->dlParams['addWhereList'] = "`{$this->rfName}`={$this->rid}";
+        if (isset($_REQUEST['rows'])) $this->dlParams['display'] = (int)$_REQUEST['rows'];
         $offset = isset($_REQUEST['page']) ? (int)$_REQUEST['page'] : 1;
         $offset = $offset ? $offset : 1;
-        $offset = $display*abs($offset-1);
-
-        $param['display'] = $display;
-        $param['offset'] = $offset;
-
+        $offset = $this->dlParams['display']*abs($offset-1);
+        $this->dlParams['offset'] = $offset;
         if(isset($_REQUEST['sort'])){
-            $sort = $_REQUEST['sort'];
-            $param['sortBy'] = preg_replace('/[^A-Za-z0-9_\-]/', '', $sort);
-            if(''==$param['sortBy']){
-                unset($param['sortBy']);
-            }
+            $this->dlParams['sortBy'] = preg_replace('/[^A-Za-z0-9_\-]/', '', $_REQUEST['sort']);
         }
         if(isset($_REQUEST['order']) && in_array(strtoupper($_REQUEST['order']), array("ASC","DESC"))){
             $param['sortDir'] = $_REQUEST['order'];
         }
-        $param['addWhereList'] = "`{$this->rfName}`={$this->rid}";
-        $out = $this->modx->runSnippet("DocLister", $param);
-        return $out;
+        foreach ($this->dlParams as &$param) {
+            if (empty($param)) unset($param);
+        }
     }
 
     public function getLanguageCode() {
