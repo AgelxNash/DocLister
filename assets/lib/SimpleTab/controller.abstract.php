@@ -3,7 +3,7 @@
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 
 abstract class AbstractController {
-    public $ridField = '';
+    public $rfName = '';
     public $rid = 0;
     public $data = null;
     public $FS = null;
@@ -59,7 +59,7 @@ abstract class AbstractController {
         if(isset($_REQUEST['order']) && in_array(strtoupper($_REQUEST['order']), array("ASC","DESC"))){
             $param['sortDir'] = $_REQUEST['order'];
         }
-        $param['addWhereList'] = "`{$this->ridField}`={$this->rid}";
+        $param['addWhereList'] = "`{$this->rfName}`={$this->rid}";
         $out = $this->modx->runSnippet("DocLister", $param);
         return $out;
     }
