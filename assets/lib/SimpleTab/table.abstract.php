@@ -1,6 +1,8 @@
 <?php namespace SimpleTab;
 require_once (MODX_BASE_PATH . 'assets/lib/MODxAPI/autoTable.abstract.php');
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
+require_once (MODX_BASE_PATH . 'assets/lib/Helpers/PHPThumb.php');
+
 class dataTable extends \autoTable {
     protected $params = array();
     protected $fs = null;
@@ -109,7 +111,7 @@ class dataTable extends \autoTable {
         $table = $this->makeTable($this->table);
         $rows = 0;
         /* more refactoring  needed */
-        if ($target[$this->indexName] < $source[$this->indexName]) {
+        if ($targetIndex < $sourceIndex) {
             if (($point == 'top' && $orderDir == 'asc') || ($point == 'bottom' && $orderDir == 'desc')) {
                 $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`+1",$table,"`{$this->indexName}`>={$targetIndex} AND `{$this->indexName}`<{$sourceIndex} AND `{$this->rfName}`={$rid}");
                 $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
@@ -119,15 +121,36 @@ class dataTable extends \autoTable {
             }
         } else {
             if (($point == 'bottom' && $orderDir == 'asc') || ($point == 'top' && $orderDir == 'desc')) {
-                $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<={$targetIndex} AND `{$this->indexName}`>{$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<={$targetIndex} AND `{$this->indexName}`>={$sourceIndex} AND `{$this->rfName}`={$rid}");
                 $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             } elseif (($point == 'top' && $orderDir == 'asc') || ($point == 'bottom' && $orderDir == 'desc')) {
-                $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<{$targetIndex} AND `{$this->indexName}`>{$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<{$targetIndex} AND `{$this->indexName}`>={$sourceIndex} AND `{$this->rfName}`={$rid}");
                 $rows = $this->modx->db->update("`{$this->indexName}`={(-1+$targetIndex)}",$table,"`{$this->pkName}`={$sourceId}");                
             }
         }
         
         return $rows;
+    }
+
+    /**
+     * @param $folder
+     * @param $url
+     * @param $options
+     * @return bool
+     */
+    public function makeThumb($folder,$url,$options) {
+        if (empty($url)) return false;
+        $thumb = new \Helpers\PHPThumb();
+        $inputFile = MODX_BASE_PATH . $this->fs->relativePath($url);
+        $outputFile = MODX_BASE_PATH. $this->fs->relativePath($folder). '/' . $this->fs->relativePath($url);
+        $dir = $this->fs->takeFileDir($outputFile);
+        $this->fs->makeDir($dir, $this->modx->config['new_folder_permissions']);
+        if ($thumb->create($inputFile,$outputFile,$options)) {
+            return true;
+        } else {
+            $this->modx->logEvent(0, 3, $thumb->debugMessages,  __NAMESPACE__);
+            return false;
+        }
     }
 }
 ?>
