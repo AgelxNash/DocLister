@@ -39,6 +39,14 @@ abstract class Plugin {
         if ($this->checkTemplate && !isset($this->params['template']) && $modx->event->name != 'OnEmptyTrash') {
             $this->params['template'] = array_pop($modx->getDocument($this->params['id'],'template','all','all'));
         }
+        //overload plugin and class properties
+        $_params = $modx->parseProperties('&template=;;'.$this->params['template'].' &id=;;'.$this->params['id'],$modx->event->activePlugin,'plugin');
+        foreach ($_params as $key=>$value) 
+            if (property_exists ($this, $key)) 
+                $this->$key = $value;
+
+        $this->params = array_merge($this->params,$_params);
+        $modx->event->_output = "";
         $this->DLTemplate = \DLTemplate::getInstance($this->modx);
         $this->fs = \Helpers\FS::getInstance();
     }
