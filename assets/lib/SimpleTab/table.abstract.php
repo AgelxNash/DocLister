@@ -117,7 +117,7 @@ class dataTable extends \autoTable {
                 $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             } elseif (($point == 'bottom' && $orderDir == 'asc') || ($point == 'top' && $orderDir == 'desc')) {
                 $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`+1",$table,"`{$this->indexName}`>{$targetIndex} AND `{$this->indexName}`<{$sourceIndex} AND `{$this->rfName}`={$rid}");
-                $rows = $this->modx->db->update("`{$this->indexName}`={(1+$targetIndex)}",$table,"`{$this->pkName}`={$sourceId}");             
+                $rows = $this->modx->db->update("`{$this->indexName}`=1+{$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             }
         } else {
             if (($point == 'bottom' && $orderDir == 'asc') || ($point == 'top' && $orderDir == 'desc')) {
@@ -125,7 +125,7 @@ class dataTable extends \autoTable {
                 $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             } elseif (($point == 'top' && $orderDir == 'asc') || ($point == 'bottom' && $orderDir == 'desc')) {
                 $rows = $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<{$targetIndex} AND `{$this->indexName}`>={$sourceIndex} AND `{$this->rfName}`={$rid}");
-                $rows = $this->modx->db->update("`{$this->indexName}`={(-1+$targetIndex)}",$table,"`{$this->pkName}`={$sourceId}");                
+                $rows = $this->modx->db->update("`{$this->indexName}`=-1+{$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");                
             }
         }
         
