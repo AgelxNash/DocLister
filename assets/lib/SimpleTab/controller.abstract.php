@@ -10,6 +10,8 @@ abstract class AbstractController {
     public $isExit = false;
     public $output = null;
     public $params = null;
+	public $fireEvents = true;
+	
     public $dlParams = array(
         "controller"    =>  "onetable",
         "table"         =>  "",
