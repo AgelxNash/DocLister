@@ -20,11 +20,15 @@ abstract class MODxAPI extends MODxAPIhelpers
     private $_decodedFields = array();
 
     public function __construct($modx, $debug = false)
-    {
+    {	
         try {
             if ($modx instanceof DocumentParser) {
                 $this->modx = $modx;
             } else throw new Exception('MODX should be instance of DocumentParser');
+			
+			if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
+                throw new Exception('Magic Quotes is a deprecated and mostly useless setting that should be disabled. Please ask your server administrator to disable it in php.ini or in your webserver config.');
+            }
         } catch (Exception $e) {
             die($e->getMessage());
         }
@@ -66,9 +70,6 @@ abstract class MODxAPI extends MODxAPIhelpers
         if(!is_scalar($value)){
             $value = '';
         }else{
-            if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
-                $value = stripslashes($value);
-            }
             $value = $this->modx->db->escape($value);
         }
         return $value;
