@@ -135,7 +135,7 @@ class DLpaginate {
 
     public function getOutput() {
         $out = '';
-        if (!$this->calculate && $this->calculate()){
+        if (!$this->calculate && $this->calculate() && !empty($this->pagination)){
             $out = str_replace(array("[+class+]", "[+wrap+]"), array($this->className, $this->pagination), $this->mainTpl) . "\n";
         }
         return $out;
