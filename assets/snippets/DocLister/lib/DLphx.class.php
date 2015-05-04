@@ -230,7 +230,7 @@ class DLphx
                         $condition[] = intval(($output == $modifier_value[$i]));
                         break;
 					case "empty":
-						 $condition[] = empty($output);
+						 $condition[] = intval(empty($output));
 						break;
                     case "notequals":
                     case "isnot":
