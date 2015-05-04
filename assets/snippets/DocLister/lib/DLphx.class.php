@@ -229,6 +229,9 @@ class DLphx
                     case "eq":
                         $condition[] = intval(($output == $modifier_value[$i]));
                         break;
+					case "empty":
+						 $condition[] = empty($output);
+						break;
                     case "notequals":
                     case "isnot":
                     case "isnt":
@@ -284,7 +287,7 @@ class DLphx
                         break;
                     case "else":
                         $conditional = implode(' ', $condition);
-                        $isvalid = intval(eval("return (" . $conditional . ");"));
+						$isvalid = intval(eval("return (" . $conditional . ");"));
                         if (!$isvalid) {
                             $output = $modifier_value[$i];
                         }

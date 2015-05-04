@@ -115,6 +115,14 @@ class modResource extends MODxAPI
         );
         return \APIhelpers::renameKeyArr($out, $prefix, $suffix, $sep);
     }
+	public function getUrl(){
+		$out = null;
+		$id = (int)$this->getID();
+		if(!empty($id)){
+			$out = $this->modx->makeUrl($id);
+		}
+		return $out;
+	}
     public function isWebShow()
     {
         $pub = ($this->get('publishedon') < time() && $this->get('published'));
