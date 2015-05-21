@@ -155,6 +155,24 @@ abstract class Plugin {
     }
 
     /**
+     * @return string
+     */
+    public function renderEmpty() {
+        $tpl = MODX_BASE_PATH.$this->emptyTpl;
+        if($this->fs->checkFile($tpl)) {
+            $output .= '[+js+]'.file_get_contents($tpl);
+        } else {
+            $this->modx->logEvent(0, 3, "Cannot load {$this->tpl} .", $this->pluginName);
+        }
+        if ($output !== false) {
+            $ph = $this->getTplPlaceholders();
+            $ph['js'] = $this->renderJS($this->jsListEmpty,$ph);
+            $output = $this->DLTemplate->parseChunk('@CODE:'.$output,$ph);
+        }
+        return $output;
+    }
+
+    /**
      * @return bool
      */
     public function checkTable() {
