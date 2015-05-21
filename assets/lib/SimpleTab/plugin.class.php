@@ -55,6 +55,21 @@ abstract class Plugin {
         foreach ($ids as $id) $this->fs->rmDir($folder.$id.'/');
     }
 
+    public function checkPermissions() {
+        $templates = isset($this->params['templates']) ? explode(',',$this->params['templates']) : false;
+        $roles = isset($this->params['roles']) ? explode(',',$this->params['roles']) : false;
+
+        $tplFlag = ($this->checkTemplate && !$templates || ($templates && !in_array($this->params['template'],$templates)));
+
+        $documents = isset($this->params['documents']) ? explode(',',$this->params['documents']) : false;
+        $docFlag = ($this->checkId && $tplFlag) ? !($documents && in_array($this->params['id'], $documents)) : $tplFlag;
+
+        $ignoreDocs = isset($this->params['ignoreDoc']) ? explode(',',$this->params['ignoreDoc']) : false;
+        $ignoreFlag = ($this->checkId && $ignoreDocs && in_array($this->params['id'], $ignoreDocs));
+
+        return ($docFlag || $ignoreFlag || ($roles && !in_array($_SESSION['mgrRole'],$roles)));
+    }
+
     /**
      * @return string
      */
@@ -68,20 +83,6 @@ abstract class Plugin {
 			$this->registerEvents($this->pluginEvents);
         }
         $output = '';
-
-    	$templates = isset($this->params['templates']) ? explode(',',$this->params['templates']) : false;
-		$roles = isset($this->params['roles']) ? explode(',',$this->params['roles']) : false;
-
-		$tplFlag = ($this->checkTemplate && !$templates || ($templates && !in_array($this->params['template'],$templates)));
-
-		$documents = isset($this->params['documents']) ? explode(',',$this->params['documents']) : false;
-		$docFlag = ($this->checkId && $tplFlag) ? !($documents && in_array($this->params['id'], $documents)) : $tplFlag;
-
-		$ignoreDocs = isset($this->params['ignoreDoc']) ? explode(',',$this->params['ignoreDoc']) : false;
-		$ignoreFlag = ($this->checkId && $ignoreDocs && in_array($this->params['id'], $ignoreDocs));
-
-		if ($docFlag || $ignoreFlag || ($roles && !in_array($_SESSION['mgrRole'],$roles))) return false;
-
 		$plugins = $this->modx->pluginEvent;
 		if(($this->renderEvent!=='OnDocFormRender' || (array_search('ManagerManager', $plugins['OnDocFormRender']) === false)) && !isset($this->modx->loadedjscripts['jQuery'])) {
 			$output .= '<script type="text/javascript" src="'.$this->modx->config['site_url'].'assets/js/jquery/jquery-1.9.1.min.js"></script>';
@@ -93,8 +94,9 @@ abstract class Plugin {
 			$output .= '[+js+][+styles+]'.file_get_contents($tpl);
 		} else {
 			$this->modx->logEvent(0, 3, "Cannot load {$this->tpl} .", $this->pluginName);
+            return false;
 		}
-		return $output;
+        return $output;
     }
 
     /**
@@ -111,15 +113,17 @@ abstract class Plugin {
 			$scripts = json_decode($scripts,true);
 			$scripts = isset($scripts['scripts']) ? $scripts['scripts'] : $scripts['styles'];
 			foreach ($scripts as $name => $params) {
-				if (!isset($this->modx->loadedjscripts[$name]) && $this->fs->checkFile($params['src'])) {
-					$this->modx->loadedjscripts[$name] = array('version'=>$params['version']);
-					if (end(explode('.',$params['src'])) == 'js') {
-						$js .= '<script type="text/javascript" src="' . $this->modx->config['site_url'] . $params['src'] . '"></script>';
-					} else {
-						$js .= '<link rel="stylesheet" type="text/css" href="'. $this->modx->config['site_url'] . $params['src'] .'">';
-					}
-				} else {
-                    $this->modx->logEvent(0, 3, 'Cannot load '.$params['src'], $this->pluginName);
+				if (!isset($this->modx->loadedjscripts[$name])) {
+					if ($this->fs->checkFile($params['src'])) {
+                        $this->modx->loadedjscripts[$name] = array('version'=>$params['version']);
+    					if (end(explode('.',$params['src'])) == 'js') {
+    						$js .= '<script type="text/javascript" src="' . $this->modx->config['site_url'] . $params['src'] . '"></script>';
+    					} else {
+    						$js .= '<link rel="stylesheet" type="text/css" href="'. $this->modx->config['site_url'] . $params['src'] .'">';
+    					}
+    				} else {
+                        $this->modx->logEvent(0, 3, 'Cannot load '.$params['src'], $this->pluginName);
+                    }
                 }
 			}
 		} else {
@@ -144,32 +148,34 @@ abstract class Plugin {
      * @return string
      */
     public function render() {
-		$output = $this->prerender();
-		if ($output !== false) {
-			$ph = $this->getTplPlaceholders();
-			$ph['js'] = $this->renderJS($this->jsListDefault,$ph) . $this->renderJS($this->jsListCustom,$ph);
-			$ph['styles'] = $this->renderJS($this->cssListDefault,$ph) . $this->renderJS($this->cssListCustom,$ph);
-			$output = $this->DLTemplate->parseChunk('@CODE:'.$output,$ph);
-		}
-		return $output;
+		if (!$this->checkPermissions()) {
+            $output = $this->prerender();
+    		if ($output !== false) {
+    			$ph = $this->getTplPlaceholders();
+    			$ph['js'] = $this->renderJS($this->jsListDefault,$ph) . $this->renderJS($this->jsListCustom,$ph);
+    			$ph['styles'] = $this->renderJS($this->cssListDefault,$ph) . $this->renderJS($this->cssListCustom,$ph);
+    			$output = $this->DLTemplate->parseChunk('@CODE:'.$output,$ph);
+    		}
+    		return $output;
+        }
     }
 
     /**
      * @return string
      */
     public function renderEmpty() {
-        $tpl = MODX_BASE_PATH.$this->emptyTpl;
-        if($this->fs->checkFile($tpl)) {
-            $output .= '[+js+]'.file_get_contents($tpl);
-        } else {
-            $this->modx->logEvent(0, 3, "Cannot load {$this->tpl} .", $this->pluginName);
+        if (!$this->checkPermissions()) {
+            $tpl = MODX_BASE_PATH.$this->emptyTpl;
+            if($this->fs->checkFile($tpl)) {
+                $output = '[+js+]'.file_get_contents($tpl);
+                $ph = $this->getTplPlaceholders();
+                $ph['js'] = $this->renderJS($this->jsListEmpty,$ph);
+                $output = $this->DLTemplate->parseChunk('@CODE:'.$output,$ph);
+                return $output;
+            } else {
+                $this->modx->logEvent(0, 3, "Cannot load {$this->emptyTpl} .", $this->pluginName);
+            }
         }
-        if ($output !== false) {
-            $ph = $this->getTplPlaceholders();
-            $ph['js'] = $this->renderJS($this->jsListEmpty,$ph);
-            $output = $this->DLTemplate->parseChunk('@CODE:'.$output,$ph);
-        }
-        return $output;
     }
 
     /**
