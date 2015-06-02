@@ -324,8 +324,6 @@ class modResource extends MODxAPI
                 $this->set('editedby', null)->touch();
             }
             unset($this->field['id']);
-        } else {
-            $this->newDoc = false;
         }
         return $this;
     }
