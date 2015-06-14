@@ -115,7 +115,7 @@ class FiltersTest extends DLAbstract {
 			'color' => 1
 		);
 		$out = array(
-			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1 LEFT JOIN site_tmplvars as `d_dltv_color_1` on d_dltv_color_1.id = 1",
+			'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1 LEFT JOIN site_tmplvars as `d_dltv_color_1` on `d_dltv_color_1`.`id` = 1",
 			'where' => "IFNULL(`dltv_color_1`.`value`, `d_dltv_color_1`.`default_text`) = 'белый'"
 		);
 
