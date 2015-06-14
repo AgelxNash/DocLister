@@ -1,5 +1,16 @@
 ## 2.1.23 (14.06.2015)
 * [Add] Добавлен параметр activeClass для сниппета DLBuildMenu
+* [Add] JS-cкрипт Sortable обновлен до версии 1.2.0
+* [Add] Вывод шаблона empty.tpl в SimpleTab-плагинах при создании документа
+* [Add] Метод checkPermissions для проверки разрешений в SimpleTab-плагинах
+* [Add] Возможность изменять свойства класса \SimpleTab\Plugin с помощью события OnParseProperties
+* [Add] Методы для удаления записей, перемещения записей в пределах документа, изменения порядка записей добавлены в абстрактные классы \SimpleTab\AbstractController и \SimpleTab\autoTable
+* [Add] Метод для получения кода языка в \SimpleTab\AbstractController
+* [Fix] Исправлена возможная ошибка в SQL запросе при фильтрации DocLister
+* [Fix] Исправлена ошибка в SQL запросе при изменении порядка записей в \SimpleTab\autoTable
+* [Refactor] \SimpleTab\autoTable - название поля, в котором хранится порядковый номер записи, задается в свойстве indexName и используется в методах, меняющих порядок записей 
+* [Refactor] Параметры для запуска DocLister в \SimpleTab\AbstractController вынесены в отдельное свойство dlParams
+
 
 ## 2.1.22 (13.05.2015)
 * [Add] Добавлен модификатор default для PHX
