@@ -21,12 +21,13 @@ if(!class_exists("DLFixedPrepare", false)){
 				$_eDL->setStore('parentIDs', $parentIDs);
 			}
 			$isActive = ((is_array($parentIDs) && in_array($data['id'], $parentIDs)) || $data['id'] == $modx->documentObject['id']);
+			$activeClass =  $_DL->getCfgDef('activeClass', 'active');
 			if($isActive){
-				$data['dl.class'] .= ' active';
+				$data['dl.class'] .= ' '.$activeClass;
 			}
 
-			if(strpos($data['dl.class'], 'current')!==false && strpos($data['dl.class'], ' active')===false){
-				$data['dl.class'] = str_replace('current', 'current active', $data['dl.class']);
+			if(strpos($data['dl.class'], 'current')!==false && strpos($data['dl.class'], ' '.$activeClass)===false){
+				$data['dl.class'] = str_replace('current', 'current '.$activeClass, $data['dl.class']);
 			}
 
 			$tpl = empty($data['dl.submenu']) ? 'noChildrenRowTPL' : 'mainRowTpl';
