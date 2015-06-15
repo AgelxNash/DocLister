@@ -63,6 +63,7 @@ class tv_DL_Extender extends extDocLister
     {
         $out = array();
         $tv = $this->getTVid($tvlist);
+        if (empty($tv)) return $out;
         $tvId = array_keys($tv);
         $tbl_site_tmplvar_contentvalues = $this->DocLister->getTable($this->tvValuesTable());
         $sanitarInIDs = $this->DocLister->sanitarIn($IDs);
