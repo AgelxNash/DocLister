@@ -184,6 +184,25 @@ class FS{
         }
         return $flag;
     }
+    
+    /**
+     * Перемещение файла с проверкой на существование оригинального файла и созданием папок
+     *
+     * @param $from источник
+     * @param $to получатель
+     * @return bool статус перемещения
+     */
+    public function moveFile($from, $to, $chmod = 0644){
+        $flag = false;
+        $from = MODX_BASE_PATH . $this->relativePath($from);
+        $to = MODX_BASE_PATH . $this->relativePath($to);
+        $dir = $this->takeFileDir($to);
+        if($this->checkFile($from) && $this->makeDir($dir) && rename($from, $to)){
+            chmod($to, $this->toOct($chmod));
+            $flag = true;
+        }
+        return $flag;
+    }
 
     /**
      * Получение относительного пути к файлу или папки
