@@ -228,7 +228,7 @@ class FS{
             foreach($dirRecursiveIterator as $path) {
                 $path->isDir() ? rmdir($path->getPathname()) : unlink($path->getPathname());
             }
-            rmdir($dirPath);
+            rmdir($path);
         }
     }
 
