@@ -227,7 +227,7 @@ abstract class DocLister
                     {
                     $cfg['idType'] = "parents";
                     if (($IDs = $this->getCFGDef('parents')) === null) {
-                        $IDs = $this->modx->documentObject['id'];
+                        $IDs = $this->getCurrentMODXPageID();
                     }
                     break;
                     }
@@ -604,6 +604,18 @@ abstract class DocLister
      ****************** CORE Block *********************
      ***************************************************/
 
+	 /**
+	 * Определение ID страницы открытой во фронте
+	 *
+	 * @return int
+	 */
+	 public function getCurrentMODXPageID(){
+		$id = isset($this->modx->documentIdentifier) ? (int)$this->modx->documentIdentifier : 0;
+		$docData = isset($this->modx->documentObject) ? $this->modx->documentObject : array();
+		
+		return empty($id) ? \APIHelpers::getkey($this->modx->documentObject, 'id', 0) : $id;
+	}
+    
     /**
      * Display and save error information
      *
