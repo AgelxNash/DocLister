@@ -116,7 +116,10 @@ class shopkeeperDocLister extends site_contentDocLister
 					}
 
                     if ($extPrepare) {
-                        $item = $extPrepare->init($this, array('data' => $item));
+                        $item = $extPrepare->init($this, array(
+                            'data' => $item,
+                            'nameParam' => 'prepare'
+                        ));
                         if (is_bool($item) && $item === false) {
                             continue;
                         }

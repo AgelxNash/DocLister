@@ -519,7 +519,7 @@ abstract class DocLister
                 $extenders = $this->unsetArrayVal($extenders, 'paginate');
             }
 
-            if ($this->getCFGDef('prepare', '') != '') {
+            if ($this->getCFGDef('prepare', '') != '' || $this->getCFGDef('prepareWrap') != '') {
                 $this->_loadExtender('prepare');
             }
         } catch (Exception $e) {
@@ -995,8 +995,14 @@ abstract class DocLister
             */
             $extPrepare = $this->getExtender('prepare');
             if ($extPrepare) {
-                $params = array('docs' => $this->_docs, 'placeholders' => $plh);
-                $params = $extPrepare->init($this, array('data' => $params, 'nameParam' => 'prepareWrap', 'return' => 'placeholders'));
+                $params = $extPrepare->init($this, array(
+                    'data' => array(
+						'docs' => $this->_docs, 
+						'placeholders' => $plh
+					),
+                    'nameParam' => 'prepareWrap',
+                    'return' => 'placeholders'
+                ));
                 if (is_bool($params) && $params === false){
                     $out = $data;
                     $parse = false;
