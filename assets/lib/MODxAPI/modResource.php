@@ -123,6 +123,14 @@ class modResource extends MODxAPI
 		}
 		return $out;
 	}
+	public function getTitle($main = 'menutitle', $second = 'pagetitle'){
+		$title = $this->get($main);
+		if(empty($title) && $title !== '0'){
+			$title = $this->get($second);
+		}
+		return $title;
+	}
+	
     public function isWebShow()
     {
         $pub = ($this->get('publishedon') < time() && $this->get('published'));
