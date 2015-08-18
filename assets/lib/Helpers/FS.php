@@ -240,14 +240,14 @@ class FS{
     }
 
     public function rmDir($dirPath) {
-        $path = MODX_BASE_PATH . $this->relativePath($dirPath);
+        $path = $_path = MODX_BASE_PATH . $this->relativePath($dirPath);
         if ($this->checkDir($path)) {
             $dirIterator = new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS);
             $dirRecursiveIterator = new \RecursiveIteratorIterator($dirIterator, \RecursiveIteratorIterator::CHILD_FIRST);
             foreach($dirRecursiveIterator as $path) {
                 $path->isDir() ? rmdir($path->getPathname()) : unlink($path->getPathname());
             }
-            rmdir($path);
+            rmdir($_path);
         }
     }
 
