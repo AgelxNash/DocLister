@@ -27,6 +27,17 @@ abstract class Action{
         $q = self::$modx->db->select($field, self::$modx->getFullTableName(self::TABLE()), "id = ".$id);
         return self::$modx->db->getValue($q);
     }
+	public static function listValue(){
+        $out = self::_workValue(function($data, $modObj){
+            $listFunction = $data['key'].'Lists';
+            $out = method_exists($modObj, $listFunction) ? $modObj->$listFunction() : array();
+            $out['selected'] =  $modObj->get($data['key']);
+            return $out;
+        });
+        self::$TPL = null;
+
+        return $out;
+    }
     protected static function _workValue($callback){
         self::$TPL = 'ajax/getValue';
         $data = Helper::jeditable('data');
@@ -45,7 +56,12 @@ abstract class Action{
             $out = array();
             if(isset($_POST['value']) && is_scalar($_POST['value'])){
                 if($modObj->set($data['key'], $_POST['value'])->save()){
-                    $out['value'] = $modObj->get($data['key']);
+                    $textMethod = $data['key'].'Text';
+                    if(method_exists($modObj, $textMethod)){
+                        $out['value'] = $modObj->$textMethod();
+                    }else{
+                        $out['value'] = $modObj->get($data['key']);
+                    }
                 }
             }
             return $out;
