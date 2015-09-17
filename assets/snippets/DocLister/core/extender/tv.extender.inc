@@ -201,7 +201,7 @@ class tv_DL_Extender extends extDocLister
                     } else {
                         $field = "`{$prefix}`.`value`";
                     }
-                    $item[0] = $this->DocLister->changeSortType($field, isset($sortType[$i]) ? $sortType[$i] : null);
+                    $item[0] = $this->DocLister->changeSortType($field, isset($sortType[$i]) ? $sortType[$i] : (isset($sortType[0]) ? $sortType[0] : null));
                 }
                 $item = implode(" ", $item);
             }
