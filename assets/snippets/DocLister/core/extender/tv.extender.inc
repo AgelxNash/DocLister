@@ -180,6 +180,7 @@ class tv_DL_Extender extends extDocLister
                 $TVnames = array();
             }
             $matches = explode(",", $match[1]);
+            sort($matches);
             $sortType = explode(",", $this->DocLister->getCFGDef('tvSortType'));
             $withDefault = explode(",", $this->DocLister->getCFGDef('tvSortWithDefault'));
             foreach ($matches as $i => &$item) {
