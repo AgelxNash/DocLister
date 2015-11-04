@@ -25,6 +25,25 @@ class PHPThumb{
         }
     }
 
+    public function optimize($file, $type = 'jpg') {
+        switch ($type) {
+            case 'jpg':
+                $ext = strtolower(end(explode('.', $file)));
+                if ($ext == 'jpeg' || $ext == 'jpg') {
+                    $cmd = '/usr/bin/jpegtran -optimize -progressive -copy none -outfile '.escapeshellarg($file.'_').' '.escapeshellarg($file);
+                    exec($cmd, $result, $return_var);
+                    if (filesize($file) > filesize($file.'_')) {
+                        @rename($file.'_',$file);
+                    } else {
+                        @unlink($file.'_');
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     private function setOptions($options) {
         $options = strtr($options, Array("," => "&", "_" => "=", '{' => '[', '}' => ']'));
         parse_str($options, $params);
