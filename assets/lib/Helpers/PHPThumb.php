@@ -16,6 +16,8 @@ class PHPThumb{
 
     public function create($inputFile, $outputFile, $options) {
         $this->thumb->sourceFilename = $inputFile;
+        $ext = str_replace('jpeg','jpg',strtolower(array_pop(explode('.',$inputFile))));
+        $options = 'f='.$ext.'&'.$options;
         $this->setOptions($options);
         if ($this->thumb->GenerateThumbnail() && $this->thumb->RenderToFile($outputFile)) {
             return true;
