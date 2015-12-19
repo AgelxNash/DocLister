@@ -240,6 +240,7 @@ class FS{
     }
 
     public function rmDir($dirPath) {
+		$flag = false;
         $path = $_path = MODX_BASE_PATH . $this->relativePath($dirPath);
         if ($this->checkDir($path)) {
             $dirIterator = new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS);
@@ -247,10 +248,36 @@ class FS{
             foreach($dirRecursiveIterator as $path) {
                 $path->isDir() ? rmdir($path->getPathname()) : unlink($path->getPathname());
             }
-            rmdir($_path);
+            $flag = rmdir($_path);
         }
+		return $flag;
+    }
+	
+	public function unlink($file){
+		$flag = false;
+        if($this->checkFile($file)){
+			$flag = unlink(MODX_BASE_PATH . $this->relativePath($file));
+        }
+		return $flag;
     }
 
+	public function delete($path){
+		$path = MODX_BASE_PATH . $this->relativePath($path);
+		switch(true){
+			case $this->checkDir($path):{
+				$flag = $this->rmDir($path);
+				break;
+			}
+			case $this->checkFile($path):{
+				$flag = $this->unlink($path);
+				break;
+			}
+			default:{
+				$flag = false;
+			}
+		}
+		return $flag;
+	}
     public function getInexistantFilename($file, $full = false) {
         $i = 1;
         $file = $mainFile = MODX_BASE_PATH.$this->relativePath($file);
