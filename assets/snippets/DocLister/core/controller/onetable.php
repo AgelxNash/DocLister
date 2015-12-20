@@ -84,7 +84,7 @@ class onetableDocLister extends DocLister
                  * @var $extPrepare prepare_DL_Extender
                  */
                 $extPrepare = $this->getExtender('prepare');
-
+				$this->skippedDocs = 0;
                 foreach ($this->_docs as $item) {
                     $this->renderTPL = $tpl;
                     if ($extUser) {
@@ -114,6 +114,7 @@ class onetableDocLister extends DocLister
                             'nameParam' => 'prepare'
                         ));
                         if (is_bool($item) && $item === false) {
+							$this->skippedDocs++;
                             continue;
                         }
                     }

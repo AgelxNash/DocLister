@@ -82,6 +82,7 @@ class shopkeeperDocLister extends site_contentDocLister
                     $comments = $extJotCount->countComments(array_keys($this->_docs));
                 }
 
+				$this->skippedDocs = 0;
                 foreach ($this->_docs as $item) {
 					$this->renderTPL = $tpl;
                     if ($extUser) {
@@ -122,6 +123,7 @@ class shopkeeperDocLister extends site_contentDocLister
                             'nameParam' => 'prepare'
                         ));
                         if (is_bool($item) && $item === false) {
+							$this->skippedDocs++;
                             continue;
                         }
                     }

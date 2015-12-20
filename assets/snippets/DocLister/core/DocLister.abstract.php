@@ -171,6 +171,9 @@ abstract class DocLister
     *               вызовами методов DocLister::render и DocLister::getJSON
     */
     protected $outData = '';
+	
+	/** @var int Число документов, которые были отфильтрованы через prepare при выводе */
+	public $skippedDocs = 0;
     /**
      * Конструктор контроллеров DocLister
      *
@@ -995,7 +998,8 @@ abstract class DocLister
      */
     public function renderWrap($data){
         $out = $data;
-        if ((($this->getCFGDef("noneWrapOuter", "1") && count($this->_docs) == 0) || count($this->_docs) > 0) && !empty($this->ownerTPL)) {
+		$docs = count($this->_docs) - $this->skippedDocs;
+		if ((($this->getCFGDef("noneWrapOuter", "1") && $docs == 0) || $docs > 0) && !empty($this->ownerTPL)) {
             $this->debug->debug("","renderWrapTPL",2);
             $parse = true;
             $plh = array($this->getCFGDef("sysKey", "dl") . ".wrap" => $data);
@@ -1056,7 +1060,7 @@ abstract class DocLister
             $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
             $class[] = $this->getCFGDef('firstClass', 'first');
         }
-        if ($i == count($this->_docs)) {
+        if ($i == (count($this->_docs) - $this->skippedDocs)) {
             $this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
             $class[] = $this->getCFGDef('lastClass', 'last');
         }
