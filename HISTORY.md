@@ -1,5 +1,6 @@
 ## 2.1.30 (20.12.2015)
-* [Add] При помощи класса [SqlFormatter](https://github.com/jdorn/sql-formatter) добавлена подсветка SQL запросов в выводе отладчика DocLister
+* [Add] При помощи класса [Formatter\SqlFormatter](https://github.com/jdorn/sql-formatter) добавлена подсветка SQL запросов в выводе отладчика DocLister
+* [Add] При помощи класса Formatter\HtmlFormatter добавлена подсветка имен шаблонов, лексиконов и плейсхолдеров
 * [Add] В методе APIhelpers::sanitarTag теперь можно подменять заменяемые символы
 * [Add] В методе APIhelpers::sanitarTag теперь можно отключить преобразование в html сущности не modx зарезервированных символов
 * [Add] В класс Helpers\FS добавлен метод unlink для удаления файлов

@@ -584,7 +584,7 @@ abstract class DocLister
      */
     public function render($tpl = '')
     {
-        $this->debug->debug('Render data with template ' . $this->debug->dumpData($tpl), 'render', 2);
+        $this->debug->debug(array('Render data with template ' => $tpl), 'render', 2, array('html'));
         $out = '';
         if (1 == $this->getCFGDef('tree', '0')) {
             foreach ($this->_tree as $item) {
@@ -746,7 +746,7 @@ abstract class DocLister
         $out = DLTemplate::getInstance($this->getMODX())->toPlaceholders($data, $set, $key, $id);
 
         $this->debug->debugEnd(
-            "toPlaceholders", $this->debug->dumpData($key) . " placeholder: " . $this->debug->dumpData($data)
+            "toPlaceholders", array($key ." placeholder" => $data), array('html')
         );
         return $out;
     }
@@ -915,7 +915,7 @@ abstract class DocLister
      */
     private function _getChunk($name)
     {
-        $this->debug->debug('Get chunk by name "' . $this->debug->dumpData($name) . '"', "getChunk", 2);
+        $this->debug->debug(array('Get chunk by name' => $name), "getChunk", 2, array('html'));
         //without trim
         $tpl = DLTemplate::getInstance($this->getMODX())->getChunk($name);
         $tpl = $this->parseLang($tpl);
@@ -932,11 +932,7 @@ abstract class DocLister
      */
     public function parseLang($tpl)
     {
-        $this->debug->debug(
-            "parseLang " . $this->debug->dumpData($tpl),
-            "parseLang",
-            2
-        );
+        $this->debug->debug(array("parseLang" => $tpl), "parseLang", 2, array('html'));
         if (is_scalar($tpl) && !empty($tpl)) {
             if (preg_match_all("/\[\%([a-zA-Z0-9\.\_\-]+)\%\]/", $tpl, $match)) {
                 $langVal = array();
@@ -951,6 +947,7 @@ abstract class DocLister
         $this->debug->debugEnd("parseLang");
         return $tpl;
     }
+
     /**
      * refactor $modx->parseChunk();
      *
@@ -963,9 +960,9 @@ abstract class DocLister
     {
         $out = null;
         $this->debug->debug(
-            "parseChunk: " . $this->debug->dumpData($name) . "\r\nWith data: " . $this->debug->dumpData($data),
+            array("parseChunk" => $name, "With data" => print_r($data, 1)),
             "parseChunk",
-            2
+            2, array('html', null)
         );
         $out = DLTemplate::getInstance($this->getMODX())->parseChunk($name, $data, $parseDocumentSource);
         if (empty($out)) {
@@ -1023,8 +1020,9 @@ abstract class DocLister
             }
             if($parse && !empty($this->ownerTPL)){
                 $this->debug->updateMessage(
-                    "render ownerTPL: " . $this->debug->dumpData($this->ownerTPL) . "\r\nWith data: " . $this->debug->dumpData($plh),
-                    "renderWrapTPL"
+                    array("render ownerTPL" => $this->ownerTPL, "With data" => print_r($plh, 1)),
+                    "renderWrapTPL",
+                    ['html', null]
                 );
                 $out = $this->parseChunk($this->ownerTPL, $plh);
             }
@@ -1661,7 +1659,7 @@ abstract class DocLister
      */
     public function dbQuery($q)
     {
-        $this->debug->debug($q, "query", 1, true);
+        $this->debug->debug($q, "query", 1, 'sql');
         $out = $this->modx->db->query($q);
         $this->debug->debugEnd("query");
         return $out;

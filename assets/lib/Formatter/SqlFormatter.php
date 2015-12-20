@@ -1,4 +1,4 @@
-<?php
+<?php namespace Formatter;
 /**
  * SQL Formatter is a collection of utilities for debugging SQL queries.
  * It includes methods for formatting, syntax highlighting, removing comments, etc.
