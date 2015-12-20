@@ -27,8 +27,7 @@ foreach($_parents as $i => $num){
 if (isset($showCurrent) && (int)$showCurrent > 0) {
     $_parents[] = $id;
 }
-
-if (!empty($_parents)) {
+if (!empty($_parents) && count($_parents) >= (empty($minDocs) ? 0 : (int)$minDocs)) {
     $_options = array_merge(
         array(
             'config' => 'crumbs:core'
