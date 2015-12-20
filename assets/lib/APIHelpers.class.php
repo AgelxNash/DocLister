@@ -221,21 +221,24 @@ class APIhelpers
         return (false !== $out && preg_match('|^(?:[0-9]{1,3}\.){3,3}[0-9]{1,3}$|', $out, $matches)) ? $out : false;
     }
 
-    public static function sanitarTag($data, $charset = 'UTF-8')
-    {
+    public static function sanitarTag($data, $charset = 'UTF-8', $chars = array(
+        '[' => '&#91;', '%5B' => '&#91;', ']' => '&#93;', '%5D' => '&#93;',
+        '{' => '&#123;', '%7B' => '&#123;', '}' => '&#125;', '%7D' => '&#125;',
+        '`' => '&#96;', '%60' => '&#96;'
+    )){
         switch(true){
             case is_scalar($data):{
                 $out = str_replace(
-                    array('[', '%5B', ']', '%5D', '{', '%7B', '}', '%7D', '`', '%60'),
-                    array('&#91;', '&#91;', '&#93;', '&#93;', '&#123;', '&#123;', '&#125;', '&#125;', '&#96;', '&#96;'),
-                    self::e($data, $charset)
+                    array_keys($chars),
+                    array_values($chars),
+                    is_null($charset) ? $data : self::e($data, $charset)
                 );
                 break;
             }
             case is_array($data):{
                 $out = $data;
                 foreach($out as $key => &$val){
-                    $val = self::sanitarTag($val, $charset);
+                    $val = self::sanitarTag($val, $charset, $chars);
                 }
                 break;
             }

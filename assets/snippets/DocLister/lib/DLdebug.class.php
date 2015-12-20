@@ -1,4 +1,5 @@
 <?php
+include_once(MODX_BASE_PATH . 'assets/lib/SqlFormatter.php');
 
 class DLdebug
 {
@@ -42,12 +43,13 @@ class DLdebug
      * 1 - SQL
      * 2 - Full debug
      */
-    public function debug($message, $key = null, $mode = 0)
+    public function debug($message, $key = null, $mode = 0, $format = false)
     {
         $mode = (int)$mode;
         if ($mode > 0 && $this->DocLister->getDebug() >= $mode) {
             $data = array(
                 'msg' => $message,
+                'format' => $format,
                 'start' => microtime(true) - $this->DocLister->getTimeStart()
             );
             if (is_scalar($key) && !empty($key)) {
@@ -70,7 +72,8 @@ class DLdebug
             $this->_log[$this->countLog()] = array(
                 'msg' => isset($msg) ? $msg : $this->_calcLog[$key]['msg'],
                 'start' => $this->_calcLog[$key]['start'],
-                'time' => microtime(true) - $this->_calcLog[$key]['time']
+                'time' => microtime(true) - $this->_calcLog[$key]['time'],
+                'format' => $this->_calcLog[$key]['format']
             );
             unset($this->_calcLog[$key]['time']);
         }
@@ -112,7 +115,11 @@ class DLdebug
                 $item['start'] = isset($item['start']) ? round(floatval($item['start']), 5) : 0;
 
                 if (isset($item['msg'])) {
-                    $item['msg'] = $this->dumpData($item['msg']);
+                    if(empty($item['format'])){
+                        $item['msg'] = $this->dumpData($item['msg']);
+                    }else{
+                       $item['msg'] = $this->dumpData(SqlFormatter::format($item['msg']), '', null);
+                    }
                 } else {
                     $item['msg'] = '';
                 }
@@ -170,14 +177,12 @@ class DLdebug
         return $out;
     }
 
-    public function dumpData($data, $wrap = '')
+    public function dumpData($data, $wrap = '', $charset = 'UTF-8')
     {
-        $out = $this->DocLister->sanitarData(print_r($data, 1));
+        $out = $this->DocLister->sanitarData(print_r($data, 1), $charset);
         if (!empty($wrap) && is_string($wrap)) {
             $out = "<{$wrap}>{$out}</{$wrap}>";
         }
         return $out;
     }
-
-
 }

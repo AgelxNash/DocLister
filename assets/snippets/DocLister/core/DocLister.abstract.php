@@ -612,10 +612,10 @@ abstract class DocLister
 	 public function getCurrentMODXPageID(){
 		$id = isset($this->modx->documentIdentifier) ? (int)$this->modx->documentIdentifier : 0;
 		$docData = isset($this->modx->documentObject) ? $this->modx->documentObject : array();
-		
+
 		return empty($id) ? \APIHelpers::getkey($this->modx->documentObject, 'id', 0) : $id;
 	}
-    
+
     /**
      * Display and save error information
      *
@@ -683,7 +683,7 @@ abstract class DocLister
     {
         return $this->_cfg;
     }
-	
+
     /**
      * Сохранение настроек вызова сниппета
      * @param array $cfg массив настроек
@@ -699,7 +699,7 @@ abstract class DocLister
         }
         return $ret;
     }
-	
+
 	/**
      * Полная перезапись настроек вызова сниппета
      * @param array $cfg массив настроек
@@ -1009,7 +1009,7 @@ abstract class DocLister
             if ($extPrepare) {
                 $params = $extPrepare->init($this, array(
                     'data' => array(
-						'docs' => $this->_docs, 
+						'docs' => $this->_docs,
 						'placeholders' => $plh
 					),
                     'nameParam' => 'prepareWrap',
@@ -1316,7 +1316,7 @@ abstract class DocLister
 	public function docsCollection(){
         return new DLCollection($this->modx, $this->_docs);
     }
-	
+
     /**********************************************************
      ********************** SQL BLOCK *************************
      *********************************************************/
@@ -1661,7 +1661,7 @@ abstract class DocLister
      */
     public function dbQuery($q)
     {
-        $this->debug->debug($this->debug->dumpData($q), "query", 1);
+        $this->debug->debug($q, "query", 1, true);
         $out = $this->modx->db->query($q);
         $this->debug->debugEnd("query");
         return $out;
