@@ -18,7 +18,7 @@ class tv_DL_Extender extends extDocLister
 {
     protected $tvValuesTable = 'site_tmplvar_contentvalues';
     protected $_TVprefix = null;
-    public $stroeTable = true;
+    public $storeTable = true;
 
     public function __construct($DocLister, $name)
     {
@@ -188,14 +188,14 @@ class tv_DL_Extender extends extDocLister
                 if (isset($TVnames[$item[0]])) {
                     $exists = $this->DocLister->checkTableAlias($item[0], $this->tvValuesTable());
                     $prefix = 'dltv_' . $item[0] . '_' . ($i + 1);
-                    $prefix = $this->stroeTable ? $this->DocLister->TableAlias($item[0], $this->tvValuesTable(), $prefix) : $prefix;
+                    $prefix = $this->storeTable ? $this->DocLister->TableAlias($item[0], $this->tvValuesTable(), $prefix) : $prefix;
                     if (!$exists) {
                         $table .= " LEFT JOIN " . $this->DocLister->getTable($this->tvValuesTable(), $prefix) . "
                         on `" . $prefix . "`.`contentid`=`c`.`id` AND `" . $prefix . "`.`tmplvarid`=" . $TVnames[$item[0]];
                     }
                     if (in_array($item[0], $withDefault)) {
                         $exists = $this->DocLister->checkTableAlias($item[0], "site_tmplvars");
-                        $dPrefix = $this->stroeTable ? $this->DocLister->TableAlias($item[0], "site_tmplvars", 'd_' . $prefix) : 'd_' . $prefix;
+                        $dPrefix = $this->storeTable ? $this->DocLister->TableAlias($item[0], "site_tmplvars", 'd_' . $prefix) : 'd_' . $prefix;
                         if (!$exists) {
                             $table .= " LEFT JOIN " . $this->DocLister->getTable("site_tmplvars", $dPrefix) . " on `" . $dPrefix . "`.`id` = " . $TVnames[$item[0]];
                         }
