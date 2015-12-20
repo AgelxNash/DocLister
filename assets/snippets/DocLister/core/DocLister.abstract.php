@@ -1022,7 +1022,7 @@ abstract class DocLister
                 $this->debug->updateMessage(
                     array("render ownerTPL" => $this->ownerTPL, "With data" => print_r($plh, 1)),
                     "renderWrapTPL",
-                    ['html', null]
+                    array('html', null)
                 );
                 $out = $this->parseChunk($this->ownerTPL, $plh);
             }
