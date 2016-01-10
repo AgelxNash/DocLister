@@ -3,6 +3,7 @@ namespace SimpleTab;
 include_once (MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLTemplate.class.php');
 include_once (MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
+require_once (MODX_BASE_PATH . 'assets/lib/Helpers/Assets.php');
 
 abstract class Plugin {
 	public $modx = null;
@@ -17,6 +18,7 @@ abstract class Plugin {
 	public $pluginEvents = array();
     public $_table = '';
 	protected $fs = null;
+    protected $assets = null;
 
 	public $DLTemplate = null;
 	public $lang_attribute = '';
@@ -49,6 +51,7 @@ abstract class Plugin {
         $modx->event->_output = "";
         $this->DLTemplate = \DLTemplate::getInstance($this->modx);
         $this->fs = \Helpers\FS::getInstance();
+        $this->assets = \AssetsHelper::getInstance($modx);
     }
 
 	public function clearFolders($ids = array(), $folder) {
@@ -84,10 +87,15 @@ abstract class Plugin {
         }
         $output = '';
 		$plugins = $this->modx->pluginEvent;
-		if(($this->renderEvent!=='OnDocFormRender' || (array_search('ManagerManager', $plugins['OnDocFormRender']) === false)) && !isset($this->modx->loadedjscripts['jQuery'])) {
-			$output .= '<script type="text/javascript" src="'.$this->modx->config['site_url'].'assets/js/jquery/jquery-1.9.1.min.js"></script>';
-            $this->modx->loadedjscripts['jQuery'] = array('version'=>'1.9.1');
-            $output .='<script type="text/javascript">var jQuery = jQuery.noConflict(true);</script>';
+		if(($this->renderEvent!=='OnDocFormRender' || (array_search('ManagerManager', $plugins['OnDocFormRender']) === false))) {
+			$jquery = $this->assets->registerScript('jQuery',array(
+                'version' => '1.9.1',
+                'src'     => 'assets/js/jquery/jquery-1.9.1.min.js'
+            ));
+            if ($jquery) {
+                $output .= $jquery;
+                $output .='<script type="text/javascript">var jQuery = jQuery.noConflict(true);</script>';    
+            }
 		}
 		$tpl = MODX_BASE_PATH.$this->tpl;
 		if($this->fs->checkFile($tpl)) {
@@ -113,18 +121,8 @@ abstract class Plugin {
 			$scripts = json_decode($scripts,true);
 			$scripts = isset($scripts['scripts']) ? $scripts['scripts'] : $scripts['styles'];
 			foreach ($scripts as $name => $params) {
-				if (!isset($this->modx->loadedjscripts[$name])) {
-					if ($this->fs->checkFile($params['src'])) {
-                        $this->modx->loadedjscripts[$name] = array('version'=>$params['version']);
-    					if (end(explode('.',$params['src'])) == 'js') {
-    						$js .= '<script type="text/javascript" src="' . $this->modx->config['site_url'] . $params['src'] . '"></script>';
-    					} else {
-    						$js .= '<link rel="stylesheet" type="text/css" href="'. $this->modx->config['site_url'] . $params['src'] .'">';
-    					}
-    				} else {
-                        $this->modx->logEvent(0, 3, 'Cannot load '.$params['src'], $this->pluginName);
-                    }
-                }
+				$script = $this->assets->registerScript($name,$params);
+                if ($script) $js .= $script;
 			}
 		} else {
 			if ($list == $this->jsListDefault) {
