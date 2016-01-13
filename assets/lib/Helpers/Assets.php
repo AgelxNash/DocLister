@@ -67,15 +67,15 @@ class AssetsHelper
         if (!isset($this->modx->loadedjscripts[$name])) {
             $src = $params['src'];
             $remote = strpos($src, "http") !== false;
-           
-            if (!$remote && $this->fs->checkFile($params['src'])) {
+            if (!$remote) {
                 $src = $this->modx->config['site_url'].$src;
-            } else {
-                $this->modx->logEvent(0, 3, 'Cannot load '.$src, 'Assets helper');
-                return false;
+                if (!$this->fs->checkFile($params['src'])) {
+                    $this->modx->logEvent(0, 3, 'Cannot load '.$src, 'Assets helper');
+                    return false;    
+                }
             }
 
-            $type = end(explode('.',$src));
+            $type = isset($params['type']) ? $params['type'] : end(explode('.',$src));
             if ($type == 'js') {
                 $out = '<script type="text/javascript" src="' . $src . '"></script>';
             } else {
