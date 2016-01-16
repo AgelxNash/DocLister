@@ -8,6 +8,7 @@ class dataTable extends \autoTable {
     protected $fs = null;
 	protected $indexName = null;
 	protected $rfName = null;
+	protected $thumbsCache = null;
 
     public function __construct($modx, $debug = false) {
         parent::__construct($modx, $debug);

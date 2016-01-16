@@ -14,7 +14,7 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 
 class DLphx
 {
-    var $placeholders = array();
+    public $placeholders = array();
 
     public function __construct($debug = 0, $maxpass = 50)
     {
@@ -44,7 +44,7 @@ class DLphx
     }
 
     // Plugin event hook for MODx
-    function OnParseDocument()
+    public function OnParseDocument()
     {
         global $modx;
         // Get document output from MODx
@@ -56,7 +56,7 @@ class DLphx
     }
 
     // Parser: Preparation, cleaning and checkup
-    function Parse($template = '')
+    public function Parse($template = '')
     {
         global $modx;
         // If we already reached max passes don't get at it again.
@@ -89,7 +89,7 @@ class DLphx
     }
 
     // Parser: Tag detection and replacements
-    function ParseValues($template = '')
+    public function ParseValues($template = '')
     {
         global $modx;
 
@@ -204,7 +204,7 @@ class DLphx
     }
 
     // Parser: modifier detection and eXtended processing if needed
-    function Filter($input, $modifiers)
+    public function Filter($input, $modifiers)
     {
         global $modx;
         $output = $input;
@@ -276,6 +276,7 @@ class DLphx
                         if (!$isvalid) {
                             $output = NULL;
                         }
+						break;
                     case "then":
                         $conditional = implode(' ', $condition);
                         $isvalid = intval(eval("return (" . $conditional . ");"));
@@ -295,7 +296,8 @@ class DLphx
                     case "select":
                         $raw = explode("&", $modifier_value[$i]);
                         $map = array();
-                        for ($m = 0; $m < (count($raw)); $m++) {
+						$count = count($raw);
+                        for ($m = 0; $m < $count; $m++) {
                             $mi = explode("=", $raw[$m]);
                             $map[$mi[0]] = $mi[1];
                         }
@@ -459,7 +461,7 @@ class DLphx
     }
 
     // Event logging (debug)
-    function createEventLog()
+    public function createEventLog()
     {
         if ($this->console) {
             $console = implode("\n", $this->console);
@@ -469,7 +471,7 @@ class DLphx
     }
 
     // Returns a cleaned string escaping the HTML and special MODx characters
-    function LogClean($string)
+	public function LogClean($string)
     {
         $string = preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", $string);
         $string = APIHelpers::sanitarTag($string);
@@ -477,7 +479,7 @@ class DLphx
     }
 
     // Simple log entry
-    function Log($string)
+	public function Log($string)
     {
         if ($this->debug) {
             $this->debugLog = true;
@@ -486,7 +488,7 @@ class DLphx
     }
 
     // Log snippet output
-    function LogSnippet($string)
+	public function LogSnippet($string)
     {
         if ($this->debug) {
             $this->debugLog = true;
@@ -495,13 +497,13 @@ class DLphx
     }
 
     // Log pass
-    function LogPass()
+	public function LogPass()
     {
         $this->console[] = "<div style='margin: 2px;margin-top: 5px;border-bottom: 1px solid black;'>Pass " . $this->curPass . "</div>";
     }
 
     // Log pass
-    function LogSource($string)
+	public function LogSource($string)
     {
         $this->console[] = "<div style='margin: 2px;margin-top: 5px;border-bottom: 1px solid black;'>Source:</div>" . $this->LogClean($string);
     }
@@ -509,7 +511,7 @@ class DLphx
 
     // Returns the specified field from the user record
     // positive userid = manager, negative integer = webuser
-    function ModUser($userid, $field)
+	public function ModUser($userid, $field)
     {
         global $modx;
         if (!array_key_exists($userid, $this->cache["ui"])) {
@@ -526,7 +528,7 @@ class DLphx
     }
 
     // Returns true if the user id is in one the specified webgroups
-    function isMemberOfWebGroupByUserId($userid = 0, $groupNames = array())
+	public function isMemberOfWebGroupByUserId($userid = 0, $groupNames = array())
     {
         global $modx;
 
@@ -556,7 +558,7 @@ class DLphx
     }
 
     // Returns the value of a PHx/MODx placeholder.
-    function getPHxVariable($name)
+	public function getPHxVariable($name)
     {
         global $modx;
         // Check if this variable is created by PHx
@@ -570,71 +572,71 @@ class DLphx
     }
 
     // Sets a placeholder variable which can only be access by PHx
-    function setPHxVariable($name, $value)
+	public function setPHxVariable($name, $value)
     {
         if ($name != "phx") $this->placeholders[$name] = $value;
     }
 
     //mbstring
-    function substr($str, $s, $l = null)
+	public function substr($str, $s, $l = null)
     {
         if (function_exists('mb_substr')) return mb_substr($str, $s, $l);
         return substr($str, $s, $l);
     }
 
-    function strlen($str)
+	public function strlen($str)
     {
         if (function_exists('mb_strlen')) return mb_strlen($str);
         return strlen($str);
     }
 
-    function strtolower($str)
+	public function strtolower($str)
     {
         if (function_exists('mb_strtolower')) return mb_strtolower($str);
         return strtolower($str);
     }
 
-    function strtoupper($str)
+	public function strtoupper($str)
     {
         if (function_exists('mb_strtoupper')) return mb_strtoupper($str);
         return strtoupper($str);
     }
 
-    function ucfirst($str)
+	public function ucfirst($str)
     {
         if (function_exists('mb_strtoupper') && function_exists('mb_substr') && function_exists('mb_strlen'))
             return mb_strtoupper(mb_substr($str, 0, 1)) . mb_substr($str, 1, mb_strlen($str));
         return ucfirst($str);
     }
 
-    function lcfirst($str)
+	public function lcfirst($str)
     {
         if (function_exists('mb_strtolower') && function_exists('mb_substr') && function_exists('mb_strlen'))
             return mb_strtolower(mb_substr($str, 0, 1)) . mb_substr($str, 1, mb_strlen($str));
         return lcfirst($str);
     }
 
-    function ucwords($str)
+	public function ucwords($str)
     {
         if (function_exists('mb_convert_case'))
             return mb_convert_case($str, MB_CASE_TITLE);
         return ucwords($str);
     }
 
-    function strrev($str)
+	public function strrev($str)
     {
         preg_match_all('/./us', $str, $ar);
         return implode(array_reverse($ar[0]));
     }
 
-    function str_shuffle($str)
+	public function str_shuffle($str)
     {
         preg_match_all('/./us', $str, $ar);
         shuffle($ar[0]);
         return implode($ar[0]);
     }
 
-    function str_word_count($str)
+	public function str_word_count($str)
     {
         return count(preg_split('~[^\p{L}\p{N}\']+~u', $str));
     }

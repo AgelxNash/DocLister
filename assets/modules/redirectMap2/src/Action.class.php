@@ -144,15 +144,14 @@ class Action extends \Module\Action
     public static function csv()
     {
         header('Content-Type: application/json');
-        $json = array();
+        $json = $log = $stat = array();
         self::$TPL = 'ajax/getValue';
         $file = Template::getParam('filedata', $_FILES);
-        $name = strtolower(end(explode(".", Template::getParam('name', $file))));
-        $stat = array();
+		$name = explode(".", Template::getParam('name', $file));
+        $name = strtolower(end($name));
 
         switch ($name) {
             case 'txt':
-            {
                 $stat = Helper::readFileLine(Template::getParam('tmp_name', $file), function (array $params) {
                     $line = trim(Template::getParam('line', $params));
                     if (!empty($line)) {
@@ -179,9 +178,7 @@ class Action extends \Module\Action
                     }
                 }, array('modx' => self::$modx), 10000);
                 break;
-            }
             case 'csv':
-            {
                 ini_set('auto_detect_line_endings', TRUE);
                 set_time_limit(0);
                 ini_set('max_execution_time', 0);
@@ -218,11 +215,8 @@ class Action extends \Module\Action
                     return $flag;
                 }, array('modx' => self::$modx), 10000);
                 break;
-            }
             default:
-                {
                 $log[] = 'Некорректный тип файла';
-                }
         }
         if (empty($log)) {
             $log = array(

@@ -31,7 +31,7 @@ class site_contentDocLister extends DocLister
 
     protected $extPaginate = null;
 
-    function __construct($modx, $cfg = array(), $startTime = null)
+    public function __construct($modx, $cfg = array(), $startTime = null)
     {
         parent::__construct($modx, $cfg, $startTime);
         $this->extTV = $this->getExtender('tv', true, true);

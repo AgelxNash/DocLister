@@ -49,7 +49,7 @@ class FS{
      * Чтобы не дергать постоянно файл который обрабатываем
      *
      * @access private
-     * @param string $name ключ
+     * @param string $file ключ
      * @return string информация из pathinfo о обрабатываемом файле input
      */
     private function _pathinfo($file, $mode){

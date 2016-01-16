@@ -49,4 +49,3 @@ $js = "<script>
 $out = $js;
 $field_html = '<select id="tv[+field_id+]" name="tv[+field_id+]" size="1" onchange="documentDirty=true;">' . $wrap . '</select>';
 return $out . $field_html;
-?>

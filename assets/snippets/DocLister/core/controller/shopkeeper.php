@@ -14,7 +14,7 @@ if (!defined('MODX_BASE_PATH')) {
 include_once(dirname(__FILE__) . "/site_content.php");
 class shopkeeperDocLister extends site_contentDocLister
 {
-    function __construct($modx, $cfg = array(), $startTime = null)
+    public function __construct($modx, $cfg = array(), $startTime = null)
     {
         $cfg = array_merge(array('tvValuesTable' => 'catalog_tmplvar_contentvalues'), $cfg);
         parent::__construct($modx, $cfg, $startTime);

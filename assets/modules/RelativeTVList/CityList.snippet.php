@@ -32,4 +32,3 @@ return "<script>
 		getStreet.request();
 	}
 </script><select id=\"tv[+field_id+]\" name=\"tv[+field_id+]\" size=\"1\" onchange=\"loadStreet(this);documentDirty=true;\">" . $wrap . "</select>";
-?>

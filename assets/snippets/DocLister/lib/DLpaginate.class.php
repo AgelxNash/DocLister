@@ -142,17 +142,15 @@ class DLpaginate {
     }
     protected function getPageQuery($page){
         switch($this->mode){
-            case 'offset':{
+            case 'offset':
                 $display = isset($this->modeConfig['display']) ? $this->modeConfig['display'] : 0;
                 $out = $display * ($page - 1);
                 break;
-            }
             case 'back':
             case 'pages':
-            default:{
+            default:
                 $out = $page;
                 break;
-            }
         }
         return $out;
     }
@@ -172,14 +170,14 @@ class DLpaginate {
 
     public function calculate() {
         $this->pagination = "";
-        $this->calculate == true;
+        $this->calculate = true;
         $error = false;
 
-        if ($this->urlF and $this->urlF != '%' and strpos($this->target, $this->urlF) === false) {
+        if ($this->urlF && $this->urlF != '%' && strpos($this->target, $this->urlF) === false) {
             //Es necesario especificar el comodin para sustituir
             //echo "Especificaste un wildcard para sustituir, pero no existe en el target<br />";
             $error = true;
-        } elseif ($this->urlF and $this->urlF == '%' and strpos($this->target, $this->urlF) === false) {
+        } elseif ($this->urlF && $this->urlF == '%' && strpos($this->target, $this->urlF) === false) {
             //echo "Es necesario especificar en el target el comodin % para sustituir el n�mero de p�gina<br />";
             $error = true;
         }

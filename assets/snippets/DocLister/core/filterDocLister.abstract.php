@@ -177,7 +177,7 @@ abstract class filterDocLister
                 }
                 break;
             }
-            case 'containsOne' :
+            case 'containsOne':
                 $words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $value);
                 $word_arr = array();
                 foreach ($words as $word) {

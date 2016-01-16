@@ -90,7 +90,7 @@ class Video
 	 * @param $link      ссылка на видео
 	 * @param $autostart сразу определить превью и клип
 	 */
-	function __construct($link = null, $autostart = true, $info = false)
+	public function __construct($link = null, $autostart = true, $info = false)
 	{
 		if ($link) {
 			$this->setLink($link);
