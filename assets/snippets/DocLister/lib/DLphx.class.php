@@ -15,30 +15,37 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 class DLphx
 {
     public $placeholders = array();
+	public $name = 'PHx';
+	public $version = '2.2.0';
+	public $user = array();
+	public $cache = array(
+		'cm' => array(),
+		'ui' => array(),
+		'mo' => array()
+	);
+	public $safetags = array(
+		array('~(?<![\[]|^\^)\[(?=[^\+\*\(\[]|$)~s', '~(?<=[^\+\*\)\]]|^)\](?=[^\]]|$)~s'),
+		array('&_PHX_INTERNAL_091_&', '&_PHX_INTERNAL_093_&'),
+		array('[', ']')
+	);
+	public $console = array();
+	public $debug = false;
+	public $debugLog = false;
+	public $curPass = 0;
+	public $maxPasses = 50;
+	public $swapSnippetCache = array();
 
     public function __construct($debug = 0, $maxpass = 50)
     {
         global $modx;
-        $this->name = "PHx";
-        $this->version = "2.2.0";
         $this->user["mgrid"] = isset($_SESSION['mgrInternalKey']) ? intval($_SESSION['mgrInternalKey']) : 0;
         $this->user["usrid"] = isset($_SESSION['webInternalKey']) ? intval($_SESSION['webInternalKey']) : 0;
         $this->user["id"] = ($this->user["usrid"] > 0) ? (-$this->user["usrid"]) : $this->user["mgrid"];
-        $this->cache["cm"] = array();
-        $this->cache["ui"] = array();
-        $this->cache["mo"] = array();
-        $this->safetags[0][0] = '~(?<![\[]|^\^)\[(?=[^\+\*\(\[]|$)~s';
-        $this->safetags[0][1] = '~(?<=[^\+\*\)\]]|^)\](?=[^\]]|$)~s';
-        $this->safetags[1][0] = '&_PHX_INTERNAL_091_&';
-        $this->safetags[1][1] = '&_PHX_INTERNAL_093_&';
-        $this->safetags[2][0] = '[';
-        $this->safetags[2][1] = ']';
-        $this->console = array();
-        $this->debug = ($debug != '') ? $debug : 0;
-        $this->debugLog = false;
-        $this->curPass = 0;
+
+		$this->debug = ($debug != '') ? $debug : 0;
+
         $this->maxPasses = ($maxpass != '') ? $maxpass : 50;
-        $this->swapSnippetCache = array();
+
         $modx->setPlaceholder("phx", "&_PHX_INTERNAL_&");
         if (function_exists('mb_internal_encoding')) mb_internal_encoding($modx->config['modx_charset']);
     }
@@ -416,6 +423,7 @@ class DLphx
 
                     // If we haven't yet found the modifier, let's look elsewhere
                     default:
+						$snippet = '';
                         // modified by Anton Kuzmin (23.06.2010) //
                         $snippetName = 'phx:' . $modifier_cmd[$i];
                         if (isset($modx->snippetCache[$snippetName])) {
@@ -445,12 +453,16 @@ class DLphx
                         $cm = $snippet;
                         // end //
 
-                        ob_start();
-                        $options = $modifier_value[$i];
-                        $custom = eval($cm);
-                        $msg = ob_get_contents();
-                        $output = $msg . $custom;
-                        ob_end_clean();
+						if(!empty($cm)){
+							ob_start();
+							$options = $modifier_value[$i];
+							$custom = eval($cm);
+							$msg = ob_get_contents();
+							$output = $msg . $custom;
+							ob_end_clean();
+						}else{
+							$output = '';
+						}
                         break;
                 }
                 if (count($condition)) $this->Log("  |--- Condition = '" . $condition[count($condition) - 1] . "'");

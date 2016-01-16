@@ -248,7 +248,8 @@ class DLTemplate
     * @return string HTML код шаблона
     */
     public function getTemplate($id){
-        if ($id > 0){
+        $tpl = null;
+		if ($id > 0){
             $tpl = $this->modx->db->getValue("SELECT `content` FROM {$this->modx->getFullTableName("site_templates")} WHERE `id` = '{$id}'");
         }
         if(is_null($tpl)){

@@ -223,8 +223,8 @@ class Actions{
 		}else{
 			$selfHost = rtrim(str_replace("http://", "", $this->config['site_url']), '/');
 			if(empty( $request['host']) ||  $request['host']==$selfHost){
-				$query = !empty($uri['query']) ? '?'.$uri['query'] : '';
-			    $refer = !empty($uri['path']) ? $uri['path'].$query : '';
+				$query = !empty($request['query']) ? '?'.$request['query'] : '';
+			    $refer = !empty($request['path']) ? $request['path'].$query : '';
 			}else{
 				$refer = '';
 			}
@@ -430,7 +430,7 @@ class Actions{
 					$uri = '';
 				}
 			}else{
-				$uri = DLTemplate::getInstance($this->modx)->sanitarTag($uri);
+				$uri = APIhelpers::sanitarTag($uri);
 			}
 		}else{
 			//$modx->sendRedirect($url, 0, 'REDIRECT_HEADER', 'HTTP/1.1 307 Temporary Redirect');

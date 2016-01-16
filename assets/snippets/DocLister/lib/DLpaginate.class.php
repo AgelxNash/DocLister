@@ -19,7 +19,7 @@ class DLpaginate {
     public $showCounter = false;
     public $className = "pagination";
     public $parameterName = "page";
-    public $urlF = false; //urlFriendly
+    public $urlF = null; //urlFriendly
 
     /**Buttons next and previous*/
     public $nextT = ' <a href="[+link+]">Next</a> ';
@@ -258,7 +258,7 @@ class DLpaginate {
                 }
             }
             if ($this->page) {
-                if ($this->page < $counter - 1){
+                if (isset($counter) && $this->page < $counter - 1){
                     $this->pagination .=  $this->nextT ? $this->renderItemTPL( $this->nextT, $next) : '';
                 } else {
                     $this->pagination .=  $this->nextI ? $this->renderItemTPL( $this->nextI, $next) : '';

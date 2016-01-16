@@ -79,7 +79,8 @@ if(!is_array($p)){
     $p = array();
 }
 if (!empty($loadfilter)) {
-    $field = end(explode(".", $field));
+	$field = explode(".", $field);
+    $field = end($field);
     if (!empty($p['filters'])) {
         $p['filters'] = rtrim(trim($p['filters']), ";") . ";";
     }

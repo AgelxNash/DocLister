@@ -177,6 +177,9 @@ abstract class DocLister
 
 	/** @var string Имя таблицы */
 	protected $table = '';
+
+	/** @var null|paginate_DL_Extender  */
+	protected $extPaginate = null;
     /**
      * Конструктор контроллеров DocLister
      *
@@ -685,11 +688,12 @@ abstract class DocLister
 
     /**
      * Сохранение настроек вызова сниппета
-     * @param array $cfg массив настроек
+     * @param array|string $cfg массив настроек
      * @return int результат сохранения настроек
      */
     public function setConfig($cfg)
     {
+		if(is_scalar($cfg)) $cfg = array($cfg);
         if (is_array($cfg)) {
             $this->_cfg = array_merge($this->_cfg, $cfg);
             $ret = count($this->_cfg);
