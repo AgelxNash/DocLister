@@ -44,7 +44,7 @@ class onetableDocLister extends DocLister
     public function getDocs($tvlist = '')
     {
         if ($this->checkExtender('paginate')) {
-            $pages = $this->extender['paginate']->init($this);
+            $this->extender['paginate']->init($this);
         } else {
             $this->setConfig(array('start' => 0));
         }
@@ -103,7 +103,8 @@ class onetableDocLister extends DocLister
                     }
 
                     $findTpl = $this->renderTPL;
-                    extract($this->uniformPrepare($item, $i), EXTR_SKIP);
+					$tmp = $this->uniformPrepare($item, $i);
+                    extract($tmp, EXTR_SKIP);
                     if ($this->renderTPL == '') {
                         $this->renderTPL = $findTpl;
                     }

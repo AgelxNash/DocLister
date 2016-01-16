@@ -68,16 +68,14 @@ abstract class autoTable extends MODxAPI
             }
             $result = $this->query($SQL);
         }
-			if($result && $this->modx->db->getAffectedRows() >= 0 ){
-				if ($this->newDoc && !empty($SQL)) $this->id = $this->modx->db->getInsertId();
-				if ($clearCache) {
-					$this->clearCache($fire_events);
-				}
-				$result = $this->id;
-			}else{
-				$this->log['SqlError'] = $SQL;
-				$result = false;
-			}
+		if($result && $this->modx->db->getAffectedRows() >= 0 ){
+			if ($this->newDoc && !empty($SQL)) $this->id = $this->modx->db->getInsertId();
+			if ($clearCache) $this->clearCache($fire_events);
+			$result = $this->id;
+		}else{
+			if(!empty($SQL)) $this->log['SqlError'] = $SQL;
+			$result = false;
+		}
         return $result;
     }
 

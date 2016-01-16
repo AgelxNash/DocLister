@@ -15,21 +15,17 @@ $requestName = (!empty($requestName) && is_scalar($requestName)) ? (string)$requ
 $out = array();
 switch ($modx->event->name) {
     case 'OnPageNotFound':
-    {
         $out = array(
             'id' => 0,
             'method' => 'none'
         );
         break;
-    }
     case 'OnWebPageInit':
-    {
         $out = array(
             'id' => (int)$modx->documentIdentifier,
             'method' => (string)$modx->documentMethod
         );
         break;
-    }
 }
 
 if (!empty($out) && isset($_GET[$requestName])) {

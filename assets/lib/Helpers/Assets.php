@@ -8,7 +8,7 @@ class AssetsHelper
     protected $fs = null;
 
     /**
-     * @var cached reference to singleton instance
+     * @var AssetsHelper cached reference to singleton instance
      */
     protected static $instance;
 
@@ -56,14 +56,13 @@ class AssetsHelper
 
     }
 
-        /**
+     /**
      * @param $name
      * @param array $params
      * @return string
      */
 
     public function registerScript($name, $params) {
-        $out = '';
         if (!isset($this->modx->loadedjscripts[$name])) {
             $src = $params['src'];
             $remote = strpos($src, "http") !== false;
@@ -75,7 +74,8 @@ class AssetsHelper
                 }
             }
 
-            $type = isset($params['type']) ? $params['type'] : end(explode('.',$src));
+			$tmp = explode('.', $src);
+            $type = isset($params['type']) ? $params['type'] : end($tmp);
             if ($type == 'js') {
                 $out = '<script type="text/javascript" src="' . $src . '"></script>';
             } else {

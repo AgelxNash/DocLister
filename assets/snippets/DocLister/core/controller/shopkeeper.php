@@ -49,8 +49,6 @@ class shopkeeperDocLister extends site_contentDocLister
             $tpl = $this->getCFGDef('tpl', '@CODE:<a href="[+url+]">[+pagetitle+]</a><br />');
         }
         if ($tpl != '') {
-            $date = $this->getCFGDef('dateSource', 'createdon');
-
             $this->toPlaceholders(count($this->_docs), 1, "display"); // [+display+] - сколько показано на странице.
 
             $i = 1;
@@ -112,7 +110,8 @@ class shopkeeperDocLister extends site_contentDocLister
                     }
 
 					$findTpl = $this->renderTPL;
-					extract($this->uniformPrepare($item, $i), EXTR_SKIP);
+					$tmp = $this->uniformPrepare($item, $i);
+					extract($tmp, EXTR_SKIP);
 					if ($this->renderTPL == '') {
 						$this->renderTPL = $findTpl;
 					}
@@ -207,7 +206,6 @@ class shopkeeperDocLister extends site_contentDocLister
                     }
                 }
             }
-            $fields = $this->getCFGDef('selectFields', 'c.*');
             $from = $tbl_site_content . " " . $this->_filters['join'];
             $where = sqlHelper::trimLogicalOp($where);
 
@@ -223,7 +221,7 @@ class shopkeeperDocLister extends site_contentDocLister
             }
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
             $sort = $this->SortOrderSQL("c.createdon");
-            list($from, $sort) = $this->injectSortByTV($from, $sort);
+            list($from) = $this->injectSortByTV($from, $sort);
 
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
             $out = $this->modx->db->getValue($rs);

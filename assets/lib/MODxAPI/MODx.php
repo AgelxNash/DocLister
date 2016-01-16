@@ -17,22 +17,19 @@ abstract class MODxAPI extends MODxAPIhelpers
     protected $_debug = false;
     protected $_query = array();
     protected $jsonFields = array();
-    private $_decodedFields = array();
+	/**
+	 * @var DLCollection
+	 */
+    private $_decodedFields;
+	private $_table = array();
 
-    public function __construct($modx, $debug = false)
+    public function __construct(DocumentParser $modx, $debug = false)
     {	
-        try {
-            if ($modx instanceof DocumentParser) {
-                $this->modx = $modx;
-            } else throw new Exception('MODX should be instance of DocumentParser');
-			
-			if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
-                throw new Exception('Magic Quotes is a deprecated and mostly useless setting that should be disabled. Please ask your server administrator to disable it in php.ini or in your webserver config.');
-            }
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-        $this->setDebug($debug);
+        if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
+        	throw new Exception('Magic Quotes is a deprecated and mostly useless setting that should be disabled. Please ask your server administrator to disable it in php.ini or in your webserver config.');
+		}
+
+		$this->setDebug($debug);
         $this->_decodedFields = new DLCollection($this->modx);
     }
 
@@ -125,15 +122,12 @@ abstract class MODxAPI extends MODxAPIhelpers
 			if(is_scalar($custom)){
 				$custom = array($custom);
 			}
-			$files = array();
 			switch ($this->modx->config['cache_type']) {
-				case 2: {
+				case 2:
 					$cacheFile = "_*.pageCache.php";
 					break;
-				}
-				default: {
+				default:
 					$cacheFile = ".pageCache.php";
-				}
 			}
 			if(is_array($custom)) {
 				foreach($custom as $id) {
@@ -153,19 +147,17 @@ abstract class MODxAPI extends MODxAPIhelpers
 	public function switchObject($id){
         switch(true){
             //Если загружен другой объект - не тот, с которым мы хотим временно поработать
-            case ($this->getID() != $id && $id):{
+            case ($this->getID() != $id && $id):
                 $obj = clone $this;
                 $obj->edit($id);
                 break;
-            }
             //Если уже загружен объект, с которым мы хотим временно поработать
             case ($this->getID() == $id && $id):
             //Если $id не указан, но уже загружен какой-то объект
             case (!$id && $this->getID()):
-            default:{
+            default:
                 $obj = $this;
                 break;
-            }
         }
         return $obj;
     }
@@ -262,55 +254,44 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     final public function fromJson($data, $callback = null)
     {
-        try {
-            if (is_scalar($data) && !empty($data)) {
-                $json = json_decode($data);
-            } else throw new Exception("json is not string with json data");
-            if ($this->jsonError($json)) {
-                if (isset($callback) && is_callable($callback)) {
-                    call_user_func_array($callback, array($json));
-                } else {
-                    if (isset($callback)) throw new Exception("Can't call callback JSON unpack <pre>" . print_r($callback, 1) . "</pre>");
-                    foreach ($json as $key => $val) {
-                        $this->set($key, $val);
-                    }
-                }
-            } else throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-        return $this;
+        if (is_scalar($data) && !empty($data)) {
+        	$json = json_decode($data);
+		} else throw new Exception("json is not string with json data");
+
+		if ($this->jsonError($json)) {
+        	if (isset($callback) && is_callable($callback)) {
+            	call_user_func_array($callback, array($json));
+			} else {
+            	if (isset($callback)) throw new Exception("Can't call callback JSON unpack <pre>" . print_r($callback, 1) . "</pre>");
+                foreach ($json as $key => $val) {
+                	$this->set($key, $val);
+				}
+			}
+		} else throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
+
+		return $this;
     }
 
     final public function toJson($callback = null)
     {
-        try {
-            $data = $this->toArray();
-            if (isset($callback) && is_callable($callback)) {
-                $data = call_user_func_array($callback, array($data));
-            } else {
-                if (isset($callback)) throw new Exception("Can't call callback JSON pre pack <pre>" . print_r($callback, 1) . "</pre>");
-            }
-            $json = json_encode($data);
-            if ($this->jsonError($data, $json)) {
-                $json = false;
-                throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
-            }
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-        return $json;
+        $data = $this->toArray();
+        if (isset($callback) && is_callable($callback)) {
+        	$data = call_user_func_array($callback, array($data));
+		} else {
+        	if (isset($callback)) throw new Exception("Can't call callback JSON pre pack <pre>" . print_r($callback, 1) . "</pre>");
+		}
+        $json = json_encode($data);
+
+		if ($this->jsonError($data, $json)) {
+        	throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
+		}
+
+		return $json;
     }
 
     final protected function jsonError($data)
     {
         $flag = false;
-        if (!function_exists('json_last_error')) {
-            function json_last_error()
-            {
-                return JSON_ERROR_NONE;
-            }
-        }
         if (json_last_error() === JSON_ERROR_NONE && is_object($data) && $data instanceof stdClass) {
             $flag = true;
         }

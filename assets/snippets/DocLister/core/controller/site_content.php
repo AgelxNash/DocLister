@@ -169,7 +169,8 @@ class site_contentDocLister extends DocLister
                     }
 
                     $findTpl = $this->renderTPL;
-                    extract($this->uniformPrepare($item, $i), EXTR_SKIP);
+                    $tmp = $this->uniformPrepare($item, $i);
+					extract($tmp, EXTR_SKIP);
                     if ($this->renderTPL == '') {
                         $this->renderTPL = $findTpl;
                     }
@@ -331,7 +332,6 @@ class site_contentDocLister extends DocLister
                     }
                 }
             }
-            $fields = $this->getCFGDef('selectFields', 'c.*');
             $from = $tbl_site_content . " " . $this->_filters['join'];
             $where = sqlHelper::trimLogicalOp($where);
 
@@ -347,7 +347,7 @@ class site_contentDocLister extends DocLister
             }
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
-            list($from, $sort) = $this->injectSortByTV($from, $sort);
+            list($from) = $this->injectSortByTV($from, $sort);
 
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
             $out = $this->modx->db->getValue($rs);

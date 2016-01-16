@@ -125,24 +125,16 @@ class APIhelpers
         for ($i = $len; $i > 0; $i--) {
             switch ($data[rand(0, ($opt - 1))]) {
                 case 'A':
-                {
-                    $tmp = rand(65, 90);
+                	$tmp = rand(65, 90);
                     break;
-                }
                 case 'a':
-                {
                     $tmp = rand(97, 122);
                     break;
-                }
                 case '0':
-                {
                     $tmp = rand(48, 57);
                     break;
-                }
                 default:
-                    {
                     $tmp = rand(33, 126);
-                    }
             }
             $pass[] = chr($tmp);
         }
@@ -227,24 +219,21 @@ class APIhelpers
         '`' => '&#96;', '%60' => '&#96;'
     )){
         switch(true){
-            case is_scalar($data):{
+            case is_scalar($data):
                 $out = str_replace(
                     array_keys($chars),
                     array_values($chars),
                     is_null($charset) ? $data : self::e($data, $charset)
                 );
                 break;
-            }
-            case is_array($data):{
+            case is_array($data):
                 $out = $data;
                 foreach($out as $key => &$val){
                     $val = self::sanitarTag($val, $charset, $chars);
                 }
                 break;
-            }
-            default:{
+            default:
                 $out = '';
-            }
         }
         return $out;
     }
@@ -257,13 +246,13 @@ class APIhelpers
      * Проверка конечно круто, но валидация русских символов в строке порой завершается не удачей по разным причинам
      * (начиная от кривых настроек сервера и заканчивая кривыми настройками кодировки на сайте)
      *
-     * @param $value Проверяемая строка
+     * @param string $value Проверяемая строка
      * @param int $minLen Минимальная длина строки
      * @param array $alph Разрешенные алфавиты
      * @param array $mixArray Примесь символов, которые так же могут использоваться в строке
      * @return bool
      */
-    public static function checkString($value, $minLen = 1, $alph = array(), $mixArray = array(), $debug = false)
+    public static function checkString($value, $minLen = 1, $alph = array(), $mixArray = array())
     {
         $flag = true;
         $len = mb_strlen($value, 'UTF-8');
@@ -275,16 +264,13 @@ class APIhelpers
                 $item = strtolower($item);
                 switch ($item) {
                     case 'rus':
-                    {
                         $data = array_merge($data, array(
                             'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й',
                             'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф',
                             'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я'
                         ));
                         break;
-                    }
                     case 'num':
-                    {
                         $tmp = range('0', '9');
                         foreach ($tmp as $t) {
                             $data[] = (string)$t;
@@ -294,9 +280,7 @@ class APIhelpers
                             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
                         ));*/
                         break;
-                    }
                     case 'eng':
-                    {
                         $data = array_merge($data, range('A', 'Z'));
                         /*$data = array_merge($data, array(
                             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
@@ -304,7 +288,6 @@ class APIhelpers
                             'W', 'X', 'Y', 'Z'
                         ));*/
                         break;
-                    }
                 }
             }
             for ($i = 0; $i < $len; $i++) {
@@ -343,16 +326,14 @@ class APIhelpers
                 $key = $InsertPrefix . $key;
                 $val = null;
                 switch(true){
-                    case is_scalar($item):{
+                    case is_scalar($item):
                         $val = $item;
                         break;
-                    }
-                    case is_array($item):{
+                    case is_array($item):
                         $val = self::renameKeyArr($item, $key.$sep, $InsertSuffix, '', $sep);
                         $out = array_merge($out, $val);
                         $val = '';
                         break;
-                    }
                 }
                 $out[$key . $InsertSuffix] = $val;
             }

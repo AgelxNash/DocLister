@@ -174,6 +174,9 @@ abstract class DocLister
 	
 	/** @var int Число документов, которые были отфильтрованы через prepare при выводе */
 	public $skippedDocs = 0;
+
+	/** @var string Имя таблицы */
+	protected $table = '';
     /**
      * Конструктор контроллеров DocLister
      *
@@ -181,35 +184,35 @@ abstract class DocLister
      * @param array $cfg массив параметров сниппета
      * @param int $startTime время запуска сниппета
      */
-    function __construct($modx, $cfg = array(), $startTime = null)
+    public function __construct($modx, $cfg = array(), $startTime = null)
     {
         $this->setTimeStart($startTime);
-        try {
-            if (extension_loaded('mbstring')) {
-                mb_internal_encoding("UTF-8");
-            } else {
-                throw new Exception('Not found php extension mbstring');
-            }
 
-            if ($modx instanceof DocumentParser) {
-                $this->modx = $modx;
-                $this->setDebug(1);
-                $this->loadLang(array('core', 'json'));
+		if (extension_loaded('mbstring')) {
+        	mb_internal_encoding("UTF-8");
+		} else {
+        	throw new Exception('Not found php extension mbstring');
+		}
 
-                if (!is_array($cfg) || empty($cfg)) $cfg = $this->modx->Event->params;
-            } else {
-                throw new Exception('MODX var is not instaceof DocumentParser');
-            }
-            $this->FS = \Helpers\FS::getInstance();
-            if (isset($cfg['config'])) {
-                $cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
-            }
-            if (!$this->setConfig($cfg)) {
-                throw new Exception('no parameters to run DocLister');
-            }
-        } catch (Exception $e) {
-            $this->ErrorLogger($e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine(), $e->getTrace());
-        }
+        if ($modx instanceof DocumentParser) {
+        	$this->modx = $modx;
+            $this->setDebug(1);
+            $this->loadLang(array('core', 'json'));
+
+            if (!is_array($cfg) || empty($cfg)) $cfg = $this->modx->Event->params;
+		} else {
+        	throw new Exception('MODX var is not instaceof DocumentParser');
+		}
+
+        $this->FS = \Helpers\FS::getInstance();
+        if (isset($cfg['config'])) {
+        	$cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
+		}
+
+		if (!$this->setConfig($cfg)) {
+        	throw new Exception('no parameters to run DocLister');
+		}
+
         $this->setDebug($this->getCFGDef('debug', 0));
 
         if ($this->checkDL()) {
@@ -496,15 +499,12 @@ abstract class DocLister
         $flag = true;
         $extenders = $this->getCFGDef('extender', '');
         $extenders = explode(",", $extenders);
-        try {
-            if (($this->getCFGDef('requestActive', '') != '' || in_array('request', $extenders)) && !$this->_loadExtender('request')) { //OR request in extender's parameter
+        	if (($this->getCFGDef('requestActive', '') != '' || in_array('request', $extenders)) && !$this->_loadExtender('request')) { //OR request in extender's parameter
                 throw new Exception('Error load request extender');
-                $flag = false;
             }
 
             if (($this->getCFGDef('summary', '') != '' || in_array('summary', $extenders)) && !$this->_loadExtender('summary')) { //OR summary in extender's parameter
                 throw new Exception('Error load summary extender');
-                $flag = false;
             }
 
             if (
@@ -517,7 +517,6 @@ abstract class DocLister
                 ) && !$this->_loadExtender('paginate')
             ) {
                 throw new Exception('Error load paginate extender');
-                $flag = false;
             } else if ((int)$this->getCFGDef('display', 0) == 0) {
                 $extenders = $this->unsetArrayVal($extenders, 'paginate');
             }
@@ -525,9 +524,6 @@ abstract class DocLister
             if ($this->getCFGDef('prepare', '') != '' || $this->getCFGDef('prepareWrap') != '') {
                 $this->_loadExtender('prepare');
             }
-        } catch (Exception $e) {
-            $this->ErrorLogger($e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine(), $e->getTrace());
-        }
 
         $this->setConfig('extender', implode(",", $extenders));
         $this->debug->debugEnd("checkDL");
@@ -616,7 +612,7 @@ abstract class DocLister
 		$id = isset($this->modx->documentIdentifier) ? (int)$this->modx->documentIdentifier : 0;
 		$docData = isset($this->modx->documentObject) ? $this->modx->documentObject : array();
 
-		return empty($id) ? \APIHelpers::getkey($this->modx->documentObject, 'id', 0) : $id;
+		return empty($id) ? \APIHelpers::getkey($docData, 'id', 0) : $id;
 	}
 
     /**
@@ -961,7 +957,6 @@ abstract class DocLister
      */
     public function parseChunk($name, $data, $parseDocumentSource = false)
     {
-        $out = null;
         $this->debug->debug(
             array("parseChunk" => $name, "With data" => print_r($data, 1)),
             "parseChunk",
@@ -1353,9 +1348,9 @@ abstract class DocLister
      *
      * @global string $order
      * @global string $orderBy
-     * @global string sortBy
+     * @global string $sortBy
      *
-     * @param string $sortNme default sort field
+     * @param string $sortName default sort field
      * @param string $orderDef default order (ASC|DESC)
      *
      * @return string Order by for SQL
@@ -1373,13 +1368,12 @@ abstract class DocLister
             case 'doclist':
             {
                 $idList = $this->sanitarIn($this->IDs, ',', false);
-                $out['orderBy'] = "FIND_IN_SET({$this->getPK()}, '{$idList}')";
+                $out = array('orderBy' => "FIND_IN_SET({$this->getPK()}, '{$idList}')");
                 $this->setConfig($out); //reload config;
                 $sort = "ORDER BY " . $out['orderBy'];
                 break;
             }
             default:
-                {
                 $out = array('orderBy' => '', 'order' => '', 'sortBy' => '');
                 if (($tmp = $this->getCFGDef('orderBy', '')) != '') {
                     $out['orderBy'] = $tmp;
@@ -1404,7 +1398,6 @@ abstract class DocLister
                 $this->setConfig($out); //reload config;
                 $sort = "ORDER BY " . $out['orderBy'];
                 break;
-                }
         }
         $this->debug->debugEnd("sortORDER", 'Get sort order for SQL: ' . $this->debug->dumpData($sort));
         return $sort;
@@ -1536,6 +1529,7 @@ abstract class DocLister
         if (!$filter_string) return;
         $output = array('join' => '', 'where' => '');
         $logic_op_found = false;
+		$joins = $wheres = array();
         foreach ($this->_logic_ops as $op => $sql) {
             if (strpos($filter_string, $op) === 0) {
                 $logic_op_found = true;

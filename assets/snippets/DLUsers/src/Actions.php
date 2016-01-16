@@ -6,23 +6,31 @@ include_once(MODX_BASE_PATH . 'assets/lib/MODxAPI/modUsers.php');
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLTemplate.class.php');
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLCollection.class.php');
 
+use APIHelpers, DocumentParser, DLCollection, DLTemplate;
+use Helpers\FS;
+
 class Actions{
     protected $modx = null;
     public $userObj = null;
-    public $url = array();
+	/**
+	 * @var DLCollection
+	 */
+    public $url;
     protected static $lang = null;
     protected static $langDic = array();
     /**
-     * @var cached reference to singleton instance
+     * @var Actions cached reference to singleton instance
      */
     protected static $instance;
+
+	protected $config = array();
 
     /**
      * gets the instance via lazy initialization (created on first usage)
      *
      * @return self
      */
-    public static function getInstance(\DocumentParser $modx, $lang, $userClass = 'modUsers', $debug = false)
+    public static function getInstance(DocumentParser $modx, $lang, $userClass = 'modUsers', $debug = false)
     {
 
         if (null === self::$instance) {
@@ -39,11 +47,11 @@ class Actions{
      * is not allowed to call from outside: private!
      *
      */
-    private function __construct(\DocumentParser $modx, $userClass, $debug)
+    private function __construct(DocumentParser $modx, $userClass, $debug)
     {
         $this->modx = $modx;
 		$this->userObj = new $userClass($this->modx, $debug);
-		$this->url = new \DLCollection($this->modx);
+		$this->url = new DLCollection($this->modx);
 
 		$site_url = $this->modx->getConfig('site_url');
 		$site_start = $this->modx->getConfig('site_start', 1);
@@ -77,7 +85,7 @@ class Actions{
      * Сброс авторизации и обновление страницы
      */
     public function logout($params){
-    	$LogoutName = \APIHelpers::getkey($params, 'LogoutName', 'logout');
+    	$LogoutName = APIHelpers::getkey($params, 'LogoutName', 'logout');
     	if(is_scalar($LogoutName) && !empty($LogoutName) && isset($_GET[$LogoutName])){
     		$type = 'web';
     		$userID = $this->UserID(compact('type'));
@@ -97,7 +105,7 @@ class Actions{
 		    		));
 		    	}
 
-			    $go = \APIHelpers::getkey($params, 'url', '');
+			    $go = APIHelpers::getkey($params, 'url', '');
 			    if(empty($go)){
 			    	$go = str_replace(
 			    		array("?".$LogoutName, "&".$LogoutName),
@@ -126,12 +134,12 @@ class Actions{
      * @return string
      */
     public function logoutUrl($params){
-    	$LogoutName = \APIHelpers::getkey($params, 'LogoutName', 'logout');
+    	$LogoutName = APIHelpers::getkey($params, 'LogoutName', 'logout');
     	$request = parse_url($_SERVER['REQUEST_URI']);
 
     	//Во избежании XSS мы не сохраняем весь REQUEST_URI, а берем только path
     	/*$query = (!empty($request['query'])) ? $request['query'].'&' : '';*/
-    	$query = '?'.$query.$LogoutName;
+    	$query = '?'.$LogoutName;
 
     	return $request['path'].$query;
     }
@@ -144,47 +152,46 @@ class Actions{
     public function AuthBlock($params){
     	$POST = array('backUrl' => $_SERVER['REQUEST_URI']);
 
-    	$dataTPL = array();
     	$error = $errorCode = '';
 
-    	$pwdField = \APIHelpers::getkey($params, 'pwdField', 'password');
-		$emailField = \APIHelpers::getkey($params, 'emailField', 'email');
-		$rememberField = \APIHelpers::getkey($params, 'rememberField', 'remember');
+    	$pwdField = APIHelpers::getkey($params, 'pwdField', 'password');
+		$emailField = APIHelpers::getkey($params, 'emailField', 'email');
+		$rememberField = APIHelpers::getkey($params, 'rememberField', 'remember');
 
     	$type = 'web';
 		if($this->UserID(compact('type'))){
-			$tpl = \APIHelpers::getkey($params, 'tplProfile', '');
+			$tpl = APIHelpers::getkey($params, 'tplProfile', '');
 			if(empty($tpl)){
 				$tpl = $this->getTemplate('tplProfile');
 			}
 			$dataTPL = $this->userObj->toArray();
 			$dataTPL['url.logout'] = $this->logoutUrl($params);
-    		$homeID = \APIHelpers::getkey($params, 'homeID');
+    		$homeID = APIHelpers::getkey($params, 'homeID');
 			if(!empty($homeID)){
 				$dataTPL['url.profile'] = $this->makeUrl($homeID);
 			}
 		}else{
-			$tpl = \APIHelpers::getkey($params, 'tplForm', '');
+			$tpl = APIHelpers::getkey($params, 'tplForm', '');
 			if(empty($tpl)){
 				$tpl = $this->getTemplate('authForm');
 			}
 			$POST = $this->Auth($pwdField, $emailField, $rememberField, $POST['backUrl'], __METHOD__, $error, $errorCode, $params);
 	    	$dataTPL = array(
-				'backUrl' => \APIHelpers::getkey($POST, 'backUrl', ''),
-				'emailValue' => \APIHelpers::getkey($POST, 'email', ''),
+				'backUrl' => APIHelpers::getkey($POST, 'backUrl', ''),
+				'emailValue' => APIHelpers::getkey($POST, 'email', ''),
 				'emailField' => $emailField,
 				'pwdField' => $pwdField,
 		    	'method' => strtolower(__METHOD__),
 				'error' => $error,
 				'errorCode' => $errorCode
 			);
-			$authId = \APIHelpers::getkey($params, 'authId');
+			$authId = APIHelpers::getkey($params, 'authId');
 			if(!empty($authId)){
 				$dataTPL['authPage'] = $this->makeUrl($authId);
 				$dataTPL['method'] = strtolower(__CLASS__ . '::'. 'authpage');
 			}
 		}
-		return \DLTemplate::getInstance($this->modx)->parseChunk($tpl, $dataTPL);
+		return DLTemplate::getInstance($this->modx)->parseChunk($tpl, $dataTPL);
     }
 
 	/**
@@ -192,17 +199,17 @@ class Actions{
 	 * [!Auth? &login=`password` &pwdField=`password` &homeID=`72`!]
 	 */
 	public function AuthPage($params){
-		$homeID = \APIHelpers::getkey($params, 'homeID');
+		$homeID = APIHelpers::getkey($params, 'homeID');
 		$this->isAuthGoHome(array('id' => $homeID));
 
 		$error = $errorCode = '';
 		$POST = array('backUrl' => '');
 
-		$pwdField = \APIHelpers::getkey($params, 'pwdField', 'password');
-		$emailField = \APIHelpers::getkey($params, 'emailField', 'email');
-		$rememberField = \APIHelpers::getkey($params, 'rememberField', 'remember');
+		$pwdField = APIHelpers::getkey($params, 'pwdField', 'password');
+		$emailField = APIHelpers::getkey($params, 'emailField', 'email');
+		$rememberField = APIHelpers::getkey($params, 'rememberField', 'remember');
 
-		$tpl = \APIHelpers::getkey($params, 'tpl', '');
+		$tpl = APIHelpers::getkey($params, 'tpl', '');
 		if(empty($tpl)){
 			$tpl = $this->getTemplate('authForm');
 		}
@@ -224,7 +231,7 @@ class Actions{
 		}
 
 		if($_SERVER['REQUEST_METHOD'] == 'POST'){
-			$backUrl = \APIHelpers::getkey($_POST, 'backUrl', $POST['backUrl']);
+			$backUrl = APIHelpers::getkey($_POST, 'backUrl', $POST['backUrl']);
 			if(!is_scalar($backUrl)){
 				$backUrl = $refer;
 			}else{
@@ -260,9 +267,9 @@ class Actions{
 			$POST['backUrl'] = $this->makeUrl($homeID);
 		}
 		$POST = $this->Auth($pwdField, $emailField, $rememberField, $POST['backUrl'], __METHOD__, $error, $errorCode, $params);
-		return \DLTemplate::getInstance($this->modx)->parseChunk($tpl, array(
-		    'backUrl' => \APIHelpers::getkey($POST, 'backUrl', ''),
-			'emailValue' => \APIHelpers::getkey($POST, 'email', ''),
+		return DLTemplate::getInstance($this->modx)->parseChunk($tpl, array(
+		    'backUrl' => APIHelpers::getkey($POST, 'backUrl', ''),
+			'emailValue' => APIHelpers::getkey($POST, 'email', ''),
 			'emailField' => $emailField,
 		    'pwdField' => $pwdField,
 		    'method' => strtolower(__METHOD__),
@@ -275,11 +282,11 @@ class Actions{
 			'backUrl' => urlencode($backUrl)
 		);
 		$userObj = &$this->userObj;
-		if($_SERVER['REQUEST_METHOD']=='POST' && \APIHelpers::getkey($_POST, 'method', '') == strtolower($method)){
+		if($_SERVER['REQUEST_METHOD']=='POST' && APIHelpers::getkey($_POST, 'method', '') == strtolower($method)){
 			$POST = array_merge($POST, array(
-				'password' => \APIHelpers::getkey($_POST, $pwdField, ''),
-				'email' => \APIHelpers::getkey($_POST, $emailField, ''),
-				'remember' => (bool)((int)\APIHelpers::getkey($_POST, $rememberField, 0))
+				'password' => APIHelpers::getkey($_POST, $pwdField, ''),
+				'email' => APIHelpers::getkey($_POST, $emailField, ''),
+				'remember' => (bool)((int)APIHelpers::getkey($_POST, $rememberField, 0))
 			));
 			if(!empty($POST['email']) && is_scalar($POST['email']) && !$userObj->emailValidate($POST['email'], false)){
 				$openUser = $userObj->edit($POST['email']);
@@ -331,7 +338,7 @@ class Actions{
 		}
 		if(!empty($error)){
 			$errorCode = $error;
-			$error = \APIHelpers::getkey($params, $error, '');
+			$error = APIHelpers::getkey($params, $error, '');
 			$error = static::getLangMsg($error, $error);
 		}
 		return $POST;
@@ -343,11 +350,11 @@ class Actions{
 	public function UserInfo($params){
 		$out = '';
 		$type = 'web';
-		$userID = \APIHelpers::getkey($params, 'id', 0);
+		$userID = APIHelpers::getkey($params, 'id', 0);
 		if(empty($userID)){
 			$userID = $this->UserID(compact('type'));
 		}
-		$field = \APIHelpers::getkey($params, 'field', 'username');
+		$field = APIHelpers::getkey($params, 'field', 'username');
 		if($userID > 0){
 			$this->userObj->edit($userID);
 			switch(true){
@@ -380,7 +387,7 @@ class Actions{
 			 * @see : http://modx.im/blog/triks/105.html
 			 */
 			$this->modx->invokeEvent('OnPageUnauthorized');
-			$id = \APIHelpers::getkey($params, 'id', $this->config['unauthorized_page']);
+			$id = APIHelpers::getkey($params, 'id', $this->config['unauthorized_page']);
 		    $this->moveTo(compact('id'));
 		}
 		return;
@@ -393,7 +400,7 @@ class Actions{
 		$type = 'web';
 		$userID = $this->UserID(compact('type'));
 		if($userID>0){
-			$id = \APIHelpers::getkey($params, 'homeID');
+			$id = APIHelpers::getkey($params, 'homeID');
 		    if(empty($id)){
 				$id = $this->modx->getConfig('login_home', $this->config['site_start']);
 		    }
@@ -406,25 +413,24 @@ class Actions{
 	 * Редирект
 	 */
 	public function moveTo($params){
-		$out = '';
-		$id = (int)\APIHelpers::getkey($params, 'id', 0);
-		$uri = \APIHelpers::getkey($params, 'url', '');
+		$id = (int)APIHelpers::getkey($params, 'id', 0);
+		$uri = APIHelpers::getkey($params, 'url', '');
 		if((empty($uri) && !empty($id)) || !is_string($uri)){
 			$uri = $this->makeUrl($id);
 		}
-		$code = (int)\APIHelpers::getkey($params, 'code', 0);
-		$addUrl = \APIHelpers::getkey($params, 'addUrl', '');
+		$code = (int)APIHelpers::getkey($params, 'code', 0);
+		$addUrl = APIHelpers::getkey($params, 'addUrl', '');
 		if(is_scalar($addUrl) && $addUrl!=''){
 		    $uri .= "?".$addUrl;
 		}
-		if(\APIHelpers::getkey($params, 'validate', false)){
+		if(APIHelpers::getkey($params, 'validate', false)){
 			if(isset($this->modx->snippetCache['getPageID'])){
 				$out = $this->modx->runSnippet('getPageID', compact('uri'));
 				if(empty($out)){
 					$uri = '';
 				}
 			}else{
-				$uri = \DLTemplate::getInstance($this->modx)->sanitarTag($uri);
+				$uri = DLTemplate::getInstance($this->modx)->sanitarTag($uri);
 			}
 		}else{
 			//$modx->sendRedirect($url, 0, 'REDIRECT_HEADER', 'HTTP/1.1 307 Temporary Redirect');
@@ -455,20 +461,20 @@ class Actions{
 	protected function getTemplate($name){
 		$out = '';
 		$file = dirname(dirname(__FILE__)).'/tpl/'.$name.'.html';
-		if( \Helpers\FS::getInstance()->checkFile($file)){
+		if( FS::getInstance()->checkFile($file)){
 			$out = '@CODE: '.file_get_contents($file);
 		}
 		return $out;
 	}
 	protected static function loadLang($lang){
 		$file = dirname(dirname(__FILE__)).'/lang/'.$lang.'.php';
-		if( ! \Helpers\FS::getInstance()->checkFile($file)){
+		if( ! FS::getInstance()->checkFile($file)){
 			$file = false;
 		}
 		if(!empty($lang) && !isset(static::$langDic[$lang]) && !empty($file)){
 			static::$langDic[$lang] = include_once($file);
 			if(is_array(static::$langDic[$lang])){
-				static::$langDic[$lang] = \APIHelpers::renameKeyArr(static::$langDic[$lang], $lang);
+				static::$langDic[$lang] = APIHelpers::renameKeyArr(static::$langDic[$lang], $lang);
 			}else{
 				static::$langDic[$lang] = array();
 			}
@@ -482,8 +488,8 @@ class Actions{
 		if(isset($dic[$lng], $dic[$lng][$lng.'.'.$key])){
 			$out = $dic[$lng][$lng.'.'.$key];
 		}
-		if(class_exists('evoBabel', false) && isset($this->modx->snippetCache['lang'])){
-			$msg = $this->modx->runSnippet('lang', array('a' => 'DLUsers.'.$key));
+		if(class_exists('evoBabel', false) && isset(self::$instance->modx->snippetCache['lang'])){
+			$msg = self::$instance->modx->runSnippet('lang', array('a' => 'DLUsers.'.$key));
 			if(!empty($msg)){
 				$out = $msg;
 			}
