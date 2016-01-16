@@ -114,7 +114,7 @@ class SummaryText
         }
 
         $summary = $this->closeTags($summary);
-        $summary = $this->rTriming($summary, $this->_dotted);
+        $summary = $this->rTriming($summary);
 
         return $summary;
     }

@@ -31,16 +31,13 @@ class Action extends \Module\Action
             );
             switch (self::$_mode) {
                 case 'city':
-                {
                     $sql = "SELECT count(id) FROM " . self::$modx->getFullTableName(self::$_mode) . " WHERE `name`='" . self::$modx->db->escape($_POST['dataname']) . "'";
                     if (self::$modx->db->getValue($sql) > 0) {
                         $insert = array();
                         $data['log'] = 'Такой город уже имеется в списке';
                     }
                     break;
-                }
                 case 'street':
-                {
                     $insert['parent_id'] = (int)Template::getParam('dataID', $_REQUEST);
                     $sql = "SELECT count(id) FROM " . self::$modx->getFullTableName(self::$_mode) . " WHERE `name`='" . self::$modx->db->escape($_POST['dataname']) . "' AND parent_id='" . $insert['parent_id'] . "'";
                     if (self::$modx->db->getValue($sql) > 0) {
@@ -48,12 +45,9 @@ class Action extends \Module\Action
                         $data['log'] = 'Такая запись уже имеется в списке';
                     }
                     break;
-                }
                 default:
-                    {
                     $insert = array();
                     $data['log'] = 'Для этого режима не определены правила добавления записей';
-                    }
             }
             if (!empty($insert)) {
                 $insert = self::$modx->db->insert($insert, self::$modx->getFullTableName(self::$_mode));
@@ -76,22 +70,16 @@ class Action extends \Module\Action
         if (!empty($dataID)) {
             switch (self::$_mode) {
                 case 'city':
-                {
                     self::deleteCity($dataID);
                     $data['log'] = 'Город удален';
                     break;
-                }
                 case 'street':
-                {
                     self::deleteStreet($dataID);
                     $data['log'] = 'Улица удалена';
                     break;
-                }
                 default:
-                    {
                     $data['log'] = 'Для этого режима не задано действие удаления';
                     break;
-                    }
             }
         } else {
             $data['log'] = 'Не указан ID записи которую необходимо удалить';

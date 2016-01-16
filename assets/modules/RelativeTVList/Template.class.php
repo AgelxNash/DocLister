@@ -10,7 +10,6 @@ class Template extends \Module\Template
         $data = array();
         switch (Helper::getMode()) {
             case 'street':
-            {
                 $dataID = (int)self::getParam('dataID', $_GET);
                 $data = array('table' => 'street',
                     'addWhereList' => 'parent_id=' . $dataID,
@@ -18,15 +17,12 @@ class Template extends \Module\Template
                     'ownerTPL' => '@CODE: ' . $this->showBody('table/StreetTable')
                 );
                 break;
-            }
             case 'city':
-            {
                 $data = array('table' => 'city',
                     'tpl' => '@CODE: ' . $this->showBody('table/CityBody'),
                     'ownerTPL' => '@CODE: ' . $this->showBody('table/CityTable')
                 );
                 break;
-            }
         }
         if (!empty($data)) {
             $out = $this->_modx->runSnippet('DocLister', array_merge(array(

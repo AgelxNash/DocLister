@@ -170,13 +170,13 @@ class APIhelpers
      * @category   validate
      * @version   0.1
      * @license    GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
-     * @param string $out IP адрес который будет отдан функцией, если больше ничего не обнаружено
+     * @param string $default IP адрес который будет отдан функцией, если больше ничего не обнаружено
      * @return string IP пользователя
      * @author Agel_Nash <Agel_Nash@xaker.ru>
      *
      * @see http://stackoverflow.com/questions/5036443/php-how-to-block-proxies-from-my-site
      */
-    public static function getUserIP($out = '127.0.0.1')
+    public static function getUserIP($default = '127.0.0.1')
     {
         //Порядок условий зависит от приоритетов
         switch (true) {
@@ -209,7 +209,7 @@ class APIhelpers
         }
         unset($tmp);
 
-        return (false !== $out && preg_match('|^(?:[0-9]{1,3}\.){3,3}[0-9]{1,3}$|', $out, $matches)) ? $out : false;
+        return (false !== $out && preg_match('|^(?:[0-9]{1,3}\.){3,3}[0-9]{1,3}$|', $out, $matches)) ? $out : $default;
     }
 
     public static function sanitarTag($data, $charset = 'UTF-8', $chars = array(

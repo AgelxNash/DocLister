@@ -12,21 +12,15 @@ class Template extends \Module\Template
         $addWhere = array();
         switch ($method) {
             case 'doc':
-            {
                 $docID = (int)$this->getParam('doc', $_GET, 0);
                 $addWhere[] = '`page`=' . $docID;
                 break;
-            }
             case 'active':
-            {
                 $addWhere[] = '`active`=1';
                 break;
-            }
             case 'deactive':
-            {
                 $addWhere[] = '`active`=0';
                 break;
-            }
         }
 
         /**

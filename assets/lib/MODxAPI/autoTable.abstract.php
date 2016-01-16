@@ -82,17 +82,13 @@ abstract class autoTable extends MODxAPI
     public function delete($ids, $fire_events = null)
     {
         $_ids = $this->cleanIDs($ids, ',');
-        try {
-            if (is_array($_ids) && $_ids != array()) {
-                $id = $this->sanitarIn($_ids);
-                if(!empty($id)){
-                    $this->query("DELETE from {$this->makeTable($this->table)} where `" . $this->pkName . "` IN ({$id})");
-                }
-                $this->clearCache($fire_events);
-            } else throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre>');
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
+        if (is_array($_ids) && $_ids != array()) {
+        	$id = $this->sanitarIn($_ids);
+            if(!empty($id)){
+            	$this->query("DELETE from {$this->makeTable($this->table)} where `" . $this->pkName . "` IN ({$id})");
+			}
+            $this->clearCache($fire_events);
+		} else throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre>');
         return $this;
     }
 }

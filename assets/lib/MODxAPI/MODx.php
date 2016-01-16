@@ -199,18 +199,13 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     final protected function Uset($key, $id = '')
     {
-        $tmp = '';
         if (!isset($this->field[$key])) {
             $tmp = "`{$key}`=''";
             $this->log[] = "{$key} is empty";
         } else {
-            try {
-                if ($this->issetField($key) && is_scalar($this->field[$key])) {
-                    $tmp = "`{$key}`='{$this->escape($this->field[$key])}'";
-                } else throw new Exception("{$key} is invalid <pre>" . print_r($this->field[$key], true) . "</pre>");
-            } catch (Exception $e) {
-                die($e->getMessage());
-            }
+            if ($this->issetField($key) && is_scalar($this->field[$key])) {
+            	$tmp = "`{$key}`='{$this->escape($this->field[$key])}'";
+			} else throw new Exception("{$key} is invalid <pre>" . print_r($this->field[$key], true) . "</pre>");
         }
         if (!empty($tmp)) {
             if ($id == '') {
@@ -227,16 +222,12 @@ abstract class MODxAPI extends MODxAPIhelpers
     {
         $out = array();
         if (!is_array($IDs)) {
-            try {
-                if (is_scalar($IDs)) {
-                    $IDs = explode($sep, $IDs);
-                } else {
-                    $IDs = array();
-                    throw new Exception('Invalid IDs list <pre>' . print_r($IDs, 1) . '</pre>');
-                }
-            } catch (Exception $e) {
-                die($e->getMessage());
-            }
+            if (is_scalar($IDs)) {
+            	$IDs = explode($sep, $IDs);
+			} else {
+            	$IDs = array();
+                throw new Exception('Invalid IDs list <pre>' . print_r($IDs, 1) . '</pre>');
+			}
         }
         foreach ($IDs as $item) {
             $item = trim($item);
@@ -282,7 +273,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 		}
         $json = json_encode($data);
 
-		if ($this->jsonError($data, $json)) {
+		if ($this->jsonError($data)) {
         	throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
 		}
 
@@ -613,6 +604,6 @@ class MODxAPIhelpers
 
     public function checkString($value, $minLen = 1, $alph = array(), $mixArray = array(), $debug = false)
     {
-        return \APIhelpers::checkString($value, $minLen, $alph, $mixArray, $debug);
+        return \APIhelpers::checkString($value, $minLen, $alph, $mixArray);
     }
 }

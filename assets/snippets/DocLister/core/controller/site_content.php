@@ -230,28 +230,20 @@ class site_contentDocLister extends DocLister
             $row = $item;
             switch (true) {
                 case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
-                {
                     $row['summary'] = $this->getSummary($this->_docs[$num], $extSummary, 'introtext', 'content');
-                    //without break
-                }
+					// no break
                 case (array('1') == $fields || in_array('date', $fields)):
-                {
                     $tmp = (isset($this->_docs[$num][$date]) && $date != 'createdon' && $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
                     $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
-                    //without break
-                }
+					// no break
                 case (array('1') == $fields || in_array(array('menutitle', 'pagetitle'), $fields)):
-                {
                     $row['title'] = ($row['menutitle'] == '' ? $row['pagetitle'] : $row['menutitle']);
-                }
                 case ((array('1') == $fields || in_array(array('content', 'type'), $fields)) && $this->getCFGDef('makeUrl', 1)):
-                {
                     if($row['type'] == 'reference'){
                         $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl($row['content'], '', '', $this->getCFGDef('urlScheme', '')) : $row['content'];
                     }else{
                         $row['url'] = $this->modx->makeUrl($row['id'], '', '', $this->getCFGDef('urlScheme', ''));
                     }
-                }
             }
 
             if($extE && $tmp = $extE->init($this, array('data' => $row))){
@@ -300,21 +292,17 @@ class site_contentDocLister extends DocLister
             if ($sanitarInIDs != "''") {
                 switch ($this->getCFGDef('idType', 'parents')) {
                     case 'parents':
-                    {
 						switch($this->getCFGDef('showParent', '0')){
-							case '-1':{
+							case '-1':
 								$tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
 								break;
-							}
-							case 0:{
+							case 0:
 								$tmpWhere = "c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
 								break;
-							}
 							case 1:
-							default: {
+							default:
 								$tmpWhere = "(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
-							break;
-							}
+								break;
 						}
                         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
@@ -324,12 +312,9 @@ class site_contentDocLister extends DocLister
                         }
 
                         break;
-                    }
                     case 'documents':
-                    {
                         $whereArr[] = "c.id IN({$sanitarInIDs})";
                         break;
-                    }
                 }
             }
             $from = $tbl_site_content . " " . $this->_filters['join'];
@@ -474,19 +459,16 @@ class site_contentDocLister extends DocLister
         $tmpWhere = null;
         if ($sanitarInIDs != "''") {
             switch($this->getCFGDef('showParent', '0')){
-				case '-1':{
+				case '-1':
 					$tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
 					break;
-				}
-				case 0:{
+				case 0:
 					$tmpWhere = "c.parent IN (" . $sanitarInIDs . ") AND c.id NOT IN(" . $sanitarInIDs . ")";
 					break;
-				}
 				case 1:
-				default: {
+				default:
 					$tmpWhere = "(c.parent IN (" . $sanitarInIDs . ") OR c.id IN({$sanitarInIDs}))";
 					break;
-				}
 			}
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
@@ -532,14 +514,10 @@ class site_contentDocLister extends DocLister
         $type = trim($type);
         switch (strtoupper($type)) {
             case 'TVDATETIME':
-            {
                 $field = "STR_TO_DATE(" . $field . ",'%d-%m-%Y %H:%i:%s')";
                 break;
-            }
             default:
-                {
                 $field = parent::changeSortType($field, $type);
-                }
         }
         return $field;
     }

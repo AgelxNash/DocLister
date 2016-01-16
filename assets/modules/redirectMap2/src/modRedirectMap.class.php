@@ -41,12 +41,9 @@ class modRedirectMap extends \autoTable
         if (is_scalar($value) && is_scalar($key) && !empty($key)) {
             switch ($key) {
                 case 'uri':
-                {
                     $value = '/' . ltrim(trim($value), '/');
                     break;
-                }
                 case 'page':
-                {
                     $value = (int)$value;
                     if ($value < 0) {
                         $value = 0;
@@ -55,13 +52,10 @@ class modRedirectMap extends \autoTable
                         $this->set('active', 0);
                     }
                     break;
-                }
                 case 'full_request':
                 case 'save_get':
                 case 'active':
-                {
                     $value = (int)((bool)$value);
-                }
             }
             $this->field[$key] = $value;
         }

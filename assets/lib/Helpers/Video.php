@@ -102,18 +102,15 @@ class Video
 	}
 	public function getScheme(){
 		switch($this->scheme){
-			case 'http':{
+			case 'http':
 				$out = 'http://';
 				break;
-			}
-			case 'https':{
+			case 'https':
 				$out = 'https://';
 				break;
-			}
-			default:{
-			$out = '//';
+			default:
+				$out = '//';
 			break;
-			}
 		}
 
 		return $out;

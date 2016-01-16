@@ -245,9 +245,9 @@ class Actions{
 		    $POST['backUrl'] = $backUrl['path'];
 		}else{
 			$selfHost = rtrim(str_replace("http://", "", $this->config['site_url']), '/');
-			if(empty($uri['host']) || $uri['host']==$selfHost){
-				$query = !empty($uri['query']) ? '?'.$uri['query'] : '';
-			    $POST['backUrl'] = !empty($uri['path']) ? $uri['path'].$query : '';
+			if(empty($backUrl['host']) || $backUrl['host']==$selfHost){
+				$query = !empty($uri['query']) ? '?'.$backUrl['query'] : '';
+			    $POST['backUrl'] = !empty($backUrl['path']) ? $backUrl['path'].$query : '';
 			}else{
 				$POST['backUrl'] = '';
 			}
@@ -289,7 +289,7 @@ class Actions{
 				'remember' => (bool)((int)APIHelpers::getkey($_POST, $rememberField, 0))
 			));
 			if(!empty($POST['email']) && is_scalar($POST['email']) && !$userObj->emailValidate($POST['email'], false)){
-				$openUser = $userObj->edit($POST['email']);
+				$userObj->edit($POST['email']);
 
 				$this->modx->invokeEvent("OnBeforeWebLogin", array(
 		            "username"		=> $POST['email'],
@@ -358,14 +358,12 @@ class Actions{
 		if($userID > 0){
 			$this->userObj->edit($userID);
 			switch(true){
-				case ($field == $this->userObj->fieldPKName()):{
+				case ($field == $this->userObj->fieldPKName()):
 					$out = $this->userObj->getID();
 					break;
-				}
-				case ($this->userObj->issetField($field)):{
+				case ($this->userObj->issetField($field)):
 					$out = $this->userObj->get($field);
 					break;
-				}
 			}
 		}
 		return $out;
@@ -373,7 +371,7 @@ class Actions{
 	/**
 	 * ID пользователя
 	 */
-	public function UserID($params){
+	public function UserID(){
 		$type = 'web';
 		return $this->modx->getLoginUserID($type);
 	}

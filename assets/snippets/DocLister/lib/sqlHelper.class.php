@@ -31,20 +31,14 @@ class sqlHelper
         $regex = 'AND|and|OR|or|\&\&|\|\||NOT|not|\!';
         switch ($mode) {
             case 'right':
-            {
                 $regex = '\s+(' . $regex . ')\s*$';
                 break;
-            }
             case 'left':
-            {
                 $regex = '^\s*(' . $regex . ')\s+';
                 break;
-            }
             default:
-                {
                 $regex = '(^\s*(' . $regex . ')\s+)|(\s+(' . $regex . ')\s*$)';
                 break;
-                }
         }
         return is_scalar($string) ? preg_replace("/{$regex}/", "", $string) : "";
     }

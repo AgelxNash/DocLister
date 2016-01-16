@@ -175,21 +175,17 @@ class shopkeeperDocLister extends site_contentDocLister
             if ($sanitarInIDs != "''") {
                 switch ($this->getCFGDef('idType', 'parents')) {
                     case 'parents':
-                    {
 						switch($this->getCFGDef('showParent', '0')){
-							case '-1':{
+							case '-1':
 								$tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
 								break;
-							}
-							case 0:{
+							case 0:
 								$tmpWhere = "c.parent IN ({$sanitarInIDs}) AND c.id NOT IN({$sanitarInIDs})";
 								break;
-							}
 							case 1:
-							default: {
+							default:
 								$tmpWhere = "(c.parent IN ({$sanitarInIDs}) OR c.id IN({$sanitarInIDs}))";
-							break;
-							}
+								break;
 						}
                         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
@@ -198,12 +194,9 @@ class shopkeeperDocLister extends site_contentDocLister
                             $whereArr[] = $tmpWhere;
                         }
                         break;
-                    }
                     case 'documents':
-                    {
                         $whereArr[] = "c.id IN({$sanitarInIDs})";
                         break;
-                    }
                 }
             }
             $from = $tbl_site_content . " " . $this->_filters['join'];
@@ -332,19 +325,16 @@ class shopkeeperDocLister extends site_contentDocLister
 
 		if ($sanitarInIDs != "''") {
 			switch($this->getCFGDef('showParent', '0')){
-				case '-1':{
+				case '-1':
 					$tmpWhere = "c.parent IN (" . $sanitarInIDs . ")";
 					break;
-				}
-				case 0:{
+				case 0:
 					$tmpWhere = "c.parent IN (" . $sanitarInIDs . ") AND c.id NOT IN(" . $sanitarInIDs . ")";
 					break;
-				}
 				case 1:
-				default: {
-				$tmpWhere = "(c.parent IN (" . $sanitarInIDs . ") OR c.id IN({$sanitarInIDs}))";
-				break;
-				}
+				default:
+					$tmpWhere = "(c.parent IN (" . $sanitarInIDs . ") OR c.id IN({$sanitarInIDs}))";
+					break;
 			}
 		}
 		if (($addDocs = $this->getCFGDef('documents', '')) != '') {

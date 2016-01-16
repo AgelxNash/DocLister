@@ -226,20 +226,16 @@ abstract class DocLister
             }
             switch ($idType) {
                 case 'documents':
-                {
                     $IDs = $this->getCFGDef('documents');
                     $cfg['idType'] = "documents";
                     break;
-                }
                 case 'parents':
                 default:
-                    {
                     $cfg['idType'] = "parents";
                     if (($IDs = $this->getCFGDef('parents')) === null) {
                         $IDs = $this->getCurrentMODXPageID();
                     }
                     break;
-                    }
             }
             $this->setConfig($cfg);
 
@@ -277,7 +273,7 @@ abstract class DocLister
 		for($i=0;$i<=$strlen;$i++){
 			$e = mb_substr($str, $i, 1, 'UTF-8');
 			switch($e){
-				case ')': {
+				case ')':
 					$open--;
 					if($open == 0){
 						$res[] = $cur.')';
@@ -286,13 +282,11 @@ abstract class DocLister
 						$cur .= $e;
 					}
 					break;
-				}
-				case '(':{
+				case '(':
 					$open++;
 					$cur .= $e;
 					break;
-				}
-				case ';':{
+				case ';':
 					if($open == 0){
 						$res[] = $cur;
 						$cur = '';
@@ -300,10 +294,8 @@ abstract class DocLister
 						$cur .= $e;
 					}
 					break;
-				}
-				default:{
+				default:
 					$cur .= $e;
-				}
 			}
 		}
 		$cur = preg_replace("/(\))$/u", '', $cur);
@@ -437,14 +429,12 @@ abstract class DocLister
             $cfgName[1] = rtrim($cfgName[1], '/');
             switch($cfgName[1]){
                 case 'custom':
-                case 'core':{
+                case 'core':
                     $configFile = dirname(dirname(__FILE__)) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
                     break;
-                }
-                default:{
+                default:
                     $configFile = $this->FS->relativePath( $cfgName[1] . '/' . $cfgName[0] . ".json");
                     break;
-                }
             }
 
             if ($this->FS->checkFile($configFile)) {
@@ -483,7 +473,6 @@ abstract class DocLister
      */
     public function isErrorJSON($json)
     {
-        $error = false;
         $error = jsonHelper::json_last_error_msg();
         if (!in_array($error, array('error_none', 'other'))) {
             $this->debug->error($this->getMsg('json.' . $error) . ": " . $this->debug->dumpData($json, 'code'), 'JSON');
@@ -528,7 +517,7 @@ abstract class DocLister
                 $this->_loadExtender('prepare');
             }
 
-        $this->setConfig('extender', implode(",", $extenders));
+        $this->setConfig(array('extender' => implode(",", $extenders)));
         $this->debug->debugEnd("checkDL");
         return $flag;
     }
@@ -663,15 +652,9 @@ abstract class DocLister
         if ($ext != '') {
             $ext = explode(",", $ext);
             foreach ($ext as $item) {
-                try {
-                    if ($item != '' && !$this->_loadExtender($item)) {
-                        $out = false;
-                        throw new Exception('Error load ' . APIHelpers::e($item) . ' extender');
-                        break;
-                    }
-                } catch (Exception $e) {
-                    $this->ErrorLogger($e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine(), $e->getTrace());
-                }
+                if ($item != '' && !$this->_loadExtender($item)) {
+                	throw new Exception('Error load ' . APIHelpers::e($item) . ' extender');
+				}
             }
         }
         return $out;
@@ -688,13 +671,12 @@ abstract class DocLister
 
     /**
      * Сохранение настроек вызова сниппета
-     * @param array|string $cfg массив настроек
+     * @param array $cfg массив настроек
      * @return int результат сохранения настроек
      */
     public function setConfig($cfg)
     {
-		if(is_scalar($cfg)) $cfg = array($cfg);
-        if (is_array($cfg)) {
+		if (is_array($cfg)) {
             $this->_cfg = array_merge($this->_cfg, $cfg);
             $ret = count($this->_cfg);
         } else {
@@ -1366,31 +1348,23 @@ abstract class DocLister
         $sort = '';
         switch ($this->getCFGDef('sortType', '')) {
             case 'none':
-            {
                 break;
-            }
             case 'doclist':
-            {
                 $idList = $this->sanitarIn($this->IDs, ',', false);
                 $out = array('orderBy' => "FIND_IN_SET({$this->getPK()}, '{$idList}')");
                 $this->setConfig($out); //reload config;
                 $sort = "ORDER BY " . $out['orderBy'];
                 break;
-            }
             default:
                 $out = array('orderBy' => '', 'order' => '', 'sortBy' => '');
                 if (($tmp = $this->getCFGDef('orderBy', '')) != '') {
                     $out['orderBy'] = $tmp;
                 } else {
                     switch (true) {
-                        case ('' != ($tmp = $this->getCFGDef('sortDir', ''))):
-                        { //higher priority than order
+                        case ('' != ($tmp = $this->getCFGDef('sortDir', ''))): //higher priority than order
                             $out['order'] = $tmp;
-                        }
                         case ('' != ($tmp = $this->getCFGDef('order', ''))):
-                        {
                             $out['order'] = $tmp;
-                        }
                     }
                     if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
                         $out['order'] = $orderDef; //Default
@@ -1586,30 +1560,20 @@ abstract class DocLister
         $type = trim($type);
         switch (strtoupper($type)) {
             case 'DECIMAL':
-            {
                 $field = 'CAST(' . $field . ' as DECIMAL(10,2))';
                 break;
-            }
             case 'UNSIGNED':
-            {
                 $field = 'CAST(' . $field . ' as UNSIGNED)';
                 break;
-            }
             case 'BINARY':
-            {
                 $field = 'CAST(' . $field . ' as BINARY)';
                 break;
-            }
             case 'DATETIME':
-            {
                 $field = 'CAST(' . $field . ' as DATETIME)';
                 break;
-            }
             case 'SIGNED':
-            {
                 $field = 'CAST(' . $field . ' as SIGNED)';
                 break;
-            }
         }
         return $field;
     }

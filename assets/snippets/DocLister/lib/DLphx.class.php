@@ -113,15 +113,11 @@ class DLphx
             $var_search = array();
             $var_replace = array();
             for ($i = 0; $i < $count; $i++) {
-                $replace = NULL;
-                $match = $matches[0][$i];
-                $input = $matches[1][$i];
-                $modifiers = $matches[2][$i];
-                $var_search[] = $match;
-                $this->Log('MODX Chunk: ' . $input);
+				$var_search[] = $matches[0][$i];
+				$input = $matches[1][$i];
+				$this->Log('MODX Chunk: ' . $input);
                 $input = $modx->mergeChunkContent('{{' . $input . '}}');
-                $replace = $this->Filter($input, $modifiers);
-                $var_replace[] = $replace;
+                $var_replace[] = $this->Filter($input, $matches[2][$i]);
             }
             $template = str_replace($var_search, $var_replace, $template);
         }
@@ -162,14 +158,10 @@ class DLphx
             $var_search = array();
             $var_replace = array();
             for ($i = 0; $i < $count; $i++) {
-                $replace = NULL;
-                $match = $matches[0][$i];
-                $type = $matches[1][$i];
-                $type_end = $matches[4][$i];
                 $input = $matches[2][$i];
                 $modifiers = $matches[3][$i];
-                $var_search[] = $match;
-                switch ($type) {
+                $var_search[] = $matches[0][$i];
+                switch ($matches[1][$i]) {
                     // Document / Template Variable eXtended
                     case "*":
                         $this->Log("MODx TV/DV: " . $input);
@@ -475,7 +467,7 @@ class DLphx
     // Event logging (debug)
     public function createEventLog()
     {
-        if ($this->console) {
+        if (!empty($this->console)) {
             $console = implode("\n", $this->console);
             $this->console = array();
             return '<pre style="overflow: auto;">' . $console . '</pre>';
