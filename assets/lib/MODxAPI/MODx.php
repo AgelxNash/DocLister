@@ -602,7 +602,7 @@ class MODxAPIhelpers
         return \APIhelpers::sanitarTag($data);
     }
 
-    public function checkString($value, $minLen = 1, $alph = array(), $mixArray = array(), $debug = false)
+    public function checkString($value, $minLen = 1, $alph = array(), $mixArray = array())
     {
         return \APIhelpers::checkString($value, $minLen, $alph, $mixArray);
     }

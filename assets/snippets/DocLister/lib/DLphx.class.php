@@ -305,10 +305,9 @@ class DLphx
                     ##### End of Conditional Modifiers
 
                     #####  String Modifiers
-					case "default":{
+					case "default":
                         $output = ($output === '') ? $modifier_value[0] : $output;
                         break;
-                    }
                     case "lcase":
                     case "strtolower":
                         $output = $this->strtolower($output);

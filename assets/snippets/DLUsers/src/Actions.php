@@ -246,7 +246,7 @@ class Actions{
 		}else{
 			$selfHost = rtrim(str_replace("http://", "", $this->config['site_url']), '/');
 			if(empty($backUrl['host']) || $backUrl['host']==$selfHost){
-				$query = !empty($uri['query']) ? '?'.$backUrl['query'] : '';
+				$query = !empty($backUrl['query']) ? '?'.$backUrl['query'] : '';
 			    $POST['backUrl'] = !empty($backUrl['path']) ? $backUrl['path'].$query : '';
 			}else{
 				$POST['backUrl'] = '';
@@ -371,8 +371,7 @@ class Actions{
 	/**
 	 * ID пользователя
 	 */
-	public function UserID(){
-		$type = 'web';
+	public function UserID($type = 'web'){
 		return $this->modx->getLoginUserID($type);
 	}
 	/**

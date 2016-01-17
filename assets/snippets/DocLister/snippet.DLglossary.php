@@ -7,23 +7,17 @@ require_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/sqlHelper.class.php
 
 switch (true) {
     case (!empty($fromget)):
-    {
         /** Брать ли данные из GET */
         $data = $_GET;
         $from = $fromget;
         break;
-    }
     case (!empty($frompost)):
-    {
         /** Брать ли данные из POST */
         $data = $_POST;
         $from = $frompost;
         break;
-    }
     default:
-    {
         $from = $data = null;
-    }
 }
 if (!empty($from)) {
     $char = (isset($data[$from]) && is_scalar($data[$from])) ? $data[$from] : null;

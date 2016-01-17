@@ -1363,8 +1363,10 @@ abstract class DocLister
                     switch (true) {
                         case ('' != ($tmp = $this->getCFGDef('sortDir', ''))): //higher priority than order
                             $out['order'] = $tmp;
+							// no break
                         case ('' != ($tmp = $this->getCFGDef('order', ''))):
                             $out['order'] = $tmp;
+							// no break
                     }
                     if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
                         $out['order'] = $orderDef; //Default

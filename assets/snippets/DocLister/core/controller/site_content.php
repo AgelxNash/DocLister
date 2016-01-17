@@ -238,12 +238,14 @@ class site_contentDocLister extends DocLister
 					// no break
                 case (array('1') == $fields || in_array(array('menutitle', 'pagetitle'), $fields)):
                     $row['title'] = ($row['menutitle'] == '' ? $row['pagetitle'] : $row['menutitle']);
+					// no break
                 case ((array('1') == $fields || in_array(array('content', 'type'), $fields)) && $this->getCFGDef('makeUrl', 1)):
                     if($row['type'] == 'reference'){
                         $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl($row['content'], '', '', $this->getCFGDef('urlScheme', '')) : $row['content'];
                     }else{
                         $row['url'] = $this->modx->makeUrl($row['id'], '', '', $this->getCFGDef('urlScheme', ''));
                     }
+					// no break
             }
 
             if($extE && $tmp = $extE->init($this, array('data' => $row))){
