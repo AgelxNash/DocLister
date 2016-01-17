@@ -87,8 +87,7 @@ class Actions{
     public function logout($params){
     	$LogoutName = APIHelpers::getkey($params, 'LogoutName', 'logout');
     	if(is_scalar($LogoutName) && !empty($LogoutName) && isset($_GET[$LogoutName])){
-    		$type = 'web';
-    		$userID = $this->UserID(compact('type'));
+    		$userID = $this->UserID('web');
     		if($userID){
     			$this->userObj->edit($userID);
     			if($this->userObj->getID()){
@@ -158,8 +157,7 @@ class Actions{
 		$emailField = APIHelpers::getkey($params, 'emailField', 'email');
 		$rememberField = APIHelpers::getkey($params, 'rememberField', 'remember');
 
-    	$type = 'web';
-		if($this->UserID(compact('type'))){
+    	if($this->UserID('web')){
 			$tpl = APIHelpers::getkey($params, 'tplProfile', '');
 			if(empty($tpl)){
 				$tpl = $this->getTemplate('tplProfile');
@@ -349,10 +347,9 @@ class Actions{
 	 */
 	public function UserInfo($params){
 		$out = '';
-		$type = 'web';
 		$userID = APIHelpers::getkey($params, 'id', 0);
 		if(empty($userID)){
-			$userID = $this->UserID(compact('type'));
+			$userID = $this->UserID('web');
 		}
 		$field = APIHelpers::getkey($params, 'field', 'username');
 		if($userID > 0){
@@ -378,8 +375,7 @@ class Actions{
 	 * Если не авторизован - то отправить на страницу
 	 */
 	public function isGuestGoHome($params){
-		$type = 'web';
-		if(!$this->UserID(compact('type'))){
+		if(!$this->UserID('web')){
 			/**
 			 * @see : http://modx.im/blog/triks/105.html
 			 */
@@ -394,8 +390,7 @@ class Actions{
 	 * Если авторизован - то открыть личный кабинет
 	 */
 	public function isAuthGoHome($params){
-		$type = 'web';
-		$userID = $this->UserID(compact('type'));
+		$userID = $this->UserID('web');
 		if($userID>0){
 			$id = APIHelpers::getkey($params, 'homeID');
 		    if(empty($id)){
