@@ -25,6 +25,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     public function __construct(DocumentParser $modx, $debug = false)
     {	
+    	$this->modx = $modx;
         if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
         	throw new Exception('Magic Quotes is a deprecated and mostly useless setting that should be disabled. Please ask your server administrator to disable it in php.ini or in your webserver config.');
 		}
