@@ -3,7 +3,7 @@ include_once(MODX_BASE_PATH.'assets/lib/APIHelpers.class.php');
 include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/jsonHelper.class.php');
 include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/DLCollection.class.php');
 
-abstract class MODxAPI extends MODxAPIhelpers
+abstract class MODxAPI extends APIhelpers
 {
     protected $modx = null;
     protected $log = array();
