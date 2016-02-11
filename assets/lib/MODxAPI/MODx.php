@@ -339,9 +339,23 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     public function checkUnique($table, $field, $PK = 'id')
     {
-        $val = $this->get($field);
-        if ($val != '') {
-            $sql = $this->query("SELECT `" . $this->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE `" . $this->escape($field) . "`='" . $this->escape($val) . "'");
+        if (is_array($field)) {
+            $where = array();
+            foreach ($field as $_field) {
+                $val = $this->get($_field);
+                if ($val != '')
+                    $where[] = "`".$this->escape($_field)."` = '".$this->escape($val)."'";
+            }
+            $where = implode(' AND ',$where);
+        } else {
+            $where = '';
+            $val = $this->get($field);
+            if ($val != '')
+                $where = "`".$this->escape($field)."` = '".$this->escape($val)."'";
+        }
+        
+        if ($where != '') {
+            $sql = $this->query("SELECT `" . $this->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE ".$where);
             $id = $this->modx->db->getValue($sql);
             if (is_null($id) || (!$this->newDoc && $id == $this->getID())) {
                 $flag = true;
