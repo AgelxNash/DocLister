@@ -238,7 +238,7 @@ class APIhelpers
     }
 
     public static function e($text, $charset = 'UTF-8'){
-        return is_scalar($text) ? htmlspecialchars($text, ENT_COMPAT, $charset, false) : '';
+        return is_scalar($text) ? htmlspecialchars($text, ENT_QUOTES, $charset, false) : '';
     }
     /**
      * Проверка строки на наличе запрещенных символов
