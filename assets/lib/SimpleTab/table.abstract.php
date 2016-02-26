@@ -101,7 +101,9 @@ class dataTable extends \autoTable {
      * @return string
      */
     public function stripName($name) {
-        return $this->modx->stripAlias($name);
+        $filename = $this->fs->takeFileName($name);
+        $ext = $this->fs->takeFileExt($name);
+        return $this->modx->stripAlias($filename).'.'.$ext;
     }
 
     public function reorder($source, $target, $point, $rid, $orderDir) {
