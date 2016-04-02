@@ -19,7 +19,7 @@ class DLpaginate {
     public $showCounter = false;
     public $className = "pagination";
     public $parameterName = "page";
-    public $urlF = false; //urlFriendly
+    public $urlF = null; //urlFriendly
 
     /**Buttons next and previous*/
     public $nextT = ' <a href="[+link+]">Next</a> ';
