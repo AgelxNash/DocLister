@@ -13,4 +13,4 @@
  * @internal    @modx_category Users
  */
 
-include MODX_BASE_PATH."assets/plugins/getPageID/getPageID.plugin.php";
+include MODX_BASE_PATH."assets/snippets/DLUsers/plugin.DLLogout.php";
