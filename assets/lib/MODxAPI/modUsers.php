@@ -310,8 +310,9 @@ class modUsers extends MODxAPI
                 "userpassword"  => $password,
                 "savedpassword" => $tmp->get('password')
             ),$fire_events);
-            if ($pluginFlag === false || (is_array($pluginFlag) && !in_array(true, $pluginFlag))) {
-                $flag = ($password == $tmp->getPassword($password));
+            if ($pluginFlag == false || (is_array($pluginFlag) && !in_array(true, $pluginFlag))) {
+                $pluginFlag = false;
+                $flag = ($tmp->get('password') == $tmp->getPassword($password));
             } else {
                 $pluginFlag = true;
             }
