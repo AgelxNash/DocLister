@@ -257,7 +257,7 @@ class modUsers extends MODxAPI
             //$this->logOut($cookieName);
             $flag = true;
             $this->SessionHandler('start', $cookieName, $fulltime);
-            $this->modx->invokeEvent("OnWebLogin", array(
+            $this->invokeEvent("OnWebLogin", array(
                 "userid"        => $this->getID(),
                 "username"      => $this->get('username'),
                 "userpassword"  => $this->givenPassword,
