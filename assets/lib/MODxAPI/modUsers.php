@@ -257,7 +257,7 @@ class modUsers extends MODxAPI
             //$this->logOut($cookieName);
             $flag = true;
             $this->SessionHandler('start', $cookieName, $fulltime);
-            $this->modx->invokeEvent("OnWebLogin", array(
+            $this->invokeEvent("OnWebLogin", array(
                 "userid"        => $this->getID(),
                 "username"      => $this->get('username'),
                 "userpassword"  => $this->givenPassword,
@@ -304,12 +304,13 @@ class modUsers extends MODxAPI
         if (
             ($tmp->getID()) && (!$blocker || ($blocker && !$tmp->checkBlock($id)))
         ) {
-            $pluginFlag = $this->invokeEvent('OnWebAuthentication',array(
+            $this->invokeEvent('OnWebAuthentication',array(
                 "userid"        => $tmp->getID(),
                 "username"      => $tmp->get('username'),
                 "userpassword"  => $password,
                 "savedpassword" => $tmp->get('password')
             ),$fire_events);
+            $pluginFlag = $this->modx->event->output_;
             if ($pluginFlag == false || (is_array($pluginFlag) && !in_array(true, $pluginFlag))) {
                 $pluginFlag = false;
                 $flag = ($tmp->get('password') == $tmp->getPassword($password));

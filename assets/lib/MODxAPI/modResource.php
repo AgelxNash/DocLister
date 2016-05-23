@@ -337,7 +337,8 @@ class modResource extends MODxAPI
 
         $this->invokeEvent('OnBeforeDocFormSave', array(
             "mode" => $this->newDoc ? "new" : "upd",
-            "id" => $this->id ? $this->id : ''
+            "id" => $this->id ? $this->id : '',
+            "doc" => $this->toArray()
         ), $fire_events);
 
         $fld = $this->toArray(null, null, null, false);
@@ -419,7 +420,8 @@ class modResource extends MODxAPI
 
         $this->invokeEvent('OnDocFormSave', array(
             "mode" => $this->newDoc ? "new" : "upd",
-            "id" => $this->id
+            "id" => $this->id,
+            "doc" => $this->toArray()
         ), $fire_events);
 
         if ($clearCache) {
