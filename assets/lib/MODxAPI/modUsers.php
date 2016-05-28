@@ -444,7 +444,7 @@ class modUsers extends MODxAPI
 
             $sql = "SELECT `uga`.`documentgroup` FROM {$web_groups} as `ug`
                 INNER JOIN {$webgroup_access} as `uga` ON `uga`.`webgroup`=`ug`.`webgroup`
-                WHERE `ug`.`webuser` = ".$this->getID();
+                WHERE `ug`.`webuser` = ".$user->getID();
             $sql = $this->modx->db->makeArray($this->modx->db->query($sql));
 
             foreach($sql as $row){
