@@ -188,12 +188,6 @@ class modResource extends MODxAPI
                         $this->field['publishedon'] = time() + $this->modxConfig('server_offset_time');
                     }
                     break;
-                case 'publishedon':
-                    $value = $this->getTime($value);
-                    if($value){
-                        $this->field['publishedon'] = $value;
-                    }
-                    break;
                 case 'pub_date':
                     $value = $this->getTime($value);
                     if($value > 0 && time() + $this->modxConfig('server_offset_time') > $value){
@@ -227,6 +221,7 @@ class modResource extends MODxAPI
                     break;
                 case 'editedon':
                 case 'createdon':
+                case 'publishedon':
                     $value = $this->getTime($value);
                     break;
                 case 'publishedby':
