@@ -191,9 +191,7 @@ class modResource extends MODxAPI
                 case 'publishedon':
                     $value = $this->getTime($value);
                     if($value){
-                        $this->field['published'] = 1;
-                    }else{
-                        $this->field['published'] = 0;
+                        $this->field['publishedon'] = $value;
                     }
                     break;
                 case 'pub_date':
