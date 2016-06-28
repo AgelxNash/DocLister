@@ -1110,7 +1110,7 @@ abstract class DocLister
         }
         $this->outData = json_encode($return);
         $this->isErrorJSON($return);
-        return strtr($this->outData, array('[[' => '[ [', ']]' => '] ]'));
+        return $this->outData;
     }
 
     protected function getSummary(array $item = array(), $extSummary = null, $introField = '', $contentField = '')
