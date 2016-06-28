@@ -483,4 +483,14 @@ class modUsers extends MODxAPI
         unset($user);
         return $out;
     }
+
+    public function setUserGroups($userID = 0, $groupIds = array()) {
+        $user = $this->switchObject($userID);
+        if($uid = $user->getID() && is_array($groupIds)) {
+            foreach ($groupIds as $gid) {
+                $this->query("REPLACE INTO {$this->modx->getFullTableName('web_groups')} (`webgroup`, `webuser`) VALUES ('{$gid}', '{$uid}')");
+            }
+        }
+        return $this;
+    }
 }
