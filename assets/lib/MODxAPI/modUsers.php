@@ -106,11 +106,9 @@ class modUsers extends MODxAPI
         if (is_scalar($value) && is_scalar($key) && !empty($key)) {
             switch ($key) {
                 case 'password':
-                {
                     $this->givenPassword = $value;
                     $value = $this->getPassword($value);
                     break;
-                }
             }
             $this->field[$key] = $value;
         }
@@ -171,7 +169,7 @@ class modUsers extends MODxAPI
             } else {
                 $SQL = "UPDATE {$this->makeTable('web_users')} SET " . implode(', ', $this->set['user']) . " WHERE id = " . $this->id;
             }
-            $result = $this->query($SQL);
+            $this->query($SQL);
         }
 
         if ($this->newDoc) {
@@ -203,16 +201,17 @@ class modUsers extends MODxAPI
             if ($value == '') continue;
             $result = $this->query("SELECT `setting_value` FROM {$this->makeTable('web_user_settings')} WHERE `webuser` = '{$this->id}' AND `setting_name` = '{$key}'");
             if ($this->modx->db->getRecordCount($result) > 0) {
-                $result = $this->query("UPDATE {$this->makeTable('web_user_settings')} SET `setting_value` = '{$value}' WHERE `webuser` = '{$this->id}' AND `setting_name` = '{$key}';");
+                $this->query("UPDATE {$this->makeTable('web_user_settings')} SET `setting_value` = '{$value}' WHERE `webuser` = '{$this->id}' AND `setting_name` = '{$key}';");
             } else {
-                $result = $this->query("INSERT into {$this->makeTable('web_user_settings')} SET `webuser` = {$this->id},`setting_name` = '{$key}',`setting_value` = '{$value}';");
+                $this->query("INSERT into {$this->makeTable('web_user_settings')} SET `webuser` = {$this->id},`setting_name` = '{$key}',`setting_value` = '{$value}';");
             }
         }
 
         $this->invokeEvent('OnWebSaveUser',array (
-            "mode" => $this->newDoc ? "new" : "upd",
-            "id" => $this->id,
-            "user" => $this->toArray()
+            'userObj'   => $this,
+            'mode'      => $this->newDoc ? "new" : "upd",
+            'id'        => $this->id,
+            'user'      => $this->toArray()
         ),$fire_events);
 
         if ($clearCache) {
@@ -230,6 +229,7 @@ class modUsers extends MODxAPI
             WHERE attribute.internalKey='{$this->escape($this->getID())}'");
             $this->query("DELETE FROM {$this->makeTable('web_user_settings')} WHERE webuser='{$this->getID()}'");
             $this->invokeEvent('OnWebDeleteUser', array(
+                'userObj'       => $this,
                 'userid'        => $this->getID(),
                 'internalKey'   => $this->getID(),
                 'username'      => $this->get('username'),
@@ -258,10 +258,11 @@ class modUsers extends MODxAPI
             $flag = true;
             $this->SessionHandler('start', $cookieName, $fulltime);
             $this->invokeEvent("OnWebLogin", array(
-                "userid"        => $this->getID(),
-                "username"      => $this->get('username'),
-                "userpassword"  => $this->givenPassword,
-                "rememberme"    => $fulltime
+                'userObj'       => $this,
+                'userid'        => $this->getID(),
+                'username'      => $this->get('username'),
+                'userpassword'  => $this->givenPassword,
+                'rememberme'    => $fulltime
             ),$fire_events);
         }
         return $flag;
@@ -304,19 +305,23 @@ class modUsers extends MODxAPI
         if (
             ($tmp->getID()) && (!$blocker || ($blocker && !$tmp->checkBlock($id)))
         ) {
-            $this->invokeEvent('OnWebAuthentication',array(
-                "userid"        => $tmp->getID(),
-                "username"      => $tmp->get('username'),
-                "userpassword"  => $password,
-                "savedpassword" => $tmp->get('password')
+            $eventResult = $this->getInvokeEventResult('OnWebAuthentication',array(
+                'userObj'       => $this,
+                'userid'        => $tmp->getID(),
+                'username'      => $tmp->get('username'),
+                'userpassword'  => $password,
+                'savedpassword' => $tmp->get('password')
             ),$fire_events);
-            $pluginFlag = $this->modx->event->output_;
-            if ($pluginFlag == false || (is_array($pluginFlag) && !in_array(true, $pluginFlag))) {
-                $pluginFlag = false;
-                $flag = ($tmp->get('password') == $tmp->getPassword($password));
+            if (is_array($eventResult)) {
+                foreach ($eventResult as $result) {
+                    $pluginFlag = (bool)$result;
+                }
             } else {
-                $pluginFlag = true;
+                $pluginFlag = (bool)$eventResult;
             }
+            if (!$pluginFlag) {
+                $flag = ($tmp->get('password') == $tmp->getPassword($password));
+            } 
         }
         unset($tmp);
         return $flag || $pluginFlag;
