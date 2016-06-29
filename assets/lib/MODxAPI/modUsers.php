@@ -206,7 +206,16 @@ class modUsers extends MODxAPI
                 $this->query("INSERT into {$this->makeTable('web_user_settings')} SET `webuser` = {$this->id},`setting_name` = '{$key}',`setting_value` = '{$value}';");
             }
         }
-
+        if (!$this->newDoc && $this->givenPassword) {
+            $this->invokeEvent('OnWebChangePassword',array(
+                'userObj'       => $this,
+                'userid'        => $this->id,
+			    'user'	        => $this->toArray(),
+			    'userpassword'	=> $this->givenPassword,
+                'internalKey'   => $this->id,
+                'username'      => $this->get('username')
+            ),$fire_events);
+        }
         $this->invokeEvent('OnWebSaveUser',array (
             'userObj'   => $this,
             'mode'      => $this->newDoc ? "new" : "upd",
@@ -302,6 +311,7 @@ class modUsers extends MODxAPI
         if ($id && $tmp->getID() != $id) {
             $tmp->edit($id);
         }
+
         $flag = $pluginFlag = false;
         if (
             ($tmp->getID()) && (!$blocker || ($blocker && !$tmp->checkBlock($id)))
@@ -333,7 +343,7 @@ class modUsers extends MODxAPI
      * @param string $cookieName
      * @return bool
      */
-    public function AutoLogin($fulltime = true, $cookieName = 'WebLoginPE')
+    public function AutoLogin($fulltime = true, $cookieName = 'WebLoginPE', $fire_events = null)
     {
         $flag = false;
         if (isset($_COOKIE[$cookieName])) {
@@ -343,7 +353,7 @@ class modUsers extends MODxAPI
                 $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->escape($cookie[0])}'");
                 $id = $this->modx->db->getValue($q);
                 if ($this->edit($id) && $this->getID() && $this->get('password') == $cookie[1] && $this->testAuth($this->getID(), $cookie[1], true)) {
-                    $flag = $this->authUser($this->getID(), $fulltime, $cookieName);
+                    $flag = $this->authUser($this->getID(), $fulltime, $cookieName, $fire_events);
 
                 }
             }
