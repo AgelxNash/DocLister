@@ -228,6 +228,7 @@ class modUsers extends MODxAPI
             LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
             WHERE attribute.internalKey='{$this->escape($this->getID())}'");
             $this->query("DELETE FROM {$this->makeTable('web_user_settings')} WHERE webuser='{$this->getID()}'");
+            $this->query("DELETE FROM {$this->makeTable('web_groups')} WHERE webuser='{$this->getID()}'");
             $this->invokeEvent('OnWebDeleteUser', array(
                 'userObj'       => $this,
                 'userid'        => $this->getID(),
@@ -450,11 +451,8 @@ class modUsers extends MODxAPI
             $sql = "SELECT `uga`.`documentgroup` FROM {$web_groups} as `ug`
                 INNER JOIN {$webgroup_access} as `uga` ON `uga`.`webgroup`=`ug`.`webgroup`
                 WHERE `ug`.`webuser` = ".$user->getID();
-            $sql = $this->modx->db->makeArray($this->modx->db->query($sql));
+            $out = $this->modx->db->getColumn('documentgroup',$this->query($sql));
 
-            foreach($sql as $row){
-                $out[] = $row['documentgroup'];
-            }
         }
         unset($user);
         return $out;
@@ -468,17 +466,13 @@ class modUsers extends MODxAPI
         $out = array();
         $user = $this->switchObject($userID);
         if($user->getID()){
-            $web_groups = $this->modx->getFullTableName('web_groups');
-            $webgroup_names = $this->modx->getFullTableName('webgroup_names');
+            $web_groups = $this->makeTable('web_groups');
+            $webgroup_names = $this->makeTable('webgroup_names');
 
             $sql = "SELECT `ugn`.`name` FROM {$web_groups} as `ug`
                 INNER JOIN {$webgroup_names} as `ugn` ON `ugn`.`id`=`ug`.`webgroup`
                 WHERE `ug`.`webuser` = ".$user->getID();
-            $sql = $this->modx->db->makeArray($this->modx->db->query($sql));
-
-            foreach($sql as $row){
-                $out[] = $row['name'];
-            }
+            $out = $this->modx->db->getColumn('name',$this->query($sql));
         }
         unset($user);
         return $out;
@@ -486,9 +480,9 @@ class modUsers extends MODxAPI
 
     public function setUserGroups($userID = 0, $groupIds = array()) {
         $user = $this->switchObject($userID);
-        if($uid = $user->getID() && is_array($groupIds)) {
+        if(($uid = $user->getID()) && is_array($groupIds)) {
             foreach ($groupIds as $gid) {
-                $this->query("REPLACE INTO {$this->modx->getFullTableName('web_groups')} (`webgroup`, `webuser`) VALUES ('{$gid}', '{$uid}')");
+                $this->query("REPLACE INTO {$this->makeTable('web_groups')} (`webgroup`, `webuser`) VALUES ('{$gid}', '{$uid}')");
             }
         }
         return $this;
