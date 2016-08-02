@@ -3,6 +3,7 @@ require_once('MODx.php');
 
 class modResource extends MODxAPI
 {
+    protected $mode = null;
     protected $default_field = array(
         'type' => 'document',
         'contentType' => 'text/html',
@@ -336,7 +337,6 @@ class modResource extends MODxAPI
         ), $fire_events);
 
         $fld = $this->toArray(null, null, null, false);
-	
         foreach ($this->default_field as $key => $value) {
             $tmp = $this->get($key);
             if ($this->newDoc && ( !is_int($tmp) && $tmp=='')) {
@@ -411,9 +411,12 @@ class modResource extends MODxAPI
                 }
             }
         }
-
+        if (!isset($this->mode)) {
+            $this->mode = $this->newDoc ? "new" : "upd";
+            $this->newDoc = false;
+        }
         $this->invokeEvent('OnDocFormSave', array(
-            'mode'  => $this->newDoc ? "new" : "upd",
+            'mode'  => $this->mode,
             'id'    => $this->id,
             'doc'   => $this->toArray(),
             'docObj'=> $this
