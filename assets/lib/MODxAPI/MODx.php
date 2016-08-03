@@ -339,7 +339,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         $fields = $this->field;
 
         foreach ($fields as $key => $value) {
-            if ($tpl != plh) {
+            if ($tpl != $plh) {
                 $out[str_replace($plh, $key, $tpl)] = $this->get($key);
             } else {
                 $out[$key] = $this->get($key);
