@@ -219,7 +219,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     public function get($key)
     {
-        return APIHelpers::getkey($this->field, $key, null);
+        return $key == $this->fieldPKName() ? $this->getID() : APIHelpers::getkey($this->field, $key, null);
     }
 
     public function fromArray($data)
@@ -337,14 +337,15 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         $out = array();
         $fields = $this->field;
-        $fields[$this->fieldPKName()] = $this->getID();
-        if ($tpl != $plh) {
-            foreach ($fields as $key => $value) {
-                $out[str_replace($plh, $key, $tpl)] = $value;
+
+        foreach ($fields as $key => $value) {
+            if ($tpl != $plh) {
+                $out[str_replace($plh, $key, $tpl)] = $this->get($key);
+            } else {
+                $out[$key] = $this->get($key);
             }
-        } else {
-            $out = $fields;
         }
+
         return $out;
     }
     final public function fieldPKName(){
