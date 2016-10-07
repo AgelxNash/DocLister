@@ -28,6 +28,7 @@ class modUsers extends MODxAPI
             'gender' => null,
             'country' => null,
             'state' => null,
+	    'city' => null,
             'zip' => null,
             'fax' => null,
             'photo' => null,
