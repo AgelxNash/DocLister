@@ -49,7 +49,7 @@ class user_DL_Extender extends extDocLister
     public function setUserData($arr)
     {
         foreach ($arr as $key => $item) {
-            $out = $this->DocLister->renameKeyArr($this->getUser($key, $item[$key]), 'user', $key);
+            $out = $this->DocLister->renameKeyArr($this->getUser($key, $item), 'user', $key);
             if (is_array($out) && count($out) > 0) {
                 $arr = array_merge($arr, $out);
             }
@@ -68,6 +68,7 @@ class user_DL_Extender extends extDocLister
         $table = array();
         switch ($type) {
             case 'manager':
+            case 'mgr':
                 $table['users'] = $this->modx->getFullTableName('manager_users');
                 $table['attributes'] = $this->modx->getFullTableName('user_attributes');
                 break;
@@ -108,6 +109,7 @@ class user_DL_Extender extends extDocLister
                     a.gender,
                     a.country,
                     a.state,
+                    a.city,
                     a.zip,
                     a.fax,
                     a.photo,
