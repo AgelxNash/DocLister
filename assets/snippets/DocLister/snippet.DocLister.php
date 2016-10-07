@@ -24,7 +24,7 @@ if (isset($controller)) {
 }
 $classname = $controller . "DocLister";
 
-$dir = isset($dir) ? $dir : $DLDir . "core/controller/";
+$dir = isset($dir) ? MODX_BASE_PATH . $dir : $DLDir . "core/controller/";
 if ($classname != 'DocLister' && file_exists($dir . $controller . ".php") && !class_exists($classname, false)) {
     require_once($dir . $controller . ".php");
 }
