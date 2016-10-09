@@ -64,7 +64,7 @@ class injectSortByTVTest extends TVAbstract
 
         /** @var \tv_DL_Extender $extTV */
         $extTV = $this->getTVExtender($this->mockDocLister('site_content', array(
-            'debug' => 1,
+            'debug'      => 1,
             'tvSortType' => 'BINARY'
         )));
 
@@ -105,7 +105,7 @@ class injectSortByTVTest extends TVAbstract
 
         /** @var \tv_DL_Extender $extTV */
         $extTV = $this->getTVExtender($this->mockDocLister('site_content', array(
-            'debug' => 1,
+            'debug'      => 1,
             'tvSortType' => ',DECIMAL',
             //'tvSortWithDefault' => ','
         )));
@@ -125,8 +125,8 @@ class injectSortByTVTest extends TVAbstract
 
         /** @var \tv_DL_Extender $extTV */
         $extTV = $this->getTVExtender($this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'tvSortType' => 'UNSIGNED',
+            'debug'             => 1,
+            'tvSortType'        => 'UNSIGNED',
             'tvSortWithDefault' => 'other'
         )));
 
@@ -145,8 +145,8 @@ class injectSortByTVTest extends TVAbstract
 
         /** @var \tv_DL_Extender $extTV */
         $extTV = $this->getTVExtender($this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'tvSortType' => 'TVDATETIME',
+            'debug'             => 1,
+            'tvSortType'        => 'TVDATETIME',
             'tvSortWithDefault' => 'other'
         )));
 
@@ -165,8 +165,8 @@ class injectSortByTVTest extends TVAbstract
 
         /** @var \tv_DL_Extender $extTV */
         $extTV = $this->getTVExtender($this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'tvSortType' => 'DATETIME',
+            'debug'             => 1,
+            'tvSortType'        => 'DATETIME',
             'tvSortWithDefault' => 'other'
         )));
 
@@ -185,8 +185,8 @@ class injectSortByTVTest extends TVAbstract
 
         /** @var \tv_DL_Extender $extTV */
         $extTV = $this->getTVExtender($this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'tvSortType' => 'BINARY',
+            'debug'             => 1,
+            'tvSortType'        => 'BINARY',
             'tvSortWithDefault' => 'other'
         )));
 
@@ -205,8 +205,8 @@ class injectSortByTVTest extends TVAbstract
 
         /** @var \tv_DL_Extender $extTV */
         $extTV = $this->getTVExtender($this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'tvSortType' => 'EXAMPLE_ERROR_TYPE',
+            'debug'             => 1,
+            'tvSortType'        => 'EXAMPLE_ERROR_TYPE',
             'tvSortWithDefault' => 'other'
         )));
 
