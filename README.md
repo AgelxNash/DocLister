@@ -23,7 +23,7 @@
 ### Полезные ссылки
 ---------
 * **Обзор**: http://blog.agel-nash.ru/2013/9/doclister.html
-* **Документация**: http://docs.evolution-cms.com/Extras/Snippets/DocLister/
+* **Документация**: https://github.com/evolution-cms/docs/tree/master/03_Extras/04_Snippets/DocLister
 * **Пример работы**: http://doclister.agelnash.ru
 
 ### Автор
