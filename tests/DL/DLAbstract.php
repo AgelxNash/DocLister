@@ -62,6 +62,7 @@ abstract class DLAbstract extends ModxAbstract
         } else {
             $data = preg_replace('/\s+/', ' ', $data);
         }
+
         return $data;
     }
 }

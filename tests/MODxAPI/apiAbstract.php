@@ -35,6 +35,7 @@ abstract class apiAbstract extends ModxAbstract
     protected function mockModUsers()
     {
         $obj = $this->getMock('modUsers', null, array($this->modx));
+
         return $obj;
     }
 }

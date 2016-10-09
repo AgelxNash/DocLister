@@ -74,10 +74,8 @@ class Video
         'http://youtu.be/ShPq2Dmy6X8',
         'youtu.be/6dwqZw0j_jY',
         'http://www.youtu.be/afa-5HQHiAs',
-
         'vimeo.com/55028438',
         'http://player.vimeo.com/video/55028438?title=0&byline=0&portrait=0&badge=0&color=e1a931',
-
         'http://rutube.ru/video/6fd81c1c212c002673280850a1c56415/#.UMQYln9yTWQ',
         'http://rutube.ru/video/dec0a58c8cb4d226abc7b1030bbb63b9/?ref=top',
         'rutube.ru/tracks/6032725.html',

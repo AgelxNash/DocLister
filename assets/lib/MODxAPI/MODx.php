@@ -845,6 +845,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         /**
          * Если поле скалярного типа и оно не распаковывалось раньше
          */
+
         return (is_scalar($data) && is_scalar($field) && $this->_decodedFields->get($field) === true);
     }
 

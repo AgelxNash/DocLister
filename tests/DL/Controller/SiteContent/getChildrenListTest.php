@@ -11,12 +11,12 @@ class getChildrenListTest extends DLAbstract
             "SELECT c.* FROM site_content as `c`  WHERE (c.parent IN ('5') OR c.id IN('5')) AND c.deleted=0 AND c.published=1 GROUP BY c.id ORDER BY if(c.pub_date=0,c.createdon,c.pub_date) DESC LIMIT 0,10"
         );
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
+            'debug'      => 1,
+            'idType'     => 'parents',
+            'parents'    => 5,
             'showParent' => 1,
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'   => 'pages',
+            'display'    => 10,
         ));
 
         $DL->debug->clearLog();
@@ -41,12 +41,12 @@ class getChildrenListTest extends DLAbstract
         );
 
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
+            'debug'      => 1,
+            'idType'     => 'parents',
+            'parents'    => 5,
             'showParent' => 0,
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'   => 'pages',
+            'display'    => 10,
         ));
 
         $DL->debug->clearLog();
@@ -69,12 +69,12 @@ class getChildrenListTest extends DLAbstract
             "SELECT c.* FROM site_content as `c`  WHERE c.parent IN ('5') AND c.deleted=0 AND c.published=1 GROUP BY c.id ORDER BY if(c.pub_date=0,c.createdon,c.pub_date) DESC LIMIT 0,10"
         );
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
+            'debug'      => 1,
+            'idType'     => 'parents',
+            'parents'    => 5,
             'showParent' => "-1",
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'   => 'pages',
+            'display'    => 10,
         ));
 
         $DL->debug->clearLog();
@@ -97,13 +97,13 @@ class getChildrenListTest extends DLAbstract
             "SELECT c.* FROM site_content as `c`  WHERE (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) AND c.deleted=0 AND c.published=1 GROUP BY c.id ORDER BY if(c.pub_date=0,c.createdon,c.pub_date) DESC LIMIT 0,10"
         );
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
-            'documents' => '10,12',
+            'debug'      => 1,
+            'idType'     => 'parents',
+            'parents'    => 5,
+            'documents'  => '10,12',
             'showParent' => 1,
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'   => 'pages',
+            'display'    => 10,
         ));
 
         $DL->debug->clearLog();
@@ -127,13 +127,13 @@ class getChildrenListTest extends DLAbstract
         );
 
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
-            'documents' => '10,12',
+            'debug'      => 1,
+            'idType'     => 'parents',
+            'parents'    => 5,
+            'documents'  => '10,12',
             'showParent' => 0,
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'   => 'pages',
+            'display'    => 10,
         ));
 
         $DL->debug->clearLog();
@@ -156,13 +156,13 @@ class getChildrenListTest extends DLAbstract
             "SELECT c.* FROM site_content as `c`  WHERE ((c.parent IN ('5')) OR c.id IN('10','12')) AND c.deleted=0 AND c.published=1 GROUP BY c.id ORDER BY if(c.pub_date=0,c.createdon,c.pub_date) DESC LIMIT 0,10"
         );
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
-            'documents' => '10,12',
+            'debug'      => 1,
+            'idType'     => 'parents',
+            'parents'    => 5,
+            'documents'  => '10,12',
             'showParent' => "-1",
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'   => 'pages',
+            'display'    => 10,
         ));
 
         $DL->debug->clearLog();
@@ -186,14 +186,14 @@ class getChildrenListTest extends DLAbstract
         );
 
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
-            'documents' => '10,12',
-            'showParent' => 1,
+            'debug'        => 1,
+            'idType'       => 'parents',
+            'parents'      => 5,
+            'documents'    => '10,12',
+            'showParent'   => 1,
             'addWhereList' => '`price`>0',
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'     => 'pages',
+            'display'      => 10,
         ));
 
         $DL->debug->clearLog();
@@ -217,14 +217,14 @@ class getChildrenListTest extends DLAbstract
         );
 
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
-            'documents' => '10,12',
-            'showParent' => 0,
+            'debug'        => 1,
+            'idType'       => 'parents',
+            'parents'      => 5,
+            'documents'    => '10,12',
+            'showParent'   => 0,
             'addWhereList' => '`price`>0',
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'     => 'pages',
+            'display'      => 10,
         ));
 
         $DL->debug->clearLog();
@@ -248,14 +248,14 @@ class getChildrenListTest extends DLAbstract
         );
 
         $DL = $this->mockDocLister('site_content', array(
-            'debug' => 1,
-            'idType' => 'parents',
-            'parents' => 5,
-            'documents' => '10,12',
-            'showParent' => "-1",
+            'debug'        => 1,
+            'idType'       => 'parents',
+            'parents'      => 5,
+            'documents'    => '10,12',
+            'showParent'   => "-1",
             'addWhereList' => '`price`>0',
-            'paginate' => 'pages',
-            'display' => 10,
+            'paginate'     => 'pages',
+            'display'      => 10,
         ));
 
         $DL->debug->clearLog();

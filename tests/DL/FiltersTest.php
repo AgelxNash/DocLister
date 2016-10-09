@@ -18,7 +18,7 @@ class FiltersTest extends DLAbstract
             'example' => 1
         );
         $out = array(
-            'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
             'where' => "`dltv_example_1`.`value` != 'asd'"
         );
 
@@ -34,7 +34,7 @@ class FiltersTest extends DLAbstract
             'example' => 1
         );
         $out = array(
-            'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
             'where' => "(`dltv_example_1`.`value` != 'asd')"
         );
 
@@ -51,7 +51,7 @@ class FiltersTest extends DLAbstract
             'testB' => 2
         );
         $out = array(
-            'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_testA_1` ON `dltv_testA_1`.`contentid`=`c`.`id` AND `dltv_testA_1`.`tmplvarid`=1 LEFT JOIN site_tmplvar_contentvalues as `dltv_testB_2` ON `dltv_testB_2`.`contentid`=`c`.`id` AND `dltv_testB_2`.`tmplvarid`=2",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_testA_1` ON `dltv_testA_1`.`contentid`=`c`.`id` AND `dltv_testA_1`.`tmplvarid`=1 LEFT JOIN site_tmplvar_contentvalues as `dltv_testB_2` ON `dltv_testB_2`.`contentid`=`c`.`id` AND `dltv_testB_2`.`tmplvarid`=2",
             'where' => "(`dltv_testA_1`.`value` != 'asd' AND `dltv_testB_2`.`value` != 'qwe')"
         );
 
@@ -67,7 +67,7 @@ class FiltersTest extends DLAbstract
             'example' => 1
         );
         $out = array(
-            'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_example_1` ON `dltv_example_1`.`contentid`=`c`.`id` AND `dltv_example_1`.`tmplvarid`=1",
             'where' => "`dltv_example_1`.`value` LIKE '%asd=%qwe==%' ESCAPE '='"
         );
 
@@ -83,7 +83,7 @@ class FiltersTest extends DLAbstract
             'color' => 1
         );
         $out = array(
-            'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
             'where' => "(`dltv_color_1`.`value` = 'черный' OR `dltv_color_1`.`value` = 'белый' OR `dltv_color_1`.`value` = 'красный')"
         );
 
@@ -99,7 +99,7 @@ class FiltersTest extends DLAbstract
             'color' => 1
         );
         $out = array(
-            'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
             'where' => "(`dltv_color_1`.`value` LIKE '%белый%' ESCAPE '=' OR `dltv_color_1`.`value` LIKE '%синий%' ESCAPE '=' OR `dltv_color_1`.`value` LIKE '%красный%' ESCAPE '=')"
         );
 
@@ -115,7 +115,7 @@ class FiltersTest extends DLAbstract
             'color' => 1
         );
         $out = array(
-            'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1",
             'where' => "`dltv_color_1`.`value` IN('белый','синий','красный')"
         );
 
@@ -131,7 +131,7 @@ class FiltersTest extends DLAbstract
             'color' => 1
         );
         $out = array(
-            'join' => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1 LEFT JOIN site_tmplvars as `d_dltv_color_1` on `d_dltv_color_1`.`id` = 1",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_color_1` ON `dltv_color_1`.`contentid`=`c`.`id` AND `dltv_color_1`.`tmplvarid`=1 LEFT JOIN site_tmplvars as `d_dltv_color_1` on `d_dltv_color_1`.`id` = 1",
             'where' => "IFNULL(`dltv_color_1`.`value`, `d_dltv_color_1`.`default_text`) = 'белый'"
         );
 
@@ -147,7 +147,7 @@ class FiltersTest extends DLAbstract
             'color' => 1
         );
         $out = array(
-            'join' => "",
+            'join'  => "",
             'where' => "`hidemenu` = '1'"
         );
 
