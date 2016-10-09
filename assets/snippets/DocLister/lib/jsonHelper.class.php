@@ -2,6 +2,9 @@
 if (!defined("JSON_ERROR_UTF8")) define("JSON_ERROR_UTF8", 5); //PHP < 5.3.3
 include_once("xnop.class.php");
 
+/**
+ * Class jsonHelper
+ */
 class jsonHelper
 {
     protected static $_error = array(
@@ -68,8 +71,12 @@ class jsonHelper
         }
         return isset(self::$_error[$error]) ? self::$_error[$error] : 'other';
     }
-	
-	public static function toJSON(array $data = array()){
+
+    /**
+     * @param array $data
+     * @return bool|string
+     */
+    public static function toJSON(array $data = array()){
         if (version_compare(PHP_VERSION, '5.4.0') < 0) {
             $out = json_encode($data);
             $out = str_replace('\\/', '/', $out);
@@ -78,8 +85,12 @@ class jsonHelper
         }
         return self::json_format($out);
     }
-	
-	 public static function json_format($json){
+
+    /**
+     * @param $json
+     * @return bool|string
+     */
+    public static function json_format($json){
         $tab = "  ";
         $new_json = "";
         $indent_level = 0;

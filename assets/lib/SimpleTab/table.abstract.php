@@ -3,6 +3,10 @@ require_once (MODX_BASE_PATH . 'assets/lib/MODxAPI/autoTable.abstract.php');
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/PHPThumb.php');
 
+/**
+ * Class dataTable
+ * @package SimpleTab
+ */
 class dataTable extends \autoTable {
     protected $params = array();
     protected $fs = null;
@@ -10,6 +14,11 @@ class dataTable extends \autoTable {
 	protected $rfName = null;
 	protected $thumbsCache = null;
 
+    /**
+     * dataTable constructor.
+     * @param \DocumentParser $modx
+     * @param bool $debug
+     */
     public function __construct($modx, $debug = false) {
         parent::__construct($modx, $debug);
         $this->modx = $modx;
@@ -17,6 +26,11 @@ class dataTable extends \autoTable {
         $this->fs = \Helpers\FS::getInstance();
     }
 
+    /**
+     * @param $ids
+     * @param $rid
+     * @return mixed
+     */
     protected function clearIndexes($ids, $rid) {
         $ids = $this->cleanIDs($ids, ',', array(0));
         $ids = $this->sanitarIn($ids);
@@ -30,6 +44,10 @@ class dataTable extends \autoTable {
         return $out;
     }
 
+    /**
+     * @param $field
+     * @return $this
+     */
     public function touch($field){
         $this->set($field, date('Y-m-d H:i:s', time() + $this->modx->config['server_offset_time']));
         return $this;
@@ -79,17 +97,31 @@ class dataTable extends \autoTable {
         if ($this->fs->checkFile($thumb)) $this->deleteThumb($thumb, true);
     }
 
+    /**
+     * @param $ids
+     * @param null $fire_events
+     * @return $this
+     */
     public function delete($ids, $fire_events = NULL) {
         $out = parent::delete($ids, $fire_events);
         $this->query("ALTER TABLE {$this->makeTable($this->table)} AUTO_INCREMENT = 1");
         return $out;
     }
 
+    /**
+     * @param $ids
+     * @param $rid
+     * @param null $fire_events
+     * @return $this
+     */
     public function deleteAll ($ids, $rid, $fire_events = NULL) {
         $this->clearIndexes($ids, $rid);
         return $this->delete($ids, $fire_events);
     }
 
+    /**
+     * @return array
+     */
     public function fieldNames(){
         $fields = array_keys($this->getDefaultFields());
         $fields[] = $this->fieldPKName();
@@ -106,6 +138,14 @@ class dataTable extends \autoTable {
         return $this->modx->stripAlias($filename).'.'.$ext;
     }
 
+    /**
+     * @param $source
+     * @param $target
+     * @param $point
+     * @param $rid
+     * @param $orderDir
+     * @return int
+     */
     public function reorder($source, $target, $point, $rid, $orderDir) {
         $rid = (int)$rid;
         $point = strtolower($point);

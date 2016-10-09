@@ -7,6 +7,9 @@ if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
 
+/**
+ * Class filterDocLister
+ */
 abstract class filterDocLister
 {
     /**

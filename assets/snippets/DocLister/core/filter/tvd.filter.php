@@ -11,6 +11,9 @@ require_once 'tv.filter.php';
  */
 class tvd_DL_filter extends tv_DL_filter
 {
+    /**
+     * @return string
+     */
     public function get_join()
     {
         $join = parent::get_join();

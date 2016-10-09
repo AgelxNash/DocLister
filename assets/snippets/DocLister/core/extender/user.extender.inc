@@ -21,6 +21,9 @@ class user_DL_Extender extends extDocLister
     private $userinfo = array();
     private $table = array();
 
+    /**
+     * @return array
+     */
     protected function run()
     {
         if ('' != $this->_cfg['fields']) {
@@ -37,6 +40,11 @@ class user_DL_Extender extends extDocLister
         return $this->userinfo;
     }
 
+    /**
+     * @param $field
+     * @param $user
+     * @return array|mixed
+     */
     public function getUser($field, $user)
     {
         $out = array();
@@ -46,6 +54,10 @@ class user_DL_Extender extends extDocLister
         return $out;
     }
 
+    /**
+     * @param $arr
+     * @return array
+     */
     public function setUserData($arr)
     {
         foreach ($arr as $key => $item) {
@@ -81,6 +93,10 @@ class user_DL_Extender extends extDocLister
         return $table;
     }
 
+    /**
+     * @param array $user
+     * @return array
+     */
     private function getInfo($user = array())
     {
         if (!isset($this->table['users'], $this->table['attributes'])) $this->table = $this->getTable();

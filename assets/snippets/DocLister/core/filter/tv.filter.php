@@ -18,12 +18,21 @@ class tv_DL_filter extends content_DL_filter
      */
     protected $extTV = null;
 
+    /**
+     * @param DocLister $DocLister
+     * @param строка $filter
+     * @return bool
+     */
     public function init(DocLister $DocLister, $filter)
     {
         $this->extTV = $DocLister->getExtender('tv', true, true);
         return parent::init($DocLister, $filter);
     }
 
+    /**
+     * @param строка $filter
+     * @return bool
+     */
     protected function parseFilter($filter)
     {
         $return = false;
@@ -61,6 +70,9 @@ class tv_DL_filter extends content_DL_filter
         return $return;
     }
 
+    /**
+     * @return string
+     */
     public function get_join()
     {
         $join = '';

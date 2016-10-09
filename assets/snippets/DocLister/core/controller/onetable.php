@@ -53,6 +53,10 @@ class onetableDocLister extends DocLister
         return $this->_docs;
     }
 
+    /**
+     * @param string $tpl
+     * @return string
+     */
     public function _render($tpl = '')
     {
         $out = '';
@@ -135,6 +139,12 @@ class onetableDocLister extends DocLister
         return $this->toPlaceholders($out);
     }
 
+    /**
+     * @param array $data
+     * @param mixed $fields
+     * @param array $array
+     * @return string
+     */
     public function getJSON($data, $fields, $array = array())
     {
         $out = array();
@@ -187,6 +197,9 @@ class onetableDocLister extends DocLister
         return parent::getJSON($out, $fields, $out);
     }
 
+    /**
+     * @return array
+     */
     protected function getDocList()
     {
         $out = array();
@@ -217,6 +230,9 @@ class onetableDocLister extends DocLister
         return $out;
     }
 
+    /**
+     * @return array
+     */
     protected function getChildrenList()
     {
         $where = array();
@@ -278,6 +294,9 @@ class onetableDocLister extends DocLister
     }
 
     // @abstract
+    /**
+     * @return int
+     */
     public function getChildrenCount()
     {
         $out = 0;
@@ -332,6 +351,10 @@ class onetableDocLister extends DocLister
         return $out;
     }
 
+    /**
+     * @param string $id
+     * @return array
+     */
     public function getChildrenFolder($id)
     {
         $sanitarInIDs = $this->sanitarIn($id);

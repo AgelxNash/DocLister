@@ -12,11 +12,18 @@ if (!defined('MODX_BASE_PATH')) {
 
 class jotcount_DL_Extender extends extDocLister
 {
+    /**
+     * @return bool
+     */
     protected function run()
     {
         return true;
     }
 
+    /**
+     * @param $docs
+     * @return array
+     */
     public function countComments($docs)
     {
         $comments = array();

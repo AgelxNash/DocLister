@@ -12,6 +12,9 @@
 ####*/
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 
+/**
+ * Class DLphx
+ */
 class DLphx
 {
     public $placeholders = array();
@@ -35,6 +38,11 @@ class DLphx
 	public $maxPasses = 50;
 	public $swapSnippetCache = array();
 
+    /**
+     * DLphx constructor.
+     * @param int $debug
+     * @param int $maxpass
+     */
     public function __construct($debug = 0, $maxpass = 50)
     {
         global $modx;
@@ -63,6 +71,10 @@ class DLphx
     }
 
     // Parser: Preparation, cleaning and checkup
+    /**
+     * @param string $template
+     * @return mixed|string
+     */
     public function Parse($template = '')
     {
         global $modx;
@@ -96,6 +108,10 @@ class DLphx
     }
 
     // Parser: Tag detection and replacements
+    /**
+     * @param string $template
+     * @return mixed|string
+     */
     public function ParseValues($template = '')
     {
         global $modx;
@@ -203,6 +219,11 @@ class DLphx
     }
 
     // Parser: modifier detection and eXtended processing if needed
+    /**
+     * @param $input
+     * @param $modifiers
+     * @return mixed|null|string
+     */
     public function Filter($input, $modifiers)
     {
         global $modx;
@@ -464,6 +485,9 @@ class DLphx
     }
 
     // Event logging (debug)
+    /**
+     * @return string
+     */
     public function createEventLog()
     {
         if (!empty($this->console)) {
@@ -474,7 +498,11 @@ class DLphx
     }
 
     // Returns a cleaned string escaping the HTML and special MODx characters
-	public function LogClean($string)
+    /**
+     * @param $string
+     * @return array|mixed|string
+     */
+    public function LogClean($string)
     {
         $string = preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", $string);
         $string = APIHelpers::sanitarTag($string);
@@ -482,7 +510,10 @@ class DLphx
     }
 
     // Simple log entry
-	public function Log($string)
+    /**
+     * @param $string
+     */
+    public function Log($string)
     {
         if ($this->debug) {
             $this->debugLog = true;
@@ -491,7 +522,10 @@ class DLphx
     }
 
     // Log snippet output
-	public function LogSnippet($string)
+    /**
+     * @param $string
+     */
+    public function LogSnippet($string)
     {
         if ($this->debug) {
             $this->debugLog = true;
@@ -506,7 +540,10 @@ class DLphx
     }
 
     // Log pass
-	public function LogSource($string)
+    /**
+     * @param $string
+     */
+    public function LogSource($string)
     {
         $this->console[] = "<div style='margin: 2px;margin-top: 5px;border-bottom: 1px solid black;'>Source:</div>" . $this->LogClean($string);
     }
@@ -514,7 +551,12 @@ class DLphx
 
     // Returns the specified field from the user record
     // positive userid = manager, negative integer = webuser
-	public function ModUser($userid, $field)
+    /**
+     * @param $userid
+     * @param $field
+     * @return mixed
+     */
+    public function ModUser($userid, $field)
     {
         global $modx;
         if (!array_key_exists($userid, $this->cache["ui"])) {
@@ -531,7 +573,12 @@ class DLphx
     }
 
     // Returns true if the user id is in one the specified webgroups
-	public function isMemberOfWebGroupByUserId($userid = 0, $groupNames = array())
+    /**
+     * @param int $userid
+     * @param array $groupNames
+     * @return bool
+     */
+    public function isMemberOfWebGroupByUserId($userid = 0, $groupNames = array())
     {
         global $modx;
 
@@ -561,7 +608,11 @@ class DLphx
     }
 
     // Returns the value of a PHx/MODx placeholder.
-	public function getPHxVariable($name)
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function getPHxVariable($name)
     {
         global $modx;
         // Check if this variable is created by PHx
@@ -575,71 +626,117 @@ class DLphx
     }
 
     // Sets a placeholder variable which can only be access by PHx
-	public function setPHxVariable($name, $value)
+    /**
+     * @param $name
+     * @param $value
+     */
+    public function setPHxVariable($name, $value)
     {
         if ($name != "phx") $this->placeholders[$name] = $value;
     }
 
     //mbstring
-	public function substr($str, $s, $l = null)
+    /**
+     * @param $str
+     * @param $s
+     * @param null $l
+     * @return string
+     */
+    public function substr($str, $s, $l = null)
     {
         if (function_exists('mb_substr')) return mb_substr($str, $s, $l);
         return substr($str, $s, $l);
     }
 
-	public function strlen($str)
+    /**
+     * @param $str
+     * @return int
+     */
+    public function strlen($str)
     {
         if (function_exists('mb_strlen')) return mb_strlen($str);
         return strlen($str);
     }
 
-	public function strtolower($str)
+    /**
+     * @param $str
+     * @return string
+     */
+    public function strtolower($str)
     {
         if (function_exists('mb_strtolower')) return mb_strtolower($str);
         return strtolower($str);
     }
 
-	public function strtoupper($str)
+    /**
+     * @param $str
+     * @return string
+     */
+    public function strtoupper($str)
     {
         if (function_exists('mb_strtoupper')) return mb_strtoupper($str);
         return strtoupper($str);
     }
 
-	public function ucfirst($str)
+    /**
+     * @param $str
+     * @return string
+     */
+    public function ucfirst($str)
     {
         if (function_exists('mb_strtoupper') && function_exists('mb_substr') && function_exists('mb_strlen'))
             return mb_strtoupper(mb_substr($str, 0, 1)) . mb_substr($str, 1, mb_strlen($str));
         return ucfirst($str);
     }
 
-	public function lcfirst($str)
+    /**
+     * @param $str
+     * @return string
+     */
+    public function lcfirst($str)
     {
         if (function_exists('mb_strtolower') && function_exists('mb_substr') && function_exists('mb_strlen'))
             return mb_strtolower(mb_substr($str, 0, 1)) . mb_substr($str, 1, mb_strlen($str));
         return lcfirst($str);
     }
 
-	public function ucwords($str)
+    /**
+     * @param $str
+     * @return string
+     */
+    public function ucwords($str)
     {
         if (function_exists('mb_convert_case'))
             return mb_convert_case($str, MB_CASE_TITLE);
         return ucwords($str);
     }
 
-	public function strrev($str)
+    /**
+     * @param $str
+     * @return string
+     */
+    public function strrev($str)
     {
         preg_match_all('/./us', $str, $ar);
         return implode(array_reverse($ar[0]));
     }
 
-	public function str_shuffle($str)
+    /**
+     * @param $str
+     * @return string
+     */
+    public function str_shuffle($str)
     {
         preg_match_all('/./us', $str, $ar);
         shuffle($ar[0]);
         return implode($ar[0]);
     }
 
-	public function str_word_count($str)
+    /**
+     * @param $str
+     * @return int
+     */
+    public function str_word_count($str)
     {
         return count(preg_split('~[^\p{L}\p{N}\']+~u', $str));
     }

@@ -1,6 +1,10 @@
 <?php
 
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
+
+/**
+ * Class DLTemplate
+ */
 class DLTemplate
 {
     protected $modx = null;
@@ -275,6 +279,11 @@ class DLTemplate
         return $string;
     }
 
+    /**
+     * @param int $debug
+     * @param int $maxpass
+     * @return DLphx
+     */
     public function createPHx($debug = 0, $maxpass = 50)
     {
         if (!class_exists('DLphx', false)) {
@@ -297,6 +306,11 @@ class DLTemplate
         return APIhelpers::renameKeyArr($data, $prefix, $suffix, $sep);
     }
 
+    /**
+     * @param $out
+     * @param null $modx
+     * @return mixed
+     */
     public function parseDocumentSource($out, $modx = null)
     {
         if(!is_object($modx)){

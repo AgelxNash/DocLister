@@ -1,5 +1,9 @@
 <?php namespace Helpers;
 
+/**
+ * Class FS
+ * @package Helpers
+ */
 class FS{
     /**
      * @var FS cached reference to singleton instance
@@ -65,32 +69,61 @@ class FS{
         return $out;
     }
 
+    /**
+     * @param $file
+     * @return string
+     */
     public function takeFileDir($file){
         return $this->_pathinfo($file, 'dirname');
     }
 
+    /**
+     * @param $file
+     * @return string
+     */
     public function takeFileBasename($file){ //file name with extension
         return $this->_pathinfo($file, 'basename');
     }
 
+    /**
+     * @param $file
+     * @return string
+     */
     public function takeFileName($file){
         return $this->_pathinfo($file, 'filename');
     }
 
+    /**
+     * @param $file
+     * @return string
+     */
     public function takeFileExt($file){
         return strtolower($this->_pathinfo($file, 'extension'));
     }
 
+    /**
+     * @param $file
+     * @return bool
+     */
     public function checkFile($file){
         $f = is_scalar($file) ? MODX_BASE_PATH . $this->relativePath($file) : '';
         return (!empty($f) && is_file($f) && is_readable($f));
     }
 
+    /**
+     * @param $path
+     * @return bool
+     */
     public function checkDir($path){
         $f = is_scalar($path) ? $this->relativePath($path) : '';
         return (!empty($f) && is_dir(MODX_BASE_PATH . $f) && is_readable(MODX_BASE_PATH . $f));
     }
 
+    /**
+     * @param $file
+     * @param bool $format
+     * @return int|string
+     */
     public function fileSize($file, $format = false){
         $out = 0;
         if($this->checkFile($file)){
@@ -151,6 +184,11 @@ class FS{
         return $out;
     }
 
+    /**
+     * @param $path
+     * @param int $perm
+     * @return bool
+     */
     public function makeDir($path, $perm = 0755){
         if (!$this->checkDir($path)){
             $path = MODX_BASE_PATH . $this->relativePath($path);
@@ -234,6 +272,10 @@ class FS{
         return is_string($chmod) ? octdec($chmod) : $chmod;
     }
 
+    /**
+     * @param $dirPath
+     * @return bool
+     */
     public function rmDir($dirPath) {
 		$flag = false;
         $path = $_path = MODX_BASE_PATH . $this->relativePath($dirPath);
@@ -247,8 +289,12 @@ class FS{
         }
 		return $flag;
     }
-	
-	public function unlink($file){
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    public function unlink($file){
 		$flag = false;
         if($this->checkFile($file)){
 			$flag = unlink(MODX_BASE_PATH . $this->relativePath($file));
@@ -256,7 +302,11 @@ class FS{
 		return $flag;
     }
 
-	public function delete($path){
+    /**
+     * @param $path
+     * @return bool
+     */
+    public function delete($path){
 		$path = MODX_BASE_PATH . $this->relativePath($path);
 		switch(true){
 			case $this->checkDir($path):
@@ -270,6 +320,12 @@ class FS{
 		}
 		return $flag;
 	}
+
+    /**
+     * @param $file
+     * @param bool $full
+     * @return string
+     */
     public function getInexistantFilename($file, $full = false) {
         $i = 1;
         $file = $mainFile = MODX_BASE_PATH.$this->relativePath($file);

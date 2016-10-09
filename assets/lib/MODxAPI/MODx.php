@@ -4,32 +4,65 @@ include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/jsonHelper.class.php'
 include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/DLCollection.class.php');
 
 
+/**
+ * Class MODxAPIhelpers
+ */
 class MODxAPIhelpers
 {
+    /**
+     * @param $email
+     * @param bool $dns
+     * @return bool
+     */
     public function emailValidate($email, $dns = true)
     {
         return \APIhelpers::emailValidate($email, $dns);
     }
+
+    /**
+     * @param $len
+     * @param string $data
+     * @return string
+     */
     public function genPass($len, $data = '')
     {
         return \APIhelpers::genPass($len, $data);
     }
+
+    /**
+     * @param string $out
+     * @return string
+     */
     public function getUserIP($out = '127.0.0.1')
     {
         return \APIhelpers::getUserIP($out);
     }
 
+    /**
+     * @param $data
+     * @return array|mixed|string
+     */
     public function sanitarTag($data)
     {
         return \APIhelpers::sanitarTag($data);
     }
 
+    /**
+     * @param $value
+     * @param int $minLen
+     * @param array $alph
+     * @param array $mixArray
+     * @return bool
+     */
     public function checkString($value, $minLen = 1, $alph = array(), $mixArray = array())
     {
         return \APIhelpers::checkString($value, $minLen, $alph, $mixArray);
     }
 }
 
+/**
+ * Class MODxAPI
+ */
 abstract class MODxAPI extends MODxAPIhelpers
 {
     protected $modx = null;
@@ -50,6 +83,12 @@ abstract class MODxAPI extends MODxAPIhelpers
     private $_decodedFields;
 	private $_table = array();
 
+    /**
+     * MODxAPI constructor.
+     * @param DocumentParser $modx
+     * @param bool $debug
+     * @throws Exception
+     */
     public function __construct(DocumentParser $modx, $debug = false)
     {	
     	$this->modx = $modx;
@@ -61,29 +100,61 @@ abstract class MODxAPI extends MODxAPIhelpers
         $this->_decodedFields = new DLCollection($this->modx);
     }
 
+    /**
+     * @param $flag
+     * @return $this
+     */
     public function setDebug($flag){
         $this->_debug = (bool)$flag;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
     public function getDebug(){
         return $this->_debug;
     }
+
+    /**
+     * @return array
+     */
     public function getDefaultFields(){
         return $this->default_field;
     }
+
+    /**
+     * @param $name
+     * @param null $default
+     * @return mixed
+     */
     final public function modxConfig($name, $default = null)
     {
         return APIHelpers::getkey($this->modx->config, $name, $default);
     }
+
+    /**
+     * @param $q
+     * @return $this
+     */
     public function addQuery($q){
         if(is_scalar($q) && !empty($q)){
             $this->_query[] = $q;
         }
         return $this;
     }
+
+    /**
+     * @return array
+     */
     public function getQueryList(){
         return $this->_query;
     }
+
+    /**
+     * @param $SQL
+     * @return null
+     */
     final public function query($SQL)
     {
         if($this->getDebug()){
@@ -91,6 +162,11 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return empty($SQL) ? null : $this->modx->db->query($SQL);
     }
+
+    /**
+     * @param $value
+     * @return string
+     */
     final public function escape($value){
         if(!is_scalar($value)){
             $value = '';
@@ -99,6 +175,13 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $value;
      }
+
+    /**
+     * @param $name
+     * @param array $data
+     * @param bool $flag
+     * @return $this
+     */
     final public function invokeEvent($name, $data = array(), $flag = false)
     {
         $flag = (isset($flag) && $flag != '') ? (bool)$flag : false;
@@ -108,6 +191,12 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $this;
     }
 
+    /**
+     * @param $name
+     * @param array $data
+     * @param null $flag
+     * @return mixed
+     */
     final public function getInvokeEventResult($name, $data = array(), $flag = null) {
         $flag = (isset($flag) && $flag != '') ? (bool)$flag : false;
         if ($flag) {
@@ -115,17 +204,27 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
     }
 
+    /**
+     * @return $this
+     */
     final public function clearLog()
     {
         $this->log = array();
         return $this;
     }
 
+    /**
+     * @return array
+     */
     final public function getLog()
     {
         return $this->log;
     }
 
+    /**
+     * @param bool $flush
+     * @return $this
+     */
     final public function list_log($flush = false)
     {
         echo '<pre>' . print_r(APIHelpers::sanitarTag($this->log), true) . '</pre>';
@@ -133,6 +232,10 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $this;
     }
 
+    /**
+     * @param bool $full
+     * @return string
+     */
     final public function getCachePath($full = true)
     {
         $path = $this->modx->getCachePath();
@@ -142,6 +245,10 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $path;
     }
 
+    /**
+     * @param null $fire_events
+     * @param bool $custom
+     */
     final public function clearCache($fire_events = null, $custom = false)
     {
 		$IDs = array();
@@ -179,7 +286,12 @@ abstract class MODxAPI extends MODxAPIhelpers
 		}
         $this->invokeEvent('OnSiteRefresh', array('IDs' => $IDs), $fire_events);
     }
-	public function switchObject($id){
+
+    /**
+     * @param $id
+     * @return MODxAPI
+     */
+    public function switchObject($id){
         switch(true){
             //Если загружен другой объект - не тот, с которым мы хотим временно поработать
             case ($this->getID() != $id && $id):
@@ -196,14 +308,28 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $obj;
     }
-	public function useIgnore($flag = true){
+
+    /**
+     * @param bool $flag
+     * @return $this
+     */
+    public function useIgnore($flag = true){
 		$this->ignoreError = $flag ? 'IGNORE' : '';
 		return $this;
 	}
-	public function hasIgnore(){
+
+    /**
+     * @return bool
+     */
+    public function hasIgnore(){
 		return (bool)$this->ignoreError;
 	}
 
+    /**
+     * @param $key
+     * @param $value
+     * @return $this
+     */
     public function set($key, $value)
     {
         if ((is_scalar($value) || $this->isJsonField($key)) && is_scalar($key) && !empty($key)) {
@@ -212,16 +338,27 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $this;
     }
 
+    /**
+     * @return null
+     */
     final public function getID()
     {
         return $this->id;
     }
 
+    /**
+     * @param $key
+     * @return mixed
+     */
     public function get($key)
     {
         return APIHelpers::getkey($this->field, $key, null);
     }
 
+    /**
+     * @param $data
+     * @return $this
+     */
     public function fromArray($data)
     {
         if (is_array($data)) {
@@ -232,6 +369,12 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $this;
     }
 
+    /**
+     * @param $key
+     * @param string $id
+     * @return $this
+     * @throws Exception
+     */
     final protected function Uset($key, $id = '')
     {
         if (!isset($this->field[$key])) {
@@ -253,6 +396,13 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
 
+    /**
+     * @param $IDs
+     * @param string $sep
+     * @param array $ignore
+     * @return array
+     * @throws Exception
+     */
     final public function cleanIDs($IDs, $sep = ',', $ignore = array())
     {
         $out = array();
@@ -278,6 +428,12 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $out;
     }
 
+    /**
+     * @param $data
+     * @param null $callback
+     * @return $this
+     * @throws Exception
+     */
     final public function fromJson($data, $callback = null)
     {
         if (is_scalar($data) && !empty($data)) {
@@ -298,6 +454,11 @@ abstract class MODxAPI extends MODxAPIhelpers
 		return $this;
     }
 
+    /**
+     * @param null $callback
+     * @return string
+     * @throws Exception
+     */
     final public function toJson($callback = null)
     {
         $data = $this->toArray();
@@ -315,6 +476,10 @@ abstract class MODxAPI extends MODxAPIhelpers
 		return $json;
     }
 
+    /**
+     * @param $data
+     * @return bool
+     */
     final protected function jsonError($data)
     {
         $flag = false;
@@ -324,6 +489,12 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $flag;
     }
 
+    /**
+     * @param string $prefix
+     * @param string $suffix
+     * @param string $sep
+     * @return array
+     */
     public function toArray($prefix = '', $suffix = '', $sep = '_')
     {
         $tpl = '';
@@ -347,15 +518,29 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $out;
     }
+
+    /**
+     * @return string
+     */
     final public function fieldPKName(){
         return $this->pkName;
     }
+
+    /**
+     * @param $table
+     * @return mixed
+     */
     final public function makeTable($table)
     {
         //Без использования APIHelpers::getkey(). Иначе getFullTableName будет всегда выполняться
         return (isset($this->_table[$table])) ? $this->_table[$table] : $this->modx->getFullTableName($table);
     }
 
+    /**
+     * @param $data
+     * @param string $sep
+     * @return array|string
+     */
     final public function sanitarIn($data, $sep = ',')
     {
         if (!is_array($data)) {
@@ -371,6 +556,12 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $out;
     }
 
+    /**
+     * @param $table
+     * @param $field
+     * @param string $PK
+     * @return bool
+     */
     public function checkUnique($table, $field, $PK = 'id')
     {
         if (is_array($field)) {
@@ -402,6 +593,10 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $flag;
     }
 
+    /**
+     * @param array $data
+     * @return $this
+     */
     public function create($data = array())
     {
         $this->close();
@@ -409,6 +604,10 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $this;
     }
 
+    /**
+     * @param $id
+     * @return $this
+     */
     public function copy($id)
     {
         $this->edit($id)->id = 0;
@@ -425,22 +624,49 @@ abstract class MODxAPI extends MODxAPIhelpers
         $this->markAllDecode();
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function issetField($key)
     {
         return (is_scalar($key) && array_key_exists($key, $this->default_field));
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     abstract public function edit($id);
 
+    /**
+     * @param null $fire_events
+     * @param bool $clearCache
+     * @return mixed
+     */
     abstract public function save($fire_events = null, $clearCache = false);
 
+    /**
+     * @param $ids
+     * @param null $fire_events
+     * @return mixed
+     */
     abstract public function delete($ids, $fire_events = null);
 
+    /**
+     * @param $data
+     * @return array|mixed|string
+     */
     final public function sanitarTag($data)
     {
         return parent::sanitarTag($this->modx->stripTags($data));
     }
 
+    /**
+     * @param $version
+     * @param bool $dmi3yy
+     * @return bool
+     */
     final protected function checkVersion($version, $dmi3yy = true)
     {
         $flag = false;
@@ -458,6 +684,10 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $flag;
     }
 
+    /**
+     * @param $name
+     * @return bool|mixed
+     */
     protected function eraseField($name)
     {
         $flag = false;

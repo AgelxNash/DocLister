@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Class DLpaginate
+ */
 class DLpaginate {
     /**
      * Script Name: *Digg Style Paginator Class
@@ -47,6 +51,11 @@ class DLpaginate {
     private $calculate = false;
     private $pagination;
 
+    /**
+     * @param $mode
+     * @param array $config
+     * @return $this
+     */
     public function setMode($mode, array $config = array()) {
         $this->mode = $mode;
         $this->modeConfig = $config;
@@ -54,79 +63,135 @@ class DLpaginate {
     }
 
     #Total items
+    /**
+     * @param $value
+     * @return $this
+     */
     public function items($value) {
         $this->total_pages = (int)$value;
         return $this;
     }
 
     #how many items to show per page
+    /**
+     * @param $value
+     * @return $this
+     */
     public function limit($value) {
         $this->limit = (int)$value;
         return $this;
     }
 
     #Page to sent the page value
+    /**
+     * @param $value
+     * @return $this
+     */
     public function target($value) {
         $this->target = $value;
         return $this;
     }
 
     #Current page
+    /**
+     * @param $value
+     * @return $this
+     */
     public function currentPage($value) {
         $this->page = (int)$value;
         return $this;
     }
 
     #How many adjacent pages should be shown on each side of the current page?
+    /**
+     * @param $value
+     * @return $this
+     */
     public function adjacents($value) {
         $this->adjacents = (int)$value;
         return $this;
     }
 
     #show counter?
+    /**
+     * @param string $value
+     * @return $this
+     */
     public function showCounter($value = "") {
         $this->showCounter = ($value === true) ? true : false;
         return $this;
     }
 
     #to change the class name of the pagination div
+    /**
+     * @param string $value
+     * @return $this
+     */
     public function changeClass($value = "") {
         $this->className = $value;
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function mainTpl($value) {
         $this->mainTpl = $value;
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function nextLabel($value) {
         $this->nextT = $value;
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function nextIcon($value) {
         $this->nextI = $value;
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function prevLabel($value) {
         $this->prevT = $value;
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function prevIcon($value) {
         $this->prevI = $value;
         return $this;
     }
 
     #to change the class name of the pagination div
+    /**
+     * @param string $value
+     * @return $this
+     */
     public function parameterName($value = "") {
         $this->parameterName = $value;
         return $this;
     }
 
     #to change urlFriendly
+    /**
+     * @param string $value
+     * @return $this
+     */
     public function urlFriendly($value = "%") {
         if (eregi('^ *$', $value)) {
             $this->urlF = false;
@@ -139,6 +204,9 @@ class DLpaginate {
         echo $this->getOutput();
     }
 
+    /**
+     * @return string
+     */
     public function getOutput() {
         $out = '';
         if (!$this->calculate && $this->calculate() && !empty($this->pagination)){
@@ -146,6 +214,11 @@ class DLpaginate {
         }
         return $out;
     }
+
+    /**
+     * @param $page
+     * @return int|mixed
+     */
     protected function getPageQuery($page){
         switch($this->mode){
             case 'offset':{
@@ -162,6 +235,11 @@ class DLpaginate {
         }
         return $out;
     }
+
+    /**
+     * @param $id
+     * @return mixed|string
+     */
     public function get_pagenum_link($id) {
         $flag = (strpos($this->target, '?') === false);
         $value = $this->getPageQuery($id);
@@ -176,6 +254,9 @@ class DLpaginate {
         return $out;
     }
 
+    /**
+     * @return bool
+     */
     public function calculate() {
         $this->pagination = "";
         $this->calculate = true;
@@ -285,6 +366,11 @@ class DLpaginate {
         return true;
     }
 
+    /**
+     * @param $tpl
+     * @param $num
+     * @return mixed
+     */
     protected function renderItemTPL($tpl, $num){
         return str_replace(array('[+num+]', '[+link+]'), array($num, $this->get_pagenum_link($num)), $tpl);
     }

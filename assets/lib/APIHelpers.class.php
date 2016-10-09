@@ -1,5 +1,8 @@
 <?php
 // extension_loaded('mbstring') ???
+/**
+ * Class APIhelpers
+ */
 class APIhelpers
 {
     /**
@@ -142,6 +145,10 @@ class APIhelpers
         return $pass;
     }
 
+    /**
+     * @param $data
+     * @return bool|false|string
+     */
     private function _getEnv($data)
     {
         switch (true) {
@@ -212,6 +219,12 @@ class APIhelpers
         return (false !== $out && preg_match('|^(?:[0-9]{1,3}\.){3,3}[0-9]{1,3}$|', $out, $matches)) ? $out : $default;
     }
 
+    /**
+     * @param $data
+     * @param string $charset
+     * @param array $chars
+     * @return array|mixed|string
+     */
     public static function sanitarTag($data, $charset = 'UTF-8', $chars = array(
         '[' => '&#91;', '%5B' => '&#91;', ']' => '&#93;', '%5D' => '&#93;',
         '{' => '&#123;', '%7B' => '&#123;', '}' => '&#125;', '%7D' => '&#125;',
@@ -237,6 +250,11 @@ class APIhelpers
         return $out;
     }
 
+    /**
+     * @param $text
+     * @param string $charset
+     * @return string
+     */
     public static function e($text, $charset = 'UTF-8'){
         return is_scalar($text) ? htmlspecialchars($text, ENT_QUOTES, $charset, false) : '';
     }

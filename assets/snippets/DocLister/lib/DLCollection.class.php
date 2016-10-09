@@ -1,9 +1,17 @@
 <?php
 include_once(MODX_BASE_PATH . "assets/lib/Helpers/Collection.php");
 
+/**
+ * Class DLCollection
+ */
 class DLCollection extends \Helpers\Collection{
     protected $modx = null;
 
+    /**
+     * DLCollection constructor.
+     * @param array $modx
+     * @param array $data
+     */
     public function __construct($modx, $data = array()){
         $this->modx = $modx;
 		switch(true){
@@ -24,7 +32,12 @@ class DLCollection extends \Helpers\Collection{
 		}
     }
 
-	public function fromQuery($q, $exec = true){
+    /**
+     * @param $q
+     * @param bool $exec
+     * @return int
+     */
+    public function fromQuery($q, $exec = true){
 		$i = 0;
 		if($exec){
 			$q = $this->modx->db->query($q);
@@ -37,6 +50,10 @@ class DLCollection extends \Helpers\Collection{
 		return $i;
 	}
 
+    /**
+     * @param array $data
+     * @return static
+     */
     public function create(array $data = array()){
         return new static($this->modx, $data);
     }

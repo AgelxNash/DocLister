@@ -13,6 +13,10 @@
  * @version 1.0.3
  */
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
+
+/**
+ * Class SummaryText
+ */
 class SummaryText
 {
     private $_cfg = array('content' => '', 'summary' => '', 'original' => '', 'break' => '');
@@ -20,6 +24,12 @@ class SummaryText
     private $_useSubstr = false;
     private $_dotted = 0;
 
+    /**
+     * SummaryText constructor.
+     * @param $text
+     * @param $action
+     * @param null $break
+     */
     public function __construct($text, $action, $break = null)
     {
         $this->_cfg['content'] = is_scalar($text) ? $text : '';
@@ -28,6 +38,10 @@ class SummaryText
         $this->_cfg['break'] = is_scalar($break) ? $break : '. ';
     }
 
+    /**
+     * @param $cut
+     * @return bool
+     */
     public function setCut($cut)
     {
         if (is_scalar($cut) && $cut != '') {
@@ -39,11 +53,18 @@ class SummaryText
         return $flag;
     }
 
+    /**
+     * @return mixed
+     */
     public function getCut()
     {
         return \APIHelpers::getkey($this->_cfg, 'cut', '<cut/>');
     }
 
+    /**
+     * @param int $scheme
+     * @return mixed
+     */
     protected function dotted($scheme = 0)
     {
         if (($scheme == 1 && ($this->_useCut || $this->_useSubstr)) || ($scheme == 2 && $this->_useSubstr && !$this->_useCut)) {
@@ -54,6 +75,10 @@ class SummaryText
         return $this->_cfg['content'];
     }
 
+    /**
+     * @param int $dotted
+     * @return mixed
+     */
     public function run($dotted = 0)
     {
         $this->_dotted = $dotted;
@@ -88,6 +113,11 @@ class SummaryText
         return $this->dotted($dotted);
     }
 
+    /**
+     * @param $resource
+     * @param string $splitter
+     * @return array|mixed
+     */
     protected  function beforeCut($resource, $splitter = '')
     {
         if ($splitter !== '') {
@@ -101,6 +131,14 @@ class SummaryText
         return $summary;
     }
 
+    /**
+     * @param $resource
+     * @param $truncLen
+     * @param $truncOffset
+     * @param $truncChars
+     * @param string $splitter
+     * @return array|mixed|string
+     */
     protected function summary($resource, $truncLen, $truncOffset, $truncChars, $splitter = '')
     {
         if (isset($this->_useCut) && $splitter != '' && mb_strstr($resource, $splitter, 'UTF-8')) {
@@ -123,6 +161,13 @@ class SummaryText
     * @see summary extender for Ditto (truncate::html_substr)
     * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L142
     */
+    /**
+     * @param $posttext
+     * @param int $minimum_length
+     * @param int $length_offset
+     * @param bool $truncChars
+     * @return string
+     */
     protected  function html_substr($posttext, $minimum_length = 200, $length_offset = 100, $truncChars = false)
     {
         $tag_counter = 0;
@@ -180,6 +225,12 @@ class SummaryText
      * @see summary extender for Ditto (truncate::textTrunc)
      * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L213
      */
+    /**
+     * @param $string
+     * @param $limit
+     * @param string $break
+     * @return string
+     */
     protected function textTrunc($string, $limit, $break = ". ")
     {
         // Original PHP code from The Art of Web: www.the-art-of-web.com
@@ -198,6 +249,10 @@ class SummaryText
         return $string;
     }
 
+    /**
+     * @param $str
+     * @return mixed
+     */
     protected function rTriming($str)
     {
         $str = preg_replace('/[\r\n]++/', ' ', $str);
@@ -210,6 +265,10 @@ class SummaryText
     /*
      * @see summary extender for Ditto (truncate::closeTags)
      * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L227
+     */
+    /**
+     * @param $text
+     * @return string
      */
     private function closeTags($text)
     {

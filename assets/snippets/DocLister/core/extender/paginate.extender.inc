@@ -13,6 +13,9 @@ if (!defined('MODX_BASE_PATH')) {
  */
 include_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/DLpaginate.class.php");
 
+/**
+ * Class paginate_DL_Extender
+ */
 class paginate_DL_Extender extends extDocLister
 {
     protected $lang = true;
@@ -108,6 +111,10 @@ class paginate_DL_Extender extends extDocLister
         return (int)APIHelpers::getkey($this->_pages, 'total', 1);
     }
 
+    /**
+     * @param string $mode
+     * @return string
+     */
     private function renderPages($mode = '')
     {
         $out = '';
@@ -150,6 +157,10 @@ class paginate_DL_Extender extends extDocLister
         return $p->getOutput();
     }
 
+    /**
+     * @param string $requestName
+     * @return array|string
+     */
     public function getUrl($requestName = '')
     {
         $url = $this->DocLister->getUrl();

@@ -1,6 +1,9 @@
 <?php
 require_once('MODx.php');
 
+/**
+ * Class modUsers
+ */
 class modUsers extends MODxAPI
 {
 
@@ -41,6 +44,10 @@ class modUsers extends MODxAPI
 
     protected $givenPassword = '';
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function issetField($key)
     {
         return (array_key_exists($key, $this->default_field['user']) || array_key_exists($key, $this->default_field['attribute']) || in_array($key, $this->default_field['hidden']));
@@ -230,6 +237,11 @@ class modUsers extends MODxAPI
         return $this->id;
     }
 
+    /**
+     * @param $ids
+     * @param null $fire_events
+     * @return bool|null
+     */
     public function delete($ids, $fire_events = null)
     {
         if ($this->edit($ids)) {
@@ -489,6 +501,11 @@ class modUsers extends MODxAPI
         return $out;
     }
 
+    /**
+     * @param int $userID
+     * @param array $groupIds
+     * @return $this
+     */
     public function setUserGroups($userID = 0, $groupIds = array()) {
         $user = $this->switchObject($userID);
         if(($uid = $user->getID()) && is_array($groupIds)) {

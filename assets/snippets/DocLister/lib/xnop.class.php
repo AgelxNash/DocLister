@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Class xNop
+ */
 class xNop
 {
     /**

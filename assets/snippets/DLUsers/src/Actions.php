@@ -9,6 +9,10 @@ include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLCollection.class.
 use APIHelpers, DocumentParser, DLCollection, DLTemplate;
 use Helpers\FS;
 
+/**
+ * Class Actions
+ * @package DLUsers
+ */
 class Actions{
     protected $modx = null;
     public $userObj = null;
@@ -275,7 +279,19 @@ class Actions{
 			'errorCode' => $errorCode
 		));
 	}
-	protected function Auth($pwdField, $emailField, $rememberField, $backUrl, $method, &$error, &$errorCode, $params = array()){
+
+    /**
+     * @param $pwdField
+     * @param $emailField
+     * @param $rememberField
+     * @param $backUrl
+     * @param $method
+     * @param $error
+     * @param $errorCode
+     * @param array $params
+     * @return array
+     */
+    protected function Auth($pwdField, $emailField, $rememberField, $backUrl, $method, &$error, &$errorCode, $params = array()){
 		$POST = array(
 			'backUrl' => urlencode($backUrl)
 		);
@@ -450,7 +466,12 @@ class Actions{
 		}
 		return $url;
 	}
-	protected function getTemplate($name){
+
+    /**
+     * @param $name
+     * @return string
+     */
+    protected function getTemplate($name){
 		$out = '';
 		$file = dirname(dirname(__FILE__)).'/tpl/'.$name.'.html';
 		if( FS::getInstance()->checkFile($file)){
@@ -458,7 +479,12 @@ class Actions{
 		}
 		return $out;
 	}
-	protected static function loadLang($lang){
+
+    /**
+     * @param $lang
+     * @return bool
+     */
+    protected static function loadLang($lang){
 		$file = dirname(dirname(__FILE__)).'/lang/'.$lang.'.php';
 		if( ! FS::getInstance()->checkFile($file)){
 			$file = false;
@@ -473,7 +499,13 @@ class Actions{
 		}
 		return !(empty($lang) || empty(static::$langDic[$lang]));
 	}
-	protected static function getLangMsg($key, $default){
+
+    /**
+     * @param $key
+     * @param $default
+     * @return mixed
+     */
+    protected static function getLangMsg($key, $default){
 		$out = $default;
 		$lng = static::$lang;
 		$dic = static::$langDic;

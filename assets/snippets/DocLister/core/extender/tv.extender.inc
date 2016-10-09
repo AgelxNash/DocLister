@@ -20,6 +20,11 @@ class tv_DL_Extender extends extDocLister
     protected $_TVprefix = null;
     public $storeTable = true;
 
+    /**
+     * tv_DL_Extender constructor.
+     * @param DocLister $DocLister
+     * @param $name
+     */
     public function __construct($DocLister, $name)
     {
         parent::__construct($DocLister, $name);
@@ -30,21 +35,34 @@ class tv_DL_Extender extends extDocLister
         $this->_TVprefix = $this->getTVprefix();
     }
 
+    /**
+     * @return bool
+     */
     protected function run()
     {
         return true;
     }
 
+    /**
+     * @return mixed|string
+     */
     public function tvValuesTable()
     {
         return $this->tvValuesTable;
     }
 
+    /**
+     * @return mixed
+     */
     public function getTVnames()
     {
         return $this->modx->_TVnames;
     }
 
+    /**
+     * @param bool $reload
+     * @return mixed
+     */
     public function getAllTV_Name($reload = false)
     {
         if (empty($this->modx->_TVnames) || $reload) {
@@ -60,6 +78,11 @@ class tv_DL_Extender extends extDocLister
         return $this->getTVnames();
     }
 
+    /**
+     * @param $IDs
+     * @param $tvlist
+     * @return array
+     */
     public function getTVList($IDs, $tvlist)
     {
         $out = array();
@@ -99,6 +122,9 @@ class tv_DL_Extender extends extDocLister
         return $out;
     }
 
+    /**
+     * @return mixed|string
+     */
     public function getTVprefix()
     {
         $tvPrefix = $this->DocLister->getCFGDef('tvPrefix', 'tv');
@@ -108,6 +134,9 @@ class tv_DL_Extender extends extDocLister
         return $tvPrefix;
     }
 
+    /**
+     * @return array|mixed
+     */
     public function getListRenderTV()
     {
         $tmp = $this->DocLister->getCFGDef('renderTV', '');
@@ -128,6 +157,13 @@ class tv_DL_Extender extends extDocLister
         return $tmp;
     }
 
+    /**
+     * @param $iddoc
+     * @param $tvname
+     * @param $tvval
+     * @param $param
+     * @return mixed
+     */
     public function renderTV($iddoc, $tvname, $tvval, $param)
     {
         include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
@@ -135,6 +171,10 @@ class tv_DL_Extender extends extDocLister
         return getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $iddoc, '');
     }
 
+    /**
+     * @param $tvlist
+     * @return array
+     */
     public function getTVid($tvlist)
     {
         if (!empty($tvlist) && is_scalar($tvlist)) {
@@ -150,6 +190,10 @@ class tv_DL_Extender extends extDocLister
         return $out;
     }
 
+    /**
+     * @param $tvId
+     * @return array
+     */
     public function loadTVDefault($tvId)
     {
         $tbl_site_tmplvars = $this->DocLister->getTable('site_tmplvars');
@@ -164,6 +208,10 @@ class tv_DL_Extender extends extDocLister
         return $out;
     }
 
+    /**
+     * @param $name
+     * @return string
+     */
     public function addTVSortWithDefault($name)
     {
         $dTV = explode(',', $this->DocLister->getCFGDef('tvSortWithDefault', ''));
@@ -173,6 +221,11 @@ class tv_DL_Extender extends extDocLister
         return $tvList;
     }
 
+    /**
+     * @param $table
+     * @param $sort
+     * @return array
+     */
     public function injectSortByTV($table, $sort)
     {
         if (preg_match("/^ORDER BY (.*)/", $sort, $match)) {

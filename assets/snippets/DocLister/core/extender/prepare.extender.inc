@@ -15,14 +15,25 @@ class prepare_DL_Extender extends extDocLister
 {
     private $_store = array();
 
+    /**
+     * @param $name
+     * @param $val
+     */
     public function setStore($name,$val){
         $this->_store[$name] = $val;
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     */
     public function getStore($name){
         return APIHelpers::getkey($this->_store, $name);
     }
 
+    /**
+     * @return array|bool|mixed|null|xNop
+     */
     protected function run()
     {
         $out = $this->getCFGDef('data', array());
@@ -46,6 +57,10 @@ class prepare_DL_Extender extends extDocLister
         return (!empty($ret) && is_scalar($ret) && isset($out[$ret])) ? $out[$ret] : $out;
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     public function getParams(array $data = array()){
         return array(
             '_extDocLister' => $this,
@@ -55,6 +70,12 @@ class prepare_DL_Extender extends extDocLister
         );
     }
 
+    /**
+     * @param $name
+     * @param array $params
+     * @param null $ret
+     * @return array|bool|mixed|null|xNop
+     */
     public function callPrepare($name, array $params, $ret = null){
         $out = null;
         if((is_object($name) && ($name instanceof Closure)) || is_callable($name)){

@@ -2,6 +2,10 @@
 
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 
+/**
+ * Class AbstractController
+ * @package SimpleTab
+ */
 abstract class AbstractController {
     public $rfName = '';
     public $rid = 0;
@@ -30,6 +34,10 @@ abstract class AbstractController {
 
     protected $modx = null;
 
+    /**
+     * AbstractController constructor.
+     * @param \DocumentParser $modx
+     */
     public function __construct(\DocumentParser $modx){
         $this->FS = \Helpers\FS::getInstance();
         $this->modx = $modx;
@@ -44,6 +52,9 @@ abstract class AbstractController {
         }
     }
 
+    /**
+     * @return array
+     */
     public function remove()
     {
         $out = array();
@@ -58,6 +69,9 @@ abstract class AbstractController {
         return $out;
     }
 
+    /**
+     * @return array
+     */
     public function place()
     {
         $out = array();
@@ -72,7 +86,10 @@ abstract class AbstractController {
         return $out;
     }
 
-    public function reorder() 
+    /**
+     * @return array
+     */
+    public function reorder()
     {
         $out = array();
         $source = $_REQUEST['source'];
@@ -117,6 +134,9 @@ abstract class AbstractController {
         }
     }
 
+    /**
+     * @return null
+     */
     public function getLanguageCode() {
         $manager_language = $this->modx->config['manager_language'];
         if(file_exists(MODX_MANAGER_PATH."includes/lang/".$manager_language.".inc.php")) {

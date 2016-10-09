@@ -1,5 +1,9 @@
 <?php namespace Module;
 
+/**
+ * Class Template
+ * @package Module
+ */
 abstract class Template{
     protected $_modx = null;
     protected $_tplFolder = null;
@@ -20,6 +24,12 @@ abstract class Template{
     );
     protected static $_ajax = false;
 
+    /**
+     * Template constructor.
+     * @param \DocumentParser $modx
+     * @param bool $ajax
+     * @param null $tplFolder
+     */
     public function __construct(\DocumentParser $modx, $ajax = false, $tplFolder = null){
         $this->_modx = $modx;
         self::$_ajax = (boolean) $ajax;
@@ -37,19 +47,40 @@ abstract class Template{
             define('MODX_MAIN_URL', MODX_SITE_URL);
         }
     }
+
+    /**
+     * @return bool
+     */
     public static function isAjax(){
         return self::$_ajax;
     }
-	public function publicFolder(){
+
+    /**
+     * @return string
+     */
+    public function publicFolder(){
 		return $this->_publicFolder;
 	}
-	public function src($path){
+
+    /**
+     * @param $path
+     * @return string
+     */
+    public function src($path){
 		return rtrim(MODX_MAIN_URL, '/').$this->publicFolder().ltrim($path, '/');
 	}
 
+    /**
+     * @return string
+     */
     public function showHeader(){
         return $this->_getMainTpl('header.inc.php');
     }
+
+    /**
+     * @param $name
+     * @return string
+     */
     protected function _getMainTpl($name){
         $content = '';
         if( ! self::isAjax()){
@@ -74,9 +105,19 @@ abstract class Template{
         $this->vars['tplClass'] = $this;
         $this->vars['modx'] = $this->_modx;
     }
+
+    /**
+     * @return string
+     */
     public function showFooter(){
         return $this->_getMainTpl('footer.inc.php');
     }
+
+    /**
+     * @param $TplName
+     * @param array $tplParams
+     * @return string
+     */
     public function showBody($TplName, array $tplParams = array()){
         ob_start();
         if(file_exists($this->_tplFolder.$TplName.".".self::TPL_EXT)){
@@ -87,9 +128,24 @@ abstract class Template{
         ob_end_clean();
         return $content;
     }
+
+    /**
+     * @param $key
+     * @param array $param
+     * @param null $default
+     * @return mixed|null
+     */
     public static function getParam($key, array $param = array(), $default = null){
         return isset($param[$key]) ? $param[$key] : $default;
     }
+
+    /**
+     * @param $action
+     * @param array $data
+     * @param null $module
+     * @param bool $full
+     * @return string
+     */
     public function makeUrl($action, array $data = array(), $module = null, $full = false){
         $action = is_scalar($action) ? $action : '';
         $content = self::getParam('content', $this->vars, array());
@@ -110,6 +166,10 @@ abstract class Template{
 		}
         return $out;
     }
+
+    /**
+     * @return string
+     */
     public static function showLog(){
         return self::isAjax() ? 'log' : 'main';
     }

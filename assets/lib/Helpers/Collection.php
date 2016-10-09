@@ -9,16 +9,34 @@ use Closure;
 class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     protected $data = array();
 
+    /**
+     * Collection constructor.
+     * @param array $data
+     */
     public function __construct(array $data = array()){
         $this->data = $data;
     }
+
+    /**
+     * @param array $data
+     * @return static
+     */
     public function create(array $data = array()){
         return new static($data);
     }
+
+    /**
+     * @return \ArrayIterator
+     */
     public function getIterator()
     {
         return new \ArrayIterator($this->data);
     }
+
+    /**
+     * @param Closure $func
+     * @return Collection
+     */
     public function map(Closure $func)
     {
         return $this->create(array_map($func, $this->data));
@@ -35,6 +53,10 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         return $this->create(array_filter($this->data, $callback));
     }
 
+    /**
+     * @param Closure $p
+     * @return bool
+     */
     public function forAll(Closure $p)
     {
         foreach ($this->data as $key => $element) {
@@ -44,6 +66,11 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         }
         return true;
     }
+
+    /**
+     * @param Closure $p
+     * @return array
+     */
     public function partition(Closure $p)
     {
         $matches = $noMatches = array();
@@ -56,22 +83,47 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         }
         return array($this->create($matches), $this->create($noMatches));
     }
+
+    /**
+     * @param $offset
+     * @param null $length
+     * @return array
+     */
     public function slice($offset, $length = null)
     {
         return array_slice($this->data, $offset, $length, true);
     }
+
+    /**
+     * @return bool
+     */
     public function isEmpty()
     {
         return empty($this->data);
     }
+
+    /**
+     * @return $this
+     */
     public function clear(){
         $this->data = array();
         return $this;
     }
+
+    /**
+     * @param $value
+     * @return $this
+     */
     public function append($value) {
         $this->data[] = $value;
         return $this;
     }
+
+    /**
+     * @param $data
+     * @param null $id
+     * @return $this
+     */
     public function add($data, $id = null){
         if((is_int($id) || is_string($id)) && $id !== ''){
             $this->data[$id] = $data;
@@ -80,9 +132,18 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         }
         return $this;
     }
+
+    /**
+     * @return int
+     */
     public function count(){
         return count($this->data);
     }
+
+    /**
+     * @param $id
+     * @return mixed|null
+     */
     public function get($id){
         $out = null;
         if(is_scalar($id) && $id!=='' && $this->containsKey($id)){
@@ -90,38 +151,67 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         }
         return $out;
     }
+
+    /**
+     * @param $key
+     * @param $value
+     */
     public function set($key, $value)
     {
         $this->data[$key] = $value;
     }
+
+    /**
+     * @return mixed
+     */
     public function first()
     {
         return reset($this->data);
     }
 
+    /**
+     * @return mixed
+     */
     public function last()
     {
         return end($this->data);
     }
 
+    /**
+     * @return mixed
+     */
     public function key()
     {
         return key($this->data);
     }
+
+    /**
+     * @return mixed
+     */
     public function prev(){
         return prev($this->data);
     }
 
+    /**
+     * @return mixed
+     */
     public function next()
     {
         return next($this->data);
     }
 
+    /**
+     * @return mixed
+     */
     public function current()
     {
         return current($this->data);
     }
 
+    /**
+     * @param $key
+     * @return mixed|null
+     */
     public function remove($key)
     {
         if ( ! isset($this->data[$key]) && ! array_key_exists($key, $this->data)) {
@@ -132,6 +222,10 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         return $removed;
     }
 
+    /**
+     * @param $element
+     * @return bool
+     */
     public function removeElement($element)
     {
         $key = array_search($element, $this->data, true);
@@ -142,16 +236,29 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         return true;
     }
 
+    /**
+     * @param mixed $offset
+     * @return bool
+     */
     public function offsetExists($offset)
     {
         return $this->containsKey($offset);
     }
 
+    /**
+     * @param mixed $offset
+     * @return mixed|null
+     */
     public function offsetGet($offset)
     {
         return $this->get($offset);
     }
 
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @return Collection
+     */
     public function offsetSet($offset, $value)
     {
         if ( ! isset($offset)) {
@@ -160,21 +267,37 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         $this->set($offset, $value);
     }
 
+    /**
+     * @param mixed $offset
+     * @return mixed|null
+     */
     public function offsetUnset($offset)
     {
         return $this->remove($offset);
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function containsKey($key)
     {
         return isset($this->data[$key]) || array_key_exists($key, $this->data);
     }
 
+    /**
+     * @param $element
+     * @return bool
+     */
     public function contains($element)
     {
         return in_array($element, $this->data, true);
     }
 
+    /**
+     * @param Closure $p
+     * @return bool
+     */
     public function exists(Closure $p)
     {
         foreach ($this->data as $key => $element) {
@@ -185,20 +308,34 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         return false;
     }
 
+    /**
+     * @param $element
+     * @return mixed
+     */
     public function indexOf($element)
     {
         return array_search($element, $this->data, true);
     }
 
+    /**
+     * @return array
+     */
     public function getKeys()
     {
         return array_keys($this->data);
     }
+
+    /**
+     * @return array
+     */
     public function getValues()
     {
         return array_values($this->data);
     }
 
+    /**
+     * @return array
+     */
     public function toArray(){
         return $this->data;
     }
@@ -264,6 +401,9 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function reindex(){
         $this->data = array_values($this->data);
         return $this;

@@ -1,8 +1,18 @@
 <?php
 
 if(!class_exists("DLFixedPrepare", false)){
-	class DLFixedPrepare{
-		public static function buildMenu(array $data = array(), DocumentParser $modx, $_DL, prepare_DL_Extender $_eDL)
+    /**
+     * Class DLFixedPrepare
+     */
+    class DLFixedPrepare{
+        /**
+         * @param array $data
+         * @param DocumentParser $modx
+         * @param $_DL
+         * @param prepare_DL_Extender $_eDL
+         * @return array
+         */
+        public static function buildMenu(array $data = array(), DocumentParser $modx, $_DL, prepare_DL_Extender $_eDL)
 		{
 			$params = $_DL->getCFGDef('params', array());
 			if ($_DL->getCfgDef('currentDepth', 1) < $_DL->getCFGDef('maxDepth', 5)) {
@@ -43,7 +53,14 @@ if(!class_exists("DLFixedPrepare", false)){
 			return $data;
 		}
 
-		public static function firstChar(array $data = array(), DocumentParser $modx, $_DocLister, prepare_DL_Extender $_extDocLister)
+        /**
+         * @param array $data
+         * @param DocumentParser $modx
+         * @param $_DocLister
+         * @param prepare_DL_Extender $_extDocLister
+         * @return array
+         */
+        public static function firstChar(array $data = array(), DocumentParser $modx, $_DocLister, prepare_DL_Extender $_extDocLister)
 		{
 			$char = mb_substr($data['pagetitle'], 0, 1, 'UTF-8');
 			$oldChar = $_extDocLister->getStore('char');

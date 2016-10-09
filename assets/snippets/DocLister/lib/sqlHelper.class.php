@@ -1,6 +1,15 @@
 <?php
+
+/**
+ * Class sqlHelper
+ */
 class sqlHelper
 {
+    /**
+     * @param $field
+     * @param string $table
+     * @return bool|float|int|string
+     */
     public static function tildeField($field, $table = '')
     {
         $out = '';
@@ -26,6 +35,11 @@ class sqlHelper
         return $out;
     }
 
+    /**
+     * @param $string
+     * @param string $mode
+     * @return mixed|string
+     */
     public static function trimLogicalOp($string, $mode = '')
     {
         $regex = 'AND|and|OR|or|\&\&|\|\||NOT|not|\!';
