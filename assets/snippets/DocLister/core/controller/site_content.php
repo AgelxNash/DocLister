@@ -10,9 +10,6 @@ if (!defined('MODX_BASE_PATH')) {
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>, kabachello <kabachnik@hotmail.com>
- *
- * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
- * @TODO st placeholder [+dl.title+] if menutitle not empty
  */
 class site_contentDocLister extends DocLister
 {
@@ -40,23 +37,6 @@ class site_contentDocLister extends DocLister
     {
         parent::__construct($modx, $cfg, $startTime);
         $this->extTV = $this->getExtender('tv', true, true);
-    }
-
-    /**
-     * @absctract
-     */
-    public function getUrl($id = 0)
-    {
-        $id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
-
-        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();
-        if ($id == $this->modx->config['site_start']) {
-            $url = $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "");
-        } else {
-            $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
-        }
-
-        return $url;
     }
 
     /**
@@ -99,9 +79,8 @@ class site_contentDocLister extends DocLister
 
 
     /**
-     * @todo set correct active placeholder if you work with other table. Because $item['id'] can differ of $modx->documentIdentifier (for other controller)
-     * @todo set author placeholder (author name). Get id from Createdby OR editedby AND get info from extender user
-     * @todo set filter placeholder with string filtering for insert URL
+     * @param string $tpl
+     * @return string
      */
     public function _render($tpl = '')
     {
@@ -423,10 +402,6 @@ class site_contentDocLister extends DocLister
      */
     public function getChildrenFolder($id)
     {
-        /**
-         * @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
-         * @TODO: 5) Добавить фильтрацию по основным параметрам документа
-         */
         $where = $this->getCFGDef('addWhereFolder', '');
         $where = sqlHelper::trimLogicalOp($where);
         if ($where != '') {
@@ -468,8 +443,7 @@ class site_contentDocLister extends DocLister
     }
 
     /**
-     * @TODO: 3) Формирование ленты в случайном порядке (если отключена пагинация и есть соответствующий запрос)
-     * @TODO: 5) Добавить фильтрацию по основным параметрам документа
+     * @return array
      */
     protected function getChildrenList()
     {

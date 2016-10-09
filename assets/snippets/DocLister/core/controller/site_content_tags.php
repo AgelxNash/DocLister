@@ -10,8 +10,6 @@ if (!defined('MODX_BASE_PATH')) {
  * @category controller
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- *
- * @TODO add parameter showFolder - include document container in result data whithout children document if you set depth parameter.
  */
 
 include_once(dirname(__FILE__) . "/site_content.php");
@@ -37,7 +35,6 @@ class site_content_tagsDocLister extends site_contentDocLister
 
     /**
      * @absctract
-     * @todo link maybe include other GET parameter with use pagination. For example - filter
      */
     public function getUrl($id = 0)
     {

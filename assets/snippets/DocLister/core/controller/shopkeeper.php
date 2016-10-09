@@ -31,27 +31,8 @@ class shopkeeperDocLister extends site_contentDocLister
     }
 
     /**
-     * @absctract
-     */
-    public function getUrl($id = 0)
-    {
-        $id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
-
-        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();
-        if ($id == $this->modx->config['site_start']) {
-            $url = $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "");
-        } else {
-            $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
-        }
-
-        return $url;
-    }
-
-
-    /**
-     * @todo set correct active placeholder if you work with other table. Because $item['id'] can differ of $modx->documentIdentifier (for other controller)
-     * @todo set author placeholder (author name). Get id from Createdby OR editedby AND get info from extender user
-     * @todo set filter placeholder with string filtering for insert URL
+     * @param string $tpl
+     * @return string
      */
     public function _render($tpl = '')
     {

@@ -7,15 +7,6 @@ if (!defined('MODX_BASE_PATH')) {
  *
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
- *
- * @TODO add controller for work with plugin http://modx.com/extras/package/quid and get TV value via LEFT JOIN
- * @TODO add controller for filter by TV values
- * @TODO add method load default template
- * @TODO add example custom controller for build google sitemap.xml
- * @TODO add method build tree for replace Wayfinder if need TV value in menu OR sitemap
- * @TODO add controller for show list web-user with filter by group and other user information
- * @TODO depending on the parameters
- * @TODO prepare value before return final data (maybe callback function OR extender)
  */
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 include_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
@@ -583,7 +574,18 @@ abstract class DocLister
      * @param int $id уникальный идентификатор страницы
      * @return string URL страницы
      */
-    abstract public function getUrl($id = 0);
+    public function getUrl($id = 0){
+        $id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
+
+        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();
+        if ($id == $this->modx->config['site_start']) {
+            $url = $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "");
+        } else {
+            $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
+        }
+
+        return $url;
+    }
 
     /**
      * Получение массива документов из базы
@@ -650,17 +652,17 @@ abstract class DocLister
      * @param string $file error on file
      * @param integer $line error on line
      * @param array $trace stack trace
-     *
-     * @todo $this->debug
      */
     public function ErrorLogger($message, $code, $file, $line, $trace)
     {
         if (abs($this->getCFGDef('debug', '0')) == '1') {
-            echo "CODE #" . $code . "<br />";
-            echo "on file: " . $file . ":" . $line . "<br />";
-            echo "<pre>";
-            var_dump($trace);
-            echo "</pre>";
+            $out = "CODE #" . $code . "<br />";
+            $out .= "on file: " . $file . ":" . $line . "<br />";
+            $out .= "<pre>";
+            $out .= print_r($trace, 1);
+            $out .= "</pre>";
+
+            $message = $out . $message;
         }
         die($message);
     }
@@ -943,8 +945,6 @@ abstract class DocLister
      *
      * @param string $name Template: chunk name || @CODE: template || @FILE: file with template
      * @return string html template with placeholders without data
-     *
-     * @TODO debug mode for log error
      */
     private function _getChunk($name)
     {

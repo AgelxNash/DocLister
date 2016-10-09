@@ -10,7 +10,6 @@ if (!defined('MODX_BASE_PATH')) {
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
  *
- * @TODO add controller for construct tree from table
  * @param introField =`` //introtext
  * @param contentField =`description` //content
  * @param table =`` //table name
@@ -20,24 +19,6 @@ class onetableDocLister extends DocLister
     protected $table = 'site_content';
     protected $idField = 'id';
     protected $parentField = 'parent';
-
-    /**
-     * @absctract
-     */
-
-    public function getUrl($id = 0)
-    {
-        $id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
-
-        $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();
-        if ($id == $this->modx->config['site_start']) {
-            $url = $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "");
-        } else {
-            $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
-        }
-
-        return $url;
-    }
 
     /**
      * @absctract
