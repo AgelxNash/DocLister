@@ -50,6 +50,23 @@
 		<strong>PayPal</strong>: agel_nash@xaker.ru<br />
 	</td>
   </tr>
+  <tr>
+    <td><img src="http://www.gravatar.com/avatar/b91e37b9ae5b4869b4508e8a5326200a?s=220"></td>
+	<td valign="top">
+		<h4>Максим
+			<br />
+			Pathologic
+		</h4>
+		<a href="https://github.com/Pathologic">@Pathologic</a><br />
+		<br />
+		<strong>Email</strong>: m@xim.name
+	</td>
+	<td valign="top">
+		<h4>Реквизиты для доната<br /><br /></h4>
+		<br /><br />
+		<strong>ЯД</strong>: 410011458897796<br />
+	</td>
+  </tr>
 </table>
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/AgelxNash/doclister/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
