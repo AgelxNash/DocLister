@@ -39,6 +39,7 @@ class private_DL_filter extends content_DL_filter
         }
         $alias = parent::TableAlias;
         $where = ($this->modx->isFrontend() ? "`{$alias}`.`privateweb`=0" : "1='{$_SESSION['mgrRole']}' OR {$alias}.`privatemgr`=0") . (!$docgrp ? "" : " OR `{$this->tableAlias}`.`document_group` IN ({$docgrp})");
+
         return "($where)";
     }
 
@@ -49,6 +50,7 @@ class private_DL_filter extends content_DL_filter
     {
         $join = 'LEFT JOIN ' . $this->DocLister->getTable('document_groups',
                 $this->tableAlias) . ' ON `' . $this->tableAlias . '`.`document`=`' . parent::TableAlias . '`.`id`';
+
         return $join;
     }
 }

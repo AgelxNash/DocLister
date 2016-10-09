@@ -19,6 +19,7 @@ if (!class_exists("DLReflect", false)) {
                 $flag = ($flag && (int)$val[0] > 0 && (int)$val[0] <= 12); //Валидация месяца
                 $flag = ($flag && self::validateYear($val[1])); //Валидация года
             }
+
             return $flag;
         }
 
@@ -33,6 +34,7 @@ if (!class_exists("DLReflect", false)) {
                 $flag = (strlen($val) == 4); //Валидация строки
                 $flag = ($flag && (int)$val > 1900 && (int)$val <= 2100); //Валидация года
             }
+
             return $flag;
         }
 
@@ -46,6 +48,7 @@ if (!class_exists("DLReflect", false)) {
         {
             $out = null;
             $action = $type . "Action";
+
             return is_callable($$action) ? call_user_func($$action) : $out;
         }
     }

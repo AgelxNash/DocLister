@@ -67,6 +67,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
                 return false;
             }
         }
+
         return true;
     }
 
@@ -84,6 +85,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
                 $noMatches[$key] = $element;
             }
         }
+
         return array($this->create($matches), $this->create($noMatches));
     }
 
@@ -111,6 +113,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     public function clear()
     {
         $this->data = array();
+
         return $this;
     }
 
@@ -121,6 +124,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     public function append($value)
     {
         $this->data[] = $value;
+
         return $this;
     }
 
@@ -136,6 +140,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
         } else {
             $this->append($data);
         }
+
         return $this;
     }
 
@@ -157,6 +162,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
         if (is_scalar($id) && $id !== '' && $this->containsKey($id)) {
             $out = $this->data[$id];
         }
+
         return $out;
     }
 
@@ -228,6 +234,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
         }
         $removed = $this->data[$key];
         unset($this->data[$key]);
+
         return $removed;
     }
 
@@ -242,6 +249,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
             return false;
         }
         unset($this->data[$key]);
+
         return true;
     }
 
@@ -314,6 +322,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
                 return true;
             }
         }
+
         return false;
     }
 
@@ -397,6 +406,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     public function sort(Closure $callback)
     {
         uasort($this->data, $callback);
+
         return $this;
     }
 
@@ -407,6 +417,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     public function ksort(Closure $callback)
     {
         uksort($this->data, $callback);
+
         return $this;
     }
 
@@ -416,6 +427,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     public function reindex()
     {
         $this->data = array_values($this->data);
+
         return $this;
     }
 

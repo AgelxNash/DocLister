@@ -50,6 +50,7 @@ class DLCollection extends \Helpers\Collection
             $this->add($data);
             $i++;
         }
+
         return $i;
     }
 

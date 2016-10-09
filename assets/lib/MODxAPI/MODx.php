@@ -107,6 +107,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     public function setDebug($flag)
     {
         $this->_debug = (bool)$flag;
+
         return $this;
     }
 
@@ -145,6 +146,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if (is_scalar($q) && !empty($q)) {
             $this->_query[] = $q;
         }
+
         return $this;
     }
 
@@ -165,6 +167,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if ($this->getDebug()) {
             $this->addQuery($SQL);
         }
+
         return empty($SQL) ? null : $this->modx->db->query($SQL);
     }
 
@@ -179,6 +182,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         } else {
             $value = $this->modx->db->escape($value);
         }
+
         return $value;
     }
 
@@ -194,6 +198,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if ($flag) {
             $this->modx->invokeEvent($name, $data);
         }
+
         return $this;
     }
 
@@ -217,6 +222,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     final public function clearLog()
     {
         $this->log = array();
+
         return $this;
     }
 
@@ -238,6 +244,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if ($flush) {
             $this->clearLog();
         }
+
         return $this;
     }
 
@@ -251,6 +258,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if ($full) {
             $path = MODX_BASE_PATH . substr($path, strlen(MODX_BASE_URL));
         }
+
         return $path;
     }
 
@@ -316,6 +324,7 @@ abstract class MODxAPI extends MODxAPIhelpers
                 $obj = $this;
                 break;
         }
+
         return $obj;
     }
 
@@ -326,6 +335,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     public function useIgnore($flag = true)
     {
         $this->ignoreError = $flag ? 'IGNORE' : '';
+
         return $this;
     }
 
@@ -347,6 +357,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if ((is_scalar($value) || $this->isJsonField($key)) && is_scalar($key) && !empty($key)) {
             $this->field[$key] = $value;
         }
+
         return $this;
     }
 
@@ -378,6 +389,7 @@ abstract class MODxAPI extends MODxAPIhelpers
                 $this->set($key, $value);
             }
         }
+
         return $this;
     }
 
@@ -406,6 +418,7 @@ abstract class MODxAPI extends MODxAPIhelpers
                 $this->set[$id][] = $tmp;
             }
         }
+
         return $this;
     }
 
@@ -439,6 +452,7 @@ abstract class MODxAPI extends MODxAPIhelpers
             }
         }
         $out = array_unique($out);
+
         return $out;
     }
 
@@ -508,6 +522,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if (json_last_error() === JSON_ERROR_NONE && is_object($data) && $data instanceof stdClass) {
             $flag = true;
         }
+
         return $flag;
     }
 
@@ -538,6 +553,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         } else {
             $out = $fields;
         }
+
         return $out;
     }
 
@@ -576,6 +592,7 @@ abstract class MODxAPI extends MODxAPIhelpers
             }
         }
         $out = empty($out) ? '' : "'" . implode("','", $out) . "'";
+
         return $out;
     }
 
@@ -615,6 +632,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         } else {
             $flag = false;
         }
+
         return $flag;
     }
 
@@ -626,6 +644,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     {
         $this->close();
         $this->fromArray($data);
+
         return $this;
     }
 
@@ -637,6 +656,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     {
         $this->edit($id)->id = 0;
         $this->newDoc = true;
+
         return $this;
     }
 
@@ -706,6 +726,7 @@ abstract class MODxAPI extends MODxAPIhelpers
                 $flag = (boolean)preg_match('/^' . $tmp . '(.*)\-d/', $currentVer);
             }
         }
+
         return $flag;
     }
 
@@ -720,6 +741,7 @@ abstract class MODxAPI extends MODxAPIhelpers
             $flag = $this->field[$name];
             unset($this->field[$name]);
         }
+
         return $flag;
     }
 
@@ -743,6 +765,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if (is_scalar($field)) {
             $this->_decodedFields->set($field, false);
         }
+
         return $this;
     }
 
@@ -756,6 +779,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if (is_scalar($field)) {
             $this->_decodedFields->set($field, true);
         }
+
         return $this;
     }
 
@@ -769,6 +793,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         foreach ($this->jsonFields as $field) {
             $this->markAsEncode($field);
         }
+
         return $this;
     }
 
@@ -782,6 +807,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         foreach ($this->jsonFields as $field) {
             $this->markAsDecode($field);
         }
+
         return $this;
     }
 
@@ -815,6 +841,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     public function isDecodableField($field)
     {
         $data = $this->get($field);
+
         /**
          * Если поле скалярного типа и оно не распаковывалось раньше
          */
@@ -851,6 +878,7 @@ abstract class MODxAPI extends MODxAPIhelpers
             $this->field[$field] = $out;
             $this->markAsDecode($field);
         }
+
         return $out;
     }
 
@@ -863,6 +891,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         foreach ($this->getNoDecodeFields() as $field => $flag) {
             $this->decodeField($field, true);
         }
+
         return $this;
     }
 
@@ -883,6 +912,7 @@ abstract class MODxAPI extends MODxAPIhelpers
             $this->field[$field] = $out;
             $this->markAsEncode($field);
         }
+
         return $out;
     }
 
@@ -895,6 +925,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         foreach ($this->getNoEncodeFields() as $field => $flag) {
             $this->encodeField($field, true);
         }
+
         return $this;
     }
 }

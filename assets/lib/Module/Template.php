@@ -100,6 +100,7 @@ abstract class Template
             }
             ob_end_clean();
         }
+
         return $content;
     }
 
@@ -137,6 +138,7 @@ abstract class Template
         }
         $content = ob_get_contents();
         ob_end_clean();
+
         return $content;
     }
 
@@ -177,6 +179,7 @@ abstract class Template
         if ($full) {
             $out = $this->_modx->getConfig('site_url') . ltrim($out, '/');
         }
+
         return $out;
     }
 

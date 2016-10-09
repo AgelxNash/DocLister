@@ -15,6 +15,7 @@ if (!function_exists('validateMonth')) {
             $flag = ($flag && (int)$val[1] > 0 && (int)$val[1] <= 12); //Валидация месяца
             $flag = ($flag && (int)$val[0] > 1900 && (int)$val[0] <= 2100); //Валидация года
         }
+
         return $flag;
     }
 }
@@ -42,6 +43,7 @@ if (!function_exists('buildUrl')) {
                 $url .= "?" . $q;
             }
         }
+
         return $url;
     }
 }

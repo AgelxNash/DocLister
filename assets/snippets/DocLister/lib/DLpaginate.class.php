@@ -61,6 +61,7 @@ class DLpaginate
     {
         $this->mode = $mode;
         $this->modeConfig = $config;
+
         return $this;
     }
 
@@ -72,6 +73,7 @@ class DLpaginate
     public function items($value)
     {
         $this->total_pages = (int)$value;
+
         return $this;
     }
 
@@ -83,6 +85,7 @@ class DLpaginate
     public function limit($value)
     {
         $this->limit = (int)$value;
+
         return $this;
     }
 
@@ -94,6 +97,7 @@ class DLpaginate
     public function target($value)
     {
         $this->target = $value;
+
         return $this;
     }
 
@@ -105,6 +109,7 @@ class DLpaginate
     public function currentPage($value)
     {
         $this->page = (int)$value;
+
         return $this;
     }
 
@@ -116,6 +121,7 @@ class DLpaginate
     public function adjacents($value)
     {
         $this->adjacents = (int)$value;
+
         return $this;
     }
 
@@ -127,6 +133,7 @@ class DLpaginate
     public function showCounter($value = "")
     {
         $this->showCounter = ($value === true) ? true : false;
+
         return $this;
     }
 
@@ -138,6 +145,7 @@ class DLpaginate
     public function changeClass($value = "")
     {
         $this->className = $value;
+
         return $this;
     }
 
@@ -148,6 +156,7 @@ class DLpaginate
     public function mainTpl($value)
     {
         $this->mainTpl = $value;
+
         return $this;
     }
 
@@ -158,6 +167,7 @@ class DLpaginate
     public function nextLabel($value)
     {
         $this->nextT = $value;
+
         return $this;
     }
 
@@ -168,6 +178,7 @@ class DLpaginate
     public function nextIcon($value)
     {
         $this->nextI = $value;
+
         return $this;
     }
 
@@ -178,6 +189,7 @@ class DLpaginate
     public function prevLabel($value)
     {
         $this->prevT = $value;
+
         return $this;
     }
 
@@ -188,6 +200,7 @@ class DLpaginate
     public function prevIcon($value)
     {
         $this->prevI = $value;
+
         return $this;
     }
 
@@ -199,6 +212,7 @@ class DLpaginate
     public function parameterName($value = "")
     {
         $this->parameterName = $value;
+
         return $this;
     }
 
@@ -213,6 +227,7 @@ class DLpaginate
             $this->urlF = false;
         }
         $this->urlF = $value;
+
         return $this;
     }
 
@@ -231,6 +246,7 @@ class DLpaginate
             $out = str_replace(array("[+class+]", "[+wrap+]"), array($this->className, $this->pagination),
                     $this->mainTpl) . "\n";
         }
+
         return $out;
     }
 
@@ -253,6 +269,7 @@ class DLpaginate
                 break;
             }
         }
+
         return $out;
     }
 
@@ -272,6 +289,7 @@ class DLpaginate
                 $out .= ($flag ? "?" : "&") . $this->parameterName . "=" . $value;
             }
         }
+
         return $out;
     }
 

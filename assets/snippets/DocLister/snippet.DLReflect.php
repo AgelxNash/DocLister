@@ -198,6 +198,7 @@ if ($appendCurrentReflect) {
 $totalReflects->sort(function ($a, $b) use ($dateFormat) {
     $aDate = DateTime::createFromFormat($dateFormat, $a['id']);
     $bDate = DateTime::createFromFormat($dateFormat, $b['id']);
+
     return $aDate->getTimestamp() - $bDate->getTimestamp();
 })->reindex();
 
@@ -210,6 +211,7 @@ list($lReflect, $rReflect) = $totalReflects->partition(function ($key, $val) use
     $aDate = DateTime::createFromFormat($dateFormat, $val['id']);
     $activeReflect = is_null($activeReflect) ? $originalDate : $activeReflect;
     $bDate = DateTime::createFromFormat($dateFormat, $activeReflect);
+
     return $aDate->getTimestamp() < $bDate->getTimestamp();
 });
 //Удаляем текущую активную дату из списка дат идущих за текущим
@@ -275,6 +277,7 @@ $outReflects = $outReflects->sort(function ($a, $b) use ($sortDir, $dateFormat) 
             $out = $bDate->getTimestamp() - $aDate->getTimestamp();
             break;
     }
+
     return $out;
 })->reindex()->unique();
 
@@ -284,6 +287,7 @@ foreach ($outReflects as $reflectItem) {
 
     $data = DLReflect::switchReflect($reflectType, function () use ($reflectItem, $DLAPI) {
         list($vMonth, $vYear) = explode('-', $reflectItem, 2);
+
         return array(
             'monthNum'  => $vMonth,
             'monthName' => $DLAPI->getMsg('months.' . (int)$vMonth),

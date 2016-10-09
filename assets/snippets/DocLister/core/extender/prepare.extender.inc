@@ -55,6 +55,7 @@ class prepare_DL_Extender extends extDocLister
             }
             $out = $params['data'];
         }
+
         return (!empty($ret) && is_scalar($ret) && isset($out[$ret])) ? $out[$ret] : $out;
     }
 
@@ -101,6 +102,7 @@ class prepare_DL_Extender extends extDocLister
                     $out = unserialize($data);
                 }
         }
+
         return is_null($out) ? $params['data'] : $out;
     }
 }

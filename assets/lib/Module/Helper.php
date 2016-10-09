@@ -45,6 +45,7 @@ class Helper extends \APIhelpers
     protected static function _counter($from, $where = '')
     {
         $q = self::$modx->db->select('count(id)', self::$modx->getFullTableName($from), $where);
+
         return self::$modx->db->getValue($q);
     }
 
@@ -65,6 +66,7 @@ class Helper extends \APIhelpers
                 'id'  => $match[2]
             );
         }
+
         return $data;
     }
 
@@ -89,6 +91,7 @@ class Helper extends \APIhelpers
         }
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_URL, $url);
+
         return curl_exec($ch);
     }
 
@@ -105,6 +108,7 @@ class Helper extends \APIhelpers
         if (!in_array($error, array('error_none', 'other'))) {
             $error = true;
         }
+
         return $error;
     }
 
@@ -135,6 +139,7 @@ class Helper extends \APIhelpers
             }
         }
         fclose($handle);
+
         return array('line' => $i, 'add' => $total);
     }
 }

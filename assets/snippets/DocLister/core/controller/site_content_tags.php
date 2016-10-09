@@ -50,6 +50,7 @@ class site_content_tagsDocLister extends site_contentDocLister
         }
         $url = ($id == $this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "") : $this->modx->makeUrl($id,
             '', $link, 'full');
+
         return $url;
     }
 
@@ -83,6 +84,7 @@ class site_content_tagsDocLister extends site_contentDocLister
                 $this->toPlaceholders($this->sanitarData($tag), 1, "tag");
             }
         }
+
         return $this->checkTag();
     }
 
@@ -96,6 +98,7 @@ class site_content_tagsDocLister extends site_contentDocLister
         if ($data === false && $reconst === true) {
             $data = $this->getTag();
         }
+
         return $data;
     }
 
@@ -128,6 +131,7 @@ class site_content_tagsDocLister extends site_contentDocLister
                 $this->_filters['join'] = $join;
             }
         }
+
         return $this->_filters;
     }
 

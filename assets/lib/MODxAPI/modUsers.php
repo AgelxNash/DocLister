@@ -73,6 +73,7 @@ class modUsers extends MODxAPI
             default:
                 $find = false;
         }
+
         return $find;
     }
 
@@ -102,6 +103,7 @@ class modUsers extends MODxAPI
                 unset($this->field['internalKey']);
             }
         }
+
         return $this;
     }
 
@@ -121,6 +123,7 @@ class modUsers extends MODxAPI
             }
             $this->field[$key] = $value;
         }
+
         return $this;
     }
 
@@ -143,17 +146,20 @@ class modUsers extends MODxAPI
         if ($this->get('email') == '' || $this->get('username') == '' || $this->get('password') == '') {
             $this->log['EmptyPKField'] = 'Email, username or password is empty <pre>' . print_r($this->toArray(),
                     true) . '</pre>';
+
             return false;
         }
 
         if (!$this->checkUnique('web_users', 'username')) {
             $this->log['UniqueUsername'] = 'username not unique <pre>' . print_r($this->get('username'),
                     true) . '</pre>';
+
             return false;
         }
 
         if (!$this->checkUnique('web_user_attributes', 'email', 'internalKey')) {
             $this->log['UniqueEmail'] = 'Email not unique <pre>' . print_r($this->get('email'), true) . '</pre>';
+
             return false;
         }
 
@@ -242,6 +248,7 @@ class modUsers extends MODxAPI
         if ($clearCache) {
             $this->clearCache($fire_events);
         }
+
         return $this->id;
     }
 
@@ -270,6 +277,7 @@ class modUsers extends MODxAPI
             $flag = false;
         }
         $this->close();
+
         return $flag;
     }
 
@@ -298,6 +306,7 @@ class modUsers extends MODxAPI
                 'rememberme'   => $fulltime
             ), $fire_events);
         }
+
         return $flag;
     }
 
@@ -318,6 +327,7 @@ class modUsers extends MODxAPI
         $ba = $tmp->get('blockedafter');
         $flag = (($b && !$bu && !$ba) || ($bu && $now < $bu) || ($ba && $now > $ba));
         unset($tmp);
+
         return $flag;
     }
 
@@ -358,6 +368,7 @@ class modUsers extends MODxAPI
             }
         }
         unset($tmp);
+
         return $flag || $pluginFlag;
     }
 
@@ -383,6 +394,7 @@ class modUsers extends MODxAPI
                 }
             }
         }
+
         return $flag;
     }
 
@@ -469,6 +481,7 @@ class modUsers extends MODxAPI
                 break;
             }
         }
+
         return $this;
     }
 
@@ -491,6 +504,7 @@ class modUsers extends MODxAPI
 
         }
         unset($user);
+
         return $out;
     }
 
@@ -512,6 +526,7 @@ class modUsers extends MODxAPI
             $out = $this->modx->db->getColumn('name', $this->query($sql));
         }
         unset($user);
+
         return $out;
     }
 
@@ -528,6 +543,7 @@ class modUsers extends MODxAPI
                 $this->query("REPLACE INTO {$this->makeTable('web_groups')} (`webgroup`, `webuser`) VALUES ('{$gid}', '{$uid}')");
             }
         }
+
         return $this;
     }
 }

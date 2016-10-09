@@ -48,6 +48,7 @@ abstract class Action
     protected static function _checkObj($id)
     {
         $q = self::$modx->db->select('id', self::$modx->getFullTableName(self::TABLE()), "id = " . $id);
+
         return (self::$modx->db->getRecordCount($q) == 1);
     }
 
@@ -59,6 +60,7 @@ abstract class Action
     protected static function _getValue($field, $id)
     {
         $q = self::$modx->db->select($field, self::$modx->getFullTableName(self::TABLE()), "id = " . $id);
+
         return self::$modx->db->getValue($q);
     }
 
@@ -71,6 +73,7 @@ abstract class Action
             $listFunction = $data['key'] . 'Lists';
             $out = method_exists($modObj, $listFunction) ? $modObj->$listFunction() : array();
             $out['selected'] = $modObj->get($data['key']);
+
             return $out;
         });
         self::$TPL = null;
@@ -94,6 +97,7 @@ abstract class Action
                 $out = call_user_func($callback, $data, $modObj);
             }
         }
+
         return $out;
     }
 
@@ -114,6 +118,7 @@ abstract class Action
                     }
                 }
             }
+
             return $out;
         });
     }
@@ -150,6 +155,7 @@ abstract class Action
         } else {
             $data['log'] = '<span class="error">Ошибка</span>. Не удалось определить обновляему запись';
         }
+
         return $data;
     }
 

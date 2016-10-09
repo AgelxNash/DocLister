@@ -109,6 +109,7 @@ class DLphx
             $modx->logEvent($this->curPass, 1, $this->createEventLog(), $this->name . ' ' . $this->version);
             $this->debugLog = false;
         }
+
         // Return the processed template
         return $template;
     }
@@ -511,6 +512,7 @@ class DLphx
                 $this->Log("  |--- Output = '" . $output . "'");
             }
         }
+
         return $output;
     }
 
@@ -523,6 +525,7 @@ class DLphx
         if (!empty($this->console)) {
             $console = implode("\n", $this->console);
             $this->console = array();
+
             return '<pre style="overflow: auto;">' . $console . '</pre>';
         }
     }
@@ -536,6 +539,7 @@ class DLphx
     {
         $string = preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", $string);
         $string = APIHelpers::sanitarTag($string);
+
         return $string;
     }
 
@@ -601,6 +605,7 @@ class DLphx
         } else {
             $user = $this->cache["ui"][$userid];
         }
+
         return $user[$field];
     }
 
@@ -686,6 +691,7 @@ class DLphx
         if (function_exists('mb_substr')) {
             return mb_substr($str, $s, $l);
         }
+
         return substr($str, $s, $l);
     }
 
@@ -698,6 +704,7 @@ class DLphx
         if (function_exists('mb_strlen')) {
             return mb_strlen($str);
         }
+
         return strlen($str);
     }
 
@@ -710,6 +717,7 @@ class DLphx
         if (function_exists('mb_strtolower')) {
             return mb_strtolower($str);
         }
+
         return strtolower($str);
     }
 
@@ -722,6 +730,7 @@ class DLphx
         if (function_exists('mb_strtoupper')) {
             return mb_strtoupper($str);
         }
+
         return strtoupper($str);
     }
 
@@ -734,6 +743,7 @@ class DLphx
         if (function_exists('mb_strtoupper') && function_exists('mb_substr') && function_exists('mb_strlen')) {
             return mb_strtoupper(mb_substr($str, 0, 1)) . mb_substr($str, 1, mb_strlen($str));
         }
+
         return ucfirst($str);
     }
 
@@ -746,6 +756,7 @@ class DLphx
         if (function_exists('mb_strtolower') && function_exists('mb_substr') && function_exists('mb_strlen')) {
             return mb_strtolower(mb_substr($str, 0, 1)) . mb_substr($str, 1, mb_strlen($str));
         }
+
         return lcfirst($str);
     }
 
@@ -758,6 +769,7 @@ class DLphx
         if (function_exists('mb_convert_case')) {
             return mb_convert_case($str, MB_CASE_TITLE);
         }
+
         return ucwords($str);
     }
 
@@ -768,6 +780,7 @@ class DLphx
     public function strrev($str)
     {
         preg_match_all('/./us', $str, $ar);
+
         return implode(array_reverse($ar[0]));
     }
 
@@ -779,6 +792,7 @@ class DLphx
     {
         preg_match_all('/./us', $str, $ar);
         shuffle($ar[0]);
+
         return implode($ar[0]);
     }
 

@@ -23,6 +23,7 @@ class FS
         if (null === self::$instance) {
             self::$instance = new self();
         }
+
         return self::$instance;
     }
 
@@ -70,6 +71,7 @@ class FS
             $this->_fileInfo[$f] = pathinfo($f);
         }
         $out = $flag && isset($this->_fileInfo[$f][$mode]) ? $this->_fileInfo[$f][$mode] : '';
+
         return $out;
     }
 
@@ -116,6 +118,7 @@ class FS
     public function checkFile($file)
     {
         $f = is_scalar($file) ? MODX_BASE_PATH . $this->relativePath($file) : '';
+
         return (!empty($f) && is_file($f) && is_readable($f));
     }
 
@@ -126,6 +129,7 @@ class FS
     public function checkDir($path)
     {
         $f = is_scalar($path) ? $this->relativePath($path) : '';
+
         return (!empty($f) && is_dir(MODX_BASE_PATH . $f) && is_readable(MODX_BASE_PATH . $f));
     }
 
@@ -145,6 +149,7 @@ class FS
             $size = $out > 0 ? floor(log($out, 1024)) : 0;
             $out = number_format($out / pow(1024, $size), 2, '.', ',') . ' ' . $types[$size];
         }
+
         return $out;
     }
 
@@ -202,6 +207,7 @@ class FS
                     }
             }
         }
+
         return $out;
     }
 
@@ -218,6 +224,7 @@ class FS
         } else {
             $flag = true;
         }
+
         return $flag;
     }
 
@@ -238,6 +245,7 @@ class FS
             chmod($to, $this->toOct($chmod));
             $flag = true;
         }
+
         return $flag;
     }
 
@@ -258,6 +266,7 @@ class FS
             chmod($to, $this->toOct($chmod));
             $flag = true;
         }
+
         return $flag;
     }
 
@@ -278,6 +287,7 @@ class FS
         } else {
             $path = '';
         }
+
         return $path;
     }
 
@@ -315,6 +325,7 @@ class FS
             }
             $flag = rmdir($_path);
         }
+
         return $flag;
     }
 
@@ -328,6 +339,7 @@ class FS
         if ($this->checkFile($file)) {
             $flag = unlink(MODX_BASE_PATH . $this->relativePath($file));
         }
+
         return $flag;
     }
 
@@ -348,6 +360,7 @@ class FS
             default:
                 $flag = false;
         }
+
         return $flag;
     }
 
@@ -366,6 +379,7 @@ class FS
             $out .= $this->takeFileName($mainFile) . "({$i})." . $this->takeFileExt($file);
             $file = $out;
         }
+
         return $full ? $file : $this->takeFileBasename($file);
     }
 }

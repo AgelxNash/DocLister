@@ -32,6 +32,7 @@ class sqlHelper
                 $out = implode(".", $field);
             }
         }
+
         return $out;
     }
 
@@ -54,6 +55,7 @@ class sqlHelper
                 $regex = '(^\s*(' . $regex . ')\s+)|(\s+(' . $regex . ')\s*$)';
                 break;
         }
+
         return is_scalar($string) ? preg_replace("/{$regex}/", "", $string) : "";
     }
 
@@ -88,6 +90,7 @@ class sqlHelper
                 $str = "{$field} LIKE '{$str}'";
             }
         }
+
         return $str;
     }
 } 

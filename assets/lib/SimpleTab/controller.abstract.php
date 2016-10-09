@@ -69,6 +69,7 @@ abstract class AbstractController
                 $out['success'] = true;
             }
         }
+
         return $out;
     }
 
@@ -86,6 +87,7 @@ abstract class AbstractController
                 $out['success'] = true;
             }
         }
+
         return $out;
     }
 
@@ -106,6 +108,7 @@ abstract class AbstractController
         } else {
             $out['success'] = false;
         }
+
         return $out;
     }
 
@@ -116,8 +119,10 @@ abstract class AbstractController
     {
         if (!$this->rid) {
             $this->isExit = true;
+
             return;
         }
+
         return $this->modx->runSnippet("DocLister", $this->dlParams);
     }
 
@@ -155,6 +160,7 @@ abstract class AbstractController
         if (file_exists(MODX_MANAGER_PATH . "includes/lang/" . $manager_language . ".inc.php")) {
             include_once MODX_MANAGER_PATH . "includes/lang/" . $manager_language . ".inc.php";
         }
+
         return isset($modx_lang_attribute) ? $modx_lang_attribute : null;
     }
 }

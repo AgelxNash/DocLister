@@ -28,6 +28,7 @@ class APIhelpers
         $str = mb_ereg_replace('^[\ ]+', '', $str);
         $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) . mb_substr($str, 1, mb_strlen($str),
                 $encoding);
+
         return $str;
     }
 
@@ -51,6 +52,7 @@ class APIhelpers
         } else {
             $out = mb_substr($text, 0, mb_strripos($text, ' ', null, $encoding), $encoding);
         }
+
         return preg_replace("/(([\.,\-:!?;\s])|(&\w+;))+$/ui", "", $out);
     }
 
@@ -66,6 +68,7 @@ class APIhelpers
         if (is_array($data) && (is_int($key) || is_string($key)) && $key !== '' && array_key_exists($key, $data)) {
             $out = $data[$key];
         }
+
         return $out;
     }
 
@@ -92,6 +95,7 @@ class APIhelpers
         } else {
             $error = 'format';
         }
+
         return $error;
     }
 
@@ -146,6 +150,7 @@ class APIhelpers
             $pass[] = chr($tmp);
         }
         $pass = implode("", $pass);
+
         return $pass;
     }
 
@@ -172,6 +177,7 @@ class APIhelpers
                 $out = false;
         }
         unset($tmp);
+
         return $out;
     }
 
@@ -262,6 +268,7 @@ class APIhelpers
             default:
                 $out = '';
         }
+
         return $out;
     }
 
@@ -365,6 +372,7 @@ class APIhelpers
         } else {
             $flag = false;
         }
+
         return $flag;
     }
 
@@ -402,6 +410,7 @@ class APIhelpers
                 $out[$key . $InsertSuffix] = $val;
             }
         }
+
         return $out;
     }
 }

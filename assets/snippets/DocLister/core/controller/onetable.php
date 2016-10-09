@@ -35,6 +35,7 @@ class onetableDocLister extends DocLister
         } else {
             $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
         }
+
         return $url;
     }
 
@@ -50,6 +51,7 @@ class onetableDocLister extends DocLister
         }
         $type = $this->getCFGDef('idType', 'parents');
         $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
+
         return $this->_docs;
     }
 
@@ -233,6 +235,7 @@ class onetableDocLister extends DocLister
                 $out[$item[$this->getPK()]] = $item;
             }
         }
+
         return $out;
     }
 
@@ -296,6 +299,7 @@ class onetableDocLister extends DocLister
                 $out[$item[$this->getPK()]] = $item;
             }
         }
+
         return $out;
     }
 
@@ -354,6 +358,7 @@ class onetableDocLister extends DocLister
 
             $out = $this->modx->db->getValue($rs);
         }
+
         return $out;
     }
 
@@ -378,6 +383,7 @@ class onetableDocLister extends DocLister
         foreach ($rows as $item) {
             $out[] = $item[$this->getPK()];
         }
+
         return $out;
     }
 }

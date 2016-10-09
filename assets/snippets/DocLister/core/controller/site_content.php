@@ -55,6 +55,7 @@ class site_contentDocLister extends DocLister
         } else {
             $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
         }
+
         return $url;
     }
 
@@ -92,6 +93,7 @@ class site_contentDocLister extends DocLister
         if (1 == $this->getCFGDef('tree', '0')) {
             $this->treeBuild('id', 'parent');
         }
+
         return $this->_docs;
     }
 
@@ -277,6 +279,7 @@ class site_contentDocLister extends DocLister
             }
             $out[$num] = $row;
         }
+
         return parent::getJSON($out, $fields, $out);
     }
 
@@ -354,6 +357,7 @@ class site_contentDocLister extends DocLister
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
             $out = $this->modx->db->getValue($rs);
         }
+
         return $out;
     }
 
@@ -409,6 +413,7 @@ class site_contentDocLister extends DocLister
                 $out[$item['id']] = $item;
             }
         }
+
         return $out;
     }
 
@@ -443,6 +448,7 @@ class site_contentDocLister extends DocLister
         foreach ($rows as $item) {
             $out[] = $item['id'];
         }
+
         return $out;
     }
 
@@ -457,6 +463,7 @@ class site_contentDocLister extends DocLister
         if (!is_array($out) || empty($out)) {
             $out = array($table, $sort);
         }
+
         return $out;
     }
 
@@ -536,6 +543,7 @@ class site_contentDocLister extends DocLister
                 $out[$item['id']] = $item;
             }
         }
+
         return $out;
     }
 
@@ -554,6 +562,7 @@ class site_contentDocLister extends DocLister
             default:
                 $field = parent::changeSortType($field, $type);
         }
+
         return $field;
     }
 }

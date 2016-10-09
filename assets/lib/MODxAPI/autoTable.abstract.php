@@ -61,6 +61,7 @@ abstract class autoTable extends MODxAPI
                 $this->decodeFields();
             }
         }
+
         return $this;
     }
 
@@ -106,6 +107,7 @@ abstract class autoTable extends MODxAPI
             }
             $result = false;
         }
+
         return $result;
     }
 
@@ -127,6 +129,7 @@ abstract class autoTable extends MODxAPI
         } else {
             throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre>');
         }
+
         return $this;
     }
 }

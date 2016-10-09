@@ -94,6 +94,7 @@ class paginate_DL_Extender extends extDocLister
                 $this->modx->sendRedirect($this->getUrl('page'));
             }
         }
+
         return APIHelpers::getkey($this->_pages, $name, $this->_pages);
     }
 
@@ -161,6 +162,7 @@ class paginate_DL_Extender extends extDocLister
                 $p->parameterName($this->getRequestName('page'));
                 break;
         }
+
         return $p->getOutput();
     }
 
@@ -192,6 +194,7 @@ class paginate_DL_Extender extends extDocLister
                 $url .= "?" . $q;
             }
         }
+
         return $url;
     }
 
@@ -204,6 +207,7 @@ class paginate_DL_Extender extends extDocLister
     public function getRequestName($name)
     {
         $id = $this->DocLister->getCFGDef('id', '');
+
         return (($id != '') ? ($id . "_") : "") . $name;
     }
 }

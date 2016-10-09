@@ -309,6 +309,7 @@ abstract class DocLister
         if ($cur != '') {
             $res[] = $cur;
         }
+
         return $res;
     }
 
@@ -397,6 +398,7 @@ abstract class DocLister
         if (!empty($alias) && is_scalar($alias)) {
             $table .= " as `" . $alias . "`";
         }
+
         return $table;
     }
 
@@ -412,6 +414,7 @@ abstract class DocLister
         if (!$this->checkTableAlias($name, $table)) {
             $this->AddTable[$table][$name] = $alias;
         }
+
         return $this->AddTable[$table][$name];
     }
 
@@ -462,6 +465,7 @@ abstract class DocLister
         }
 
         $this->debug->debugEnd("loadconfig");
+
         return $config;
     }
 
@@ -481,6 +485,7 @@ abstract class DocLister
         $config = jsonHelper::jsonDecode($json, $config, $nop);
         $this->isErrorJSON($json);
         $this->debug->debugEnd("jsonDecode");
+
         return $config;
     }
 
@@ -497,6 +502,7 @@ abstract class DocLister
             $this->debug->error($this->getMsg('json.' . $error) . ": " . $this->debug->dumpData($json, 'code'), 'JSON');
             $error = true;
         }
+
         return $error;
     }
 
@@ -544,6 +550,7 @@ abstract class DocLister
 
         $this->setConfig(array('extender' => implode(",", $extenders)));
         $this->debug->debugEnd("checkDL");
+
         return $flag;
     }
 
@@ -566,6 +573,7 @@ abstract class DocLister
                 }
             }
         }
+
         return $out;
     }
 
@@ -613,6 +621,7 @@ abstract class DocLister
 
         $this->outData = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
         $this->debug->debugEnd('render');
+
         return $this->outData;
     }
 
@@ -683,6 +692,7 @@ abstract class DocLister
                 }
             }
         }
+
         return $out;
     }
 
@@ -708,6 +718,7 @@ abstract class DocLister
         } else {
             $ret = false;
         }
+
         return $ret;
     }
 
@@ -722,6 +733,7 @@ abstract class DocLister
             $cfg = array();
         }
         $this->_cfg = $cfg;
+
         return count($this->_cfg);
     }
 
@@ -761,6 +773,7 @@ abstract class DocLister
         $this->debug->debugEnd(
             "toPlaceholders", array($key . " placeholder" => $data), array('html')
         );
+
         return $out;
     }
 
@@ -787,6 +800,7 @@ abstract class DocLister
         }
         $q = $quote ? "'" : "";
         $out = $q . implode($q . "," . $q, $out) . $q;
+
         return $out;
     }
 
@@ -810,6 +824,7 @@ abstract class DocLister
             $tmp = include(dirname(__FILE__) . "/lang/" . $lang . ".php");
             $this->_customLang = is_array($tmp) ? $tmp : array();
         }
+
         return $this->_customLang;
     }
 
@@ -847,6 +862,7 @@ abstract class DocLister
             }
         }
         $this->debug->debugEnd("loadlang");
+
         return $this->_lang;
     }
 
@@ -864,6 +880,7 @@ abstract class DocLister
         } else {
             $say = \APIHelpers::getkey($this->_lang, $name, $def);
         }
+
         return $say;
     }
 
@@ -895,6 +912,7 @@ abstract class DocLister
         if ('' != $locale) {
             setlocale(LC_ALL, $locale);
         }
+
         return $locale;
     }
 
@@ -916,6 +934,7 @@ abstract class DocLister
 
         $data[$this->getCFGDef("sysKey", "dl") . ".wrap"] = $this->renderWrap($out);
         $out = $this->parseChunk($this->getCFGDef('tpl', ''), $data);
+
         return $out;
     }
 
@@ -935,6 +954,7 @@ abstract class DocLister
         $tpl = $this->parseLang($tpl);
 
         $this->debug->debugEnd("getChunk");
+
         return $tpl;
     }
 
@@ -959,6 +979,7 @@ abstract class DocLister
             $tpl = '';
         }
         $this->debug->debugEnd("parseLang");
+
         return $tpl;
     }
 
@@ -982,6 +1003,7 @@ abstract class DocLister
             $this->debug->debug("Empty chunk: " . $this->debug->dumpData($name), '', 2);
         }
         $this->debug->debugEnd("parseChunk");
+
         return $out;
     }
 
@@ -997,6 +1019,7 @@ abstract class DocLister
     {
         $data = $this->getCFGDef($name, $val);
         $data = $this->_getChunk($data);
+
         return $data;
     }
 
@@ -1046,6 +1069,7 @@ abstract class DocLister
             }
             $this->debug->debugEnd("renderWrapTPL");
         }
+
         return $out;
     }
 
@@ -1100,6 +1124,7 @@ abstract class DocLister
                 $data = $out;
             }
         }
+
         return compact('class', 'iterationName');
     }
 
@@ -1146,6 +1171,7 @@ abstract class DocLister
         }
         $this->outData = json_encode($return);
         $this->isErrorJSON($return);
+
         return $this->outData;
     }
 
@@ -1182,6 +1208,7 @@ abstract class DocLister
                 ));
             }
         }
+
         return $out;
     }
 
@@ -1220,6 +1247,7 @@ abstract class DocLister
         if ($nop && is_null($out)) {
             $out = new xNop();
         }
+
         return $out;
     }
 
@@ -1253,6 +1281,7 @@ abstract class DocLister
             $this->debug->debug("Error load Extender " . $this->debug->dumpData($name));
         }
         $this->debug->debugEnd('LoadExtender');
+
         return $flag;
     }
 
@@ -1282,6 +1311,7 @@ abstract class DocLister
             } while ((--$depth) > 0);
         }
         $this->debug->debugEnd("setIDs");
+
         return ($this->IDs = $IDs);
     }
 
@@ -1316,6 +1346,7 @@ abstract class DocLister
         }
         $out = array_unique($out);
         $this->debug->debugEnd("cleanIDs");
+
         return $out;
     }
 
@@ -1344,6 +1375,7 @@ abstract class DocLister
                 $out[$doc] = $val[$userField];
             }
         }
+
         return $out;
     }
 
@@ -1385,6 +1417,7 @@ abstract class DocLister
         if ($group != '') {
             $out = 'GROUP BY ' . $group;
         }
+
         return $out;
     }
 
@@ -1439,6 +1472,7 @@ abstract class DocLister
                 break;
         }
         $this->debug->debugEnd("sortORDER", 'Get sort order for SQL: ' . $this->debug->dumpData($sort));
+
         return $sort;
     }
 
@@ -1476,6 +1510,7 @@ abstract class DocLister
             }
         }
         $this->debug->debugEnd("limitSQL", "Get limit for SQL: " . $this->debug->dumpData($ret));
+
         return $ret;
     }
 
@@ -1609,6 +1644,7 @@ abstract class DocLister
             }
         }
         $this->debug->debug('getFilter');
+
         return $output;
     }
 
@@ -1655,6 +1691,7 @@ abstract class DocLister
                 $field = 'CAST(' . $field . ' as SIGNED)';
                 break;
         }
+
         return $field;
     }
 
@@ -1687,6 +1724,7 @@ abstract class DocLister
             $this->debug->error("Error load Filter: '{$this->debug->dumpData($filter)}'", 'Filter');
         }
         $this->debug->debugEnd("loadFilter");
+
         return $out;
     }
 
@@ -1708,6 +1746,7 @@ abstract class DocLister
         $this->debug->debug($q, "query", 1, 'sql');
         $out = $this->modx->db->query($q);
         $this->debug->debugEnd("query");
+
         return $out;
     }
 
@@ -1734,6 +1773,7 @@ abstract class DocLister
     {
         $URL = null;
         parse_str(parse_url(MODX_SITE_URL . $_SERVER['REQUEST_URI'], PHP_URL_QUERY), $URL);
+
         return http_build_query(array_merge($URL, array(DocLister::AliasRequest => null)));
     }
 }

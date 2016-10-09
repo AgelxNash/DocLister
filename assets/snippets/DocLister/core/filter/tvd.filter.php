@@ -29,6 +29,7 @@ class tvd_DL_filter extends tv_DL_filter
                     $dPrefix) . " on `" . $dPrefix . "`.`id` = " . $this->tv_id;
             $this->extTV->addTVSortWithDefault($this->tvName);
         }
+
         return $join;
     }
 }

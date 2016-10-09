@@ -36,6 +36,7 @@ class HtmlFormatter
         if ($decode) {
             $string = htmlentities($string);
         }
+
         return '<pre>' . preg_replace($find, $replace, $string) . '</pre>';
     }
 }

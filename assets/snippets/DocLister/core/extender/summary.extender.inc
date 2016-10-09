@@ -25,6 +25,7 @@ class summary_DL_Extender extends extDocLister
             $summary->setCut($this->getCFGDef('cutSummary', '<cut/>'));
             $this->_cfg['content'] = $summary->run($this->getCFGDef('dotSummary', 0));
         }
+
         return $this->_cfg['content'];
     }
 }

@@ -75,6 +75,7 @@ class tv_DL_Extender extends extDocLister
             }
             $this->modx->_TVnames = $out;
         }
+
         return $this->getTVnames();
     }
 
@@ -121,6 +122,7 @@ class tv_DL_Extender extends extDocLister
                 }
             }
         }
+
         return $out;
     }
 
@@ -133,6 +135,7 @@ class tv_DL_Extender extends extDocLister
         if (!empty($tvPrefix)) {
             $tvPrefix .= '.';
         }
+
         return $tvPrefix;
     }
 
@@ -156,6 +159,7 @@ class tv_DL_Extender extends extDocLister
         } else {
             $tmp = array($tmp);
         }
+
         return $tmp;
     }
 
@@ -170,6 +174,7 @@ class tv_DL_Extender extends extDocLister
     {
         include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
         include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
+
         return getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $iddoc,
             '');
     }
@@ -190,6 +195,7 @@ class tv_DL_Extender extends extDocLister
                 $out[$this->modx->_TVnames[$tv]] = $tv;
             }
         }
+
         return $out;
     }
 
@@ -208,6 +214,7 @@ class tv_DL_Extender extends extDocLister
         foreach ($rows as $item) {
             $out[$this->_TVprefix . $item['name']] = $item;
         }
+
         return $out;
     }
 
@@ -221,6 +228,7 @@ class tv_DL_Extender extends extDocLister
         $dTV[] = $name;
         $tvList = implode(",", array_unique($dTV));
         $this->DocLister->setConfig(array('tvSortWithDefault' => $tvList));
+
         return $tvList;
     }
 
@@ -268,6 +276,7 @@ class tv_DL_Extender extends extDocLister
             }
             $sort = "ORDER BY " . implode(",", $matches);
         }
+
         return array($table, $sort);
     }
 }

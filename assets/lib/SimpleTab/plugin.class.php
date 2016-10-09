@@ -106,6 +106,7 @@ abstract class Plugin
             $result = $this->createTable();
             if (!$result) {
                 $this->modx->logEvent(0, 3, "Cannot create {$this->table} table.", $this->pluginName);
+
                 return;
             }
             $this->registerEvents($this->pluginEvents);
@@ -129,8 +130,10 @@ abstract class Plugin
             $output .= '[+js+][+styles+]' . file_get_contents($tpl);
         } else {
             $this->modx->logEvent(0, 3, "Cannot load {$this->tpl} .", $this->pluginName);
+
             return false;
         }
+
         return $output;
     }
 
@@ -161,6 +164,7 @@ abstract class Plugin
                 $this->modx->logEvent(0, 3, "Cannot load {$this->cssListDefault} .", $this->pluginName);
             }
         }
+
         return $js;
     }
 
@@ -170,6 +174,7 @@ abstract class Plugin
     public function getTplPlaceholders()
     {
         $ph = array();
+
         return $ph;
     }
 
@@ -187,6 +192,7 @@ abstract class Plugin
                         $ph);
                 $output = $this->DLTemplate->parseChunk('@CODE:' . $output, $ph);
             }
+
             return $output;
         }
     }
@@ -203,6 +209,7 @@ abstract class Plugin
                 $ph = $this->getTplPlaceholders();
                 $ph['js'] = $this->renderJS($this->jsListEmpty, $ph);
                 $output = $this->DLTemplate->parseChunk('@CODE:' . $output, $ph);
+
                 return $output;
             } else {
                 $this->modx->logEvent(0, 3, "Cannot load {$this->emptyTpl} .", $this->pluginName);
@@ -216,6 +223,7 @@ abstract class Plugin
     public function checkTable()
     {
         $sql = "SHOW TABLES LIKE '{$this->_table}'";
+
         return $this->modx->db->getRecordCount($this->modx->db->query($sql));
     }
 
@@ -225,6 +233,7 @@ abstract class Plugin
     public function createTable()
     {
         $sql = '';
+
         return $this->modx->db->query($sql);
     }
 

@@ -312,6 +312,7 @@ class Video
         if ($this->info) {
             $this->getYoutubeInfo($id);
         }
+
         return true;
     }
 
@@ -329,6 +330,7 @@ class Video
         if ($this->info) {
             $this->getVimeoInfo($id);
         }
+
         return true;
     }
 
@@ -342,6 +344,7 @@ class Video
         if ($this->info) {
             $this->getRutubeInfo($id);
         }
+
         return true;
     }
 
@@ -398,6 +401,7 @@ class Video
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
+
         return '<iframe src="' . $url . '" width="' . $width . '" height="' . $height . '" frameborder="0" allowfullscreen' . $class . '></iframe>';
     }
 

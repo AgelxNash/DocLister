@@ -131,6 +131,7 @@ class Actions
                 $this->modx->sendErrorPage();
             }
         }
+
         return true;
     }
 
@@ -198,6 +199,7 @@ class Actions
                 $dataTPL['method'] = strtolower(__CLASS__ . '::' . 'authpage');
             }
         }
+
         return DLTemplate::getInstance($this->modx)->parseChunk($tpl, $dataTPL);
     }
 
@@ -276,6 +278,7 @@ class Actions
         }
         $POST = $this->Auth($pwdField, $emailField, $rememberField, $POST['backUrl'], __METHOD__, $error, $errorCode,
             $params);
+
         return DLTemplate::getInstance($this->modx)->parseChunk($tpl, array(
             'backUrl'    => APIHelpers::getkey($POST, 'backUrl', ''),
             'emailValue' => APIHelpers::getkey($POST, 'email', ''),
@@ -373,6 +376,7 @@ class Actions
             $error = APIHelpers::getkey($params, $error, '');
             $error = static::getLangMsg($error, $error);
         }
+
         return $POST;
     }
 
@@ -399,6 +403,7 @@ class Actions
                     break;
             }
         }
+
         return $out;
     }
 
@@ -423,6 +428,7 @@ class Actions
             $id = APIHelpers::getkey($params, 'id', $this->config['unauthorized_page']);
             $this->moveTo(compact('id'));
         }
+
         return;
     }
 
@@ -439,6 +445,7 @@ class Actions
             }
             $this->moveTo(compact('id'));
         }
+
         return;
     }
 
@@ -470,6 +477,7 @@ class Actions
             //$modx->sendRedirect($url, 0, 'REDIRECT_HEADER', 'HTTP/1.1 307 Temporary Redirect');
             header("Location: " . $uri, true, ($code > 0 ? $code : 307));
         }
+
         return $uri;
     }
 
@@ -491,6 +499,7 @@ class Actions
             $url = $this->modx->makeUrl($id);
             $this->url->set($id, $url);
         }
+
         return $url;
     }
 
@@ -505,6 +514,7 @@ class Actions
         if (FS::getInstance()->checkFile($file)) {
             $out = '@CODE: ' . file_get_contents($file);
         }
+
         return $out;
     }
 
@@ -526,6 +536,7 @@ class Actions
                 static::$langDic[$lang] = array();
             }
         }
+
         return !(empty($lang) || empty(static::$langDic[$lang]));
     }
 
@@ -548,6 +559,7 @@ class Actions
                 $out = $msg;
             }
         }
+
         return $out;
     }
 }

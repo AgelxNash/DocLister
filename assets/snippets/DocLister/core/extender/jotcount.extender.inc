@@ -36,6 +36,7 @@ class jotcount_DL_Extender extends extDocLister
                 $comments[$v['uparent']] = $v['total'];
             }
         }
+
         return $comments;
     }
 }

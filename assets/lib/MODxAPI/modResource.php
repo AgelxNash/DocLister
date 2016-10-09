@@ -162,6 +162,7 @@ class modResource extends MODxAPI
     public function toArrayMain()
     {
         $out = array_intersect_key(parent::toArray(), $this->default_field);
+
         return $out;
     }
 
@@ -184,6 +185,7 @@ class modResource extends MODxAPI
                 $out[$key] = $this->renderTV($key);
             }
         }
+
         return $out;
     }
 
@@ -201,6 +203,7 @@ class modResource extends MODxAPI
             $this->toArrayTV($render),
             array($this->fieldPKName() => $this->getID())
         );
+
         return \APIhelpers::renameKeyArr($out, $prefix, $suffix, $sep);
     }
 
@@ -214,6 +217,7 @@ class modResource extends MODxAPI
         if (!empty($id)) {
             $out = $this->modx->makeUrl($id);
         }
+
         return $out;
     }
 
@@ -228,6 +232,7 @@ class modResource extends MODxAPI
         if (empty($title) && $title !== '0') {
             $title = $this->get($second);
         }
+
         return $title;
     }
 
@@ -239,6 +244,7 @@ class modResource extends MODxAPI
         $pub = ($this->get('publishedon') < time() && $this->get('published'));
         $unpub = ($this->get('unpub_date') == 0 || $this->get('unpub_date') > time());
         $del = ($this->get('deleted') == 0 && ($this->get('deletedon') == 0 || $this->get('deletedon') > time()));
+
         return ($pub && $unpub && $del);
     }
 
@@ -248,6 +254,7 @@ class modResource extends MODxAPI
     public function touch()
     {
         $this->set('editedon', time());
+
         return $this;
     }
 
@@ -268,6 +275,7 @@ class modResource extends MODxAPI
             $type = APIHelpers::getkey($param, 'type', '');
             $out = getTVDisplayFormat($tvname, $tvval, $display, $display_params, $type, $this->getID(), '');
         }
+
         return $out;
     }
 
@@ -286,6 +294,7 @@ class modResource extends MODxAPI
                 $out = APIHelpers::getkey($this->tvd[$key], 'value', null);
             }
         }
+
         return $out;
     }
 
@@ -356,6 +365,7 @@ class modResource extends MODxAPI
             }
             $this->field[$key] = $value;
         }
+
         return $this;
     }
 
@@ -380,6 +390,7 @@ class modResource extends MODxAPI
         if (empty($value)) {
             $value = empty($currentAdmin) ? $default : $currentAdmin;
         }
+
         return $value;
     }
 
@@ -402,6 +413,7 @@ class modResource extends MODxAPI
             default:
                 $find = false;
         }
+
         return $find;
     }
 
@@ -420,6 +432,7 @@ class modResource extends MODxAPI
                 $value += $this->modxConfig('server_offset_time');
             }
         }
+
         return $value;
     }
 
@@ -434,6 +447,7 @@ class modResource extends MODxAPI
             ->set('editedby', null)
             ->set('createdon', time())
             ->touch();
+
         return $this;
     }
 
@@ -462,6 +476,7 @@ class modResource extends MODxAPI
             }
             unset($this->field['id']);
         }
+
         return $this;
     }
 
@@ -475,6 +490,7 @@ class modResource extends MODxAPI
         $parent = null;
         if ($this->field['pagetitle'] == '') {
             $this->log['emptyPagetitle'] = 'Pagetitle is empty in <pre>' . print_r($this->field, true) . '</pre>';
+
             return false;
         }
 
@@ -579,6 +595,7 @@ class modResource extends MODxAPI
         if ($clearCache) {
             $this->clearCache($fire_events);
         }
+
         return $this->id;
     }
 
@@ -598,6 +615,7 @@ class modResource extends MODxAPI
             throw new Exception('Invalid IDs list for mark trash: <pre>' . print_r($ids,
                     1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
         }
+
         return $this;
     }
 
@@ -626,6 +644,7 @@ class modResource extends MODxAPI
                 "ids" => $_ids
             ), $fire_events);
         }
+
         return $this;
     }
 
@@ -648,6 +667,7 @@ class modResource extends MODxAPI
                 $_ids = array_merge($_ids, $id);
             }
         }
+
         return $_ids;
     }
 
@@ -699,6 +719,7 @@ class modResource extends MODxAPI
         foreach ($data as $item) {
             $ignore[] = (int)$item['setting_value'];
         }
+
         return array_unique($ignore);
 
     }
@@ -728,6 +749,7 @@ class modResource extends MODxAPI
                 $alias = $this->checkAlias($alias);
             }
         }
+
         return $alias;
     }
 
@@ -757,6 +779,7 @@ class modResource extends MODxAPI
             $this->tv[$name] = $id;
         }
         $this->loadTVTemplate()->loadTVDefault(array_values($this->tv));
+
         return $this;
     }
 
@@ -771,6 +794,7 @@ class modResource extends MODxAPI
         foreach ($q as $item) {
             $this->tvTpl[$item['templateid']][] = $item['tmplvarid'];
         }
+
         return $this;
     }
 
@@ -791,6 +815,7 @@ class modResource extends MODxAPI
                 $this->tvd[$item['name']] = $item;
             }
         }
+
         return $this;
     }
 
@@ -813,6 +838,7 @@ class modResource extends MODxAPI
                 throw new Exception("Invalid template name: " . print_r($tpl, 1));
             }
         }
+
         return (int)$tpl;
     }
 
@@ -831,6 +857,7 @@ class modResource extends MODxAPI
             }
         }
         $alias = $this->modx->stripAlias($alias);
+
         return $this->checkAlias($alias);
     }
 }

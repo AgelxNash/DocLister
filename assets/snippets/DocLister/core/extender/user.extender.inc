@@ -36,6 +36,7 @@ class user_DL_Extender extends extDocLister
             $this->userinfo = $this->getInfo($userid);
             unset($userid);
         }
+
         return $this->userinfo;
     }
 
@@ -50,6 +51,7 @@ class user_DL_Extender extends extDocLister
         if (isset($this->fields[$field], $this->userinfo[$user])) {
             $out = $this->userinfo[$user];
         }
+
         return $out;
     }
 
@@ -65,6 +67,7 @@ class user_DL_Extender extends extDocLister
                 $arr = array_merge($arr, $out);
             }
         }
+
         return $arr;
     }
 
@@ -89,6 +92,7 @@ class user_DL_Extender extends extDocLister
                 $table['attributes'] = $this->modx->getFullTableName('web_user_attributes');
                 break;
         }
+
         return $table;
     }
 
@@ -144,6 +148,7 @@ class user_DL_Extender extends extDocLister
                 $out[$tmp['id']] = $tmp;
             }
         }
+
         return $out;
     }
 }

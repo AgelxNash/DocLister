@@ -32,6 +32,7 @@ class request_DL_Extender extends extDocLister
                 $count = $this->parseParam($item);
             }
         }
+
         return $count;
     }
 
@@ -99,6 +100,7 @@ class request_DL_Extender extends extDocLister
         }
 
         $this->setCFG();
+
         return $this->param;
     }
 
@@ -134,6 +136,7 @@ class request_DL_Extender extends extDocLister
                 }
             }
         }
+
         return $out;
     }
 
@@ -155,6 +158,7 @@ class request_DL_Extender extends extDocLister
                 $link[] = $this->_getLink($item, $name);
             }
         }
+
         return (count($link) > 0) ? implode("&", $link) : "";
     }
 
@@ -178,6 +182,7 @@ class request_DL_Extender extends extDocLister
                 $link = $name . "=" . urlencode($item);
             }
         }
+
         return $link;
     }
 }

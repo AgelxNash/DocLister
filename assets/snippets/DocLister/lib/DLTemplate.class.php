@@ -27,6 +27,7 @@ class DLTemplate
         if (null === self::$instance) {
             self::$instance = new self($modx);
         }
+
         return self::$instance;
     }
 
@@ -76,6 +77,7 @@ class DLTemplate
         } else {
             $out = $data;
         }
+
         return $out;
     }
 
@@ -164,6 +166,7 @@ class DLTemplate
                 $tpl = $this->modx->getChunk($name);
             }
         }
+
         return $tpl;
     }
 
@@ -208,10 +211,11 @@ class DLTemplate
         $m->documentContent = $tpl;
         if ($events) {
             $m->invokeEvent("OnLoadWebDocument", array(
-                'source' => 'DLTemplate',
+                'source'   => 'DLTemplate',
                 'mainModx' => $this->modx,
             ));
         }
+
         return $this->parseDocumentSource($m->documentContent, $m);
     }
 
@@ -229,6 +233,7 @@ class DLTemplate
         if (is_null($tpl)) {
             $tpl = '[*content*]';
         }
+
         return $tpl;
     }
 
@@ -261,6 +266,7 @@ class DLTemplate
         if ($parseDocumentSource) {
             $out = $this->parseDocumentSource($out);
         }
+
         return $out;
     }
 
@@ -294,6 +300,7 @@ class DLTemplate
         if ($matches[0]) {
             $string = str_replace($matches[0], '', $string);
         }
+
         return $string;
     }
 
@@ -307,6 +314,7 @@ class DLTemplate
         if (!class_exists('DLphx', false)) {
             include_once(dirname(__FILE__) . '/DLphx.class.php');
         }
+
         return new DLphx($debug, $maxpass);
     }
 
@@ -351,6 +359,7 @@ class DLTemplate
         }
         $out = $modx->rewriteUrls($out);
         $modx->config['site_status'] = $site_status;
+
         return $out;
     }
 }

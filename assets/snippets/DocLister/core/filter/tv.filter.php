@@ -27,6 +27,7 @@ class tv_DL_filter extends content_DL_filter
     public function init(DocLister $DocLister, $filter)
     {
         $this->extTV = $DocLister->getExtender('tv', true, true);
+
         return parent::init($DocLister, $filter);
     }
 
@@ -86,6 +87,7 @@ class tv_DL_filter extends content_DL_filter
         } else {
             $this->setTableAlias($alias);
         }
+
         return $join;
     }
 }

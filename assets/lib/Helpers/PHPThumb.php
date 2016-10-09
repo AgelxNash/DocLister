@@ -40,6 +40,7 @@ class PHPThumb
             return true;
         } else {
             $this->debugMessages = implode('<br/>', $this->thumb->debugmessages);
+
             return false;
         }
     }

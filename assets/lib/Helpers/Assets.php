@@ -26,6 +26,7 @@ class AssetsHelper
         if (null === self::$instance) {
             self::$instance = new self($modx);
         }
+
         return self::$instance;
     }
 
@@ -73,6 +74,7 @@ class AssetsHelper
             ));
             $output .= '<script type="text/javascript">var jQuery = jQuery.noConflict(true);</script>';
         }
+
         return $output;
     }
 
@@ -91,6 +93,7 @@ class AssetsHelper
                 $src = $this->modx->config['site_url'] . $src;
                 if (!$this->fs->checkFile($params['src'])) {
                     $this->modx->logEvent(0, 3, 'Cannot load ' . $src, 'Assets helper');
+
                     return $out;
                 }
             }
@@ -106,6 +109,7 @@ class AssetsHelper
             $this->modx->loadedjscripts[$name] = $params;
 
         }
+
         return $out;
     }
 
@@ -119,6 +123,7 @@ class AssetsHelper
         foreach ($list as $script => $params) {
             $out .= $this->registerScript($script, $params);
         }
+
         return $out;
     }
 }

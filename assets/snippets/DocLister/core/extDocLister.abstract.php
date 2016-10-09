@@ -78,6 +78,7 @@ abstract class extDocLister
             $flag = $this->checkParam(func_get_args())->run();
         }
         $this->DocLister->debug->debugEnd('runExtender');
+
         return $flag;
     }
 
@@ -92,6 +93,7 @@ abstract class extDocLister
         if (isset($args[1])) {
             $this->_cfg = $args[1];
         }
+
         return $this;
     }
 

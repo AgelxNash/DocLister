@@ -55,6 +55,7 @@ if (!class_exists("DLFixedPrepare", false)) {
                         $_DL->renderTPL);
                 }
             }
+
             return $data;
         }
 

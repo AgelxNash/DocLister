@@ -30,6 +30,7 @@ class e_DL_Extender extends extDocLister
                 }
             }
         }
+
         return $out;
     }
 }

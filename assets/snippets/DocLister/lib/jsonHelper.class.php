@@ -56,6 +56,7 @@ class jsonHelper
                 $out = new xNop();
             }
         }
+
         return $out;
     }
 
@@ -71,6 +72,7 @@ class jsonHelper
         } else {
             $error = 999;
         }
+
         return isset(self::$_error[$error]) ? self::$_error[$error] : 'other';
     }
 
@@ -86,6 +88,7 @@ class jsonHelper
         } else {
             $out = json_encode($data, JSON_UNESCAPED_SLASHES);
         }
+
         return self::json_format($out);
     }
 
@@ -149,6 +152,7 @@ class jsonHelper
                     break;
             }
         }
+
         return $new_json;
     }
 }

@@ -51,6 +51,7 @@ class DLdebug
     public function clearLog()
     {
         $this->_log = array();
+
         return $this;
     }
 
@@ -258,6 +259,7 @@ class DLdebug
                 <div class=\"dlDebug\"><ul>[+wrap+]</ul></div>", array('wrap' => $out));
             }
         }
+
         return $out;
     }
 
@@ -273,6 +275,7 @@ class DLdebug
         if (!empty($wrap) && is_string($wrap)) {
             $out = "<{$wrap}>{$out}</{$wrap}>";
         }
+
         return $out;
     }
 }

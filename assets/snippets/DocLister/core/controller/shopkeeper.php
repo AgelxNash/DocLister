@@ -43,6 +43,7 @@ class shopkeeperDocLister extends site_contentDocLister
         } else {
             $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
         }
+
         return $url;
     }
 
@@ -232,6 +233,7 @@ class shopkeeperDocLister extends site_contentDocLister
             $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
             $out = $this->modx->db->getValue($rs);
         }
+
         return $out;
     }
 
@@ -287,6 +289,7 @@ class shopkeeperDocLister extends site_contentDocLister
                 $out[$item['id']] = $item;
             }
         }
+
         return $out;
     }
 
@@ -318,6 +321,7 @@ class shopkeeperDocLister extends site_contentDocLister
         foreach ($rows as $item) {
             $out[] = $item['id'];
         }
+
         return $out;
     }
 
@@ -395,6 +399,7 @@ class shopkeeperDocLister extends site_contentDocLister
                 $out[$item['id']] = $item;
             }
         }
+
         return $out;
     }
 }

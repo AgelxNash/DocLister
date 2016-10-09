@@ -50,6 +50,7 @@ class SummaryText
         } else {
             $flag = false;
         }
+
         return $flag;
     }
 
@@ -74,6 +75,7 @@ class SummaryText
                 $this->_cfg['content'] .= '.';
             }
         }
+
         return $this->_cfg['content'];
     }
 
@@ -113,6 +115,7 @@ class SummaryText
                 }
             }
         }
+
         return $this->dotted($dotted);
     }
 
@@ -132,6 +135,7 @@ class SummaryText
         } else {
             $summary = $resource;
         }
+
         return $summary;
     }
 
@@ -230,10 +234,12 @@ class SummaryText
                 // then wait for the tag_counter to become 0, and chop the string there
                 if ($c > $minimum_length - $length_offset && $tag_counter == 0) {
                     $posttext = mb_substr($posttext, 0, $i + 1, 'UTF-8');
+
                     return $posttext;
                 }
             }
         }
+
         return $this->textTrunc($posttext, $minimum_length + $length_offset, $this->_cfg['break']);
     }
 
@@ -264,6 +270,7 @@ class SummaryText
                 $string = $this->textTrunc($string, $limit, " ");
             }
         }
+
         return $string;
     }
 
@@ -277,6 +284,7 @@ class SummaryText
         if (!$this->_useCut || $this->_dotted != 2) {
             $str = preg_replace("/(([\.,\-:!?;\s])|(&\w+;))+$/ui", "", $str);
         }
+
         return $str;
     }
 
@@ -333,6 +341,7 @@ class SummaryText
                 }
             }
         }
+
         return $text . $endTags;
     }
 }
