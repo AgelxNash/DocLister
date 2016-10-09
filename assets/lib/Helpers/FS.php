@@ -11,6 +11,9 @@ class FS
      */
     protected static $instance;
 
+    /**
+     * @var array
+     */
     private $_fileInfo = array();
 
     /**
@@ -160,8 +163,8 @@ class FS
      *      - image/gif
      * Для всех остальных файлов будет присвоен тип application/octet-stream
      *
-     * @param $fname Имя файла
-     * @return string MIME тип файла
+     * @param string $file Имя файла
+     * @return null|string MIME тип файла
      */
     public function takeFileMIME($file)
     {
@@ -231,8 +234,8 @@ class FS
     /**
      * Копирование файла с проверкой на существование оригинального файла и созданием папок
      *
-     * @param $from источник
-     * @param $to получатель
+     * @param string $from источник
+     * @param string $to получатель
      * @return bool статус копирования
      */
     public function copyFile($from, $to, $chmod = 0644)

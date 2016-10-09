@@ -8,6 +8,11 @@ include_once(dirname(dirname(__FILE__)) . '/APIHelpers.class.php');
  */
 class Helper extends \APIhelpers
 {
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
+     * @access protected
+     */
     protected static $modx = null;
     protected static $mode = 'list';
 

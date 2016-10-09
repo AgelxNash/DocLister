@@ -869,7 +869,7 @@ abstract class DocLister
     /**
      * Получение строки из языкового пакета
      *
-     * @param $name имя записи в языковом пакете
+     * @param string $name имя записи в языковом пакете
      * @param string $def Строка по умолчанию, если запись в языковом пакете не будет обнаружена
      * @return string строка в соответствии с текущими языковыми настройками
      */
@@ -887,7 +887,7 @@ abstract class DocLister
     /**
      * Переменовывание элементов массива
      *
-     * @param $data массив с данными
+     * @param array $data массив с данными
      * @param string $prefix префикс ключей
      * @param string $suffix суффикс ключей
      * @param string $sep разделитель суффиксов, префиксов и ключей массива
@@ -1233,7 +1233,7 @@ abstract class DocLister
     /**
      * Вытащить экземпляр класса экстендера из общего массива экстендеров
      *
-     * @param $name имя экстендера
+     * @param string $name имя экстендера
      * @param bool $autoload Если экстендер не загружен, то пытаться ли его загрузить
      * @param bool $nop если экстендер не загружен, то загружать ли xNop
      * @return null|xNop
@@ -1518,7 +1518,7 @@ abstract class DocLister
      * Clean up the modx and html tags
      *
      * @param string $data String for cleaning
-     * @param  string charset
+     * @param string $charset
      * @return string Clear string
      */
     public function sanitarData($data, $charset = 'UTF-8')
@@ -1531,6 +1531,7 @@ abstract class DocLister
      *
      * @param string $idField default name id field
      * @param string $parentField default name parent field
+     * @return array
      */
     public function treeBuild($idField = 'id', $parentField = 'parent')
     {
@@ -1544,6 +1545,7 @@ abstract class DocLister
      * @param array $data Associative data array
      * @param string $idName name ID field in associative data array
      * @param string $pidName name parent field in associative data array
+     * @return array
      */
     private function _treeBuild($data, $idName, $pidName)
     {

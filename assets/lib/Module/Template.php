@@ -104,6 +104,9 @@ abstract class Template
         return $content;
     }
 
+    /**
+     *
+     */
     public function loadVars()
     {
         $vars = array();
@@ -191,5 +194,8 @@ abstract class Template
         return self::isAjax() ? 'log' : 'main';
     }
 
+    /**
+     * @return mixed
+     */
     abstract public function Lists();
 }

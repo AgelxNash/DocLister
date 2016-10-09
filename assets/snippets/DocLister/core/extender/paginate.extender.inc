@@ -201,7 +201,7 @@ class paginate_DL_Extender extends extDocLister
     /**
      * Имя REQUEST переменной в пагинаторе
      *
-     * @param $name основное имя REQUEST переменной в пагинаторе
+     * @param string $name основное имя REQUEST переменной в пагинаторе
      * @return string
      */
     public function getRequestName($name)

@@ -64,8 +64,8 @@ abstract class filterDocLister
     /**
      * Запуск фильтра
      *
-     * @param $DocLister экземпляр класса DocLister
-     * @param $filter строка с условиями фильтрации
+     * @param DocLister $DocLister экземпляр класса DocLister
+     * @param string $filter строка с условиями фильтрации
      * @return bool
      */
     public function init(DocLister $DocLister, $filter)
@@ -94,7 +94,7 @@ abstract class filterDocLister
     /**
      * Разбор строки фильтрации
      *
-     * @param $filter строка фильтрации
+     * @param string $filter строка фильтрации
      * @return bool результат разбора фильтра
      */
     protected function parseFilter($filter)
@@ -121,10 +121,10 @@ abstract class filterDocLister
     /**
      * Конструктор условий для WHERE секции
      *
-     * @param $table_alias алиас таблицы
-     * @param $field поле для фильтрации
-     * @param $operator оператор сопоставления
-     * @param $value искомое значение
+     * @param string $table_alias алиас таблицы
+     * @param string $field поле для фильтрации
+     * @param string $operator оператор сопоставления
+     * @param string $value искомое значение
      * @return string
      */
     protected function build_sql_where($table_alias, $field, $operator, $value)

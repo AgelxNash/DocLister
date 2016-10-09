@@ -65,6 +65,11 @@ class MODxAPIhelpers
  */
 abstract class MODxAPI extends MODxAPIhelpers
 {
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
+     * @access protected
+     */
     protected $modx = null;
     protected $log = array();
     protected $field = array();

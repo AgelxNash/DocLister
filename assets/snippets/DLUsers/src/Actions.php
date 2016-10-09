@@ -15,6 +15,11 @@ use Helpers\FS;
  */
 class Actions
 {
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
+     * @access protected
+     */
     protected $modx = null;
     public $userObj = null;
     /**

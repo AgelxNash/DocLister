@@ -65,8 +65,9 @@ class DLpaginate
         return $this;
     }
 
-    #Total items
     /**
+     * Total items
+     *
      * @param $value
      * @return $this
      */
@@ -77,8 +78,9 @@ class DLpaginate
         return $this;
     }
 
-    #how many items to show per page
     /**
+     * how many items to show per page
+     *
      * @param $value
      * @return $this
      */
@@ -89,8 +91,9 @@ class DLpaginate
         return $this;
     }
 
-    #Page to sent the page value
     /**
+     * Page to sent the page value
+     *
      * @param $value
      * @return $this
      */
@@ -101,8 +104,9 @@ class DLpaginate
         return $this;
     }
 
-    #Current page
     /**
+     * Current page
+     *
      * @param $value
      * @return $this
      */
@@ -113,8 +117,9 @@ class DLpaginate
         return $this;
     }
 
-    #How many adjacent pages should be shown on each side of the current page?
     /**
+     * How many adjacent pages should be shown on each side of the current page?
+     *
      * @param $value
      * @return $this
      */
@@ -125,8 +130,9 @@ class DLpaginate
         return $this;
     }
 
-    #show counter?
     /**
+     * show counter?
+     *
      * @param string $value
      * @return $this
      */
@@ -137,8 +143,9 @@ class DLpaginate
         return $this;
     }
 
-    #to change the class name of the pagination div
     /**
+     * to change the class name of the pagination div
+     *
      * @param string $value
      * @return $this
      */
@@ -204,8 +211,9 @@ class DLpaginate
         return $this;
     }
 
-    #to change the class name of the pagination div
     /**
+     * to change the class name of the pagination div
+     *
      * @param string $value
      * @return $this
      */
@@ -216,8 +224,9 @@ class DLpaginate
         return $this;
     }
 
-    #to change urlFriendly
     /**
+     * to change urlFriendly
+     *
      * @param string $value
      * @return $this
      */
