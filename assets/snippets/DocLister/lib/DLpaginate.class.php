@@ -266,17 +266,15 @@ class DLpaginate
     protected function getPageQuery($page)
     {
         switch ($this->mode) {
-            case 'offset': {
+            case 'offset':
                 $display = isset($this->modeConfig['display']) ? $this->modeConfig['display'] : 0;
                 $out = $display * ($page - 1);
                 break;
-            }
             case 'back':
             case 'pages':
-            default: {
+            default:
                 $out = $page;
                 break;
-            }
         }
 
         return $out;

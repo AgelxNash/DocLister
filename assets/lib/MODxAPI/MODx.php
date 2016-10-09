@@ -165,7 +165,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     /**
      * @param $SQL
-     * @return null|void
+     * @return mixed
      */
     final public function query($SQL)
     {
@@ -216,9 +216,8 @@ abstract class MODxAPI extends MODxAPIhelpers
     final public function getInvokeEventResult($name, $data = array(), $flag = null)
     {
         $flag = (isset($flag) && $flag != '') ? (bool)$flag : false;
-        if ($flag) {
-            return $this->modx->invokeEvent($name, $data);
-        }
+
+        return $flag ? $this->modx->invokeEvent($name, $data) : false;
     }
 
     /**

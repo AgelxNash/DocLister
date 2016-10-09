@@ -137,11 +137,11 @@ class modUsers extends MODxAPI
     }
 
     /**
-     * @param null $fire_events
+     * @param bool $fire_events
      * @param bool $clearCache
      * @return bool|int|null|void
      */
-    public function save($fire_events = null, $clearCache = false)
+    public function save($fire_events = false, $clearCache = false)
     {
         if ($this->get('email') == '' || $this->get('username') == '' || $this->get('password') == '') {
             $this->log['EmptyPKField'] = 'Email, username or password is empty <pre>' . print_r($this->toArray(),
@@ -172,9 +172,6 @@ class modUsers extends MODxAPI
         foreach ($this->default_field['user'] as $key => $value) {
             $tmp = $this->get($key);
             if ($this->newDoc && (!is_int($tmp) && $tmp == '')) {
-                if ($tmp == $value) {
-                    //take default value from global config
-                }
                 $this->field[$key] = $value;
             }
             $this->Uset($key, 'user');
@@ -197,9 +194,6 @@ class modUsers extends MODxAPI
         foreach ($this->default_field['attribute'] as $key => $value) {
             $tmp = $this->get($key);
             if ($this->newDoc && (!is_int($tmp) && $tmp == '')) {
-                if ($tmp == $value) {
-                    //take default value from global config
-                }
                 $this->field[$key] = $value;
             }
             $this->Uset($key, 'attribute');
@@ -254,10 +248,10 @@ class modUsers extends MODxAPI
 
     /**
      * @param $ids
-     * @param null $fire_events
+     * @param bool $fire_events
      * @return bool|null|void
      */
-    public function delete($ids, $fire_events = null)
+    public function delete($ids, $fire_events = false)
     {
         if ($this->edit($ids)) {
             $flag = $this->query("
@@ -285,10 +279,10 @@ class modUsers extends MODxAPI
      * @param int $id
      * @param bool $fulltime
      * @param string $cookieName
-     * @param null $fire_events
+     * @param bool $fire_events
      * @return bool
      */
-    public function authUser($id = 0, $fulltime = true, $cookieName = 'WebLoginPE', $fire_events = null)
+    public function authUser($id = 0, $fulltime = true, $cookieName = 'WebLoginPE', $fire_events = false)
     {
         $flag = false;
         if (!$this->getID() && $id) {
@@ -335,10 +329,10 @@ class modUsers extends MODxAPI
      * @param $id
      * @param $password
      * @param $blocker
-     * @param null $fire_events
+     * @param bool $fire_events
      * @return bool
      */
-    public function testAuth($id, $password, $blocker, $fire_events = null)
+    public function testAuth($id, $password, $blocker, $fire_events = false)
     {
         $tmp = clone $this;
         if ($id && $tmp->getID() != $id) {
@@ -431,7 +425,7 @@ class modUsers extends MODxAPI
     protected function SessionHandler($directive, $cookieName, $remember = true)
     {
         switch ($directive) {
-            case 'start': {
+            case 'start':
                 if ($this->getID()) {
                     $_SESSION['webShortname'] = $this->get('username');
                     $_SESSION['webFullname'] = $this->get('fullname');
@@ -453,8 +447,7 @@ class modUsers extends MODxAPI
                     }
                 }
                 break;
-            }
-            case 'destroy': {
+            case 'destroy':
                 if (isset($_SESSION['mgrValidated'])) {
                     unset($_SESSION['webShortname']);
                     unset($_SESSION['webFullname']);
@@ -479,7 +472,6 @@ class modUsers extends MODxAPI
                     session_destroy();
                 }
                 break;
-            }
         }
 
         return $this;
