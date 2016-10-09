@@ -1,6 +1,7 @@
 {
-  "name": "agelxnash/DocLister",
-  "type": "MODX Snippet",
+  "name": "agelxnash/doclister",
+  "type": "MODX-Snippet",
+  "description": "This is a very cool package!",
   "license": "GPL-2.0",
   "autoload": {
       "classmap": [

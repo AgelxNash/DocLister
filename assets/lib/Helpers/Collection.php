@@ -146,12 +146,6 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     {
         return $this->containsKey($offset);
     }
-    public function dump(){
-        return var_dump($this->data);
-    }
-    public function show(){
-        print_r($this->data);
-    }
 
     public function offsetGet($offset)
     {

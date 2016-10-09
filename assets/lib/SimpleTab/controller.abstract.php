@@ -122,6 +122,6 @@ abstract class AbstractController {
         if(file_exists(MODX_MANAGER_PATH."includes/lang/".$manager_language.".inc.php")) {
             include_once MODX_MANAGER_PATH."includes/lang/".$manager_language.".inc.php";
         }
-        return $modx_lang_attribute;
+        return isset($modx_lang_attribute) ? $modx_lang_attribute : null;
     }
 }
