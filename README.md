@@ -1,5 +1,6 @@
 ### DocLister for MODX Evolution
-[![Build Status](https://api.travis-ci.org/AgelxNash/DocLister.svg)](https://travis-ci.org/AgelxNash/DocLister)
+[![Stars](https://img.shields.io/github/stars/AgelxNash/DocLister.svg?style=social&label=Star&maxAge=2592000)](https://github.com/AgelxNash/DocLister/stargazers)
+[![CMS MODX Evolution](https://img.shields.io/badge/CMS-MODX%20Evolution-brightgreen.svg)](https://github.com/modxcms/evolution) [![Build Status](https://img.shields.io/travis/AgelxNash/DocLister/master.svg?maxAge=2592000)](https://travis-ci.org/AgelxNash/DocLister) [![Issues](https://img.shields.io/github/issues-closed-raw/AgelxNash/DocLister.svg?maxAge=2592000)](https://github.com/AgelxNash/DocLister/issues) [![Code quality](https://img.shields.io/scrutinizer/g/AgelxNash/DocLister.svg?maxAge=2592000)](https://scrutinizer-ci.com/g/AgelxNash/DocLister/) [![Documentation](https://img.shields.io/badge/Documentation-processed-orange.svg)](https://github.com/evolution-cms/docs/tree/master/03_Extras/04_Snippets/DocLister) [![License](https://img.shields.io/github/license/AgelxNash/DocLister.svg?maxAge=2592000)](https://github.com/AgelxNash/DocLister/blob/master/license.txt)
 
 Класс для вывода информации из таблиц по предопределенным правилам.
 Если нет правил, то данные отображаются без дополнительной обработки и связи. Т.е. все поля и значения совпадают с базой данных.

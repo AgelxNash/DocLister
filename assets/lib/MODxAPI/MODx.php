@@ -108,7 +108,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         return $this;
     }
 
-    final public function getInvokeEventResult($name, $data = array(), $flag = false) {
+    final public function getInvokeEventResult($name, $data = array(), $flag = null) {
         $flag = (isset($flag) && $flag != '') ? (bool)$flag : false;
         if ($flag) {
             return $this->modx->invokeEvent($name, $data);
