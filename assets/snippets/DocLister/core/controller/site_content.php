@@ -228,26 +228,23 @@ class site_contentDocLister extends DocLister
 
         foreach ($data as $num => $item) {
             $row = $item;
-            switch (true) {
-                case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
-                    $row['summary'] = $this->getSummary($this->_docs[$num], $extSummary, 'introtext', 'content');
-					// no break
-                case (array('1') == $fields || in_array('date', $fields)):
-                    $tmp = (isset($this->_docs[$num][$date]) && $date != 'createdon' && $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
-                    $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
-					// no break
-                case (array('1') == $fields || in_array(array('menutitle', 'pagetitle'), $fields)):
-                    $row['title'] = ($row['menutitle'] == '' ? $row['pagetitle'] : $row['menutitle']);
-					// no break
-                case ((array('1') == $fields || in_array(array('content', 'type'), $fields)) && $this->getCFGDef('makeUrl', 1)):
-                    if($row['type'] == 'reference'){
-                        $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl($row['content'], '', '', $this->getCFGDef('urlScheme', '')) : $row['content'];
-                    }else{
-                        $row['url'] = $this->modx->makeUrl($row['id'], '', '', $this->getCFGDef('urlScheme', ''));
-                    }
-					// no break
+            if((array('1') == $fields || in_array('summary', $fields)) && $extSummary) {
+                $row['summary'] = $this->getSummary($this->_docs[$num], $extSummary, 'introtext', 'content');
             }
-
+            if(array('1') == $fields || in_array('date', $fields)) {
+                $tmp = (isset($this->_docs[$num][$date]) && $date != 'createdon' && $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
+                $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
+            }
+            if(array('1') == $fields || in_array(array('menutitle', 'pagetitle'), $fields)) {
+                $row['title'] = ($row['menutitle'] == '' ? $row['pagetitle'] : $row['menutitle']);
+            }
+            if((bool)$this->getCFGDef('makeUrl', 1) && (array('1') == $fields || in_array(array('content', 'type'), $fields))){
+                if($row['type'] == 'reference'){
+                    $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl($row['content'], '', '', $this->getCFGDef('urlScheme', '')) : $row['content'];
+                }else{
+                    $row['url'] = $this->modx->makeUrl($row['id'], '', '', $this->getCFGDef('urlScheme', ''));
+                }
+            }
             if($extE && $tmp = $extE->init($this, array('data' => $row))){
                 if(is_array($tmp)){
                     $row = $tmp;
