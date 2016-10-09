@@ -10,6 +10,7 @@ if (!defined('MODX_BASE_PATH')) {
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
  */
+
 class summary_DL_Extender extends extDocLister
 {
 

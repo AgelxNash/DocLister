@@ -8,18 +8,13 @@ require_once 'content.filter.php';
 /**
  * Class private_DL_filter
  */
-class private_DL_filter extends content_DL_filter
-{
-    /**
-     *
-     */
+class private_DL_filter extends content_DL_filter {
     const TableAlias = 'dg';
 
     /**
      * private_DL_filter constructor.
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->setTableAlias(self::TableAlias);
     }
 
@@ -27,19 +22,17 @@ class private_DL_filter extends content_DL_filter
      * @param строка $filter
      * @return bool
      */
-    public function parseFilter($filter)
-    {
+    public function parseFilter($filter) {
         return true;
     }
 
     /**
      * @return string
      */
-    public function get_where()
-    {
-        if ($docgrp = $this->modx->getUserDocGroups()) $docgrp = implode(",", $docgrp);
+    public function get_where() {
+        if($docgrp = $this->modx->getUserDocGroups()) $docgrp = implode(",",$docgrp);
         $alias = parent::TableAlias;
-        $where = ($this->modx->isFrontend() ? "`{$alias}`.`privateweb`=0" : "1='{$_SESSION['mgrRole']}' OR {$alias}.`privatemgr`=0") . (!$docgrp ? "" : " OR `{$this->tableAlias}`.`document_group` IN ({$docgrp})");
+        $where = ($this->modx->isFrontend() ? "`{$alias}`.`privateweb`=0" : "1='{$_SESSION['mgrRole']}' OR {$alias}.`privatemgr`=0").(!$docgrp ? "" : " OR `{$this->tableAlias}`.`document_group` IN ({$docgrp})");
         return "($where)";
     }
 

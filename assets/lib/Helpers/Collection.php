@@ -3,22 +3,17 @@
 use Closure;
 
 /**
- * @TODO: Потырить методы из Laravel
- * https://github.com/laravel/framework/blob/4.2/src/Illuminate/Support/Collection.php
- */
-class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
-{
-    /**
-     * @var array
-     */
+* @TODO: Потырить методы из Laravel
+* https://github.com/laravel/framework/blob/4.2/src/Illuminate/Support/Collection.php
+*/
+class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
     protected $data = array();
 
     /**
      * Collection constructor.
      * @param array $data
      */
-    public function __construct(array $data = array())
-    {
+    public function __construct(array $data = array()){
         $this->data = $data;
     }
 
@@ -26,8 +21,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      * @param array $data
      * @return static
      */
-    public function create(array $data = array())
-    {
+    public function create(array $data = array()){
         return new static($data);
     }
 
@@ -51,7 +45,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * Run a filter over each of the items.
      *
-     * @param  Closure $callback
+     * @param  Closure  $callback
      * @return static
      */
     public function filter(Closure $callback)
@@ -66,7 +60,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     public function forAll(Closure $p)
     {
         foreach ($this->data as $key => $element) {
-            if (!$p($key, $element)) {
+            if ( ! $p($key, $element)) {
                 return false;
             }
         }
@@ -111,8 +105,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * @return $this
      */
-    public function clear()
-    {
+    public function clear(){
         $this->data = array();
         return $this;
     }
@@ -121,8 +114,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      * @param $value
      * @return $this
      */
-    public function append($value)
-    {
+    public function append($value) {
         $this->data[] = $value;
         return $this;
     }
@@ -132,11 +124,10 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      * @param null $id
      * @return $this
      */
-    public function add($data, $id = null)
-    {
-        if ((is_int($id) || is_string($id)) && $id !== '') {
+    public function add($data, $id = null){
+        if((is_int($id) || is_string($id)) && $id !== ''){
             $this->data[$id] = $data;
-        } else {
+        }else{
             $this->append($data);
         }
         return $this;
@@ -145,8 +136,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * @return int
      */
-    public function count()
-    {
+    public function count(){
         return count($this->data);
     }
 
@@ -154,10 +144,9 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      * @param $id
      * @return mixed|null
      */
-    public function get($id)
-    {
+    public function get($id){
         $out = null;
-        if (is_scalar($id) && $id !== '' && $this->containsKey($id)) {
+        if(is_scalar($id) && $id!=='' && $this->containsKey($id)){
             $out = $this->data[$id];
         }
         return $out;
@@ -199,8 +188,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * @return mixed
      */
-    public function prev()
-    {
+    public function prev(){
         return prev($this->data);
     }
 
@@ -226,7 +214,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      */
     public function remove($key)
     {
-        if (!isset($this->data[$key]) && !array_key_exists($key, $this->data)) {
+        if ( ! isset($this->data[$key]) && ! array_key_exists($key, $this->data)) {
             return null;
         }
         $removed = $this->data[$key];
@@ -273,7 +261,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if (!isset($offset)) {
+        if ( ! isset($offset)) {
             return $this->add($value);
         }
         $this->set($offset, $value);
@@ -348,16 +336,15 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray(){
         return $this->data;
     }
 
     /**
      * Reduce the collection to a single value.
      *
-     * @param  callable $callback
-     * @param  mixed $initial
+     * @param  callable  $callback
+     * @param  mixed     $initial
      * @return mixed
      */
     public function reduce(Closure $callback, $initial = null)
@@ -368,25 +355,26 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * Get the max value of a given key.
      *
-     * @param  string $key
+     * @param  string  $key
      * @return mixed
      */
     public function max($key)
     {
-        return $this->reduce(function ($result, $item) use ($key) {
+        return $this->reduce(function($result, $item) use ($key)
+        {
             return (is_null($result) || $item[$key] > $result) ? $item[$key] : $result;
         });
     }
-
     /**
      * Get the min value of a given key.
      *
-     * @param  string $key
+     * @param  string  $key
      * @return mixed
      */
     public function min($key)
     {
-        return $this->reduce(function ($result, $item) use ($key) {
+        return $this->reduce(function($result, $item) use ($key)
+        {
             return (is_null($result) || $item[$key] < $result) ? $item[$key] : $result;
         });
     }
@@ -394,7 +382,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * Sort through each item with a callback.
      *
-     * @param  Closure $callback
+     * @param  Closure  $callback
      * @return $this
      */
     public function sort(Closure $callback)
@@ -404,7 +392,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     }
 
     /**
-     * @param  Closure $callback
+     * @param  Closure  $callback
      * @return $this
      */
     public function ksort(Closure $callback)
@@ -416,8 +404,7 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * @return $this
      */
-    public function reindex()
-    {
+    public function reindex(){
         $this->data = array_values($this->data);
         return $this;
     }

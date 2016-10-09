@@ -1,5 +1,5 @@
 <?php
-
+// extension_loaded('mbstring') ???
 /**
  * Class APIhelpers
  */
@@ -11,9 +11,8 @@ class APIhelpers
      * @param string $encoding - кодировка, по-умолчанию UTF-8
      * @return string
      */
-    public static function mb_lcfirst($str, $encoding = 'UTF-8')
-    {
-        return mb_strtolower(mb_substr($str, 0, 1, $encoding), $encoding) . mb_substr($str, 1, mb_strlen($str), $encoding);
+    public static function mb_lcfirst($str, $encoding='UTF-8'){
+        return mb_strtolower(mb_substr($str, 0, 1, $encoding), $encoding).mb_substr($str,1, mb_strlen($str), $encoding);
     }
 
     /**
@@ -22,10 +21,10 @@ class APIhelpers
      * @param string $encoding - кодировка, по-умолчанию UTF-8
      * @return string
      */
-    public static function mb_ucfirst($str, $encoding = 'UTF-8')
+    public static function mb_ucfirst($str, $encoding='UTF-8')
     {
         $str = mb_ereg_replace('^[\ ]+', '', $str);
-        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) . mb_substr($str, 1, mb_strlen($str), $encoding);
+        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding).mb_substr($str, 1, mb_strlen($str), $encoding);
         return $str;
     }
 
@@ -40,13 +39,12 @@ class APIhelpers
      * @param string $encoding кодировка
      * @return string
      */
-    public static function mb_trim_word($html, $len, $encoding = 'UTF-8')
-    {
+    public static function mb_trim_word($html, $len, $encoding = 'UTF-8'){
         $text = trim(preg_replace('|\s+|', ' ', strip_tags($html)));
-        $text = mb_substr($text, 0, $len + 1, $encoding);
-        if (mb_substr($text, -1, null, $encoding) == ' ') {
+        $text = mb_substr($text, 0, $len+1, $encoding);
+        if(mb_substr($text, -1, null, $encoding) == ' '){
             $out = trim($text);
-        } else {
+        }else{
             $out = mb_substr($text, 0, mb_strripos($text, ' ', null, $encoding), $encoding);
         }
         return preg_replace("/(([\.,\-:!?;\s])|(&\w+;))+$/ui", "", $out);
@@ -81,7 +79,7 @@ class APIhelpers
     public static function emailValidate($email, $dns = true)
     {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            list(, $domain) = explode("@", $email, 2);
+            list(,$domain) = explode("@", $email, 2);
             if (!$dns || ($dns && checkdnsrr($domain, "MX") && checkdnsrr($domain, "A"))) {
                 $error = false;
             } else {
@@ -130,7 +128,7 @@ class APIhelpers
         for ($i = $len; $i > 0; $i--) {
             switch ($data[rand(0, ($opt - 1))]) {
                 case 'A':
-                    $tmp = rand(65, 90);
+                	$tmp = rand(65, 90);
                     break;
                 case 'a':
                     $tmp = rand(97, 122);
@@ -231,9 +229,8 @@ class APIhelpers
         '[' => '&#91;', '%5B' => '&#91;', ']' => '&#93;', '%5D' => '&#93;',
         '{' => '&#123;', '%7B' => '&#123;', '}' => '&#125;', '%7D' => '&#125;',
         '`' => '&#96;', '%60' => '&#96;'
-    ))
-    {
-        switch (true) {
+    )){
+        switch(true){
             case is_scalar($data):
                 $out = str_replace(
                     array_keys($chars),
@@ -243,7 +240,7 @@ class APIhelpers
                 break;
             case is_array($data):
                 $out = $data;
-                foreach ($out as $key => &$val) {
+                foreach($out as $key => &$val){
                     $val = self::sanitarTag($val, $charset, $chars);
                 }
                 break;
@@ -258,11 +255,9 @@ class APIhelpers
      * @param string $charset
      * @return string
      */
-    public static function e($text, $charset = 'UTF-8')
-    {
+    public static function e($text, $charset = 'UTF-8'){
         return is_scalar($text) ? htmlspecialchars($text, ENT_QUOTES, $charset, false) : '';
     }
-
     /**
      * Проверка строки на наличе запрещенных символов
      * Проверка конечно круто, но валидация русских символов в строке порой завершается не удачей по разным причинам
@@ -343,16 +338,16 @@ class APIhelpers
             $out = $data;
         } else {
             $InsertPrefix = ($prefix != '') ? ($prefix . $addPS) : '';
-            $InsertSuffix = ($suffix != '') ? ($addPS . $suffix) : '';
+            $InsertSuffix = ($suffix != '') ? ($addPS. $suffix) : '';
             foreach ($data as $key => $item) {
                 $key = $InsertPrefix . $key;
                 $val = null;
-                switch (true) {
+                switch(true){
                     case is_scalar($item):
                         $val = $item;
                         break;
                     case is_array($item):
-                        $val = self::renameKeyArr($item, $key . $sep, $InsertSuffix, '', $sep);
+                        $val = self::renameKeyArr($item, $key.$sep, $InsertSuffix, '', $sep);
                         $out = array_merge($out, $val);
                         $val = '';
                         break;

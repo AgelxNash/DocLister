@@ -11,6 +11,7 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
  */
+
 class e_DL_Extender extends extDocLister
 {
     /**
@@ -20,13 +21,13 @@ class e_DL_Extender extends extDocLister
     {
         $out = $this->getCFGDef('data', array());
         if (($eFields = $this->DocLister->getCFGDef('e', 'title')) != '') {
-            if (is_scalar($eFields)) {
+            if(is_scalar($eFields)){
                 $eFields = explode(",", $eFields);
             }
-            if (is_array($eFields)) {
-                foreach ($eFields as $field) {
+            if(is_array($eFields)){
+                foreach($eFields as $field){
                     $val = APIHelpers::getkey($out, $field, '');
-                    $out['e.' . $field] = APIHelpers::e($val);
+                    $out['e.'.$field] = APIHelpers::e($val);
                 }
             }
         }

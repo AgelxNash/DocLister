@@ -6,7 +6,7 @@ $lang = APIHelpers::getkey($params, 'lang', $modx->getConfig('manager_language')
 $userClass = APIHelpers::getkey($params, 'userClass', 'modUsers');
 $DLUsers = \DLUsers\Actions::getInstance($modx, $lang, $userClass);
 $out = '';
-if (!empty($action) && method_exists($DLUsers, $action)) {
+if(!empty($action) && method_exists($DLUsers, $action)) {
     $out = call_user_func_array(array($DLUsers, $action), array($params));
 }
 return $out;

@@ -6,14 +6,7 @@ require_once('MODx.php');
  */
 class modResource extends MODxAPI
 {
-    /**
-     * @var null
-     */
     protected $mode = null;
-
-    /**
-     * @var array
-     */
     protected $default_field = array(
         'type' => 'document',
         'contentType' => 'text/html',
@@ -53,10 +46,6 @@ class modResource extends MODxAPI
         'hidemenu' => 0,
         'alias_visible' => 1
     );
-
-    /**
-     * @var array
-     */
     private $table = array('"' => '_', "'" => '_', ' ' => '_', '.' => '_', ',' => '_', 'а' => 'a', 'б' => 'b', 'в' => 'v',
         'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'zh', 'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k',
         'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u',
@@ -69,12 +58,10 @@ class modResource extends MODxAPI
     /**
      * @var array массив ТВшек где name это ключ массива, а ID это значение
      */
-
     private $tv = array();
     /**
      * @var array массив ТВшек где ID это ключ массива, а name это значение
      */
-
     private $tvid = array();
     /**
      * @var array значения по умолчанию для ТВ параметров
@@ -101,7 +88,7 @@ class modResource extends MODxAPI
         $this->get_TV();
         $uTable = $this->makeTable("manager_users");
         $aTable = $this->makeTable("user_attributes");
-        $query = "SELECT `u`.`id`, `a`.`email`, `u`.`username`  FROM " . $aTable . " as `a` LEFT JOIN " . $uTable . " as `u` ON `u`.`id`=`a`.`internalKey`";
+        $query = "SELECT `u`.`id`, `a`.`email`, `u`.`username`  FROM ".$aTable." as `a` LEFT JOIN ".$uTable." as `u` ON `u`.`id`=`a`.`internalKey`";
         $this->managerUsers = new DLCollection($modx, $this->query($query));
     }
 
@@ -123,13 +110,13 @@ class modResource extends MODxAPI
         $out = array_diff_key(parent::toArray(), $this->default_field);
         $tpl = $this->get('template');
         $tvTPL = APIHelpers::getkey($this->tvTpl, $tpl, array());
-        foreach ($tvTPL as $item) {
-            if (isset($this->tvid[$item]) && !array_key_exists($this->tvid[$item], $out)) {
+        foreach($tvTPL as $item){
+            if(isset($this->tvid[$item]) && !array_key_exists($this->tvid[$item], $out)){
                 $out[$this->tvid[$item]] = $this->get($this->tvid[$item]);
             }
         }
-        if ($render) {
-            foreach ($out as $key => $val) {
+        if($render){
+            foreach($out as $key => $val){
                 $out[$key] = $this->renderTV($key);
             }
         }
@@ -143,8 +130,7 @@ class modResource extends MODxAPI
      * @param bool $render
      * @return array
      */
-    public function toArray($prefix = '', $suffix = '', $sep = '_', $render = true)
-    {
+    public function toArray($prefix = '', $suffix = '', $sep = '_', $render = true){
         $out = array_merge(
             $this->toArrayMain(),
             $this->toArrayTV($render),
@@ -154,31 +140,29 @@ class modResource extends MODxAPI
     }
 
     /**
-     * @return null
+     * @return null|string
      */
-    public function getUrl()
-    {
-        $out = null;
-        $id = (int)$this->getID();
-        if (!empty($id)) {
-            $out = $this->modx->makeUrl($id);
-        }
-        return $out;
-    }
+    public function getUrl(){
+		$out = null;
+		$id = (int)$this->getID();
+		if(!empty($id)){
+			$out = $this->modx->makeUrl($id);
+		}
+		return $out;
+	}
 
     /**
      * @param string $main
      * @param string $second
      * @return mixed
      */
-    public function getTitle($main = 'menutitle', $second = 'pagetitle')
-    {
-        $title = $this->get($main);
-        if (empty($title) && $title !== '0') {
-            $title = $this->get($second);
-        }
-        return $title;
-    }
+    public function getTitle($main = 'menutitle', $second = 'pagetitle'){
+		$title = $this->get($main);
+		if(empty($title) && $title !== '0'){
+			$title = $this->get($second);
+		}
+		return $title;
+	}
 
     /**
      * @return bool
@@ -194,8 +178,7 @@ class modResource extends MODxAPI
     /**
      * @return $this
      */
-    public function touch()
-    {
+    public function touch(){
         $this->set('editedon', time());
         return $this;
     }
@@ -204,10 +187,9 @@ class modResource extends MODxAPI
      * @param $tvname
      * @return null
      */
-    public function renderTV($tvname)
-    {
+    public function renderTV($tvname){
         $out = null;
-        if ($this->getID() > 0) {
+        if($this->getID() > 0){
             include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
             include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
             $tvval = $this->get($tvname);
@@ -224,14 +206,13 @@ class modResource extends MODxAPI
      * @param $key
      * @return mixed
      */
-    public function get($key)
-    {
+    public function get($key){
         $out = parent::get($key);
-        if (isset($this->tv[$key])) {
+        if(isset($this->tv[$key])){
             $tpl = $this->get('template');
             $tvTPL = APIHelpers::getkey($this->tvTpl, $tpl, array());
             $tvID = APIHelpers::getkey($this->tv, $key, 0);
-            if (in_array($tvID, $tvTPL) && is_null($out)) {
+            if(in_array($tvID, $tvTPL) && is_null($out)){
                 $out = APIHelpers::getkey($this->tvd[$key], 'value', null);
             }
         }
@@ -256,38 +237,38 @@ class modResource extends MODxAPI
                     break;
                 case 'published':
                     $value = (int)((bool)$value);
-                    if ($value) {
+                    if($value){
                         $this->field['publishedon'] = time() + $this->modxConfig('server_offset_time');
                     }
                     break;
                 case 'pub_date':
                     $value = $this->getTime($value);
-                    if ($value > 0 && time() + $this->modxConfig('server_offset_time') > $value) {
+                    if($value > 0 && time() + $this->modxConfig('server_offset_time') > $value){
                         $this->field['published'] = 1;
                         $this->field['publishedon'] = $value;
                     }
                     break;
                 case 'unpub_date':
                     $value = $this->getTime($value);
-                    if ($value > 0 && time() + $this->modxConfig('server_offset_time') > $value) {
+                    if($value > 0 && time() + $this->modxConfig('server_offset_time') > $value){
                         $this->field['published'] = 0;
                         $this->field['publishedon'] = 0;
                     }
                     break;
                 case 'deleted':
                     $value = (int)((bool)$value);
-                    if ($value) {
+                    if($value){
                         $this->field['deletedon'] = time() + $this->modxConfig('server_offset_time');
-                    } else {
+                    }else{
                         $this->field['deletedon'] = 0;
                     }
                     break;
                 case 'deletedon':
                     $value = $this->getTime($value);
-                    if ($value > 0 && time() + $this->modxConfig('server_offset_time') < $value) {
+                    if($value > 0 && time() + $this->modxConfig('server_offset_time') < $value){
                         $value = 0;
                     }
-                    if ($value) {
+                    if($value){
                         $this->field['deleted'] = 1;
                     }
                     break;
@@ -313,20 +294,19 @@ class modResource extends MODxAPI
      * @param int $default
      * @return int|mixed
      */
-    protected function getUser($value, $default = 0)
-    {
+    protected function getUser($value, $default = 0){
         $currentAdmin = APIHelpers::getkey($_SESSION, 'mgrInternalKey', 0);
         $value = (int)$value;
-        if (!empty($value)) {
+        if(!empty($value)){
             $by = $this->findUserBy($value);
-            $exists = $this->managerUsers->exists(function ($key, $val) use ($by, $value) {
+            $exists = $this->managerUsers->exists(function($key, $val) use ($by, $value){
                 return ($val->containsKey($by) && $val->get($by) === (string)$value);
             });
-            if (!$exists) {
+            if(!$exists){
                 $value = 0;
             }
         }
-        if (empty($value)) {
+        if(empty($value)){
             $value = empty($currentAdmin) ? $default : $currentAdmin;
         }
         return $value;
@@ -358,14 +338,13 @@ class modResource extends MODxAPI
      * @param $value
      * @return int|mixed|string
      */
-    protected function getTime($value)
-    {
+    protected function getTime($value){
         $value = trim($value);
-        if (!empty($value)) {
-            if (!is_numeric($value)) {
+        if(!empty($value)){
+            if(!is_numeric($value)){
                 $value = (int)strtotime($value);
             }
-            if (!empty($value)) {
+            if(!empty($value)){
                 $value += $this->modxConfig('server_offset_time');
             }
         }
@@ -417,7 +396,7 @@ class modResource extends MODxAPI
     /**
      * @param null $fire_events
      * @param bool $clearCache
-     * @return bool|null
+     * @return bool|null|void
      */
     public function save($fire_events = null, $clearCache = false)
     {
@@ -430,17 +409,17 @@ class modResource extends MODxAPI
         $this->set('alias', $this->getAlias());
 
         $this->invokeEvent('OnBeforeDocFormSave', array(
-            'mode' => $this->newDoc ? "new" : "upd",
-            'id' => $this->id ? $this->id : '',
-            'doc' => $this->toArray(),
-            'docObj' => $this
+            'mode'  => $this->newDoc ? "new" : "upd",
+            'id'    => $this->id ? $this->id : '',
+            'doc'   => $this->toArray(),
+            'docObj'=> $this
         ), $fire_events);
 
         $fld = $this->toArray(null, null, null, false);
         foreach ($this->default_field as $key => $value) {
             $tmp = $this->get($key);
-            if ($this->newDoc && (!is_int($tmp) && $tmp == '')) {
-                if ($tmp == $value) {
+            if ($this->newDoc && ( !is_int($tmp) && $tmp=='')) {
+                if($tmp == $value){
                     switch ($key) {
                         case 'cacheable':
                             $value = $this->modxConfig('cache_default');
@@ -461,11 +440,11 @@ class modResource extends MODxAPI
                 }
                 $this->field[$key] = $value;
             }
-            switch (true) {
+            switch(true){
                 case $key == 'parent':
                     $parent = (int)$this->get($key);
                     $q = $this->query("SELECT count(`id`) FROM {$this->makeTable('site_content')} WHERE `id`='{$parent}'");
-                    if ($this->modx->db->getValue($q) != 1) {
+                    if($this->modx->db->getValue($q)!=1){
                         $parent = $value;
                     }
                     $this->field[$key] = $parent;
@@ -516,10 +495,10 @@ class modResource extends MODxAPI
             $this->newDoc = false;
         }
         $this->invokeEvent('OnDocFormSave', array(
-            'mode' => $this->mode,
-            'id' => $this->id,
-            'doc' => $this->toArray(),
-            'docObj' => $this
+            'mode'  => $this->mode,
+            'id'    => $this->id,
+            'doc'   => $this->toArray(),
+            'docObj'=> $this
         ), $fire_events);
 
         if ($clearCache) {
@@ -533,14 +512,13 @@ class modResource extends MODxAPI
      * @return $this
      * @throws Exception
      */
-    public function toTrash($ids)
-    {
+    public function toTrash($ids){
         $ignore = $this->systemID();
         $_ids = $this->cleanIDs($ids, ',', $ignore);
         if (is_array($_ids) && $_ids != array()) {
-            $id = $this->sanitarIn($_ids);
+        	$id = $this->sanitarIn($_ids);
             $this->query("UPDATE {$this->makeTable('site_content')} SET `deleted`='1' WHERE `id` IN ({$id})");
-        } else throw new Exception('Invalid IDs list for mark trash: <pre>' . print_r($ids, 1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
+		} else throw new Exception('Invalid IDs list for mark trash: <pre>' . print_r($ids, 1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
         return $this;
     }
 
@@ -548,13 +526,12 @@ class modResource extends MODxAPI
      * @param null $fire_events
      * @return $this
      */
-    public function clearTrash($fire_events = null)
-    {
+    public function clearTrash($fire_events = null){
         $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} WHERE `deleted`='1'");
         $q = $this->modx->makeArray($q);
         $_ids = array();
-        foreach ($q as $item) {
-            $_ids[] = $item['id'];
+        foreach($q as $item){
+              $_ids[] = $item['id'];
         }
         if (is_array($_ids) && $_ids != array()) {
             $this->invokeEvent('OnBeforeEmptyTrash', array(
@@ -582,10 +559,10 @@ class modResource extends MODxAPI
         $_ids = $this->cleanIDs($ids, ',');
         if (is_array($_ids) && $_ids != array()) {
             $id = $this->sanitarIn($_ids);
-            if (!empty($id)) {
+            if(!empty($id)) {
                 $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} where `parent` IN ({$id})");
                 $id = $this->modx->db->getColumn('id', $q);
-                if ($depth > 0 || $depth === true) {
+                if($depth > 0 || $depth === true){
                     $id = $this->childrens($id, is_bool($depth) ? $depth : ($depth - 1));
                 }
                 $_ids = array_merge($_ids, $id);
@@ -605,19 +582,19 @@ class modResource extends MODxAPI
         $ids = $this->childrens($ids, true);
         $_ids = $this->cleanIDs($ids, ',', $this->systemID());
         if (is_array($_ids) && $_ids != array()) {
-            $this->invokeEvent('OnBeforeEmptyTrash', array(
-                "ids" => $_ids
-            ), $fire_events);
+        	$this->invokeEvent('OnBeforeEmptyTrash', array(
+            	"ids" => $_ids
+			), $fire_events);
 
-            $id = $this->sanitarIn($_ids);
-            if (!empty($id)) {
-                $this->query("DELETE from {$this->makeTable('site_content')} where `id` IN ({$id})");
-                $this->query("DELETE from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid` IN ({$id})");
-                $this->invokeEvent('OnEmptyTrash', array(
-                    "ids" => $_ids
-                ), $fire_events);
-            }
-        } else throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
+			$id = $this->sanitarIn($_ids);
+			if(!empty($id)){
+				$this->query("DELETE from {$this->makeTable('site_content')} where `id` IN ({$id})");
+				$this->query("DELETE from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid` IN ({$id})");
+				$this->invokeEvent('OnEmptyTrash', array(
+					"ids" => $_ids
+				), $fire_events);
+			}
+		} else throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
 
         return $this;
     }
@@ -692,7 +669,7 @@ class modResource extends MODxAPI
                 $this->modx->_TVnames[$row['name']] = $row['id'];
             }
         }
-        foreach ($this->modx->_TVnames as $name => $id) {
+        foreach($this->modx->_TVnames as $name => $id){
             $this->tvid[$id] = $name;
             $this->tv[$name] = $id;
         }
@@ -703,12 +680,11 @@ class modResource extends MODxAPI
     /**
      * @return $this
      */
-    protected function loadTVTemplate()
-    {
-        $q = $this->query("SELECT `tmplvarid`, `templateid` FROM " . $this->makeTable('site_tmplvar_templates'));
+    protected function loadTVTemplate(){
+        $q = $this->query("SELECT `tmplvarid`, `templateid` FROM ".$this->makeTable('site_tmplvar_templates'));
         $q = $this->modx->db->makeArray($q);
         $this->tvTpl = array();
-        foreach ($q as $item) {
+        foreach($q as $item){
             $this->tvTpl[$item['templateid']][] = $item['tmplvarid'];
         }
         return $this;
@@ -720,7 +696,7 @@ class modResource extends MODxAPI
      */
     protected function loadTVDefault(array $tvId = array())
     {
-        if (is_array($tvId) && !empty($tvId)) {
+        if(is_array($tvId) && !empty($tvId)){
             $tbl_site_tmplvars = $this->makeTable('site_tmplvars');
             $fields = 'id,name,default_text as value,display,display_params,type';
             $implodeTvId = implode(',', $tvId);
@@ -743,13 +719,13 @@ class modResource extends MODxAPI
     {
         if (!is_numeric($tpl) || $tpl != (int)$tpl) {
             if (is_scalar($tpl)) {
-                $sql = "SELECT `id` FROM {$this->makeTable('site_templates')} WHERE `templatename` = '" . $this->escape($tpl) . "'";
-                $rs = $this->query($sql);
-                if (!$rs || $this->modx->db->getRecordCount($rs) <= 0) throw new Exception("Template {$tpl} is not exists");
-                $tpl = $this->modx->db->getValue($rs);
-            } else {
-                throw new Exception("Invalid template name: " . print_r($tpl, 1));
-            }
+            	$sql = "SELECT `id` FROM {$this->makeTable('site_templates')} WHERE `templatename` = '".$this->escape($tpl)."'";
+				$rs = $this->query($sql);
+				if (!$rs || $this->modx->db->getRecordCount($rs) <= 0) throw new Exception("Template {$tpl} is not exists");
+				$tpl = $this->modx->db->getValue($rs);
+			} else {
+				throw new Exception("Invalid template name: " . print_r($tpl, 1));
+			}
         }
         return (int)$tpl;
     }

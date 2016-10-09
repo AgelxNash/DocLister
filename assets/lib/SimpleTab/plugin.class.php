@@ -1,5 +1,6 @@
 <?php
 namespace SimpleTab;
+
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLTemplate.class.php');
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 require_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
@@ -11,107 +12,28 @@ require_once(MODX_BASE_PATH . 'assets/lib/Helpers/Assets.php');
  */
 abstract class Plugin
 {
-
-    /**
-     * Объект DocumentParser - основной класс MODX'а
-     * @var \DocumentParser|null
-     * @access protected
-     */
     public $modx = null;
-
-    /**
-     * @var string
-     */
     public $pluginName = '';
-
-    /**
-     * @var array
-     */
     public $params = array();
-
-    /**
-     * @var string
-     */
     public $table = '';
-
-    /**
-     * @var string
-     */
     public $tpl = '';
-
-    /**
-     * @var string
-     */
     public $jsListDefault = '';
-
-    /**
-     * @var string
-     */
     public $jsListCustom = '';
-
-    /**
-     * @var string
-     */
     public $cssListDefault = '';
-
-    /**
-     * @var string
-     */
     public $cssListCustom = '';
-
-    /**
-     * @var array
-     */
     public $pluginEvents = array();
-
-    /**
-     * @var string
-     */
     public $_table = '';
-
-    /**
-     * @var \Helpers\FS|null
-     */
     protected $fs = null;
-
-    /**
-     * @var \AssetsHelper|null
-     */
     protected $assets = null;
-
-    /**
-     * @var null
-     */
     protected $emptyTpl = null;
-
-    /**
-     * @var string
-     */
     protected $jsListEmpty = '';
 
-    /**
-     * @var \DLTemplate|null
-     */
     public $DLTemplate = null;
-
-    /**
-     * @var string
-     */
     public $lang_attribute = '';
 
-    /**
-     * @var bool
-     */
     protected $checkTemplate = true;
-
-    /**
-     * @var string
-     */
     protected $renderEvent = 'OnDocFormRender';
 
-    /**
-     * @var bool
-     */
     protected $checkId = true;
 
     /**
@@ -129,10 +51,13 @@ abstract class Plugin
             $this->params['template'] = is_array($doc) ? end($doc) : null;
         }
         //overload plugin and class properties
-        $_params = $modx->parseProperties('&template=;;' . $this->params['template'] . ' &id=;;' . $this->params['id'], $modx->event->activePlugin, 'plugin');
-        foreach ($_params as $key => $value)
-            if (property_exists($this, $key))
+        $_params = $modx->parseProperties('&template=;;' . $this->params['template'] . ' &id=;;' . $this->params['id'],
+            $modx->event->activePlugin, 'plugin');
+        foreach ($_params as $key => $value) {
+            if (property_exists($this, $key)) {
                 $this->$key = $value;
+            }
+        }
 
         $this->params = array_merge($this->params, $_params);
         $modx->event->_output = "";
@@ -147,7 +72,9 @@ abstract class Plugin
      */
     public function clearFolders($ids = array(), $folder)
     {
-        foreach ($ids as $id) $this->fs->rmDir($folder . $id . '/');
+        foreach ($ids as $id) {
+            $this->fs->rmDir($folder . $id . '/');
+        }
     }
 
     /**
@@ -158,7 +85,8 @@ abstract class Plugin
         $templates = isset($this->params['templates']) ? explode(',', $this->params['templates']) : false;
         $roles = isset($this->params['roles']) ? explode(',', $this->params['roles']) : false;
 
-        $tplFlag = ($this->checkTemplate && !$templates || ($templates && !in_array($this->params['template'], $templates)));
+        $tplFlag = ($this->checkTemplate && !$templates || ($templates && !in_array($this->params['template'],
+                    $templates)));
 
         $documents = isset($this->params['documents']) ? explode(',', $this->params['documents']) : false;
         $docFlag = ($this->checkId && $tplFlag) ? !($documents && in_array($this->params['id'], $documents)) : $tplFlag;
@@ -184,10 +112,12 @@ abstract class Plugin
         }
         $output = '';
         $plugins = $this->modx->pluginEvent;
-        if (($this->renderEvent !== 'OnDocFormRender' || (array_search('ManagerManager', $plugins['OnDocFormRender']) === false))) {
+        if (($this->renderEvent !== 'OnDocFormRender' || (array_search('ManagerManager',
+                    $plugins['OnDocFormRender']) === false))
+        ) {
             $jquery = $this->assets->registerScript('jQuery', array(
                 'version' => '1.9.1',
-                'src' => 'assets/js/jquery/jquery-1.9.1.min.js'
+                'src'     => 'assets/js/jquery/jquery-1.9.1.min.js'
             ));
             if ($jquery !== false) {
                 $output .= $jquery;
@@ -220,7 +150,9 @@ abstract class Plugin
             $scripts = isset($scripts['scripts']) ? $scripts['scripts'] : $scripts['styles'];
             foreach ($scripts as $name => $params) {
                 $script = $this->assets->registerScript($name, $params);
-                if ($script !== false) $js .= $script;
+                if ($script !== false) {
+                    $js .= $script;
+                }
             }
         } else {
             if ($list == $this->jsListDefault) {
@@ -251,7 +183,8 @@ abstract class Plugin
             if ($output !== false) {
                 $ph = $this->getTplPlaceholders();
                 $ph['js'] = $this->renderJS($this->jsListDefault, $ph) . $this->renderJS($this->jsListCustom, $ph);
-                $ph['styles'] = $this->renderJS($this->cssListDefault, $ph) . $this->renderJS($this->cssListCustom, $ph);
+                $ph['styles'] = $this->renderJS($this->cssListDefault, $ph) . $this->renderJS($this->cssListCustom,
+                        $ph);
                 $output = $this->DLTemplate->parseChunk('@CODE:' . $output, $ph);
             }
             return $output;
@@ -306,7 +239,9 @@ abstract class Plugin
             $result = $this->modx->db->select('`id`', $eventsTable, "`name` = '{$event}'");
             if (!$this->modx->db->getRecordCount($result)) {
                 $sql = "INSERT INTO {$eventsTable} VALUES (NULL, '{$event}', '{$eventsType}', '{$this->pluginName} Events')";
-                if (!$this->modx->db->query($sql)) $this->modx->logEvent(0, 3, "Cannot register {$event} event.", $this->pluginName);
+                if (!$this->modx->db->query($sql)) {
+                    $this->modx->logEvent(0, 3, "Cannot register {$event} event.", $this->pluginName);
+                }
             }
         }
     }

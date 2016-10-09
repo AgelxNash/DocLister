@@ -4,7 +4,6 @@ if (!defined('MODX_BASE_PATH')) {
 }
 
 require_once 'content.filter.php';
-
 /**
  * Filters DocLister results by value of a given MODx Template Variables (TVs).
  * @author kabachello <kabachnik@hotmail.com>
@@ -12,14 +11,7 @@ require_once 'content.filter.php';
  */
 class tv_DL_filter extends content_DL_filter
 {
-    /**
-     * @var
-     */
     protected $tv_id;
-
-    /**
-     * @var null
-     */
     protected $tvName = null;
     /**
      * @var tv_DL_Extender

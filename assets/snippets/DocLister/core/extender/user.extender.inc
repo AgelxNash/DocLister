@@ -14,21 +14,11 @@ if (!defined('MODX_BASE_PATH')) {
  * @param $usertype get information about managers or web users
  *
  */
+
 class user_DL_Extender extends extDocLister
 {
-    /**
-     * @var array
-     */
     private $fields = array();
-
-    /**
-     * @var array
-     */
     private $userinfo = array();
-
-    /**
-     * @var array
-     */
     private $table = array();
 
     /**

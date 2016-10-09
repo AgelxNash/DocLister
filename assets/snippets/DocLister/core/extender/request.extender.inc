@@ -15,12 +15,8 @@ if (!defined('MODX_BASE_PATH')) {
 /*
  * @TODO: не юзать. сырой, дырявый и вообще удалить нафиг
  */
-
 class request_DL_Extender extends extDocLister
 {
-    /**
-     * @var array
-     */
     private $param = array();
 
     /**
@@ -54,30 +50,30 @@ class request_DL_Extender extends extDocLister
         switch ($tmp[1]) {
             case 'r':
             case 'request':
-                //$_REQUEST;
+              //$_REQUEST;
                 $GLOBArr = $_REQUEST;
                 $name = "request";
                 break;
             case 'c':
             case 'cookie':
-                //$_COOKIE;
+            //$_COOKIE;
                 $GLOBArr = $_COOKIE;
                 $name = "cookie";
                 break;
             case 'p':
             case 'post':
-                //$_POST;
+            //$_POST;
                 $GLOBArr = $_POST;
                 $name = "post";
                 break;
             case 'session':
-                //$_SESSION;
+            //$_SESSION;
                 $GLOBArr = $_SESSION;
                 $name = "session";
                 break;
             case 'g':
             case 'get':
-                //$_GET;
+            //$_GET;
                 $GLOBArr = $_GET;
                 $name = "get";
         }
@@ -140,9 +136,6 @@ class request_DL_Extender extends extDocLister
         return $out;
     }
 
-    /**
-     *
-     */
     private function setCFG()
     {
         foreach ($this->param as $name => $item) {

@@ -2,7 +2,6 @@
 if (!defined('MODX_BASE_PATH')) {
     die('HACK???');
 }
-
 /**
  * Jot extender for DocLister
  *
@@ -10,6 +9,7 @@ if (!defined('MODX_BASE_PATH')) {
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Pathologic <maxx@np.by>
  */
+
 class jotcount_DL_Extender extends extDocLister
 {
     /**

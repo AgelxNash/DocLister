@@ -16,19 +16,8 @@ if (!defined('MODX_BASE_PATH')) {
  */
 class tv_DL_Extender extends extDocLister
 {
-    /**
-     * @var mixed|string
-     */
     protected $tvValuesTable = 'site_tmplvar_contentvalues';
-
-    /**
-     * @var mixed|null|string
-     */
     protected $_TVprefix = null;
-
-    /**
-     * @var bool
-     */
     public $storeTable = true;
 
     /**
@@ -39,7 +28,7 @@ class tv_DL_Extender extends extDocLister
     public function __construct($DocLister, $name)
     {
         parent::__construct($DocLister, $name);
-        if (!isset($this->modx->_TVnames)) {
+        if(!isset($this->modx->_TVnames)){
             $this->modx->_TVnames = array();
         }
         $this->tvValuesTable = $this->DocLister->getCFGDef('tvValuesTable', $this->tvValuesTable());

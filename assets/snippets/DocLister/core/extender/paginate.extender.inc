@@ -18,14 +18,8 @@ include_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/DLpaginate.class.ph
  */
 class paginate_DL_Extender extends extDocLister
 {
-    /**
-     * @var bool
-     */
     protected $lang = true;
 
-    /**
-     * @var array
-     */
     private $_pages = array();
 
     /**

@@ -34,7 +34,6 @@ abstract class DocLister
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
      */
     const AliasRequest = 'q';
-
     /**
      * Массив документов полученный в результате выборки из базы
      * @var array
@@ -57,7 +56,7 @@ abstract class DocLister
 
     /**
      * Объект DocumentParser - основной класс MODX'а
-     * @var DocumentParser|null
+     * @var DocumentParser
      * @access protected
      */
     protected $modx = null;
@@ -111,10 +110,10 @@ abstract class DocLister
     protected $idField = 'id';
 
     /**
-     * Parent Key основной таблицы
-     * @var string
-     * @access protected
-     */
+    * Parent Key основной таблицы
+    * @var string
+    * @access protected
+    */
     protected $parentField = 'parent';
     /**
      * Дополнительные условия для SQL запросов
@@ -167,27 +166,23 @@ abstract class DocLister
     /** @var string имя шаблона для вывода записи */
     public $renderTPL = '';
 
-    /** @var string имя шаблона обертки для записей */
+    /** @var string имя шаблона обертки для записей  */
     public $ownerTPL = '';
 
-    /**
-     * @var \Helpers\FS|null
-     */
     public $FS = null;
     /** @var string результатирующая строка которая была последний раз сгенирирована
-     *               вызовами методов DocLister::render и DocLister::getJSON
-     */
+    *               вызовами методов DocLister::render и DocLister::getJSON
+    */
     protected $outData = '';
+	
+	/** @var int Число документов, которые были отфильтрованы через prepare при выводе */
+	public $skippedDocs = 0;
 
-    /** @var int Число документов, которые были отфильтрованы через prepare при выводе */
-    public $skippedDocs = 0;
+	/** @var string Имя таблицы */
+	protected $table = '';
 
-    /** @var string Имя таблицы */
-    protected $table = '';
-
-    /** @var null|paginate_DL_Extender */
-    protected $extPaginate = null;
-
+	/** @var null|paginate_DL_Extender  */
+	protected $extPaginate = null;
     /**
      * Конструктор контроллеров DocLister
      *
@@ -199,30 +194,30 @@ abstract class DocLister
     {
         $this->setTimeStart($startTime);
 
-        if (extension_loaded('mbstring')) {
-            mb_internal_encoding("UTF-8");
-        } else {
-            throw new Exception('Not found php extension mbstring');
-        }
+		if (extension_loaded('mbstring')) {
+        	mb_internal_encoding("UTF-8");
+		} else {
+        	throw new Exception('Not found php extension mbstring');
+		}
 
         if ($modx instanceof DocumentParser) {
-            $this->modx = $modx;
+        	$this->modx = $modx;
             $this->setDebug(1);
             $this->loadLang(array('core', 'json'));
 
             if (!is_array($cfg) || empty($cfg)) $cfg = $this->modx->Event->params;
-        } else {
-            throw new Exception('MODX var is not instaceof DocumentParser');
-        }
+		} else {
+        	throw new Exception('MODX var is not instaceof DocumentParser');
+		}
 
         $this->FS = \Helpers\FS::getInstance();
         if (isset($cfg['config'])) {
-            $cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
-        }
+        	$cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
+		}
 
-        if (!$this->setConfig($cfg)) {
-            throw new Exception('no parameters to run DocLister');
-        }
+		if (!$this->setConfig($cfg)) {
+        	throw new Exception('no parameters to run DocLister');
+		}
 
         $this->setDebug($this->getCFGDef('debug', 0));
 
@@ -270,49 +265,48 @@ abstract class DocLister
 
     /**
      * Разбиение фильтра на субфильтры с учётом вложенности
-     * @param string $str строка с фильтром
+	 * @param string $str строка с фильтром
      * @return array массив субфильтров
      */
-    public function smartSplit($str)
-    {
-        $res = array();
-        $cur = '';
-        $open = 0;
-        $strlen = mb_strlen($str, 'UTF-8');
-        for ($i = 0; $i <= $strlen; $i++) {
-            $e = mb_substr($str, $i, 1, 'UTF-8');
-            switch ($e) {
-                case ')':
-                    $open--;
-                    if ($open == 0) {
-                        $res[] = $cur . ')';
-                        $cur = '';
-                    } else {
-                        $cur .= $e;
-                    }
-                    break;
-                case '(':
-                    $open++;
-                    $cur .= $e;
-                    break;
-                case ';':
-                    if ($open == 0) {
-                        $res[] = $cur;
-                        $cur = '';
-                    } else {
-                        $cur .= $e;
-                    }
-                    break;
-                default:
-                    $cur .= $e;
-            }
-        }
-        $cur = preg_replace("/(\))$/u", '', $cur);
-        if ($cur != '') {
-            $res[] = $cur;
-        }
-        return $res;
-    }
+	public function smartSplit($str){
+		$res = array();
+		$cur = '';
+		$open = 0;
+		$strlen = mb_strlen($str, 'UTF-8');
+		for($i=0;$i<=$strlen;$i++){
+			$e = mb_substr($str, $i, 1, 'UTF-8');
+			switch($e){
+				case ')':
+					$open--;
+					if($open == 0){
+						$res[] = $cur.')';
+						$cur = '';
+					} else {
+						$cur .= $e;
+					}
+					break;
+				case '(':
+					$open++;
+					$cur .= $e;
+					break;
+				case ';':
+					if($open == 0){
+						$res[] = $cur;
+						$cur = '';
+					} else {
+						$cur .= $e;
+					}
+					break;
+				default:
+					$cur .= $e;
+			}
+		}
+		$cur = preg_replace("/(\))$/u", '', $cur);
+		if ($cur != ''){
+			$res[] = $cur;
+		}
+		return $res;
+	}
 
     /**
      * Трансформация объекта в строку
@@ -447,13 +441,13 @@ abstract class DocLister
                 $cfgName[1] = 'custom';
             }
             $cfgName[1] = rtrim($cfgName[1], '/');
-            switch ($cfgName[1]) {
+            switch($cfgName[1]){
                 case 'custom':
                 case 'core':
                     $configFile = dirname(dirname(__FILE__)) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
                     break;
                 default:
-                    $configFile = $this->FS->relativePath($cfgName[1] . '/' . $cfgName[0] . ".json");
+                    $configFile = $this->FS->relativePath( $cfgName[1] . '/' . $cfgName[0] . ".json");
                     break;
             }
 
@@ -511,31 +505,31 @@ abstract class DocLister
         $flag = true;
         $extenders = $this->getCFGDef('extender', '');
         $extenders = explode(",", $extenders);
-        if (($this->getCFGDef('requestActive', '') != '' || in_array('request', $extenders)) && !$this->_loadExtender('request')) { //OR request in extender's parameter
-            throw new Exception('Error load request extender');
-        }
+        	if (($this->getCFGDef('requestActive', '') != '' || in_array('request', $extenders)) && !$this->_loadExtender('request')) { //OR request in extender's parameter
+                throw new Exception('Error load request extender');
+            }
 
-        if (($this->getCFGDef('summary', '') != '' || in_array('summary', $extenders)) && !$this->_loadExtender('summary')) { //OR summary in extender's parameter
-            throw new Exception('Error load summary extender');
-        }
+            if (($this->getCFGDef('summary', '') != '' || in_array('summary', $extenders)) && !$this->_loadExtender('summary')) { //OR summary in extender's parameter
+                throw new Exception('Error load summary extender');
+            }
 
-        if (
-            (int)$this->getCFGDef('display', 0) > 0 && ( //OR paginate in extender's parameter
-                in_array('paginate', $extenders) || $this->getCFGDef('paginate', '') != '' ||
-                $this->getCFGDef('TplPrevP', '') != '' || $this->getCFGDef('TplPage', '') != '' ||
-                $this->getCFGDef('TplCurrentPage', '') != '' || $this->getCFGDef('TplWrapPaginate', '') != '' ||
-                $this->getCFGDef('pageLimit', '') != '' || $this->getCFGDef('pageAdjacents', '') != '' ||
-                $this->getCFGDef('PaginateClass', '') != '' || $this->getCFGDef('TplNextP', '') != ''
-            ) && !$this->_loadExtender('paginate')
-        ) {
-            throw new Exception('Error load paginate extender');
-        } else if ((int)$this->getCFGDef('display', 0) == 0) {
-            $extenders = $this->unsetArrayVal($extenders, 'paginate');
-        }
+            if (
+                (int)$this->getCFGDef('display', 0) > 0 && ( //OR paginate in extender's parameter
+                    in_array('paginate', $extenders) || $this->getCFGDef('paginate', '') != '' ||
+                    $this->getCFGDef('TplPrevP', '') != '' || $this->getCFGDef('TplPage', '') != '' ||
+                    $this->getCFGDef('TplCurrentPage', '') != '' || $this->getCFGDef('TplWrapPaginate', '') != '' ||
+                    $this->getCFGDef('pageLimit', '') != '' || $this->getCFGDef('pageAdjacents', '') != '' ||
+                    $this->getCFGDef('PaginateClass', '') != '' || $this->getCFGDef('TplNextP', '') != ''
+                ) && !$this->_loadExtender('paginate')
+            ) {
+                throw new Exception('Error load paginate extender');
+            } else if ((int)$this->getCFGDef('display', 0) == 0) {
+                $extenders = $this->unsetArrayVal($extenders, 'paginate');
+            }
 
-        if ($this->getCFGDef('prepare', '') != '' || $this->getCFGDef('prepareWrap') != '') {
-            $this->_loadExtender('prepare');
-        }
+            if ($this->getCFGDef('prepare', '') != '' || $this->getCFGDef('prepareWrap') != '') {
+                $this->_loadExtender('prepare');
+            }
 
         $this->setConfig(array('extender' => implode(",", $extenders)));
         $this->debug->debugEnd("checkDL");
@@ -615,18 +609,17 @@ abstract class DocLister
      ****************** CORE Block *********************
      ***************************************************/
 
-    /**
-     * Определение ID страницы открытой во фронте
-     *
-     * @return int
-     */
-    public function getCurrentMODXPageID()
-    {
-        $id = isset($this->modx->documentIdentifier) ? (int)$this->modx->documentIdentifier : 0;
-        $docData = isset($this->modx->documentObject) ? $this->modx->documentObject : array();
+	 /**
+	 * Определение ID страницы открытой во фронте
+	 *
+	 * @return int
+	 */
+	 public function getCurrentMODXPageID(){
+		$id = isset($this->modx->documentIdentifier) ? (int)$this->modx->documentIdentifier : 0;
+		$docData = isset($this->modx->documentObject) ? $this->modx->documentObject : array();
 
-        return empty($id) ? \APIHelpers::getkey($docData, 'id', 0) : $id;
-    }
+		return empty($id) ? \APIHelpers::getkey($docData, 'id', 0) : $id;
+	}
 
     /**
      * Display and save error information
@@ -674,14 +667,14 @@ abstract class DocLister
             $ext = explode(",", $ext);
             foreach ($ext as $item) {
                 if ($item != '' && !$this->_loadExtender($item)) {
-                    throw new Exception('Error load ' . APIHelpers::e($item) . ' extender');
-                }
+                	throw new Exception('Error load ' . APIHelpers::e($item) . ' extender');
+				}
             }
         }
         return $out;
     }
 
-    /**
+	/**
      * Получение всего списка настроек
      * @return array
      */
@@ -697,7 +690,7 @@ abstract class DocLister
      */
     public function setConfig($cfg)
     {
-        if (is_array($cfg)) {
+		if (is_array($cfg)) {
             $this->_cfg = array_merge($this->_cfg, $cfg);
             $ret = count($this->_cfg);
         } else {
@@ -706,7 +699,7 @@ abstract class DocLister
         return $ret;
     }
 
-    /**
+	/**
      * Полная перезапись настроек вызова сниппета
      * @param array $cfg массив настроек
      * @return int Общее число новых настроек
@@ -714,9 +707,9 @@ abstract class DocLister
     public function replaceConfig($cfg)
     {
         if (!is_array($cfg)) {
-            $cfg = array();
+			$cfg = array();
         }
-        $this->_cfg = $cfg;
+		$this->_cfg = $cfg;
         return count($this->_cfg);
     }
 
@@ -752,7 +745,7 @@ abstract class DocLister
         $out = DLTemplate::getInstance($this->getMODX())->toPlaceholders($data, $set, $key, $id);
 
         $this->debug->debugEnd(
-            "toPlaceholders", array($key . " placeholder" => $data), array('html')
+            "toPlaceholders", array($key ." placeholder" => $data), array('html')
         );
         return $out;
     }
@@ -774,7 +767,7 @@ abstract class DocLister
         }
         $out = array();
         foreach ($data as $item) {
-            if ($item !== '') {
+            if($item !== ''){
                 $out[] = $this->modx->db->escape($item);
             }
         }
@@ -998,34 +991,33 @@ abstract class DocLister
      * @param string $data html код который нужно обернуть в ownerTPL
      * @return string результатирующий html код
      */
-    public function renderWrap($data)
-    {
+    public function renderWrap($data){
         $out = $data;
-        $docs = count($this->_docs) - $this->skippedDocs;
-        if ((($this->getCFGDef("noneWrapOuter", "1") && $docs == 0) || $docs > 0) && !empty($this->ownerTPL)) {
-            $this->debug->debug("", "renderWrapTPL", 2);
+		$docs = count($this->_docs) - $this->skippedDocs;
+		if ((($this->getCFGDef("noneWrapOuter", "1") && $docs == 0) || $docs > 0) && !empty($this->ownerTPL)) {
+            $this->debug->debug("","renderWrapTPL",2);
             $parse = true;
             $plh = array($this->getCFGDef("sysKey", "dl") . ".wrap" => $data);
             /**
-             * @var $extPrepare prepare_DL_Extender
-             */
+            * @var $extPrepare prepare_DL_Extender
+            */
             $extPrepare = $this->getExtender('prepare');
             if ($extPrepare) {
                 $params = $extPrepare->init($this, array(
                     'data' => array(
-                        'docs' => $this->_docs,
-                        'placeholders' => $plh
-                    ),
+						'docs' => $this->_docs,
+						'placeholders' => $plh
+					),
                     'nameParam' => 'prepareWrap',
                     'return' => 'placeholders'
                 ));
-                if (is_bool($params) && $params === false) {
+                if (is_bool($params) && $params === false){
                     $out = $data;
                     $parse = false;
                 }
                 $plh = $params;
             }
-            if ($parse && !empty($this->ownerTPL)) {
+            if($parse && !empty($this->ownerTPL)){
                 $this->debug->updateMessage(
                     array("render ownerTPL" => $this->ownerTPL, "With data" => print_r($plh, 1)),
                     "renderWrapTPL",
@@ -1033,28 +1025,26 @@ abstract class DocLister
                 );
                 $out = $this->parseChunk($this->ownerTPL, $plh);
             }
-            if (empty($this->ownerTPL)) {
+            if(empty($this->ownerTPL)){
                 $this->debug->updateMessage("empty ownerTPL", "renderWrapTPL");
             }
             $this->debug->debugEnd("renderWrapTPL");
         }
         return $out;
     }
-
     /**
-     * Единые обработки массива с данными о документе для всех контроллеров
-     *
-     * @param array $data массив с данными о текущем документе
-     * @param int $i номер итерации в цикле
-     * @return array массив с данными которые можно использовать в цикле render метода
-     */
-    protected function uniformPrepare(&$data, $i = 0)
-    {
+    * Единые обработки массива с данными о документе для всех контроллеров
+    *
+    * @param array $data массив с данными о текущем документе
+    * @param int $i номер итерации в цикле
+    * @return array массив с данными которые можно использовать в цикле render метода
+    */
+    protected function uniformPrepare(&$data, $i=0){
         $class = array();
 
         $iterationName = ($i % 2 == 0) ? 'Odd' : 'Even';
         $tmp = strtolower($iterationName);
-        $class[] = $this->getCFGDef($tmp . 'Class', $tmp);
+        $class[] = $this->getCFGDef($tmp.'Class', $tmp);
 
         $this->renderTPL = $this->getCFGDef('tplId' . $i, $this->renderTPL);
         $this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
@@ -1081,17 +1071,16 @@ abstract class DocLister
         $data[$this->getCFGDef("sysKey", "dl") . '.class'] = $class;
 
         /**
-         * @var $extE e_DL_Extender
-         */
+        * @var $extE e_DL_Extender
+        */
         $extE = $this->getExtender('e', true, true);
-        if ($out = $extE->init($this, compact('data'))) {
-            if (is_array($out)) {
-                $data = $out;
+        if($out = $extE->init($this, compact('data'))){
+            if(is_array($out)){
+                $data =  $out;
             }
         }
         return compact('class', 'iterationName');
     }
-
     /**
      * Формирование JSON ответа
      *
@@ -1338,8 +1327,7 @@ abstract class DocLister
     /**
      * @return DLCollection
      */
-    public function docsCollection()
-    {
+    public function docsCollection(){
         return new DLCollection($this->modx, $this->_docs);
     }
 
@@ -1410,10 +1398,10 @@ abstract class DocLister
                     switch (true) {
                         case ('' != ($tmp = $this->getCFGDef('sortDir', ''))): //higher priority than order
                             $out['order'] = $tmp;
-                        // no break
+							// no break
                         case ('' != ($tmp = $this->getCFGDef('order', ''))):
                             $out['order'] = $tmp;
-                        // no break
+							// no break
                     }
                     if ('' == $out['order'] || !in_array(strtoupper($out['order']), array('ASC', 'DESC'))) {
                         $out['order'] = $orderDef; //Default
@@ -1534,15 +1522,13 @@ abstract class DocLister
     }
 
     /**
-     * Получение Parent key
-     * По умолчанию это parent. Переопределить можно в контроллере присвоив другое значение переменной parentField
-     * @return string Parent Key основной таблицы
-     */
-    public function getParentField()
-    {
+    * Получение Parent key
+    * По умолчанию это parent. Переопределить можно в контроллере присвоив другое значение переменной parentField
+    * @return string Parent Key основной таблицы
+    */
+    public function getParentField(){
         return isset($this->parentField) ? $this->parentField : '';
     }
-
     /**
      * Разбор фильтров
      * OR(AND(filter:field:operator:value;filter2:field:oerpator:value);(...)), etc.
@@ -1558,7 +1544,7 @@ abstract class DocLister
         if (!$filter_string) return;
         $output = array('join' => '', 'where' => '');
         $logic_op_found = false;
-        $joins = $wheres = array();
+		$joins = $wheres = array();
         foreach ($this->_logic_ops as $op => $sql) {
             if (strpos($filter_string, $op) === 0) {
                 $logic_op_found = true;

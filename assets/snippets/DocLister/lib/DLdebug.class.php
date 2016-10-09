@@ -7,14 +7,7 @@ include_once(MODX_BASE_PATH . 'assets/lib/Formatter/HtmlFormatter.php');
  */
 class DLdebug
 {
-    /**
-     * @var array
-     */
     private $_log = array();
-
-    /**
-     * @var array
-     */
     private $_calcLog = array();
 
     /**
@@ -25,8 +18,8 @@ class DLdebug
     protected $DocLister = null;
 
     /**
-     * Объект DocumentParser - основной класс MODX'а
-     * @var \DocumentParser|null
+     * Объект DocumentParser - основной класс MODX
+     * @var DocumentParser
      * @access protected
      */
     protected $modx = null;
@@ -47,16 +40,14 @@ class DLdebug
     /**
      * @return array
      */
-    public function getLog()
-    {
+    public function getLog(){
         return $this->_log;
     }
 
     /**
      * @return $this
      */
-    public function clearLog()
-    {
+    public function clearLog(){
         $this->_log = array();
         return $this;
     }
@@ -64,8 +55,7 @@ class DLdebug
     /**
      * @return int
      */
-    public function countLog()
-    {
+    public function countLog(){
         return count($this->_log);
     }
     /*
@@ -101,11 +91,10 @@ class DLdebug
      * @param $key
      * @param null $format
      */
-    public function updateMessage($message, $key, $format = null)
-    {
+    public function updateMessage($message, $key, $format = null){
         if (is_scalar($key) && !empty($key) && isset($this->_calcLog[$key])) {
             $this->_calcLog[$key]['msg'] = $message;
-            if (!is_null($format)) {
+            if(!is_null($format)){
                 $this->_calcLog[$key]['format'] = $format;
             }
         }
@@ -180,17 +169,17 @@ class DLdebug
                 $item['start'] = isset($item['start']) ? round(floatval($item['start']), 5) : 0;
 
                 if (isset($item['msg'])) {
-                    if (is_scalar($item['msg'])) {
+                    if(is_scalar($item['msg'])){
                         $item['msg'] = array($item['msg']);
                     }
-                    if (is_scalar($item['format'])) {
+                    if(is_scalar($item['format'])){
                         $item['format'] = array($item['format']);
                     }
                     $message = '';
                     $i = 0;
-                    foreach ($item['msg'] as $title => $msg) {
+                    foreach($item['msg'] as $title => $msg){
                         $format = isset($item['format'][$i]) ? $item['format'][$i] : null;
-                        switch ($format) {
+                        switch($format){
                             case 'sql':
                                 $msg = $this->dumpData(Formatter\SqlFormatter::format($msg), '', null);
                                 break;
@@ -201,9 +190,9 @@ class DLdebug
                                 $msg = $this->dumpData($msg);
                                 break;
                         }
-                        if (!empty($title) && !is_numeric($title)) {
+                        if(!empty($title) && !is_numeric($title)){
                             $message .= $this->DocLister->parseChunk('@CODE:<strong>[+title+]</strong>: [+msg+]<br />', compact('msg', 'title'));
-                        } else {
+                        }else{
                             $message .= $msg;
                         }
                         $i++;

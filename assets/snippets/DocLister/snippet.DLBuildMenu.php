@@ -6,7 +6,7 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLFixedPrepare.class.php');
 
 $p = &$modx->event->params;
-if (!is_array($p)) {
+if(!is_array($p)){
     $p = array();
 }
 
@@ -17,12 +17,12 @@ $p['currentDepth'] = $currentDepth = \APIhelpers::getkey($p, 'currentDepth', 1);
 /** Основной шаблон обертка */
 $p['TplMainOwner'] = \APIhelpers::getkey($p, 'TplMainOwner',
     '@CODE: <ul id="nav" class="menu level-1">[+dl.wrap+]</ul>'
-);
+    );
 
 /** Шаблон обертка для вложенных уровней */
 $p['TplSubOwner'] = \APIhelpers::getkey($p, 'TplSubOwner',
     '@CODE: <ul class="sub-menu level-[+dl.currentDepth+]">[+dl.wrap+]</ul>'
-);
+    );
 
 /**
  * TplOwnerN    Шаблон обертка для N уровня вложенности
@@ -44,10 +44,10 @@ $p['TplOneItem'] = $currentTpl = \APIhelpers::getkey($p, 'TplOneItem',
 );
 
 /**
- *   TplDepthN               Шаблон пункта меню вложенности N
- *   TplNoChildrenDepthN     Шаблон пункта меню вложенности N без дочерних элементов
- *   noChildrenRowTPL        Общий шаблон пункта меню без дочерних элементов
- */
+*   TplDepthN               Шаблон пункта меню вложенности N
+*   TplNoChildrenDepthN     Шаблон пункта меню вложенности N без дочерних элементов
+*   noChildrenRowTPL        Общий шаблон пункта меню без дочерних элементов
+*/
 $currentTpl = \APIhelpers::getkey($p, 'TplDepth' . $currentDepth, $currentTpl);
 $currentNoChildrenTpl = \APIhelpers::getkey($p, 'TplNoChildrenDepth' . $currentDepth);
 if (empty($currentNoChildrenTpl)) {
@@ -58,11 +58,11 @@ if (empty($currentNoChildrenTpl)) {
 /** Условия выборки документов для всех уровней */
 $p['addWhereList'] = $currentWhere = \APIhelpers::getkey($p, 'addWhereList', 'c.hidemenu = 0');
 /** addWhereListN   Условия выборки документов N уровня */
-$currentWhere = \APIhelpers::getkey($p, 'addWhereList' . $currentDepth, $currentWhere);
+$currentWhere = \APIhelpers::getkey($p, 'addWhereList'.$currentDepth, $currentWhere);
 
 $p['orderBy'] = $currentOrderBy = \APIhelpers::getkey($p, 'orderBy', 'menuindex ASC, id ASC');
 /** orderByN   Условия сортировки документов N уровня */
-$currentOrderBy = \APIhelpers::getkey($p, 'orderBy' . $currentDepth, $currentOrderBy);
+$currentOrderBy = \APIhelpers::getkey($p, 'orderBy'.$currentDepth, $currentOrderBy);
 
 /**
  * Получение prepare сниппетов из параметров BeforePrepare и AfterPrepare

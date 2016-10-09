@@ -1,46 +1,25 @@
 <?php namespace SimpleTab;
-require_once(MODX_BASE_PATH . 'assets/lib/MODxAPI/autoTable.abstract.php');
-require_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
-require_once(MODX_BASE_PATH . 'assets/lib/Helpers/PHPThumb.php');
+require_once (MODX_BASE_PATH . 'assets/lib/MODxAPI/autoTable.abstract.php');
+require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
+require_once (MODX_BASE_PATH . 'assets/lib/Helpers/PHPThumb.php');
 
 /**
  * Class dataTable
  * @package SimpleTab
  */
-class dataTable extends \autoTable
-{
-    /**
-     * @var array
-     */
+class dataTable extends \autoTable {
     protected $params = array();
-
-    /**
-     * @var \Helpers\FS|null
-     */
     protected $fs = null;
-
-    /**
-     * @var null
-     */
-    protected $indexName = null;
-
-    /**
-     * @var null
-     */
-    protected $rfName = null;
-
-    /**
-     * @var null
-     */
-    protected $thumbsCache = null;
+	protected $indexName = null;
+	protected $rfName = null;
+	protected $thumbsCache = null;
 
     /**
      * dataTable constructor.
      * @param \DocumentParser $modx
      * @param bool $debug
      */
-    public function __construct($modx, $debug = false)
-    {
+    public function __construct($modx, $debug = false) {
         parent::__construct($modx, $debug);
         $this->modx = $modx;
         $this->params = (isset($modx->event->params) && is_array($modx->event->params)) ? $modx->event->params : array();
@@ -50,17 +29,15 @@ class dataTable extends \autoTable
     /**
      * @param $ids
      * @param $rid
-     * @return mixed
      */
-    protected function clearIndexes($ids, $rid)
-    {
+    protected function clearIndexes($ids, $rid) {
         $ids = $this->cleanIDs($ids, ',', array(0));
         $ids = $this->sanitarIn($ids);
         $table = $this->makeTable($this->table);
         $rows = $this->query("SELECT MIN(`{$this->indexName}`) FROM {$table} WHERE `{$this->pkName}` IN ({$ids})");
         $index = $this->modx->db->getValue($rows);
         $index = $index - 1;
-        $this->query("SET @index := " . $index);
+        $this->query("SET @index := ".$index);
         $this->query("UPDATE {$table} SET `{$this->indexName}` = (@index := @index + 1) WHERE (`{$this->indexName}`>{$index} AND `{$this->rfName}`={$rid} AND `{$this->pkName}` NOT IN ({$ids})) ORDER BY `{$this->indexName}` ASC");
         $out = $this->modx->db->getAffectedRows();
         return $out;
@@ -70,8 +47,7 @@ class dataTable extends \autoTable
      * @param $field
      * @return $this
      */
-    public function touch($field)
-    {
+    public function touch($field){
         $this->set($field, date('Y-m-d H:i:s', time() + $this->modx->config['server_offset_time']));
         return $this;
     }
@@ -81,15 +57,14 @@ class dataTable extends \autoTable
      * @param $dir
      * @param $rid
      */
-    public function place($ids, $dir, $rid)
-    {
+    public function place($ids, $dir, $rid) {
         $table = $this->makeTable($this->table);
         $ids = $this->cleanIDs($ids, ',', array(0));
-        if (empty($ids) || is_scalar($ids)) return false;
+        if(empty($ids) || is_scalar($ids)) return false;
         $rows = $this->query("SELECT count(`{$this->pkName}`) FROM {$table} WHERE `{$this->rfName}`={$rid}");
         $index = $this->modx->db->getValue($rows);
         $cnt = count($ids);
-        $ids = implode(',', $ids);
+        $ids = implode(',',$ids);
         if ($dir == 'top') {
             $this->query("SET @index := " . ($index - $cnt - 1));
             $this->query("UPDATE {$table} SET `{$this->indexName}` = (@index := @index + 1) WHERE (`{$this->pkName}` IN ({$ids})) ORDER BY `{$this->indexName}` ASC");
@@ -108,8 +83,7 @@ class dataTable extends \autoTable
      * @param $url
      * @param bool $cache
      */
-    public function deleteThumb($url, $cache = false)
-    {
+    public function deleteThumb($url, $cache = false) {
         $url = $this->fs->relativePath($url);
         if (empty($url)) return;
         if ($this->fs->checkFile($url)) unlink(MODX_BASE_PATH . $url);
@@ -118,7 +92,7 @@ class dataTable extends \autoTable
         if (!$iterator->valid()) rmdir($dir);
         if ($cache) return;
         $thumbsCache = isset($this->params['thumbsCache']) ? $this->params['thumbsCache'] : $this->thumbsCache;
-        $thumb = $thumbsCache . $url;
+        $thumb = $thumbsCache.$url;
         if ($this->fs->checkFile($thumb)) $this->deleteThumb($thumb, true);
     }
 
@@ -127,8 +101,7 @@ class dataTable extends \autoTable
      * @param null $fire_events
      * @return $this
      */
-    public function delete($ids, $fire_events = NULL)
-    {
+    public function delete($ids, $fire_events = NULL) {
         $out = parent::delete($ids, $fire_events);
         $this->query("ALTER TABLE {$this->makeTable($this->table)} AUTO_INCREMENT = 1");
         return $out;
@@ -140,8 +113,7 @@ class dataTable extends \autoTable
      * @param null $fire_events
      * @return $this
      */
-    public function deleteAll($ids, $rid, $fire_events = NULL)
-    {
+    public function deleteAll ($ids, $rid, $fire_events = NULL) {
         $this->clearIndexes($ids, $rid);
         return $this->delete($ids, $fire_events);
     }
@@ -149,8 +121,7 @@ class dataTable extends \autoTable
     /**
      * @return array
      */
-    public function fieldNames()
-    {
+    public function fieldNames(){
         $fields = array_keys($this->getDefaultFields());
         $fields[] = $this->fieldPKName();
         return $fields;
@@ -160,11 +131,10 @@ class dataTable extends \autoTable
      * @param  string $name
      * @return string
      */
-    public function stripName($name)
-    {
+    public function stripName($name) {
         $filename = $this->fs->takeFileName($name);
         $ext = $this->fs->takeFileExt($name);
-        return $this->modx->stripAlias($filename) . '.' . $ext;
+        return $this->modx->stripAlias($filename).'.'.$ext;
     }
 
     /**
@@ -173,10 +143,9 @@ class dataTable extends \autoTable
      * @param $point
      * @param $rid
      * @param $orderDir
-     * @return int
+     * @return int|void
      */
-    public function reorder($source, $target, $point, $rid, $orderDir)
-    {
+    public function reorder($source, $target, $point, $rid, $orderDir) {
         $rid = (int)$rid;
         $point = strtolower($point);
         $orderDir = strtolower($orderDir);
@@ -188,22 +157,22 @@ class dataTable extends \autoTable
         /* more refactoring  needed */
         if ($targetIndex < $sourceIndex) {
             if (($point == 'top' && $orderDir == 'asc') || ($point == 'bottom' && $orderDir == 'desc')) {
-                $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`+1", $table, "`{$this->indexName}`>={$targetIndex} AND `{$this->indexName}`<{$sourceIndex} AND `{$this->rfName}`={$rid}");
-                $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}", $table, "`{$this->pkName}`={$sourceId}");
+                $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`+1",$table,"`{$this->indexName}`>={$targetIndex} AND `{$this->indexName}`<{$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             } elseif (($point == 'bottom' && $orderDir == 'asc') || ($point == 'top' && $orderDir == 'desc')) {
-                $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`+1", $table, "`{$this->indexName}`>{$targetIndex} AND `{$this->indexName}`<{$sourceIndex} AND `{$this->rfName}`={$rid}");
-                $rows = $this->modx->db->update("`{$this->indexName}`=1+{$targetIndex}", $table, "`{$this->pkName}`={$sourceId}");
+                $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`+1",$table,"`{$this->indexName}`>{$targetIndex} AND `{$this->indexName}`<{$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`=1+{$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             }
         } else {
             if (($point == 'bottom' && $orderDir == 'asc') || ($point == 'top' && $orderDir == 'desc')) {
-                $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1", $table, "`{$this->indexName}`<={$targetIndex} AND `{$this->indexName}`>={$sourceIndex} AND `{$this->rfName}`={$rid}");
-                $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}", $table, "`{$this->pkName}`={$sourceId}");
+                $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<={$targetIndex} AND `{$this->indexName}`>={$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`={$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");             
             } elseif (($point == 'top' && $orderDir == 'asc') || ($point == 'bottom' && $orderDir == 'desc')) {
-                $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1", $table, "`{$this->indexName}`<{$targetIndex} AND `{$this->indexName}`>={$sourceIndex} AND `{$this->rfName}`={$rid}");
-                $rows = $this->modx->db->update("`{$this->indexName}`=-1+{$targetIndex}", $table, "`{$this->pkName}`={$sourceId}");
+                $this->modx->db->update("`{$this->indexName}`=`{$this->indexName}`-1",$table,"`{$this->indexName}`<{$targetIndex} AND `{$this->indexName}`>={$sourceIndex} AND `{$this->rfName}`={$rid}");
+                $rows = $this->modx->db->update("`{$this->indexName}`=-1+{$targetIndex}",$table,"`{$this->pkName}`={$sourceId}");                
             }
         }
-
+        
         return $rows;
     }
 
@@ -213,18 +182,17 @@ class dataTable extends \autoTable
      * @param $options
      * @return bool
      */
-    public function makeThumb($folder, $url, $options)
-    {
+    public function makeThumb($folder,$url,$options) {
         if (empty($url)) return false;
         $thumb = new \Helpers\PHPThumb();
         $inputFile = MODX_BASE_PATH . $this->fs->relativePath($url);
-        $outputFile = MODX_BASE_PATH . $this->fs->relativePath($folder) . '/' . $this->fs->relativePath($url);
+        $outputFile = MODX_BASE_PATH. $this->fs->relativePath($folder). '/' . $this->fs->relativePath($url);
         $dir = $this->fs->takeFileDir($outputFile);
         $this->fs->makeDir($dir, $this->modx->config['new_folder_permissions']);
-        if ($thumb->create($inputFile, $outputFile, $options)) {
+        if ($thumb->create($inputFile,$outputFile,$options)) {
             return true;
         } else {
-            $this->modx->logEvent(0, 3, $thumb->debugMessages, __NAMESPACE__);
+            $this->modx->logEvent(0, 3, $thumb->debugMessages,  __NAMESPACE__);
             return false;
         }
     }

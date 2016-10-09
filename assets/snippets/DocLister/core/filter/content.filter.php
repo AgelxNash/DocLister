@@ -16,9 +16,6 @@ if (!defined('MODX_BASE_PATH')) {
 class content_DL_filter extends filterDocLister
 {
 
-    /**
-     *
-     */
     const TableAlias = 'c';
 
     /**
