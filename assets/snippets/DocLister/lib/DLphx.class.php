@@ -17,25 +17,72 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
  */
 class DLphx
 {
+    /**
+     * @var array
+     */
     public $placeholders = array();
+
+    /**
+     * @var string
+     */
 	public $name = 'PHx';
+
+    /**
+     * @var string
+     */
 	public $version = '2.2.0';
+
+    /**
+     * @var array
+     */
 	public $user = array();
+
+    /**
+     * @var array
+     */
 	public $cache = array(
 		'cm' => array(),
 		'ui' => array(),
 		'mo' => array()
 	);
+
+    /**
+     * @var array
+     */
 	public $safetags = array(
 		array('~(?<![\[]|^\^)\[(?=[^\+\*\(\[]|$)~s', '~(?<=[^\+\*\)\]]|^)\](?=[^\]]|$)~s'),
 		array('&_PHX_INTERNAL_091_&', '&_PHX_INTERNAL_093_&'),
 		array('[', ']')
 	);
+
+    /**
+     * @var array
+     */
 	public $console = array();
+
+    /**
+     * @var bool|int
+     */
 	public $debug = false;
+
+    /**
+     * @var bool
+     */
 	public $debugLog = false;
+
+    /**
+     * @var int
+     */
 	public $curPass = 0;
+
+    /**
+     * @var int
+     */
 	public $maxPasses = 50;
+
+    /**
+     * @var array
+     */
 	public $swapSnippetCache = array();
 
     /**

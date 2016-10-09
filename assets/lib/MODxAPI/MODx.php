@@ -65,22 +65,74 @@ class MODxAPIhelpers
  */
 abstract class MODxAPI extends MODxAPIhelpers
 {
+    /**
+     * @var DocumentParser|null
+     */
     protected $modx = null;
+
+    /**
+     * @var array
+     */
     protected $log = array();
+
+    /**
+     * @var array
+     */
     protected $field = array();
+
+    /**
+     * @var array
+     */
     protected $default_field = array();
+
+    /**
+     * @var null
+     */
     protected $id = null;
+
+    /**
+     * @var array
+     */
     protected $set = array();
+
+    /**
+     * @var bool
+     */
     protected $newDoc = false;
+
+    /**
+     * @var string
+     */
     protected $pkName = 'id';
+
+    /**
+     * @var string
+     */
 	protected $ignoreError = '';
+
+    /**
+     * @var bool
+     */
     protected $_debug = false;
+
+    /**
+     * @var array
+     */
     protected $_query = array();
+
+    /**
+     * @var array
+     */
     protected $jsonFields = array();
+
 	/**
 	 * @var DLCollection
 	 */
     private $_decodedFields;
+
+    /**
+     * @var array
+     */
 	private $_table = array();
 
     /**
@@ -394,7 +446,6 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         return $this;
     }
-
 
     /**
      * @param $IDs

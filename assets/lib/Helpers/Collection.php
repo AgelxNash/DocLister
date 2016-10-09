@@ -7,6 +7,9 @@ use Closure;
 * https://github.com/laravel/framework/blob/4.2/src/Illuminate/Support/Collection.php
 */
 class Collection implements \Countable, \IteratorAggregate, \ArrayAccess{
+    /**
+     * @var array
+     */
     protected $data = array();
 
     /**

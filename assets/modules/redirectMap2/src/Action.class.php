@@ -1,9 +1,22 @@
 <?php namespace RedirectMap;
 
+/**
+ * Class Action
+ * @package RedirectMap
+ */
 class Action extends \Module\Action
 {
+    /**
+     * @var string
+     */
 	protected static $TABLE = "redirect_map";
 
+    /**
+     * @param $uri
+     * @param $page
+     * @param int $active
+     * @return array
+     */
     public static function checkPageID($uri, $page, $active = 1)
     {
         $modx = self::$modx;
@@ -21,6 +34,9 @@ class Action extends \Module\Action
         return $insert;
     }
 
+    /**
+     * @return array
+     */
     public static function addUri()
     {
         $out = array();
@@ -50,6 +66,9 @@ class Action extends \Module\Action
         return $out;
     }
 
+    /**
+     * @return array|mixed
+     */
     public static function checkUniq()
     {
         return self::_workValue(function ($data, $modSEO) {
@@ -67,6 +86,9 @@ class Action extends \Module\Action
         });
     }
 
+    /**
+     * @return array
+     */
     public static function fullRequest()
     {
         $data = array();
@@ -83,6 +105,9 @@ class Action extends \Module\Action
         return $data;
     }
 
+    /**
+     * @return array
+     */
     public static function saveGet()
     {
         $data = array();
@@ -99,6 +124,9 @@ class Action extends \Module\Action
         return $data;
     }
 
+    /**
+     * @return array
+     */
     public static function isactive()
     {
         $data = array();
@@ -123,6 +151,9 @@ class Action extends \Module\Action
         return $data;
     }
 
+    /**
+     * @return array
+     */
     public static function fullDelete()
     {
         $data = array();
@@ -141,6 +172,9 @@ class Action extends \Module\Action
         return $data;
     }
 
+    /**
+     * @return array
+     */
     public static function csv()
     {
         header('Content-Type: application/json');

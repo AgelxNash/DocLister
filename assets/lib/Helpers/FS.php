@@ -10,6 +10,9 @@ class FS{
      */
     protected static $instance;
 
+    /**
+     * @var array
+     */
     private $_fileInfo = array();
 
     /**

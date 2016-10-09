@@ -16,39 +16,121 @@ class DLpaginate {
 
     /**Default values*/
     public $total_pages = -1; //items
+
+    /**
+     * @var null
+     */
     public $limit = null;
+
+    /**
+     * @var string
+     */
     public $target = "";
+
+    /**
+     * @var int
+     */
     public $page = 1;
+
+    /**
+     * @var int
+     */
     public $adjacents = 2;
+
+    /**
+     * @var bool
+     */
     public $showCounter = false;
+
+    /**
+     * @var string
+     */
     public $className = "pagination";
+
+    /**
+     * @var string
+     */
     public $parameterName = "page";
+
+    /**
+     * @var null
+     */
     public $urlF = null; //urlFriendly
 
     /**Buttons next and previous*/
     public $nextT = ' <a href="[+link+]">Next</a> ';
+
+    /**
+     * @var string
+     */
     public $nextI = "&#187;"; //&#9658;
+
+    /**
+     * @var string
+     */
     public $prevT = ' <a href="[+link+]">Previous</a> ';
+
+    /**
+     * @var string
+     */
     public $prevI = "&#171;"; //&#9668;
 
     /**Buttons last and first*/
     public $lastT = ' <a href="[+link+]">Last</a> ';
+
+    /**
+     * @var string
+     */
     public $lastI = "&#187;&#187;"; //&#9658;
+
+    /**
+     * @var string
+     */
     public $firstT = ' <a href="[+link+]">First</a> ';
+
+    /**
+     * @var string
+     */
     public $firstI = "&#171;&#171;"; //&#9668;
 
+    /**
+     * @var string
+     */
     public $numberT = ' <a href="[+link+]">[+num+]</a> ';
+
+    /**
+     * @var string
+     */
     public $currentT = ' <b>[+num+]</b> ';
 
+    /**
+     * @var string
+     */
     public $mainTpl = '<div class="[+classname+]">[+wrap+]</div>';
 
+    /**
+     * @var string
+     */
     public $dotsT = ' ... ';
 
-    /*****/
+    /**
+     * @var null
+     */
     protected $mode = null;
+
+    /**
+     * @var array
+     */
     protected $modeConfig = array();
 
+    /**
+     * @var bool
+     */
     private $calculate = false;
+
+    /**
+     * @var
+     */
     private $pagination;
 
     /**

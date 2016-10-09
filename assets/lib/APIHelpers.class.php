@@ -1,5 +1,4 @@
 <?php
-// extension_loaded('mbstring') ???
 /**
  * Class APIhelpers
  */

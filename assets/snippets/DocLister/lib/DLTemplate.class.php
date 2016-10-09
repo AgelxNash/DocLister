@@ -7,6 +7,9 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
  */
 class DLTemplate
 {
+    /**
+     * @var DocumentParser|null
+     */
     protected $modx = null;
 
     /**
@@ -14,6 +17,9 @@ class DLTemplate
      */
     protected static $instance;
 
+    /**
+     * @var null
+     */
     public $phx = null;
 
     /**

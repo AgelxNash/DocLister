@@ -13,26 +13,85 @@
  */
 class SqlFormatter
 {
-    // Constants for token types
+    /**
+     *
+     */
     const TOKEN_TYPE_WHITESPACE = 0;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_WORD = 1;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_QUOTE = 2;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_BACKTICK_QUOTE = 3;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_RESERVED = 4;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_RESERVED_TOPLEVEL = 5;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_RESERVED_NEWLINE = 6;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_BOUNDARY = 7;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_COMMENT = 8;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_BLOCK_COMMENT = 9;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_NUMBER = 10;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_ERROR = 11;
+
+    /**
+     *
+     */
     const TOKEN_TYPE_VARIABLE = 12;
 
-    // Constants for different components of a token
+    /**
+     *
+     */
     const TOKEN_TYPE = 0;
+
+    /**
+     *
+     */
     const TOKEN_VALUE = 1;
 
-    // Reserved words (for syntax highlighting)
+    /**
+     * Reserved words (for syntax highlighting)
+     * @var array
+     */
     protected static $reserved = array(
         'ACCESSIBLE', 'ACTION', 'AGAINST', 'AGGREGATE', 'ALGORITHM', 'ALL', 'ALTER', 'ANALYSE', 'ANALYZE', 'AS', 'ASC',
         'AUTOCOMMIT', 'AUTO_INCREMENT', 'BACKUP', 'BEGIN', 'BETWEEN', 'BINLOG', 'BOTH', 'CASCADE', 'CASE', 'CHANGE', 'CHANGED', 'CHARACTER SET',
@@ -61,17 +120,26 @@ class SqlFormatter
         'VIEW', 'WHEN', 'WITH', 'WORK', 'WRITE', 'YEAR_MONTH'
     );
 
-    // For SQL formatting
-    // These keywords will all be on their own line
+    /**
+     * For SQL formatting
+     * These keywords will all be on their own line
+     * @var array
+     */
     protected static $reserved_toplevel = array(
         'SELECT', 'FROM', 'WHERE', 'SET', 'ORDER BY', 'GROUP BY', 'LIMIT', 'DROP',
         'VALUES', 'UPDATE', 'HAVING', 'ADD', 'AFTER', 'ALTER TABLE', 'DELETE FROM', 'UNION ALL', 'UNION', 'EXCEPT', 'INTERSECT'
     );
 
+    /**
+     * @var array
+     */
     protected static $reserved_newline = array(
         'LEFT OUTER JOIN', 'RIGHT OUTER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'OUTER JOIN', 'INNER JOIN', 'JOIN', 'XOR', 'OR', 'AND'
     );
 
+    /**
+     * @var array
+     */
     protected static $functions = array (
         'ABS', 'ACOS', 'ADDDATE', 'ADDTIME', 'AES_DECRYPT', 'AES_ENCRYPT', 'AREA', 'ASBINARY', 'ASCII', 'ASIN', 'ASTEXT', 'ATAN', 'ATAN2',
         'AVG', 'BDMPOLYFROMTEXT',  'BDMPOLYFROMWKB', 'BDPOLYFROMTEXT', 'BDPOLYFROMWKB', 'BENCHMARK', 'BIN', 'BIT_AND', 'BIT_COUNT', 'BIT_LENGTH',
@@ -102,59 +170,161 @@ class SqlFormatter
     );
 
     // Punctuation that can be used as a boundary between other tokens
+    /**
+     * @var array
+     */
     protected static $boundaries = array(',', ';',':', ')', '(', '.', '=', '<', '>', '+', '-', '*', '/', '!', '^', '%', '|', '&', '#');
 
     // For HTML syntax highlighting
     // Styles applied to different token types
+    /**
+     * @var string
+     */
     public static $quote_attributes = 'style="color: blue;"';
+    /**
+     * @var string
+     */
     public static $backtick_quote_attributes = 'style="color: purple;"';
+    /**
+     * @var string
+     */
     public static $reserved_attributes = 'style="font-weight:bold;"';
+    /**
+     * @var string
+     */
     public static $boundary_attributes = '';
+    /**
+     * @var string
+     */
     public static $number_attributes = 'style="color: green;"';
+    /**
+     * @var string
+     */
     public static $word_attributes = 'style="color: #333;"';
+    /**
+     * @var string
+     */
     public static $error_attributes = 'style="background-color: red;"';
+    /**
+     * @var string
+     */
     public static $comment_attributes = 'style="color: #aaa;"';
+    /**
+     * @var string
+     */
     public static $variable_attributes = 'style="color: orange;"';
+    /**
+     * @var string
+     */
     public static $pre_attributes = 'style="color: black; background-color: white;"';
 
     // Boolean - whether or not the current environment is the CLI
     // This affects the type of syntax highlighting
     // If not defined, it will be determined automatically
+    /**
+     * @var
+     */
     public static $cli;
 
     // For CLI syntax highlighting
+    /**
+     * @var string
+     */
     public static $cli_quote = "\x1b[34;1m";
+    /**
+     * @var string
+     */
     public static $cli_backtick_quote = "\x1b[35;1m";
+    /**
+     * @var string
+     */
     public static $cli_reserved = "\x1b[37m";
+    /**
+     * @var string
+     */
     public static $cli_boundary = "";
+    /**
+     * @var string
+     */
     public static $cli_number = "\x1b[32;1m";
+    /**
+     * @var string
+     */
     public static $cli_word = "";
+    /**
+     * @var string
+     */
     public static $cli_error = "\x1b[31;1;7m";
+    /**
+     * @var string
+     */
     public static $cli_comment = "\x1b[30;1m";
+    /**
+     * @var string
+     */
     public static $cli_functions = "\x1b[37m";
+    /**
+     * @var string
+     */
     public static $cli_variable = "\x1b[36;1m";
 
     // The tab character to use when formatting SQL
+    /**
+     * @var string
+     */
     public static $tab = '  ';
 
     // This flag tells us if queries need to be enclosed in <pre> tags
+    /**
+     * @var bool
+     */
     public static $use_pre = true;
 
     // This flag tells us if SqlFormatted has been initialized
+    /**
+     * @var
+     */
     protected static $init;
 
     // Regular expressions for tokenizing
+    /**
+     * @var
+     */
     protected static $regex_boundaries;
+    /**
+     * @var
+     */
     protected static $regex_reserved;
+    /**
+     * @var
+     */
     protected static $regex_reserved_newline;
+    /**
+     * @var
+     */
     protected static $regex_reserved_toplevel;
+    /**
+     * @var
+     */
     protected static $regex_function;
 
     // Cache variables
     // Only tokens shorter than this size will be cached.  Somewhere between 10 and 20 seems to work well for most cases.
+    /**
+     * @var int
+     */
     public static $max_cachekey_size = 15;
+    /**
+     * @var array
+     */
     protected static $token_cache = array();
+    /**
+     * @var int
+     */
     protected static $cache_hits = 0;
+    /**
+     * @var int
+     */
     protected static $cache_misses = 0;
 
     /**

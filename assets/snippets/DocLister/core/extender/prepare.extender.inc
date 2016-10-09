@@ -13,6 +13,9 @@ if (!defined('MODX_BASE_PATH')) {
 
 class prepare_DL_Extender extends extDocLister
 {
+    /**
+     * @var array
+     */
     private $_store = array();
 
     /**

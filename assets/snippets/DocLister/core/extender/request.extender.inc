@@ -17,6 +17,9 @@ if (!defined('MODX_BASE_PATH')) {
  */
 class request_DL_Extender extends extDocLister
 {
+    /**
+     * @var array
+     */
     private $param = array();
 
     /**
@@ -136,6 +139,9 @@ class request_DL_Extender extends extDocLister
         return $out;
     }
 
+    /**
+     *
+     */
     private function setCFG()
     {
         foreach ($this->param as $name => $item) {

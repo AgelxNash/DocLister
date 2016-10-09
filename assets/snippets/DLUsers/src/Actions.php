@@ -14,19 +14,37 @@ use Helpers\FS;
  * @package DLUsers
  */
 class Actions{
+    /**
+     * @var DocumentParser|null
+     */
     protected $modx = null;
+    /**
+     * @var null
+     */
     public $userObj = null;
 	/**
 	 * @var DLCollection
 	 */
     public $url;
+
+    /**
+     * @var null
+     */
     protected static $lang = null;
+
+    /**
+     * @var array
+     */
     protected static $langDic = array();
+
     /**
      * @var Actions cached reference to singleton instance
      */
     protected static $instance;
 
+    /**
+     * @var array
+     */
 	protected $config = array();
 
     /**

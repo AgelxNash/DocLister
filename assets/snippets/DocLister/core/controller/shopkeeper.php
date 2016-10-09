@@ -157,10 +157,8 @@ class shopkeeperDocLister extends site_contentDocLister
     }
 
     /**
-     * document
+     * @abstract
      */
-
-    // @abstract
     public function getChildrenCount()
     {
         $out = 0;

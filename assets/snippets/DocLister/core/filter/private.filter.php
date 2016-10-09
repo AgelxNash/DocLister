@@ -9,6 +9,9 @@ require_once 'content.filter.php';
  * Class private_DL_filter
  */
 class private_DL_filter extends content_DL_filter {
+    /**
+     *
+     */
     const TableAlias = 'dg';
 
     /**

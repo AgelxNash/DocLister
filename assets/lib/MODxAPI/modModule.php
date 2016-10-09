@@ -6,5 +6,8 @@ include_once(dirname(__FILE__) . "/autoTable.abstract.php");
  */
 class modModule extends autoTable
 {
+    /**
+     * @var string
+     */
     protected $table = "site_modules";
 }

@@ -8,10 +8,29 @@ require_once (MODX_BASE_PATH . 'assets/lib/Helpers/PHPThumb.php');
  * @package SimpleTab
  */
 class dataTable extends \autoTable {
+    /**
+     * @var array
+     */
     protected $params = array();
+
+    /**
+     * @var \Helpers\FS|null
+     */
     protected $fs = null;
+
+    /**
+     * @var null
+     */
 	protected $indexName = null;
+
+    /**
+     * @var null
+     */
 	protected $rfName = null;
+
+    /**
+     * @var null
+     */
 	protected $thumbsCache = null;
 
     /**

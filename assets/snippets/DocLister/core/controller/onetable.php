@@ -18,13 +18,21 @@ if (!defined('MODX_BASE_PATH')) {
 
 class onetableDocLister extends DocLister
 {
+    /**
+     * @var string
+     */
     protected $table = 'site_content';
+    /**
+     * @var string
+     */
     protected $idField = 'id';
+    /**
+     * @var string
+     */
     protected $parentField = 'parent';
     /**
      * @absctract
      */
-
 	public function getUrl($id = 0)
     {
 		$id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
@@ -293,7 +301,6 @@ class onetableDocLister extends DocLister
         return $out;
     }
 
-    // @abstract
     /**
      * @return int
      */

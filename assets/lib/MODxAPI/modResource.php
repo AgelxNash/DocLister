@@ -6,7 +6,14 @@ require_once('MODx.php');
  */
 class modResource extends MODxAPI
 {
+    /**
+     * @var null
+     */
     protected $mode = null;
+
+    /**
+     * @var array
+     */
     protected $default_field = array(
         'type' => 'document',
         'contentType' => 'text/html',
@@ -46,6 +53,10 @@ class modResource extends MODxAPI
         'hidemenu' => 0,
         'alias_visible' => 1
     );
+
+    /**
+     * @var array
+     */
     private $table = array('"' => '_', "'" => '_', ' ' => '_', '.' => '_', ',' => '_', 'а' => 'a', 'б' => 'b', 'в' => 'v',
         'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'zh', 'з' => 'z', 'и' => 'i', 'й' => 'y', 'к' => 'k',
         'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u',
@@ -58,10 +69,12 @@ class modResource extends MODxAPI
     /**
      * @var array массив ТВшек где name это ключ массива, а ID это значение
      */
+
     private $tv = array();
     /**
      * @var array массив ТВшек где ID это ключ массива, а name это значение
      */
+
     private $tvid = array();
     /**
      * @var array значения по умолчанию для ТВ параметров

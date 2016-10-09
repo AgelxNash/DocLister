@@ -5,10 +5,30 @@
  * @package Module
  */
 abstract class Action{
+
+    /**
+     * @var null
+     */
     protected static $modx = null;
+
+    /**
+     * @var null
+     */
     public static $TPL = null;
+
+    /**
+     * @var string
+     */
     protected static $TABLE = "site_content";
+
+    /**
+     * @var null
+     */
     protected static $classTable = null;
+
+    /**
+     * @var null
+     */
 	protected static $_tplObj = null;
 
     /**

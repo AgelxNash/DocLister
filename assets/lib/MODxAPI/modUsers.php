@@ -6,7 +6,9 @@ require_once('MODx.php');
  */
 class modUsers extends MODxAPI
 {
-
+    /**
+     * @var array
+     */
     protected $default_field = array(
         'user' => array(
             'username' => null,
@@ -42,6 +44,9 @@ class modUsers extends MODxAPI
         )
     );
 
+    /**
+     * @var string
+     */
     protected $givenPassword = '';
 
     /**

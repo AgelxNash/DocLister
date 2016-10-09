@@ -7,7 +7,14 @@ include_once(MODX_BASE_PATH . 'assets/lib/Formatter/HtmlFormatter.php');
  */
 class DLdebug
 {
+    /**
+     * @var array
+     */
     private $_log = array();
+
+    /**
+     * @var array
+     */
     private $_calcLog = array();
 
     /**

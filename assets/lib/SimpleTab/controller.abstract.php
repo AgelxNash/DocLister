@@ -7,15 +7,42 @@ require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
  * @package SimpleTab
  */
 abstract class AbstractController {
+    /**
+     * @var string
+     */
     public $rfName = '';
+    /**
+     * @var int
+     */
     public $rid = 0;
+    /**
+     * @var null
+     */
     public $data = null;
+    /**
+     * @var \Helpers\FS|null
+     */
     public $FS = null;
+    /**
+     * @var bool
+     */
     public $isExit = false;
+    /**
+     * @var null
+     */
     public $output = null;
+    /**
+     * @var null
+     */
     public $params = null;
+    /**
+     * @var bool
+     */
 	public $fireEvents = true;
-	
+
+    /**
+     * @var array
+     */
     public $dlParams = array(
         "controller"    =>  "onetable",
         "table"         =>  "",
@@ -32,6 +59,9 @@ abstract class AbstractController {
 
     );
 
+    /**
+     * @var \DocumentParser|null
+     */
     protected $modx = null;
 
     /**
@@ -45,6 +75,9 @@ abstract class AbstractController {
         $this->rid = isset($_REQUEST[$this->rfName]) ? (int)$_REQUEST[$this->rfName] : 0;
     }
 
+    /**
+     *
+     */
     public function callExit(){
         if($this->isExit){
             echo $this->output;
@@ -106,6 +139,9 @@ abstract class AbstractController {
         return $out;
     }
 
+    /**
+     * @return string|void
+     */
     public function listing() {
         if (!$this->rid) {
             $this->isExit = true;
@@ -114,6 +150,9 @@ abstract class AbstractController {
         return $this->modx->runSnippet("DocLister", $this->dlParams);
     }
 
+    /**
+     *
+     */
     public function dlInit() {
         $this->dlParams['table'] = $this->data->tableName();
         $this->dlParams['idField'] = $this->data->fieldPKName();

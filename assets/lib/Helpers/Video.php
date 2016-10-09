@@ -34,14 +34,39 @@ class Video
 	/** Видео */
 	protected $video;
 
+    /**
+     * @var int
+     */
 	protected $width = 420;
+
+    /**
+     * @var int
+     */
 	protected $height = 315;
+
+    /**
+     * @var bool
+     */
 	protected $autoplay = false;
 
+    /**
+     * @var string
+     */
 	public $scheme = 'https';
 
+    /**
+     *
+     */
 	const YOUTUBE = 'youtube';
+
+    /**
+     *
+     */
 	const VIMEO   = 'vimeo';
+
+    /**
+     *
+     */
 	const RUTUBE  = 'rutube';
 
 	/** Регулярки для определения видеохостинга и идентификатора ролика */
@@ -84,6 +109,9 @@ class Video
 		'http://www.rutube.ru/video/embed/6032725',
 	);
 
+    /**
+     * @var bool
+     */
 	protected $info = false;
 
 	/**
@@ -133,6 +161,7 @@ class Video
     public function getInfo(){
 		return $this->info;
 	}
+
 	/** Видеохостинг */
 	public function getHosting()
 	{
@@ -391,6 +420,7 @@ class Video
 		}
 		return '<iframe src="'.$url.'" width="'.$width.'" height="'.$height.'" frameborder="0" allowfullscreen'.$class.'></iframe>';
 	}
+
 	/** Прогоняем тест по видам URL */
 	public static function RunTest($links = null)
 	{

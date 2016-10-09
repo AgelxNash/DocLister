@@ -1,7 +1,14 @@
 <?php namespace DLCity;
 
+/**
+ * Class Template
+ * @package DLCity
+ */
 class Template extends \Module\Template
 {
+    /**
+     * @return string
+     */
     public function Lists()
     {
         $out = '';

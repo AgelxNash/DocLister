@@ -7,7 +7,15 @@ include_once(dirname(dirname(__FILE__)).'/APIHelpers.class.php');
  * @package Module
  */
 class Helper extends \APIhelpers{
+
+    /**
+     * @var null
+     */
     protected static $modx = null;
+
+    /**
+     * @var string
+     */
 	protected static $mode = 'list';
 
     /**

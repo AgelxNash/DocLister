@@ -11,7 +11,14 @@ require_once 'content.filter.php';
  */
 class tv_DL_filter extends content_DL_filter
 {
+    /**
+     * @var
+     */
     protected $tv_id;
+
+    /**
+     * @var null
+     */
     protected $tvName = null;
     /**
      * @var tv_DL_Extender

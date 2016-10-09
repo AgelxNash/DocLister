@@ -10,28 +10,105 @@ require_once (MODX_BASE_PATH . 'assets/lib/Helpers/Assets.php');
  * @package SimpleTab
  */
 abstract class Plugin {
+
+    /**
+     * @var \DocumentParser|null
+     */
 	public $modx = null;
+
+    /**
+     * @var string
+     */
 	public $pluginName = '';
+
+    /**
+     * @var array
+     */
 	public $params = array();
+
+    /**
+     * @var string
+     */
     public $table = '';
+
+    /**
+     * @var string
+     */
 	public $tpl = '';
+
+    /**
+     * @var string
+     */
 	public $jsListDefault = '';
+
+    /**
+     * @var string
+     */
 	public $jsListCustom = '';
+
+    /**
+     * @var string
+     */
 	public $cssListDefault = '';
+
+    /**
+     * @var string
+     */
 	public $cssListCustom = '';
+
+    /**
+     * @var array
+     */
 	public $pluginEvents = array();
+
+    /**
+     * @var string
+     */
     public $_table = '';
+
+    /**
+     * @var \Helpers\FS|null
+     */
 	protected $fs = null;
+
+    /**
+     * @var \AssetsHelper|null
+     */
     protected $assets = null;
+
+    /**
+     * @var null
+     */
 	protected $emptyTpl = null;
+
+    /**
+     * @var string
+     */
 	protected $jsListEmpty = '';
 
+    /**
+     * @var \DLTemplate|null
+     */
 	public $DLTemplate = null;
+
+    /**
+     * @var string
+     */
 	public $lang_attribute = '';
 
+    /**
+     * @var bool
+     */
 	protected $checkTemplate = true;
+
+    /**
+     * @var string
+     */
 	protected $renderEvent = 'OnDocFormRender';
 
+    /**
+     * @var bool
+     */
 	protected $checkId = true;
 
 	/**

@@ -34,6 +34,7 @@ abstract class DocLister
      * Ключ в массиве $_REQUEST в котором находится алиас запрашиваемого документа
      */
     const AliasRequest = 'q';
+
     /**
      * Массив документов полученный в результате выборки из базы
      * @var array
@@ -169,6 +170,9 @@ abstract class DocLister
     /** @var string имя шаблона обертки для записей  */
     public $ownerTPL = '';
 
+    /**
+     * @var \Helpers\FS|null
+     */
     public $FS = null;
     /** @var string результатирующая строка которая была последний раз сгенирирована
     *               вызовами методов DocLister::render и DocLister::getJSON
@@ -183,6 +187,7 @@ abstract class DocLister
 
 	/** @var null|paginate_DL_Extender  */
 	protected $extPaginate = null;
+
     /**
      * Конструктор контроллеров DocLister
      *

@@ -7,7 +7,14 @@ require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
  */
 class AssetsHelper
 {
+    /**
+     * @var DocumentParser|null
+     */
     protected $modx = null;
+
+    /**
+     * @var \Helpers\FS|null
+     */
     protected $fs = null;
 
     /**

@@ -1,26 +1,50 @@
 <?php namespace DLCity;
+/**
+ * Class Action
+ * @package DLCity
+ */
 class Action extends \Module\Action
 {
+    /**
+     * @var null
+     */
     protected static $_mode = null;
 
+    /**
+     * @param \DocumentParser $modx
+     * @param \Module\Template $tpl
+     * @param \MODxAPI $classTable
+     */
 	public static function init(\DocumentParser $modx, \Module\Template $tpl, \MODxAPI $classTable)
     {
         parent::init($modx, $tpl, $classTable);
         self::$_mode = Helper::getMode();
     }
 
+    /**
+     * @param $id
+     * @return bool
+     */
     protected static function checkObj($id)
     {
         $q = self::$modx->db->select('hide', self::$modx->getFullTableName(self::$_mode), "id = " . $id);
         return (self::$modx->db->getRecordCount($q) == 1);
     }
 
+    /**
+     * @param $field
+     * @param $id
+     * @return mixed
+     */
     protected static function _getValue($field, $id)
     {
         $q = self::$modx->db->select($field, self::$modx->getFullTableName(self::$_mode), "id = " . $id);
         return self::$modx->db->getValue($q);
     }
 
+    /**
+     * @return array
+     */
     public static function add()
     {
 		$data = array();
@@ -63,6 +87,9 @@ class Action extends \Module\Action
         return $data;
     }
 
+    /**
+     * @return array
+     */
     public static function delete()
     {
 		$data = array();
@@ -87,6 +114,9 @@ class Action extends \Module\Action
         return $data;
     }
 
+    /**
+     * @return array
+     */
     public static function edit()
     {
 		$data = array();
@@ -113,6 +143,9 @@ class Action extends \Module\Action
         return $data;
     }
 
+    /**
+     * @return array
+     */
     public static function display()
     {
 		$data = array();
@@ -128,13 +161,18 @@ class Action extends \Module\Action
         return $data;
     }
 
-
+    /**
+     * @param $id
+     */
     protected static function deleteCity($id)
     {
         self::$modx->db->delete(self::$modx->getFullTableName('street'), "parent_id = " . $id);
         self::$modx->db->delete(self::$modx->getFullTableName('city'), "id = " . $id);
     }
 
+    /**
+     * @param $id
+     */
     protected static function deleteStreet($id)
     {
         self::$modx->db->delete(self::$modx->getFullTableName('street'), "id = " . $id);
