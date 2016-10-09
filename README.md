@@ -23,8 +23,18 @@
 ### Полезные ссылки
 ---------
 * **Документация**: https://github.com/evolution-cms/docs/tree/master/03_Extras/04_Snippets/DocLister
+* **Статьи про DocLister**: http://modx.im/tag/doclister/
 
-### Автор
+### Компоненты на базе DocLister
+---------
+* [SimpleGallery](https://github.com/Pathologic/SimpleGallery)
+* [SimpleTube](https://github.com/Pathologic/SimpleTube)
+* [SimpleFiles](https://github.com/Pathologic/SimpleFiles)
+* [FormLister](https://github.com/Pathologic/FormLister)
+* [FastImageTV](https://github.com/Pathologic/FastImageTV)
+* [DLRequest](https://github.com/Pathologic/DLRequest)
+
+### Авторы
 ---------
 <table>
   <tr>
@@ -65,5 +75,82 @@
   </tr>
 </table>
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/AgelxNash/doclister/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+### Как прислать PullRequest
+---------
+#### 1. Сделайте ["форк"](http://help.github.com/fork-a-repo/) репозитория AgelxNash/DocLister, а затем клонируйте его в свою локальную среду разработки
+```bash
+git clone git@github.com:имя-вашего-пользователя/yupe.git
+```
 
+#### 2. Добавьте основой репозиторий DocLister как удаленный (remote) с названием "upstream"
+Перейдите в директорию куда вы сделали клон на первом шаге и выполните следующую команду:
+```bash
+git remote add upstream git://github.com/AgelxNash/DocLister.git
+```
+
+#### 3. Получите последние изменения кода из основного репозитория DocLister
+```bash
+git fetch upstream
+```
+Вы должны начинать с этого шага для каждого нового патча, чтобы быть уверенными, что работаете с кодом содержащим последние изменения.
+
+#### 4. Создайте новую ветку основанную на текущей master ветке DocLister
+```bash
+git checkout upstream/master
+git checkout -b 999-название-вашей-ветки
+```
+
+#### 5. Пишем код
+Убеждаемся, что он работает :)
+
+#### 6. Cделайте коммит изменений
+Добавляем файлы c изменениями:
+```bash
+# один файл
+git add путь/до/вашего/файла.php
+# все измененные файлы
+git add .
+```
+Если добавить в описание коммита номер тикета #XXX, тогда GitHub автоматически свяжет его с тикетом над которым вы работаете:
+```bash
+git commit -m "Описание коммита для тикета #42"
+```
+
+#### 7. Получите последние изменения кода из upstream (добавили на втором шаге)
+```bash
+git pull upstream master
+```
+Опять же таким образом убеждаемся, что ваша ветка содержит последние изменения. Если возникли конфликты, исправляем и снова комитим.
+
+#### 8. Имея код без конфликтов отравьте изменения на github
+```bash
+git push -u origin 999-название-вашей-ветки
+```
+
+#### 9. Пришлите [pull request](http://help.github.com/send-pull-requests/) в основной репозиторий DocLister
+Перейдите в свой репозиторий на GitHub'e и нажмите "Pull Request", выберите свою ветку справа и добавьте описание вашего "Pull Request'a", чтобы GitHub автоматически связал его с тикетом добавьте в комментарий номер тикета '#999'.
+
+#### 10. Ожидайте рассмотрения вашего кода
+Кто-то рассмотрит ваш код и может быть попросит внести изменения, если это произошло возвращайтесь к 5 шагу.
+
+#### 11. Удаление ветки
+После того как ваш код приняли или отклонили вы можете удалить ветку из локального репозитория и GitHub'a
+```bash
+git checkout master
+git branch -D 999-название-вашей-ветки
+git push origin --delete 999-название-вашей-ветки
+```
+
+#### Все шаги кратко
+```bash
+git clone git@github.com:ваше-имя-пользователя/DocLister.git
+git remote add upstream git://github.com/AgelxNash/DocLister.git
+git fetch upstream
+git checkout upstream/master
+git checkout -b 999-название-вашей-ветки
+/* пишем код */
+git add путь/до/вашего/файла.php
+git commit -m "Описание коммита для тикета #42"
+git pull upstream master
+git push -u origin 999-название-вашей-ветки
+```
