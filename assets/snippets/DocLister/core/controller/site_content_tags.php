@@ -38,14 +38,14 @@ class site_content_tagsDocLister extends site_contentDocLister
         $this->whereTag();
     }
 
-/**
+    /**
      * @absctract
      * @todo link maybe include other GET parameter with use pagination. For example - filter
      */
     public function getUrl($id = 0)
     {
         $id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
-		
+
         $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : "";
         $tag = $this->checkTag();
         if ($tag !== false && is_array($tag) && $tag['mode'] == 'get') {
@@ -72,9 +72,9 @@ class site_content_tagsDocLister extends site_contentDocLister
                     case 'static':
                     default:
                         $tag = $tmp[1];
-                        $separator = $this->getCFGDef('tagsSeparator','||');
+                        $separator = $this->getCFGDef('tagsSeparator', '||');
                         if (!empty($tag) && !empty($separator)) {
-                            $_tag = explode($separator,$tag);
+                            $_tag = explode($separator, $tag);
                             if (count($_tag) > 1) $tag = $_tag;
                         }
                         break;

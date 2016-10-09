@@ -2,22 +2,24 @@
 
 use DocLister\Tests\DL\DLAbstract;
 
-abstract class TVAbstract extends DLAbstract{
-	protected $TVList = array(
-		'price' => 1,
-		'image' => 2,
-		'other' => 3
-	);
+abstract class TVAbstract extends DLAbstract
+{
+    protected $TVList = array(
+        'price' => 1,
+        'image' => 2,
+        'other' => 3
+    );
 
-	public function getTVExtender(&$DL){
-		$extTV = $this->getMock('tv_DL_Extender', array('getTVnames'), array($DL, 'tv'));
+    public function getTVExtender(&$DL)
+    {
+        $extTV = $this->getMock('tv_DL_Extender', array('getTVnames'), array($DL, 'tv'));
 
-		$extTV->expects($this->any())
-			->method('getTVnames')
-			->will($this->returnValue($this->TVList));
+        $extTV->expects($this->any())
+            ->method('getTVnames')
+            ->will($this->returnValue($this->TVList));
 
-		$this->setProperty($DL, 'extTV', $extTV);
+        $this->setProperty($DL, 'extTV', $extTV);
 
-		return $extTV;
-	}
+        return $extTV;
+    }
 }

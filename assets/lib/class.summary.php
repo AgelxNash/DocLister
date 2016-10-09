@@ -105,7 +105,7 @@ class SummaryText
                 $process = explode(":", $doing);
                 switch ($process[0]) {
                     case 'notags':
-                    	$this->_cfg['content'] = strip_tags($this->_cfg['content']);
+                        $this->_cfg['content'] = strip_tags($this->_cfg['content']);
                         break;
                     case 'noparser':
                         $this->_cfg['content'] = APIhelpers::sanitarTag($this->_cfg['content']);
@@ -133,7 +133,7 @@ class SummaryText
      * @param string $splitter
      * @return array|mixed
      */
-    protected  function beforeCut($resource, $splitter = '')
+    protected function beforeCut($resource, $splitter = '')
     {
         if ($splitter !== '') {
             $summary = str_replace('<p>' . $splitter . '</p>', $splitter, $resource); // For TinyMCE or if it isn't wrapped inside paragraph tags
@@ -183,7 +183,7 @@ class SummaryText
      * @param bool $truncChars
      * @return string
      */
-    protected  function html_substr($posttext, $minimum_length = 200, $length_offset = 100, $truncChars = false)
+    protected function html_substr($posttext, $minimum_length = 200, $length_offset = 100, $truncChars = false)
     {
         $tag_counter = 0;
         $quotes_on = FALSE;

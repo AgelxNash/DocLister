@@ -19,7 +19,8 @@ abstract class autoTable extends MODxAPI
     /**
      * @return null
      */
-    public function tableName(){
+    public function tableName()
+    {
         return $this->table;
     }
 
@@ -31,7 +32,7 @@ abstract class autoTable extends MODxAPI
     public function __construct($modx, $debug = false)
     {
         parent::__construct($modx, $debug);
-        if(empty($this->default_field)){
+        if (empty($this->default_field)) {
             $data = $this->modx->db->getTableMetaData($this->makeTable($this->table));
             foreach ($data as $item) {
                 if (empty($this->pkName) && $item['Key'] == 'PRI') {
@@ -58,12 +59,12 @@ abstract class autoTable extends MODxAPI
             $this->markAllEncode();
             $this->field = array();
             $this->set = array();
-            $result = $this->query("SELECT * from {$this->makeTable($this->table)} where `" . $this->pkName . "`='" . $this->escape($id)."'");
+            $result = $this->query("SELECT * from {$this->makeTable($this->table)} where `" . $this->pkName . "`='" . $this->escape($id) . "'");
             $this->fromArray($this->modx->db->getRow($result));
             $this->id = $this->eraseField($this->pkName);
-            if(is_bool($this->id) && $this->id === false){
+            if (is_bool($this->id) && $this->id === false) {
                 $this->id = null;
-            }else{
+            } else {
                 $this->decodeFields();
             }
         }
@@ -83,7 +84,7 @@ abstract class autoTable extends MODxAPI
             if ($this->newDoc && $this->get($key) === null && $this->get($key) !== $value) {
                 $this->set($key, $value);
             }
-            if((!$this->generateField || isset($fld[$key])) && $this->get($key) !== null){
+            if ((!$this->generateField || isset($fld[$key])) && $this->get($key) !== null) {
                 $this->Uset($key);
             }
             unset($fld[$key]);
@@ -96,14 +97,14 @@ abstract class autoTable extends MODxAPI
             }
             $result = $this->query($SQL);
         }
-		if($result && $this->modx->db->getAffectedRows() >= 0 ){
-			if ($this->newDoc && !empty($SQL)) $this->id = $this->modx->db->getInsertId();
-			if ($clearCache) $this->clearCache($fire_events);
-			$result = $this->id;
-		}else{
-			if(!empty($SQL)) $this->log['SqlError'] = $SQL;
-			$result = false;
-		}
+        if ($result && $this->modx->db->getAffectedRows() >= 0) {
+            if ($this->newDoc && !empty($SQL)) $this->id = $this->modx->db->getInsertId();
+            if ($clearCache) $this->clearCache($fire_events);
+            $result = $this->id;
+        } else {
+            if (!empty($SQL)) $this->log['SqlError'] = $SQL;
+            $result = false;
+        }
         return $result;
     }
 
@@ -117,12 +118,12 @@ abstract class autoTable extends MODxAPI
     {
         $_ids = $this->cleanIDs($ids, ',');
         if (is_array($_ids) && $_ids != array()) {
-        	$id = $this->sanitarIn($_ids);
-            if(!empty($id)){
-            	$this->query("DELETE from {$this->makeTable($this->table)} where `" . $this->pkName . "` IN ({$id})");
-			}
+            $id = $this->sanitarIn($_ids);
+            if (!empty($id)) {
+                $this->query("DELETE from {$this->makeTable($this->table)} where `" . $this->pkName . "` IN ({$id})");
+            }
             $this->clearCache($fire_events);
-		} else throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre>');
+        } else throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre>');
         return $this;
     }
 }

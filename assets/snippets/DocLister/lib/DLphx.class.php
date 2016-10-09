@@ -25,65 +25,65 @@ class DLphx
     /**
      * @var string
      */
-	public $name = 'PHx';
+    public $name = 'PHx';
 
     /**
      * @var string
      */
-	public $version = '2.2.0';
+    public $version = '2.2.0';
 
     /**
      * @var array
      */
-	public $user = array();
+    public $user = array();
 
     /**
      * @var array
      */
-	public $cache = array(
-		'cm' => array(),
-		'ui' => array(),
-		'mo' => array()
-	);
+    public $cache = array(
+        'cm' => array(),
+        'ui' => array(),
+        'mo' => array()
+    );
 
     /**
      * @var array
      */
-	public $safetags = array(
-		array('~(?<![\[]|^\^)\[(?=[^\+\*\(\[]|$)~s', '~(?<=[^\+\*\)\]]|^)\](?=[^\]]|$)~s'),
-		array('&_PHX_INTERNAL_091_&', '&_PHX_INTERNAL_093_&'),
-		array('[', ']')
-	);
+    public $safetags = array(
+        array('~(?<![\[]|^\^)\[(?=[^\+\*\(\[]|$)~s', '~(?<=[^\+\*\)\]]|^)\](?=[^\]]|$)~s'),
+        array('&_PHX_INTERNAL_091_&', '&_PHX_INTERNAL_093_&'),
+        array('[', ']')
+    );
 
     /**
      * @var array
      */
-	public $console = array();
+    public $console = array();
 
     /**
      * @var bool|int
      */
-	public $debug = false;
+    public $debug = false;
 
     /**
      * @var bool
      */
-	public $debugLog = false;
+    public $debugLog = false;
 
     /**
      * @var int
      */
-	public $curPass = 0;
+    public $curPass = 0;
 
     /**
      * @var int
      */
-	public $maxPasses = 50;
+    public $maxPasses = 50;
 
     /**
      * @var array
      */
-	public $swapSnippetCache = array();
+    public $swapSnippetCache = array();
 
     /**
      * DLphx constructor.
@@ -97,7 +97,7 @@ class DLphx
         $this->user["usrid"] = isset($_SESSION['webInternalKey']) ? intval($_SESSION['webInternalKey']) : 0;
         $this->user["id"] = ($this->user["usrid"] > 0) ? (-$this->user["usrid"]) : $this->user["mgrid"];
 
-		$this->debug = ($debug != '') ? $debug : 0;
+        $this->debug = ($debug != '') ? $debug : 0;
 
         $this->maxPasses = ($maxpass != '') ? $maxpass : 50;
 
@@ -176,9 +176,9 @@ class DLphx
             $var_search = array();
             $var_replace = array();
             for ($i = 0; $i < $count; $i++) {
-				$var_search[] = $matches[0][$i];
-				$input = $matches[1][$i];
-				$this->Log('MODX Chunk: ' . $input);
+                $var_search[] = $matches[0][$i];
+                $input = $matches[1][$i];
+                $this->Log('MODX Chunk: ' . $input);
                 $input = $modx->mergeChunkContent('{{' . $input . '}}');
                 $var_replace[] = $this->Filter($input, $matches[2][$i]);
             }
@@ -296,9 +296,9 @@ class DLphx
                     case "eq":
                         $condition[] = intval(($output == $modifier_value[$i]));
                         break;
-					case "empty":
-						 $condition[] = intval(empty($output));
-						break;
+                    case "empty":
+                        $condition[] = intval(empty($output));
+                        break;
                     case "notequals":
                     case "isnot":
                     case "isnt":
@@ -343,7 +343,7 @@ class DLphx
                         if (!$isvalid) {
                             $output = NULL;
                         }
-						break;
+                        break;
                     case "then":
                         $conditional = implode(' ', $condition);
                         $isvalid = intval(eval("return (" . $conditional . ");"));
@@ -355,7 +355,7 @@ class DLphx
                         break;
                     case "else":
                         $conditional = implode(' ', $condition);
-						$isvalid = intval(eval("return (" . $conditional . ");"));
+                        $isvalid = intval(eval("return (" . $conditional . ");"));
                         if (!$isvalid) {
                             $output = $modifier_value[$i];
                         }
@@ -363,7 +363,7 @@ class DLphx
                     case "select":
                         $raw = explode("&", $modifier_value[$i]);
                         $map = array();
-						$count = count($raw);
+                        $count = count($raw);
                         for ($m = 0; $m < $count; $m++) {
                             $mi = explode("=", $raw[$m]);
                             $map[$mi[0]] = $mi[1];
@@ -373,7 +373,7 @@ class DLphx
                     ##### End of Conditional Modifiers
 
                     #####  String Modifiers
-					case "default":
+                    case "default":
                         $output = ($output === '') ? $modifier_value[0] : $output;
                         break;
                     case "lcase":
@@ -482,7 +482,7 @@ class DLphx
 
                     // If we haven't yet found the modifier, let's look elsewhere
                     default:
-						$snippet = '';
+                        $snippet = '';
                         // modified by Anton Kuzmin (23.06.2010) //
                         $snippetName = 'phx:' . $modifier_cmd[$i];
                         if (isset($modx->snippetCache[$snippetName])) {
@@ -512,16 +512,16 @@ class DLphx
                         $cm = $snippet;
                         // end //
 
-						if(!empty($cm)){
-							ob_start();
-							$options = $modifier_value[$i];
-							$custom = eval($cm);
-							$msg = ob_get_contents();
-							$output = $msg . $custom;
-							ob_end_clean();
-						}else{
-							$output = '';
-						}
+                        if (!empty($cm)) {
+                            ob_start();
+                            $options = $modifier_value[$i];
+                            $custom = eval($cm);
+                            $msg = ob_get_contents();
+                            $output = $msg . $custom;
+                            ob_end_clean();
+                        } else {
+                            $output = '';
+                        }
                         break;
                 }
                 if (count($condition)) $this->Log("  |--- Condition = '" . $condition[count($condition) - 1] . "'");
@@ -581,7 +581,7 @@ class DLphx
     }
 
     // Log pass
-	public function LogPass()
+    public function LogPass()
     {
         $this->console[] = "<div style='margin: 2px;margin-top: 5px;border-bottom: 1px solid black;'>Pass " . $this->curPass . "</div>";
     }

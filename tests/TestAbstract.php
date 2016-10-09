@@ -1,34 +1,35 @@
 <?php namespace DocLister\Tests;
 
-class TestAbstract extends \PHPUnit_Framework_TestCase {
-	public function getMethod($class, $method)
-	{
-		$reflection = new \ReflectionClass($class);
-		$method = $reflection->getMethod($method);
-		$method->setAccessible(true);
+class TestAbstract extends \PHPUnit_Framework_TestCase
+{
+    public function getMethod($class, $method)
+    {
+        $reflection = new \ReflectionClass($class);
+        $method = $reflection->getMethod($method);
+        $method->setAccessible(true);
 
-		return $method;
-	}
+        return $method;
+    }
 
-	public function getProperty($class, $property)
-	{
-		$reflection = new \ReflectionClass($class);
+    public function getProperty($class, $property)
+    {
+        $reflection = new \ReflectionClass($class);
 
-		/** @var \ReflectionProperty $property */
-		$property = $reflection->getProperty($property);
-		$property->setAccessible(true);
+        /** @var \ReflectionProperty $property */
+        $property = $reflection->getProperty($property);
+        $property->setAccessible(true);
 
-		return $property->getValue($class);
-	}
+        return $property->getValue($class);
+    }
 
-	public function setProperty($class, $property, $value)
-	{
-		$reflection = new \ReflectionClass($class);
+    public function setProperty($class, $property, $value)
+    {
+        $reflection = new \ReflectionClass($class);
 
-		/** @var \ReflectionProperty $property */
-		$property = $reflection->getProperty($property);
-		$property->setAccessible(true);
+        /** @var \ReflectionProperty $property */
+        $property = $reflection->getProperty($property);
+        $property->setAccessible(true);
 
-		$property->setValue($class, $value);
-	}
+        $property->setValue($class, $value);
+    }
 }

@@ -1,7 +1,7 @@
 <?php
-include_once(MODX_BASE_PATH.'assets/lib/APIHelpers.class.php');
-include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/jsonHelper.class.php');
-include_once(MODX_BASE_PATH.'assets/snippets/DocLister/lib/DLCollection.class.php');
+include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
+include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/jsonHelper.class.php');
+include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLCollection.class.php');
 
 
 /**
@@ -66,7 +66,9 @@ class MODxAPIhelpers
 abstract class MODxAPI extends MODxAPIhelpers
 {
     /**
-     * @var DocumentParser|null
+     * Объект DocumentParser - основной класс MODX'а
+     * @var \DocumentParser|null
+     * @access protected
      */
     protected $modx = null;
 
@@ -108,7 +110,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     /**
      * @var string
      */
-	protected $ignoreError = '';
+    protected $ignoreError = '';
 
     /**
      * @var bool
@@ -125,15 +127,15 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     protected $jsonFields = array();
 
-	/**
-	 * @var DLCollection
-	 */
+    /**
+     * @var DLCollection
+     */
     private $_decodedFields;
 
     /**
      * @var array
      */
-	private $_table = array();
+    private $_table = array();
 
     /**
      * MODxAPI constructor.
@@ -142,13 +144,13 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @throws Exception
      */
     public function __construct(DocumentParser $modx, $debug = false)
-    {	
-    	$this->modx = $modx;
-        if(function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()){
-        	throw new Exception('Magic Quotes is a deprecated and mostly useless setting that should be disabled. Please ask your server administrator to disable it in php.ini or in your webserver config.');
-		}
+    {
+        $this->modx = $modx;
+        if (function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) {
+            throw new Exception('Magic Quotes is a deprecated and mostly useless setting that should be disabled. Please ask your server administrator to disable it in php.ini or in your webserver config.');
+        }
 
-		$this->setDebug($debug);
+        $this->setDebug($debug);
         $this->_decodedFields = new DLCollection($this->modx);
     }
 
@@ -156,7 +158,8 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param $flag
      * @return $this
      */
-    public function setDebug($flag){
+    public function setDebug($flag)
+    {
         $this->_debug = (bool)$flag;
         return $this;
     }
@@ -164,14 +167,16 @@ abstract class MODxAPI extends MODxAPIhelpers
     /**
      * @return bool
      */
-    public function getDebug(){
+    public function getDebug()
+    {
         return $this->_debug;
     }
 
     /**
      * @return array
      */
-    public function getDefaultFields(){
+    public function getDefaultFields()
+    {
         return $this->default_field;
     }
 
@@ -189,8 +194,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param $q
      * @return $this
      */
-    public function addQuery($q){
-        if(is_scalar($q) && !empty($q)){
+    public function addQuery($q)
+    {
+        if (is_scalar($q) && !empty($q)) {
             $this->_query[] = $q;
         }
         return $this;
@@ -199,7 +205,8 @@ abstract class MODxAPI extends MODxAPIhelpers
     /**
      * @return array
      */
-    public function getQueryList(){
+    public function getQueryList()
+    {
         return $this->_query;
     }
 
@@ -209,7 +216,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final public function query($SQL)
     {
-        if($this->getDebug()){
+        if ($this->getDebug()) {
             $this->addQuery($SQL);
         }
         return empty($SQL) ? null : $this->modx->db->query($SQL);
@@ -219,14 +226,15 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param $value
      * @return string
      */
-    final public function escape($value){
-        if(!is_scalar($value)){
+    final public function escape($value)
+    {
+        if (!is_scalar($value)) {
             $value = '';
-        }else{
+        } else {
             $value = $this->modx->db->escape($value);
         }
         return $value;
-     }
+    }
 
     /**
      * @param $name
@@ -249,7 +257,8 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param null $flag
      * @return mixed
      */
-    final public function getInvokeEventResult($name, $data = array(), $flag = null) {
+    final public function getInvokeEventResult($name, $data = array(), $flag = null)
+    {
         $flag = (isset($flag) && $flag != '') ? (bool)$flag : false;
         if ($flag) {
             return $this->modx->invokeEvent($name, $data);
@@ -303,39 +312,39 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final public function clearCache($fire_events = null, $custom = false)
     {
-		$IDs = array();
-		if($custom === false) {
-			$this->modx->clearCache();
-			include_once(MODX_MANAGER_PATH . 'processors/cache_sync.class.processor.php');
-			$sync = new synccache();
-			$path = $this->getCachePath(true);
-			$sync->setCachepath($path);
-			$sync->setReport(false);
-			$sync->emptyCache();
-		}else {
-			if(is_scalar($custom)){
-				$custom = array($custom);
-			}
-			switch ($this->modx->config['cache_type']) {
-				case 2:
-					$cacheFile = "_*.pageCache.php";
-					break;
-				default:
-					$cacheFile = ".pageCache.php";
-			}
-			if(is_array($custom)) {
-				foreach($custom as $id) {
-					$tmp = glob(MODX_BASE_PATH."assets/cache/docid_" . $id . $cacheFile);
-					foreach($tmp as $file){
-						if(is_readable($file)){
-							unlink($file);
-						}
-						$IDs[] = $id;
-					}
-				}
-			}
-			clearstatcache();
-		}
+        $IDs = array();
+        if ($custom === false) {
+            $this->modx->clearCache();
+            include_once(MODX_MANAGER_PATH . 'processors/cache_sync.class.processor.php');
+            $sync = new synccache();
+            $path = $this->getCachePath(true);
+            $sync->setCachepath($path);
+            $sync->setReport(false);
+            $sync->emptyCache();
+        } else {
+            if (is_scalar($custom)) {
+                $custom = array($custom);
+            }
+            switch ($this->modx->config['cache_type']) {
+                case 2:
+                    $cacheFile = "_*.pageCache.php";
+                    break;
+                default:
+                    $cacheFile = ".pageCache.php";
+            }
+            if (is_array($custom)) {
+                foreach ($custom as $id) {
+                    $tmp = glob(MODX_BASE_PATH . "assets/cache/docid_" . $id . $cacheFile);
+                    foreach ($tmp as $file) {
+                        if (is_readable($file)) {
+                            unlink($file);
+                        }
+                        $IDs[] = $id;
+                    }
+                }
+            }
+            clearstatcache();
+        }
         $this->invokeEvent('OnSiteRefresh', array('IDs' => $IDs), $fire_events);
     }
 
@@ -343,8 +352,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param $id
      * @return MODxAPI
      */
-    public function switchObject($id){
-        switch(true){
+    public function switchObject($id)
+    {
+        switch (true) {
             //Если загружен другой объект - не тот, с которым мы хотим временно поработать
             case ($this->getID() != $id && $id):
                 $obj = clone $this;
@@ -352,7 +362,7 @@ abstract class MODxAPI extends MODxAPIhelpers
                 break;
             //Если уже загружен объект, с которым мы хотим временно поработать
             case ($this->getID() == $id && $id):
-            //Если $id не указан, но уже загружен какой-то объект
+                //Если $id не указан, но уже загружен какой-то объект
             case (!$id && $this->getID()):
             default:
                 $obj = $this;
@@ -365,17 +375,19 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param bool $flag
      * @return $this
      */
-    public function useIgnore($flag = true){
-		$this->ignoreError = $flag ? 'IGNORE' : '';
-		return $this;
-	}
+    public function useIgnore($flag = true)
+    {
+        $this->ignoreError = $flag ? 'IGNORE' : '';
+        return $this;
+    }
 
     /**
      * @return bool
      */
-    public function hasIgnore(){
-		return (bool)$this->ignoreError;
-	}
+    public function hasIgnore()
+    {
+        return (bool)$this->ignoreError;
+    }
 
     /**
      * @param $key
@@ -434,8 +446,8 @@ abstract class MODxAPI extends MODxAPIhelpers
             $this->log[] = "{$key} is empty";
         } else {
             if ($this->issetField($key) && is_scalar($this->field[$key])) {
-            	$tmp = "`{$key}`='{$this->escape($this->field[$key])}'";
-			} else throw new Exception("{$key} is invalid <pre>" . print_r($this->field[$key], true) . "</pre>");
+                $tmp = "`{$key}`='{$this->escape($this->field[$key])}'";
+            } else throw new Exception("{$key} is invalid <pre>" . print_r($this->field[$key], true) . "</pre>");
         }
         if (!empty($tmp)) {
             if ($id == '') {
@@ -459,11 +471,11 @@ abstract class MODxAPI extends MODxAPIhelpers
         $out = array();
         if (!is_array($IDs)) {
             if (is_scalar($IDs)) {
-            	$IDs = explode($sep, $IDs);
-			} else {
-            	$IDs = array();
+                $IDs = explode($sep, $IDs);
+            } else {
+                $IDs = array();
                 throw new Exception('Invalid IDs list <pre>' . print_r($IDs, 1) . '</pre>');
-			}
+            }
         }
         foreach ($IDs as $item) {
             $item = trim($item);
@@ -488,21 +500,21 @@ abstract class MODxAPI extends MODxAPIhelpers
     final public function fromJson($data, $callback = null)
     {
         if (is_scalar($data) && !empty($data)) {
-        	$json = json_decode($data);
-		} else throw new Exception("json is not string with json data");
+            $json = json_decode($data);
+        } else throw new Exception("json is not string with json data");
 
-		if ($this->jsonError($json)) {
-        	if (isset($callback) && is_callable($callback)) {
-            	call_user_func_array($callback, array($json));
-			} else {
-            	if (isset($callback)) throw new Exception("Can't call callback JSON unpack <pre>" . print_r($callback, 1) . "</pre>");
+        if ($this->jsonError($json)) {
+            if (isset($callback) && is_callable($callback)) {
+                call_user_func_array($callback, array($json));
+            } else {
+                if (isset($callback)) throw new Exception("Can't call callback JSON unpack <pre>" . print_r($callback, 1) . "</pre>");
                 foreach ($json as $key => $val) {
-                	$this->set($key, $val);
-				}
-			}
-		} else throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
+                    $this->set($key, $val);
+                }
+            }
+        } else throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
 
-		return $this;
+        return $this;
     }
 
     /**
@@ -514,17 +526,17 @@ abstract class MODxAPI extends MODxAPIhelpers
     {
         $data = $this->toArray();
         if (isset($callback) && is_callable($callback)) {
-        	$data = call_user_func_array($callback, array($data));
-		} else {
-        	if (isset($callback)) throw new Exception("Can't call callback JSON pre pack <pre>" . print_r($callback, 1) . "</pre>");
-		}
+            $data = call_user_func_array($callback, array($data));
+        } else {
+            if (isset($callback)) throw new Exception("Can't call callback JSON pre pack <pre>" . print_r($callback, 1) . "</pre>");
+        }
         $json = json_encode($data);
 
-		if ($this->jsonError($data)) {
-        	throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
-		}
+        if ($this->jsonError($data)) {
+            throw new Exception('Error from JSON decode: <pre>' . print_r($data, 1) . '</pre>');
+        }
 
-		return $json;
+        return $json;
     }
 
     /**
@@ -573,7 +585,8 @@ abstract class MODxAPI extends MODxAPIhelpers
     /**
      * @return string
      */
-    final public function fieldPKName(){
+    final public function fieldPKName()
+    {
         return $this->pkName;
     }
 
@@ -599,7 +612,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         }
         $out = array();
         foreach ($data as $item) {
-            if($item !== ''){
+            if ($item !== '') {
                 $out[] = $this->escape($item);
             }
         }
@@ -620,18 +633,18 @@ abstract class MODxAPI extends MODxAPIhelpers
             foreach ($field as $_field) {
                 $val = $this->get($_field);
                 if ($val != '')
-                    $where[] = "`".$this->escape($_field)."` = '".$this->escape($val)."'";
+                    $where[] = "`" . $this->escape($_field) . "` = '" . $this->escape($val) . "'";
             }
-            $where = implode(' AND ',$where);
+            $where = implode(' AND ', $where);
         } else {
             $where = '';
             $val = $this->get($field);
             if ($val != '')
-                $where = "`".$this->escape($field)."` = '".$this->escape($val)."'";
+                $where = "`" . $this->escape($field) . "` = '" . $this->escape($val) . "'";
         }
-        
+
         if ($where != '') {
-            $sql = $this->query("SELECT `" . $this->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE ".$where);
+            $sql = $this->query("SELECT `" . $this->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE " . $where);
             $id = $this->modx->db->getValue($sql);
             if (is_null($id) || (!$this->newDoc && $id == $this->getID())) {
                 $flag = true;
@@ -754,7 +767,8 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param  string $field имя поля
      * @return boolean
      */
-    public function isJsonField($field){
+    public function isJsonField($field)
+    {
         return (is_scalar($field) && in_array($field, $this->jsonFields));
     }
 
@@ -763,8 +777,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param  string $field имя поля
      * @return $this
      */
-    public function markAsDecode($field){
-        if(is_scalar($field)){
+    public function markAsDecode($field)
+    {
+        if (is_scalar($field)) {
             $this->_decodedFields->set($field, false);
         }
         return $this;
@@ -775,8 +790,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param  string $field имя поля
      * @return $this
      */
-    public function markAsEncode($field){
-        if(is_scalar($field)){
+    public function markAsEncode($field)
+    {
+        if (is_scalar($field)) {
             $this->_decodedFields->set($field, true);
         }
         return $this;
@@ -786,9 +802,10 @@ abstract class MODxAPI extends MODxAPIhelpers
      * Пометить все поля как запакованные
      * @return $this
      */
-    public function markAllEncode(){
+    public function markAllEncode()
+    {
         $this->_decodedFields->clear();
-        foreach($this->jsonFields as $field){
+        foreach ($this->jsonFields as $field) {
             $this->markAsEncode($field);
         }
         return $this;
@@ -798,9 +815,10 @@ abstract class MODxAPI extends MODxAPIhelpers
      * Пометить все поля как распакованные
      * @return $this
      */
-    public function markAllDecode(){
+    public function markAllDecode()
+    {
         $this->_decodedFields->clear();
-        foreach($this->jsonFields as $field){
+        foreach ($this->jsonFields as $field) {
             $this->markAsDecode($field);
         }
         return $this;
@@ -810,8 +828,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * Получить список не запакованных полей
      * @return array
      */
-    public function getNoEncodeFields(){
-        return $this->_decodedFields->filter(function($value){
+    public function getNoEncodeFields()
+    {
+        return $this->_decodedFields->filter(function ($value) {
             return ($value === false);
         });
     }
@@ -820,8 +839,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * Получить список не распакованных полей
      * @return array
      */
-    public function getNoDecodeFields(){
-       return $this->_decodedFields->filter(function($value){
+    public function getNoDecodeFields()
+    {
+        return $this->_decodedFields->filter(function ($value) {
             return ($value === true);
         });
     }
@@ -831,24 +851,26 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param  string $field имя поля
      * @return boolean
      */
-    public function isDecodableField($field){
+    public function isDecodableField($field)
+    {
         $data = $this->get($field);
         /**
          * Если поле скалярного типа и оно не распаковывалось раньше
          */
-        return (is_scalar($data) && is_scalar($field) && $this->_decodedFields->get($field)===true);
+        return (is_scalar($data) && is_scalar($field) && $this->_decodedFields->get($field) === true);
     }
 
     /**
      * Можно ли закодировать данные с помощью json_encode
-     * @param  string  $field имя поля
+     * @param  string $field имя поля
      * @return boolean
      */
-    public function isEncodableField($field){
+    public function isEncodableField($field)
+    {
         /**
          * Если поле было распаковано ранее и еще не упаковано
          */
-        return (is_scalar($field) && $this->_decodedFields->get($field)===false);
+        return (is_scalar($field) && $this->_decodedFields->get($field) === false);
     }
 
     /**
@@ -857,13 +879,14 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param  bool $store обновить распакованное поле
      * @return array ассоциативный массив с данными из json строки
      */
-    public function decodeField($field, $store = false){
+    public function decodeField($field, $store = false)
+    {
         $out = array();
-        if($this->isDecodableField($field)){
+        if ($this->isDecodableField($field)) {
             $data = $this->get($field);
             $out = jsonHelper::jsonDecode($data, array('assoc' => true), true);
         }
-        if($store){
+        if ($store) {
             $this->field[$field] = $out;
             $this->markAsDecode($field);
         }
@@ -874,8 +897,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * Декодирование всех json полей
      * @return $this
      */
-    protected function decodeFields(){
-        foreach($this->getNoDecodeFields() as $field => $flag){
+    protected function decodeFields()
+    {
+        foreach ($this->getNoDecodeFields() as $field => $flag) {
             $this->decodeField($field, true);
         }
         return $this;
@@ -887,13 +911,14 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param  bool $store обновить запакованное поле
      * @return array json строка
      */
-    public function encodeField($field, $store = false){
+    public function encodeField($field, $store = false)
+    {
         $out = null;
-        if($this->isEncodableField($field)){
+        if ($this->isEncodableField($field)) {
             $data = $this->get($field);
             $out = json_encode($data);
         }
-        if($store){
+        if ($store) {
             $this->field[$field] = $out;
             $this->markAsEncode($field);
         }
@@ -904,8 +929,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * Запаковка всех json полей
      * @return $this
      */
-    protected function encodeFields(){
-        foreach($this->getNoEncodeFields() as $field => $flag){
+    protected function encodeFields()
+    {
+        foreach ($this->getNoEncodeFields() as $field => $flag) {
             $this->encodeField($field, true);
         }
         return $this;
