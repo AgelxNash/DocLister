@@ -1,6 +1,7 @@
 {
   "name": "agelxnash/DocLister",
   "type": "MODX Snippet",
+  "license": "GPL-2.0",
   "autoload": {
       "classmap": [
         "assets/snippets/DocLister/",
