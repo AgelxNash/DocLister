@@ -460,10 +460,27 @@ class modResource extends MODxAPI
         return $this;
     }
 
+    public function childrens($ids, $depth = 0)
+    {
+        $_ids = $this->cleanIDs($ids, ',');
+        if (is_array($_ids) && $_ids != array()) {
+            $id = $this->sanitarIn($_ids);
+            if(!empty($id)) {
+                $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} where `parent` IN ({$id})");
+                $id = $this->modx->db->getColumn('id', $q);
+                if($depth > 0 || (is_bool($depth) && $depth == true)){
+                    $id = $this->childrens($id, is_bool($depth) ? $depth : ($depth - 1));
+                }
+                $_ids = array_merge($_ids, $id);
+            }
+        }
+        return $_ids;
+    }
+
     public function delete($ids, $fire_events = null)
     {
-        $ignore = $this->systemID();
-        $_ids = $this->cleanIDs($ids, ',', $ignore);
+        $ids = $this->childrens($ids, true);
+        $_ids = $this->cleanIDs($ids, ',', $this->systemID());
         if (is_array($_ids) && $_ids != array()) {
         	$this->invokeEvent('OnBeforeEmptyTrash', array(
             	"ids" => $_ids
