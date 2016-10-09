@@ -12,7 +12,7 @@ class MODxAPIhelpers
     /**
      * @param $email
      * @param bool $dns
-     * @return bool
+     * @return false|string
      */
     public function emailValidate($email, $dns = true)
     {
@@ -106,7 +106,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param $flag
+     * @param boolean $flag
      * @return $this
      */
     public function setDebug($flag)
@@ -133,7 +133,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param null $default
      * @return mixed
      */
@@ -192,7 +192,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param array $data
      * @param bool $flag
      * @return $this
@@ -208,9 +208,9 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param array $data
-     * @param null $flag
+     * @param boolean $flag
      * @return array|bool
      */
     final public function getInvokeEventResult($name, $data = array(), $flag = null)
@@ -267,7 +267,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param null $fire_events
+     * @param null|boolean $fire_events
      * @param bool $custom
      */
     final public function clearCache($fire_events = null, $custom = false)
@@ -309,7 +309,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param $id
+     * @param integer $id
      * @return MODxAPI
      */
     public function switchObject($id)
@@ -430,7 +430,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     /**
      * @param $IDs
      * @param string $sep
-     * @param array $ignore
+     * @param integer[] $ignore
      * @return array
      * @throws Exception
      */
@@ -601,8 +601,8 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param $table
-     * @param $field
+     * @param string $table
+     * @param string $field
      * @param string $PK
      * @return bool
      */
@@ -712,7 +712,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param $version
+     * @param string $version
      * @param bool $dmi3yy
      * @return bool
      */
@@ -735,7 +735,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return bool|mixed
      */
     protected function eraseField($name)
@@ -817,7 +817,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     /**
      * Получить список не запакованных полей
-     * @return array
+     * @return DLCollection
      */
     public function getNoEncodeFields()
     {
@@ -828,7 +828,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     /**
      * Получить список не распакованных полей
-     * @return array
+     * @return DLCollection
      */
     public function getNoDecodeFields()
     {
@@ -904,7 +904,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      * Запаковывает конкретное поле в JSON
      * @param  string $field Имя поля
      * @param  bool $store обновить запакованное поле
-     * @return array json строка
+     * @return string|null json строка
      */
     public function encodeField($field, $store = false)
     {

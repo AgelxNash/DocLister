@@ -55,8 +55,8 @@ class modUsers extends MODxAPI
     }
 
     /**
-     * @param $data
-     * @return bool|string
+     * @param string $data
+     * @return string|false
      */
     protected function findUser($data)
     {
@@ -108,7 +108,7 @@ class modUsers extends MODxAPI
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param $value
      * @return $this
      */
@@ -416,7 +416,8 @@ class modUsers extends MODxAPI
      * Starts the user session on login success. Destroys session on error or logout.
      *
      * @param string $directive ('start' or 'destroy')
-     * @return void
+     * @param string $cookieName
+     * @return modUsers
      * @author Raymond Irving
      * @author Scotty Delicious
      *
