@@ -2,6 +2,9 @@
 
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 
+/**
+ * Class AssetsHelper
+ */
 class AssetsHelper
 {
     protected $modx = null;
@@ -56,6 +59,9 @@ class AssetsHelper
 
     }
 
+    /**
+     * @return string
+     */
     public function registerJQuery() {
         $output = '';
         $plugins = $this->modx->pluginEvent;
@@ -69,6 +75,11 @@ class AssetsHelper
         return $output;
     }
 
+    /**
+     * @param $name
+     * @param $params
+     * @return string
+     */
     public function registerScript($name, $params) {
         $out = '';
         if (!isset($this->modx->loadedjscripts[$name])) {
@@ -95,7 +106,11 @@ class AssetsHelper
         }
         return $out;
     }
-    
+
+    /**
+     * @param array $list
+     * @return string
+     */
     public function registerScriptsList($list = array()) {
         $out = '';
         foreach ($list as $script=>$params) {

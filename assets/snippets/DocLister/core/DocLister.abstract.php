@@ -25,6 +25,9 @@ require_once(dirname(dirname(__FILE__)) . "/lib/DLTemplate.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/DLCollection.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/xnop.class.php");
 
+/**
+ * Class DocLister
+ */
 abstract class DocLister
 {
     /**
@@ -394,6 +397,12 @@ abstract class DocLister
     }
 
 
+    /**
+     * @param $name
+     * @param $table
+     * @param $alias
+     * @return mixed
+     */
     public function TableAlias($name, $table, $alias)
     {
         if (!$this->checkTableAlias($name, $table)) {
@@ -402,6 +411,11 @@ abstract class DocLister
         return $this->AddTable[$table][$name];
     }
 
+    /**
+     * @param $name
+     * @param $table
+     * @return bool
+     */
     public function checkTableAlias($name, $table)
     {
         return isset($this->AddTable[$table][$name]);
@@ -1113,6 +1127,13 @@ abstract class DocLister
         return $this->outData;
     }
 
+    /**
+     * @param array $item
+     * @param null $extSummary
+     * @param string $introField
+     * @param string $contentField
+     * @return mixed|string
+     */
     protected function getSummary(array $item = array(), $extSummary = null, $introField = '', $contentField = '')
     {
         $out = '';
@@ -1151,6 +1172,10 @@ abstract class DocLister
         return (isset($this->extender[$name]) && $this->extender[$name] instanceof $name . "_DL_Extender");
     }
 
+    /**
+     * @param $name
+     * @param $obj
+     */
     public function setExtender($name, $obj)
     {
         $this->extender[$name] = $obj;
@@ -1238,6 +1263,9 @@ abstract class DocLister
         return ($this->IDs = $IDs);
     }
 
+    /**
+     * @return int
+     */
     public function getIDs()
     {
         return $this->IDs;
@@ -1296,7 +1324,10 @@ abstract class DocLister
         return $out;
     }
 
-	public function docsCollection(){
+    /**
+     * @return DLCollection
+     */
+    public function docsCollection(){
         return new DLCollection($this->modx, $this->_docs);
     }
 
@@ -1320,6 +1351,10 @@ abstract class DocLister
      */
     abstract public function getChildrenFolder($id);
 
+    /**
+     * @param string $group
+     * @return string
+     */
     protected function getGroupSQL($group = '')
     {
         $out = '';
@@ -1540,11 +1575,17 @@ abstract class DocLister
         return $output;
     }
 
+    /**
+     * @return mixed
+     */
     public function filtersWhere()
     {
         return APIHelpers::getkey($this->_filters, 'where', '');
     }
 
+    /**
+     * @return mixed
+     */
     public function filtersJoin()
     {
         return APIHelpers::getkey($this->_filters, 'join', '');

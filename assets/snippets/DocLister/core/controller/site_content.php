@@ -31,6 +31,12 @@ class site_contentDocLister extends DocLister
 
     protected $extPaginate = null;
 
+    /**
+     * site_contentDocLister constructor.
+     * @param DocumentParser $modx
+     * @param array $cfg
+     * @param null $startTime
+     */
     public function __construct($modx, $cfg = array(), $startTime = null)
     {
         parent::__construct($modx, $cfg, $startTime);
@@ -205,6 +211,12 @@ class site_contentDocLister extends DocLister
         return $this->toPlaceholders($out);
     }
 
+    /**
+     * @param array $data
+     * @param mixed $fields
+     * @param array $array
+     * @return string
+     */
     public function getJSON($data, $fields, $array = array())
     {
         $out = array();
@@ -339,6 +351,9 @@ class site_contentDocLister extends DocLister
         return $out;
     }
 
+    /**
+     * @return array
+     */
     protected function getDocList()
     {
         $out = array();
@@ -390,6 +405,10 @@ class site_contentDocLister extends DocLister
         return $out;
     }
 
+    /**
+     * @param string $id
+     * @return array
+     */
     public function getChildrenFolder($id)
     {
         /**
@@ -420,6 +439,11 @@ class site_contentDocLister extends DocLister
         return $out;
     }
 
+    /**
+     * @param $table
+     * @param $sort
+     * @return array
+     */
     protected function injectSortByTV($table, $sort)
     {
         $out = $this->getExtender('tv', true, true)->injectSortByTV($table, $sort);
@@ -508,6 +532,11 @@ class site_contentDocLister extends DocLister
         return $out;
     }
 
+    /**
+     * @param string $field
+     * @param string $type
+     * @return string
+     */
     public function changeSortType($field, $type)
     {
         $type = trim($type);

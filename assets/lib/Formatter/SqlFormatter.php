@@ -329,6 +329,10 @@ class SqlFormatter
         );
     }
 
+    /**
+     * @param $string
+     * @return null
+     */
     protected static function getQuotedString($string)
     {
         $ret = null;
@@ -1072,6 +1076,9 @@ class SqlFormatter
         }
     }
 
+    /**
+     * @return bool
+     */
     private static function is_cli()
     {
         if (isset(self::$cli)) return self::$cli;

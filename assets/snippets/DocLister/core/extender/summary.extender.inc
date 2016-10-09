@@ -14,6 +14,9 @@ if (!defined('MODX_BASE_PATH')) {
 class summary_DL_Extender extends extDocLister
 {
 
+    /**
+     * @return mixed
+     */
     protected function run()
     {
         if (!empty($this->_cfg['action']) && !empty($this->_cfg['content'])) {

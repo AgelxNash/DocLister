@@ -100,7 +100,11 @@ class Video
 			}
 		}
 	}
-	public function getScheme(){
+
+    /**
+     * @return string
+     */
+    public function getScheme(){
 		switch($this->scheme){
 			case 'http':
 				$out = 'http://';
@@ -115,10 +119,18 @@ class Video
 
 		return $out;
 	}
-	public function setInfo($info){
+
+    /**
+     * @param $info
+     */
+    public function setInfo($info){
 		$this->info = (bool)$info;
 	}
-	public function getInfo(){
+
+    /**
+     * @return bool
+     */
+    public function getInfo(){
 		return $this->info;
 	}
 	/** Видеохостинг */
@@ -363,7 +375,11 @@ class Video
 		return curl_exec($ch);
 	}
 
-	public function getEmbed($options){
+    /**
+     * @param $options
+     * @return string
+     */
+    public function getEmbed($options){
 		$autoplay = isset($options["autoplay"]) ? $options["autoplay"] : $this->autoplay;
 		$width = isset($options["width"]) ? (int)$options["width"] : $this->width;
 		$height = isset($options["height"]) ? (int)$options["height"] : $this->height;

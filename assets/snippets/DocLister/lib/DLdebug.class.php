@@ -2,6 +2,9 @@
 include_once(MODX_BASE_PATH . 'assets/lib/Formatter/SqlFormatter.php');
 include_once(MODX_BASE_PATH . 'assets/lib/Formatter/HtmlFormatter.php');
 
+/**
+ * Class DLdebug
+ */
 class DLdebug
 {
     private $_log = array();
@@ -21,6 +24,10 @@ class DLdebug
      */
     protected $modx = null;
 
+    /**
+     * DLdebug constructor.
+     * @param $DocLister
+     */
     public function __construct($DocLister)
     {
         if ($DocLister instanceof DocLister) {
@@ -30,19 +37,36 @@ class DLdebug
 
     }
 
+    /**
+     * @return array
+     */
     public function getLog(){
         return $this->_log;
     }
+
+    /**
+     * @return $this
+     */
     public function clearLog(){
         $this->_log = array();
         return $this;
     }
+
+    /**
+     * @return int
+     */
     public function countLog(){
         return count($this->_log);
     }
     /*
      * 1 - SQL
      * 2 - Full debug
+     */
+    /**
+     * @param $message
+     * @param null $key
+     * @param int $mode
+     * @param bool $format
      */
     public function debug($message, $key = null, $mode = 0, $format = false)
     {
@@ -61,6 +85,12 @@ class DLdebug
             }
         }
     }
+
+    /**
+     * @param $message
+     * @param $key
+     * @param null $format
+     */
     public function updateMessage($message, $key, $format = null){
         if (is_scalar($key) && !empty($key) && isset($this->_calcLog[$key])) {
             $this->_calcLog[$key]['msg'] = $message;
@@ -70,6 +100,11 @@ class DLdebug
         }
     }
 
+    /**
+     * @param $key
+     * @param null $msg
+     * @param null $format
+     */
     public function debugEnd($key, $msg = null, $format = null)
     {
         if (is_scalar($key) && isset($this->_calcLog[$key], $this->_calcLog[$key]['time']) && $this->DocLister->getDebug() > 0) {
@@ -84,27 +119,47 @@ class DLdebug
     }
 
 
+    /**
+     * @param $message
+     * @param string $title
+     */
     public function info($message, $title = '')
     {
         $this->_sendLogEvent(1, $message, $title);
     }
 
+    /**
+     * @param $message
+     * @param string $title
+     */
     public function warning($message, $title = '')
     {
         $this->_sendLogEvent(2, $message, $title);
     }
 
+    /**
+     * @param $message
+     * @param string $title
+     */
     public function error($message, $title = '')
     {
         $this->_sendLogEvent(3, $message, $title);
     }
 
+    /**
+     * @param $type
+     * @param $message
+     * @param string $title
+     */
     private function _sendLogEvent($type, $message, $title = '')
     {
         $title = "DocLister" . (!empty($title) ? ' - ' . $title : '');
         $this->modx->logEvent(0, $type, $message, $title);
     }
 
+    /**
+     * @return string
+     */
     public function showLog()
     {
         $out = "";
@@ -200,6 +255,12 @@ class DLdebug
         return $out;
     }
 
+    /**
+     * @param $data
+     * @param string $wrap
+     * @param string $charset
+     * @return string
+     */
     public function dumpData($data, $wrap = '', $charset = 'UTF-8')
     {
         $out = $this->DocLister->sanitarData(print_r($data, 1), $charset);

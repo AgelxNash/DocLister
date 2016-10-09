@@ -1,30 +1,55 @@
 <?php namespace Module;
 
 include_once(dirname(dirname(__FILE__)).'/APIHelpers.class.php');
+
+/**
+ * Class Helper
+ * @package Module
+ */
 class Helper extends \APIhelpers{
     protected static $modx = null;
 	protected static $mode = 'list';
 
+    /**
+     * @param \DocumentParser $modx
+     * @param string $mode
+     */
     public static function init(\DocumentParser $modx, $mode = 'list'){
         self::$modx = $modx;
 		self::setMode($mode);
     }
 
-	public static function getMode()
+    /**
+     * @return string
+     */
+    public static function getMode()
 	{
 		return self::$mode;
 	}
 
-	public static function setMode($text)
+    /**
+     * @param $text
+     */
+    public static function setMode($text)
 	{
 		self::$mode = $text;
 	}
 
+    /**
+     * @param $from
+     * @param string $where
+     * @return mixed
+     */
     protected static function _counter($from, $where = ''){
         $q = self::$modx->db->select('count(id)', self::$modx->getFullTableName($from), $where);
         return self::$modx->db->getValue($q);
     }
 
+    /**
+     * @param string $key
+     * @param bool $post
+     * @return array
+     */
     public static function jeditable($key = 'id', $post = true){
        $data = array();
        $request = $post ? $_POST : $_GET;
@@ -38,7 +63,14 @@ class Helper extends \APIhelpers{
        return $data;
     }
 
-	public static function curl($url, $data = '', $post = false, array $header = array())
+    /**
+     * @param $url
+     * @param string $data
+     * @param bool $post
+     * @param array $header
+     * @return mixed
+     */
+    public static function curl($url, $data = '', $post = false, array $header = array())
 	{
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -71,7 +103,15 @@ class Helper extends \APIhelpers{
 		return $error;
 	}
 
-	public static function readFileLine($path, $callback, array $callbackParams = array(), $lines = 0, $size = 4096)
+    /**
+     * @param $path
+     * @param $callback
+     * @param array $callbackParams
+     * @param int $lines
+     * @param int $size
+     * @return array
+     */
+    public static function readFileLine($path, $callback, array $callbackParams = array(), $lines = 0, $size = 4096)
 	{
 		$handle = fopen($path, "r");
 		$i = $total = 0;

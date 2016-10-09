@@ -1,8 +1,15 @@
 <?php
 
 if(!class_exists("DLReflect", false)){
-	class DLReflect{
-		public static function validateMonth($val){
+    /**
+     * Class DLReflect
+     */
+    class DLReflect{
+        /**
+         * @param $val
+         * @return bool
+         */
+        public static function validateMonth($val){
 			$flag = false;
 			if(is_scalar($val)){
 				$val = explode("-", $val, 2);
@@ -13,7 +20,11 @@ if(!class_exists("DLReflect", false)){
 			return $flag;
 		}
 
-		public static function validateYear($val){
+        /**
+         * @param $val
+         * @return bool
+         */
+        public static function validateYear($val){
 			$flag = false;
 			if(is_scalar($val)){
 				$flag = (strlen($val)==4); //Валидация строки
@@ -22,7 +33,13 @@ if(!class_exists("DLReflect", false)){
 			return $flag;
 		}
 
-		public static function switchReflect($type, $monthAction, $yearAction){
+        /**
+         * @param $type
+         * @param $monthAction
+         * @param $yearAction
+         * @return mixed|null
+         */
+        public static function switchReflect($type, $monthAction, $yearAction){
 			$out = null;
 			$action = $type."Action";
 			return is_callable($$action) ? call_user_func($$action) : $out;

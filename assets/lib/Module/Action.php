@@ -1,5 +1,9 @@
 <?php namespace Module;
 
+/**
+ * Class Action
+ * @package Module
+ */
 abstract class Action{
     protected static $modx = null;
     public static $TPL = null;
@@ -7,27 +11,55 @@ abstract class Action{
     protected static $classTable = null;
 	protected static $_tplObj = null;
 
+    /**
+     * @param \DocumentParser $modx
+     */
     public static function setMODX(\DocumentParser $modx){
         self::$modx = $modx;
     }
+
+    /**
+     * @param \DocumentParser $modx
+     * @param Template $tpl
+     * @param \MODxAPI $classTable
+     */
     public static function init(\DocumentParser $modx, Template $tpl, \MODxAPI $classTable){
         self::setMODX($modx);
         self::$TPL = Template::showLog();
 		self::$_tplObj = $tpl;
         self::$classTable = $classTable;
     }
+
+    /**
+     * @return string
+     */
     public static function TABLE(){
         return static::$TABLE;
     }
+
+    /**
+     * @param $id
+     * @return bool
+     */
     protected static function _checkObj($id){
         $q = self::$modx->db->select('id', self::$modx->getFullTableName(self::TABLE()), "id = ".$id);
         return (self::$modx->db->getRecordCount($q)==1);
     }
+
+    /**
+     * @param $field
+     * @param $id
+     * @return mixed
+     */
     protected static function _getValue($field, $id){
         $q = self::$modx->db->select($field, self::$modx->getFullTableName(self::TABLE()), "id = ".$id);
         return self::$modx->db->getValue($q);
     }
-	public static function listValue(){
+
+    /**
+     * @return array|mixed
+     */
+    public static function listValue(){
         $out = self::_workValue(function($data, $modObj){
             $listFunction = $data['key'].'Lists';
             $out = method_exists($modObj, $listFunction) ? $modObj->$listFunction() : array();
@@ -38,6 +70,11 @@ abstract class Action{
 
         return $out;
     }
+
+    /**
+     * @param $callback
+     * @return array|mixed
+     */
     protected static function _workValue($callback){
         self::$TPL = 'ajax/getValue';
         $data = Helper::jeditable('data');
@@ -51,6 +88,10 @@ abstract class Action{
         }
         return $out;
     }
+
+    /**
+     * @return array|mixed
+     */
     public static function saveValue(){
         return self::_workValue(function($data, $modObj){
             $out = array();
@@ -67,6 +108,10 @@ abstract class Action{
             return $out;
         });
     }
+
+    /**
+     * @return array|mixed
+     */
     public static function getValue(){
         return self::_workValue(function($data, $modObj){
             return array(
@@ -74,6 +119,10 @@ abstract class Action{
             );
         });
     }
+
+    /**
+     * @return array
+     */
     public static function deleted(){
 		$data = array();
         $dataID = (int)Template::getParam('docId', $_GET);
@@ -95,7 +144,11 @@ abstract class Action{
     public static function lists(){
         self::$TPL = 'ajax/lists';
     }
-	public static function getClassTable(){
+
+    /**
+     * @return null
+     */
+    public static function getClassTable(){
 		return self::$classTable;
 	}
 }

@@ -16,10 +16,19 @@ if (!defined('MODX_BASE_PATH')) {
 
 include_once(dirname(__FILE__) . "/site_content.php");
 
+/**
+ * Class site_content_tagsDocLister
+ */
 class site_content_tagsDocLister extends site_contentDocLister
 {
     private $tag = array();
 
+    /**
+     * site_content_tagsDocLister constructor.
+     * @param DocumentParser $modx
+     * @param array $cfg
+     * @param null $startTime
+     */
     public function __construct($modx, $cfg = array(), $startTime = null)
     {
         parent::__construct($modx, $cfg, $startTime);
@@ -43,6 +52,9 @@ class site_content_tagsDocLister extends site_contentDocLister
         return $url;
     }
 
+    /**
+     * @return array|bool
+     */
     private function getTag()
     {
         $tags = $this->getCFGDef('tagsData', '');
@@ -71,6 +83,10 @@ class site_content_tagsDocLister extends site_contentDocLister
         return $this->checkTag();
     }
 
+    /**
+     * @param bool $reconst
+     * @return array|bool
+     */
     private function checkTag($reconst = false)
     {
         $data = (is_array($this->tag) && count($this->tag) == 2 && isset($this->tag['tag']) && $this->tag['tag'] != '') ? $this->tag : false;
@@ -80,6 +96,9 @@ class site_content_tagsDocLister extends site_contentDocLister
         return $data;
     }
 
+    /**
+     * @return array|mixed
+     */
     private function whereTag()
     {
         $tag = $this->checkTag(true);

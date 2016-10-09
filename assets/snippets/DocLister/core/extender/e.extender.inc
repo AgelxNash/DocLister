@@ -14,6 +14,9 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 
 class e_DL_Extender extends extDocLister
 {
+    /**
+     * @return mixed
+     */
     protected function run()
     {
         $out = $this->getCFGDef('data', array());

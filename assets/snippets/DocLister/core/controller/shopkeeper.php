@@ -12,8 +12,18 @@ if (!defined('MODX_BASE_PATH')) {
  * @author Agel_Nash <Agel_Nash@xaker.ru>, kabachello <kabachnik@hotmail.com>
  */
 include_once(dirname(__FILE__) . "/site_content.php");
+
+/**
+ * Class shopkeeperDocLister
+ */
 class shopkeeperDocLister extends site_contentDocLister
 {
+    /**
+     * shopkeeperDocLister constructor.
+     * @param DocumentParser $modx
+     * @param array $cfg
+     * @param null $startTime
+     */
     public function __construct($modx, $cfg = array(), $startTime = null)
     {
         $cfg = array_merge(array('tvValuesTable' => 'catalog_tmplvar_contentvalues'), $cfg);
@@ -222,6 +232,9 @@ class shopkeeperDocLister extends site_contentDocLister
         return $out;
     }
 
+    /**
+     * @return array
+     */
     protected function getDocList()
     {
         $out = array();
@@ -273,6 +286,10 @@ class shopkeeperDocLister extends site_contentDocLister
         return $out;
     }
 
+    /**
+     * @param string $id
+     * @return array
+     */
     public function getChildrenFolder($id)
     {
         $where = $this->getCFGDef('addWhereFolder', '');
@@ -299,6 +316,9 @@ class shopkeeperDocLister extends site_contentDocLister
         return $out;
     }
 
+    /**
+     * @return array
+     */
     protected function getChildrenList()
     {
 		$where = array();

@@ -1,14 +1,26 @@
 <?php
 require_once('MODx.php');
 
+/**
+ * Class autoTable
+ */
 abstract class autoTable extends MODxAPI
 {
     protected $table = null;
     protected $generateField = false;
 
+    /**
+     * @return null
+     */
     public function tableName(){
         return $this->table;
     }
+
+    /**
+     * autoTable constructor.
+     * @param DocumentParser $modx
+     * @param bool $debug
+     */
     public function __construct($modx, $debug = false)
     {
         parent::__construct($modx, $debug);
@@ -26,6 +38,10 @@ abstract class autoTable extends MODxAPI
         }
     }
 
+    /**
+     * @param $id
+     * @return $this
+     */
     public function edit($id)
     {
         $id = is_scalar($id) ? trim($id) : '';
@@ -47,6 +63,11 @@ abstract class autoTable extends MODxAPI
         return $this;
     }
 
+    /**
+     * @param null $fire_events
+     * @param bool $clearCache
+     * @return bool|null
+     */
     public function save($fire_events = null, $clearCache = false)
     {
         $result = false;
@@ -79,6 +100,12 @@ abstract class autoTable extends MODxAPI
         return $result;
     }
 
+    /**
+     * @param $ids
+     * @param null $fire_events
+     * @return $this
+     * @throws Exception
+     */
     public function delete($ids, $fire_events = null)
     {
         $_ids = $this->cleanIDs($ids, ',');

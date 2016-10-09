@@ -1,6 +1,15 @@
 <?php namespace Formatter;
 
+/**
+ * Class HtmlFormatter
+ * @package Formatter
+ */
 class HtmlFormatter{
+    /**
+     * @param $string
+     * @param bool $decode
+     * @return string
+     */
     public static function format($string, $decode = TRUE){
         $tag = '#0000ff';
         $att = '#ff0000';

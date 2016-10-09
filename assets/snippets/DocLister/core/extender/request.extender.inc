@@ -19,6 +19,9 @@ class request_DL_Extender extends extDocLister
 {
     private $param = array();
 
+    /**
+     * @return array|int
+     */
     protected function run()
     {
         $count = 0;
@@ -31,6 +34,10 @@ class request_DL_Extender extends extDocLister
         return $count;
     }
 
+    /**
+     * @param $data
+     * @return array
+     */
     private function parseParam($data)
     {
         $GLOBArr = array();
@@ -94,6 +101,11 @@ class request_DL_Extender extends extDocLister
         return $this->param;
     }
 
+    /**
+     * @param $data
+     * @param $val
+     * @return bool
+     */
     private function parseValidate($data, $val)
     {
         $out = false;
@@ -131,6 +143,9 @@ class request_DL_Extender extends extDocLister
         }
     }
 
+    /**
+     * @return string
+     */
     public function getLink()
     {
         $link = array();
@@ -142,6 +157,11 @@ class request_DL_Extender extends extDocLister
         return (count($link) > 0) ? implode("&", $link) : "";
     }
 
+    /**
+     * @param $item
+     * @param string $name
+     * @return array|string
+     */
     private function _getLink($item, $name = '')
     {
         $link = '';

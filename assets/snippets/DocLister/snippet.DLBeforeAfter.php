@@ -1,7 +1,11 @@
 <?php
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 if(!function_exists('validateMonth')){
-	function validateDate($val){
+    /**
+     * @param $val
+     * @return bool
+     */
+    function validateDate($val){
 		$flag = false;
 		if(is_string($val)){
 			$val = explode("-", $val, 3);
@@ -15,7 +19,12 @@ if(!function_exists('validateMonth')){
 }
 
 if(!function_exists('buildUrl')){
-	function buildUrl($url, $start = 0){
+    /**
+     * @param $url
+     * @param int $start
+     * @return array|string
+     */
+    function buildUrl($url, $start = 0){
 		$params = parse_url($url, PHP_URL_QUERY);
         parse_str(html_entity_decode($params), $params);
         $requestName = 'start';

@@ -5,6 +5,10 @@ include_once (MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 require_once (MODX_BASE_PATH . 'assets/lib/Helpers/Assets.php');
 
+/**
+ * Class Plugin
+ * @package SimpleTab
+ */
 abstract class Plugin {
 	public $modx = null;
 	public $pluginName = '';
@@ -56,10 +60,17 @@ abstract class Plugin {
         $this->assets = \AssetsHelper::getInstance($modx);
     }
 
-	public function clearFolders($ids = array(), $folder) {
+    /**
+     * @param array $ids
+     * @param $folder
+     */
+    public function clearFolders($ids = array(), $folder) {
         foreach ($ids as $id) $this->fs->rmDir($folder.$id.'/');
     }
 
+    /**
+     * @return bool
+     */
     public function checkPermissions() {
         $templates = isset($this->params['templates']) ? explode(',',$this->params['templates']) : false;
         $roles = isset($this->params['roles']) ? explode(',',$this->params['roles']) : false;
@@ -186,12 +197,19 @@ abstract class Plugin {
         return $this->modx->db->getRecordCount( $this->modx->db->query($sql));
     }
 
+    /**
+     * @return mixed
+     */
     public function createTable() {
     	$sql = '';
     	return $this->modx->db->query($sql);
     }
 
-	public function registerEvents($events = array(), $eventsType = '6') {
+    /**
+     * @param array $events
+     * @param string $eventsType
+     */
+    public function registerEvents($events = array(), $eventsType = '6') {
 		$eventsTable = $this->modx->getFullTableName('system_eventnames');
 		foreach ($events as $event) {
 			$result = $this->modx->db->select('`id`',$eventsTable,"`name` = '{$event}'");

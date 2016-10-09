@@ -3,18 +3,31 @@
 include_once(MODX_BASE_PATH.'assets/snippets/phpthumb/phpthumb.class.php');
 require_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 
+/**
+ * Class PHPThumb
+ * @package Helpers
+ */
 class PHPThumb{
 
     private $thumb = null;
     protected $fs = null;
 	public $debugMessages = '';
 
+    /**
+     * PHPThumb constructor.
+     */
     public function __construct()
     {
        	$this->thumb = new \phpthumb();
 		$this->fs = FS::getInstance();
     }
 
+    /**
+     * @param $inputFile
+     * @param $outputFile
+     * @param $options
+     * @return bool
+     */
     public function create($inputFile, $outputFile, $options) {
         $this->thumb->sourceFilename = $inputFile;
 		$ext = explode('.',$inputFile);
@@ -29,6 +42,10 @@ class PHPThumb{
         }
     }
 
+    /**
+     * @param $file
+     * @param string $type
+     */
     public function optimize($file, $type = 'jpg') {
         switch ($type) {
             case 'jpg':
@@ -48,6 +65,9 @@ class PHPThumb{
         }
     }
 
+    /**
+     * @param $options
+     */
     private function setOptions($options) {
         $options = strtr($options, Array("," => "&", "_" => "=", '{' => '[', '}' => ']'));
         parse_str($options, $params);

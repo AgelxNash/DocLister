@@ -1,6 +1,9 @@
 <?php
 require_once('MODx.php');
 
+/**
+ * Class modResource
+ */
 class modResource extends MODxAPI
 {
     protected $mode = null;
@@ -74,6 +77,11 @@ class modResource extends MODxAPI
      */
     private $managerUsers = null;
 
+    /**
+     * modResource constructor.
+     * @param DocumentParser $modx
+     * @param bool $debug
+     */
     public function __construct($modx, $debug = false)
     {
         parent::__construct($modx, $debug);
@@ -84,12 +92,19 @@ class modResource extends MODxAPI
         $this->managerUsers = new DLCollection($modx, $this->query($query));
     }
 
+    /**
+     * @return array
+     */
     public function toArrayMain()
     {
         $out = array_intersect_key(parent::toArray(), $this->default_field);
         return $out;
     }
 
+    /**
+     * @param bool $render
+     * @return array
+     */
     public function toArrayTV($render = false)
     {
         $out = array_diff_key(parent::toArray(), $this->default_field);
@@ -108,6 +123,13 @@ class modResource extends MODxAPI
         return $out;
     }
 
+    /**
+     * @param string $prefix
+     * @param string $suffix
+     * @param string $sep
+     * @param bool $render
+     * @return array
+     */
     public function toArray($prefix = '', $suffix = '', $sep = '_', $render = true){
         $out = array_merge(
             $this->toArrayMain(),
@@ -116,7 +138,11 @@ class modResource extends MODxAPI
         );
         return \APIhelpers::renameKeyArr($out, $prefix, $suffix, $sep);
     }
-	public function getUrl(){
+
+    /**
+     * @return null
+     */
+    public function getUrl(){
 		$out = null;
 		$id = (int)$this->getID();
 		if(!empty($id)){
@@ -124,14 +150,23 @@ class modResource extends MODxAPI
 		}
 		return $out;
 	}
-	public function getTitle($main = 'menutitle', $second = 'pagetitle'){
+
+    /**
+     * @param string $main
+     * @param string $second
+     * @return mixed
+     */
+    public function getTitle($main = 'menutitle', $second = 'pagetitle'){
 		$title = $this->get($main);
 		if(empty($title) && $title !== '0'){
 			$title = $this->get($second);
 		}
 		return $title;
 	}
-	
+
+    /**
+     * @return bool
+     */
     public function isWebShow()
     {
         $pub = ($this->get('publishedon') < time() && $this->get('published'));
@@ -139,11 +174,19 @@ class modResource extends MODxAPI
         $del = ($this->get('deleted') == 0 && ($this->get('deletedon') == 0 || $this->get('deletedon') > time()));
         return ($pub && $unpub && $del);
     }
+
+    /**
+     * @return $this
+     */
     public function touch(){
         $this->set('editedon', time());
         return $this;
     }
 
+    /**
+     * @param $tvname
+     * @return null
+     */
     public function renderTV($tvname){
         $out = null;
         if($this->getID() > 0){
@@ -159,6 +202,10 @@ class modResource extends MODxAPI
         return $out;
     }
 
+    /**
+     * @param $key
+     * @return mixed
+     */
     public function get($key){
         $out = parent::get($key);
         if(isset($this->tv[$key])){
@@ -172,6 +219,11 @@ class modResource extends MODxAPI
         return $out;
     }
 
+    /**
+     * @param $key
+     * @param $value
+     * @return $this
+     */
     public function set($key, $value)
     {
         if (is_scalar($value) && is_scalar($key) && !empty($key)) {
@@ -237,6 +289,11 @@ class modResource extends MODxAPI
         return $this;
     }
 
+    /**
+     * @param $value
+     * @param int $default
+     * @return int|mixed
+     */
     protected function getUser($value, $default = 0){
         $currentAdmin = APIHelpers::getkey($_SESSION, 'mgrInternalKey', 0);
         $value = (int)$value;
@@ -255,6 +312,10 @@ class modResource extends MODxAPI
         return $value;
     }
 
+    /**
+     * @param $data
+     * @return bool|string
+     */
     protected function findUserBy($data)
     {
         switch (true) {
@@ -273,6 +334,10 @@ class modResource extends MODxAPI
         return $find;
     }
 
+    /**
+     * @param $value
+     * @return int|mixed|string
+     */
     protected function getTime($value){
         $value = trim($value);
         if(!empty($value)){
@@ -285,6 +350,11 @@ class modResource extends MODxAPI
         }
         return $value;
     }
+
+    /**
+     * @param array $data
+     * @return $this
+     */
     public function create($data = array())
     {
         parent::create($data);
@@ -295,6 +365,10 @@ class modResource extends MODxAPI
         return $this;
     }
 
+    /**
+     * @param $id
+     * @return $this
+     */
     public function edit($id)
     {
         $id = is_scalar($id) ? trim($id) : '';
@@ -319,6 +393,11 @@ class modResource extends MODxAPI
         return $this;
     }
 
+    /**
+     * @param null $fire_events
+     * @param bool $clearCache
+     * @return bool|null
+     */
     public function save($fire_events = null, $clearCache = false)
     {
         $parent = null;
@@ -428,6 +507,11 @@ class modResource extends MODxAPI
         return $this->id;
     }
 
+    /**
+     * @param $ids
+     * @return $this
+     * @throws Exception
+     */
     public function toTrash($ids){
         $ignore = $this->systemID();
         $_ids = $this->cleanIDs($ids, ',', $ignore);
@@ -437,6 +521,11 @@ class modResource extends MODxAPI
 		} else throw new Exception('Invalid IDs list for mark trash: <pre>' . print_r($ids, 1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
         return $this;
     }
+
+    /**
+     * @param null $fire_events
+     * @return $this
+     */
     public function clearTrash($fire_events = null){
         $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} WHERE `deleted`='1'");
         $q = $this->modx->makeArray($q);
@@ -460,6 +549,11 @@ class modResource extends MODxAPI
         return $this;
     }
 
+    /**
+     * @param $ids
+     * @param int $depth
+     * @return array
+     */
     public function childrens($ids, $depth = 0)
     {
         $_ids = $this->cleanIDs($ids, ',');
@@ -477,6 +571,12 @@ class modResource extends MODxAPI
         return $_ids;
     }
 
+    /**
+     * @param $ids
+     * @param null $fire_events
+     * @return $this
+     * @throws Exception
+     */
     public function delete($ids, $fire_events = null)
     {
         $ids = $this->childrens($ids, true);
@@ -499,6 +599,9 @@ class modResource extends MODxAPI
         return $this;
     }
 
+    /**
+     * @return array
+     */
     private function systemID()
     {
         $ignore = array(
@@ -517,6 +620,10 @@ class modResource extends MODxAPI
 
     }
 
+    /**
+     * @param $alias
+     * @return string
+     */
     private function checkAlias($alias)
     {
         $alias = strtolower($alias);
@@ -541,11 +648,19 @@ class modResource extends MODxAPI
         return $alias;
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function issetField($key)
     {
         return (array_key_exists($key, $this->default_field) || array_key_exists($key, $this->tv));
     }
 
+    /**
+     * @param bool $reload
+     * @return $this
+     */
     protected function get_TV($reload = false)
     {
         if (empty($this->modx->_TVnames) || $reload) {
@@ -561,6 +676,10 @@ class modResource extends MODxAPI
         $this->loadTVTemplate()->loadTVDefault(array_values($this->tv));
         return $this;
     }
+
+    /**
+     * @return $this
+     */
     protected function loadTVTemplate(){
         $q = $this->query("SELECT `tmplvarid`, `templateid` FROM ".$this->makeTable('site_tmplvar_templates'));
         $q = $this->modx->db->makeArray($q);
@@ -570,6 +689,11 @@ class modResource extends MODxAPI
         }
         return $this;
     }
+
+    /**
+     * @param array $tvId
+     * @return $this
+     */
     protected function loadTVDefault(array $tvId = array())
     {
         if(is_array($tvId) && !empty($tvId)){
@@ -585,6 +709,12 @@ class modResource extends MODxAPI
         }
         return $this;
     }
+
+    /**
+     * @param $tpl
+     * @return int
+     * @throws Exception
+     */
     public function setTemplate($tpl)
     {
         if (!is_numeric($tpl) || $tpl != (int)$tpl) {
@@ -600,6 +730,9 @@ class modResource extends MODxAPI
         return (int)$tpl;
     }
 
+    /**
+     * @return string
+     */
     private function getAlias()
     {
         if ($this->modxConfig('friendly_urls') && $this->modxConfig('automatic_alias') && $this->get('alias') == '') {
