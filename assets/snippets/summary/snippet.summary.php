@@ -21,7 +21,7 @@ if (file_exists($summary) && !class_exists('SummaryText', false)) {
 
 if (class_exists('SummaryText', false)) {
     $action = (!empty($action) && is_scalar($action)) ? $action : array();
-    if(is_array($action)){
+    if (is_array($action)) {
         if (empty($tags)) {
             $action[] = 'notags';
         }

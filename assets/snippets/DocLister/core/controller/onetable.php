@@ -15,24 +15,24 @@ if (!defined('MODX_BASE_PATH')) {
  * @param contentField =`description` //content
  * @param table =`` //table name
  */
-
 class onetableDocLister extends DocLister
 {
     protected $table = 'site_content';
     protected $idField = 'id';
     protected $parentField = 'parent';
+
     /**
      * @absctract
      */
 
-	public function getUrl($id = 0)
+    public function getUrl($id = 0)
     {
-		$id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
-		
+        $id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
+
         $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();
-        if($id == $this->modx->config['site_start']){
-            $url = $this->modx->config['site_url'].($link != '' ? "?{$link}" : "");
-        }else{
+        if ($id == $this->modx->config['site_start']) {
+            $url = $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "");
+        } else {
             $url = $this->modx->makeUrl($id, '', $link, $this->getCFGDef('urlScheme', ''));
         }
         return $url;
@@ -88,26 +88,30 @@ class onetableDocLister extends DocLister
                  * @var $extPrepare prepare_DL_Extender
                  */
                 $extPrepare = $this->getExtender('prepare');
-				$this->skippedDocs = 0;
+                $this->skippedDocs = 0;
                 foreach ($this->_docs as $item) {
                     $this->renderTPL = $tpl;
                     if ($extUser) {
                         $item = $extUser->setUserData($item); //[+user.id.createdby+], [+user.fullname.publishedby+], [+dl.user.publishedby+]....
                     }
 
-                    $item[$this->getCFGDef("sysKey", "dl") . '.summary'] = $extSummary ? $this->getSummary($item, $extSummary) : '';
+                    $item[$this->getCFGDef("sysKey", "dl") . '.summary'] = $extSummary ? $this->getSummary($item,
+                        $extSummary) : '';
 
-                    $item = array_merge($item, $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
-                    $item[$this->getCFGDef("sysKey", "dl") . '.iteration'] = $i; //[+iteration+] - Number element. Starting from zero
+                    $item = array_merge($item,
+                        $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
+                    $item[$this->getCFGDef("sysKey",
+                        "dl") . '.iteration'] = $i; //[+iteration+] - Number element. Starting from zero
 
                     $date = $this->getCFGDef('dateSource', 'pub_date');
                     $date = isset($item[$date]) ? $item[$date] + $this->modx->config['server_offset_time'] : '';
                     if ($date != '' && $this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
-                        $item[$this->getCFGDef("sysKey", "dl") . '.date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $date);
+                        $item[$this->getCFGDef("sysKey", "dl") . '.date'] = strftime($this->getCFGDef('dateFormat',
+                            '%d.%b.%y %H:%M'), $date);
                     }
 
                     $findTpl = $this->renderTPL;
-					$tmp = $this->uniformPrepare($item, $i);
+                    $tmp = $this->uniformPrepare($item, $i);
                     extract($tmp, EXTR_SKIP);
                     if ($this->renderTPL == '') {
                         $this->renderTPL = $findTpl;
@@ -115,17 +119,18 @@ class onetableDocLister extends DocLister
 
                     if ($extPrepare) {
                         $item = $extPrepare->init($this, array(
-                            'data' => $item,
+                            'data'      => $item,
                             'nameParam' => 'prepare'
                         ));
                         if (is_bool($item) && $item === false) {
-							$this->skippedDocs++;
+                            $this->skippedDocs++;
                             continue;
                         }
                     }
                     $tmp = $this->parseChunk($this->renderTPL, $item);
                     if ($this->getCFGDef('contentPlaceholder', 0) !== 0) {
-                        $this->toPlaceholders($tmp, 1, "item[" . $i . "]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
+                        $this->toPlaceholders($tmp, 1,
+                            "item[" . $i . "]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
                     }
                     $out .= $tmp;
                     $i++;
@@ -157,13 +162,13 @@ class onetableDocLister extends DocLister
         $extSummary = $this->getExtender('summary');
 
         /**
-        * @var $extPrepare prepare_DL_Extender
-        */
+         * @var $extPrepare prepare_DL_Extender
+         */
         $extPrepare = $this->getExtender('prepare');
 
         /**
-        * @var $extE e_DL_Extender
-        */
+         * @var $extE e_DL_Extender
+         */
         $extE = $this->getExtender('e', true, true);
 
         foreach ($data as $num => $item) {
@@ -172,16 +177,17 @@ class onetableDocLister extends DocLister
             switch (true) {
                 case ((array('1') == $fields || in_array('summary', $fields)) && $extSummary):
                     $row['summary'] = $this->getSummary($this->_docs[$num], $extSummary, 'introtext');
-                    //without break
+                //without break
                 case ((array('1') == $fields || in_array('date', $fields)) && $date != 'date'):
                     $tmp = (isset($this->_docs[$num][$date]) && $date != 'createdon' && $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
-                    $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $tmp + $this->modx->config['server_offset_time']);
-					// no break
+                    $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'),
+                        $tmp + $this->modx->config['server_offset_time']);
+                // no break
             }
 
-            if($extE && $tmp = $extE->init($this, array('data' => $row))){
-                if(is_array($tmp)){
-                    $row =  $tmp;
+            if ($extE && $tmp = $extE->init($this, array('data' => $row))) {
+                if (is_array($tmp)) {
+                    $row = $tmp;
                 }
             }
 
@@ -248,24 +254,24 @@ class onetableDocLister extends DocLister
         $tmpWhere = null;
         if ($sanitarInIDs != "''") {
             $tmpWhere = "(`{$this->getParentField()}` IN (" . $sanitarInIDs . ")";
-            switch($this->getCFGDef('showParent', '0')){
-				case -1:
-					$tmpWhere .= ")";
-					break;
-				case 0:
-					$tmpWhere .= " AND `{$this->getPK()}` NOT IN(" . $sanitarInIDs . "))";
-					break;
-				case 1:
-				default:
-					$tmpWhere .= " OR `{$this->getPK()}` IN({$sanitarInIDs}))";
-					break;
-			}
+            switch ($this->getCFGDef('showParent', '0')) {
+                case -1:
+                    $tmpWhere .= ")";
+                    break;
+                case 0:
+                    $tmpWhere .= " AND `{$this->getPK()}` NOT IN(" . $sanitarInIDs . "))";
+                    break;
+                case 1:
+                default:
+                    $tmpWhere .= " OR `{$this->getPK()}` IN({$sanitarInIDs}))";
+                    break;
+            }
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
             $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-            if(empty($tmpWhere)){
-                $tmpWhere = $this->getPK()." IN({$addDocs})";
-            }else{
+            if (empty($tmpWhere)) {
+                $tmpWhere = $this->getPK() . " IN({$addDocs})";
+            } else {
                 $tmpWhere = "((" . $tmpWhere . ") OR {$this->getPK()} IN({$addDocs}))";
             }
         }
@@ -305,25 +311,25 @@ class onetableDocLister extends DocLister
             $where = $this->getCFGDef('addWhereList', '');
             if ($where != '') {
                 $where = array($where);
-            }else{
+            } else {
                 $where = array();
             }
             if ($sanitarInIDs != "''") {
                 if ($sanitarInIDs != "''") {
                     switch ($this->getCFGDef('idType', 'parents')) {
                         case 'parents':
-							switch($this->getCFGDef('showParent', '0')){
-								case '-1':
-									$tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
-									break;
-								case 0:
-									$tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs}) AND `{$this->getPK()}` NOT IN({$sanitarInIDs})";
-									break;
-								case 1:
-								default:
-									$tmpWhere = "(`{$this->getParentField()}` IN ({$sanitarInIDs}) OR `{$this->getPK()}` IN({$sanitarInIDs}))";
-									break;
-							}
+                            switch ($this->getCFGDef('showParent', '0')) {
+                                case '-1':
+                                    $tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
+                                    break;
+                                case 0:
+                                    $tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs}) AND `{$this->getPK()}` NOT IN({$sanitarInIDs})";
+                                    break;
+                                case 1:
+                                default:
+                                    $tmpWhere = "(`{$this->getParentField()}` IN ({$sanitarInIDs}) OR `{$this->getPK()}` IN({$sanitarInIDs}))";
+                                    break;
+                            }
                             if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                                 $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
                                 $where[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
@@ -339,7 +345,7 @@ class onetableDocLister extends DocLister
             }
             if (!empty($where)) {
                 $where = "WHERE " . implode(" AND ", $where);
-            }else{
+            } else {
                 $where = '';
             }
 

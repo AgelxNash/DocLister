@@ -69,8 +69,10 @@ class SummaryText
     {
         if (($scheme == 1 && ($this->_useCut || $this->_useSubstr)) || ($scheme == 2 && $this->_useSubstr && !$this->_useCut)) {
             $this->_cfg['content'] .= '&hellip;'; //...
-        } else if ($scheme && (!$this->_useCut || $scheme != 2)) {
-            $this->_cfg['content'] .= '.';
+        } else {
+            if ($scheme && (!$this->_useCut || $scheme != 2)) {
+                $this->_cfg['content'] .= '.';
+            }
         }
         return $this->_cfg['content'];
     }
@@ -90,7 +92,7 @@ class SummaryText
                 $process = explode(":", $doing);
                 switch ($process[0]) {
                     case 'notags':
-                    	$this->_cfg['content'] = strip_tags($this->_cfg['content']);
+                        $this->_cfg['content'] = strip_tags($this->_cfg['content']);
                         break;
                     case 'noparser':
                         $this->_cfg['content'] = APIhelpers::sanitarTag($this->_cfg['content']);
@@ -105,7 +107,8 @@ class SummaryText
                         if (!(isset($process[1]) && $process[1] > 0)) {
                             $process[1] = 200;
                         }
-                        $this->_cfg['content'] = $this->summary($this->_cfg['content'], $process[1], 50, true, $this->getCut());
+                        $this->_cfg['content'] = $this->summary($this->_cfg['content'], $process[1], 50, true,
+                            $this->getCut());
                         break;
                 }
             }
@@ -118,10 +121,11 @@ class SummaryText
      * @param string $splitter
      * @return array|mixed
      */
-    protected  function beforeCut($resource, $splitter = '')
+    protected function beforeCut($resource, $splitter = '')
     {
         if ($splitter !== '') {
-            $summary = str_replace('<p>' . $splitter . '</p>', $splitter, $resource); // For TinyMCE or if it isn't wrapped inside paragraph tags
+            $summary = str_replace('<p>' . $splitter . '</p>', $splitter,
+                $resource); // For TinyMCE or if it isn't wrapped inside paragraph tags
             $summary = explode($splitter, $summary, 2);
             $this->_useCut = isset($summary[1]);
             $summary = $summary['0'];
@@ -143,12 +147,16 @@ class SummaryText
     {
         if (isset($this->_useCut) && $splitter != '' && mb_strstr($resource, $splitter, 'UTF-8')) {
             $summary = $this->beforeCut($resource, $splitter);
-        } else if ($this->_useCut !== true && (mb_strlen($resource, 'UTF-8') > $truncLen)) {
-
-            $summary = $this->html_substr($resource, $truncLen, $truncOffset, $truncChars);
-            if ($resource != $summary) $this->_useSubstr = true;
         } else {
-            $summary = $resource;
+            if ($this->_useCut !== true && (mb_strlen($resource, 'UTF-8') > $truncLen)) {
+
+                $summary = $this->html_substr($resource, $truncLen, $truncOffset, $truncChars);
+                if ($resource != $summary) {
+                    $this->_useSubstr = true;
+                }
+            } else {
+                $summary = $resource;
+            }
         }
 
         $summary = $this->closeTags($summary);
@@ -168,10 +176,10 @@ class SummaryText
      * @param bool $truncChars
      * @return string
      */
-    protected  function html_substr($posttext, $minimum_length = 200, $length_offset = 100, $truncChars = false)
+    protected function html_substr($posttext, $minimum_length = 200, $length_offset = 100, $truncChars = false)
     {
         $tag_counter = 0;
-        $quotes_on = FALSE;
+        $quotes_on = false;
         if (mb_strlen($posttext) > $minimum_length && $truncChars !== true) {
             $c = 0;
             for ($i = 0; $i < mb_strlen($posttext, 'UTF-8'); $i++) {
@@ -194,15 +202,23 @@ class SummaryText
                     }
                     // Slash signifies an ending (like </a> or ... />)
                     // substract 2
-                    if ($current_char == '/' && $tag_counter <> 0) $tag_counter -= 2;
+                    if ($current_char == '/' && $tag_counter <> 0) {
+                        $tag_counter -= 2;
+                    }
                     // On a ">" substract 1
-                    if ($current_char == '>') $tag_counter -= 1;
+                    if ($current_char == '>') {
+                        $tag_counter -= 1;
+                    }
                     // If quotes are encountered, start ignoring the tags
                     // (for directory slashes)
-                    if ($current_char == '"') $quotes_on = TRUE;
+                    if ($current_char == '"') {
+                        $quotes_on = true;
+                    }
                 } else {
                     // IF quotes are encountered again, turn it back off
-                    if ($current_char == '"') $quotes_on = FALSE;
+                    if ($current_char == '"') {
+                        $quotes_on = false;
+                    }
                 }
 
                 // Count only the chars outside html tags
@@ -236,7 +252,9 @@ class SummaryText
         // Original PHP code from The Art of Web: www.the-art-of-web.com
 
         // return with no change if string is shorter than $limit
-        if (mb_strlen($string, 'UTF-8') < $limit) return $string;
+        if (mb_strlen($string, 'UTF-8') < $limit) {
+            return $string;
+        }
 
         $string = mb_substr($string, 0, $limit, 'UTF-8');
         if (false !== ($breakpoint = mb_strrpos($string, $break, 'UTF-8'))) {

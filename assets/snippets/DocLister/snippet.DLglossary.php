@@ -45,14 +45,16 @@ $register = empty($register) ? true : false; //Чувствительность 
 
 if (preg_match("/\s+/", $field)) {
     /** SQL-injection protection :-)  */
-$char = '';
+    $char = '';
 }
 
 $out = $where = '';
 $action = "like-r";
 
 if (!is_null($char)) {
-    if ($register) $char = mb_strtolower($char, 'UTF-8');
+    if ($register) {
+        $char = mb_strtolower($char, 'UTF-8');
+    }
 
     if (mb_strlen($char, 'UTF-8') == 1) {
         $char = preg_match('/^[а-яa-z0-9]/iu', $char) ? $char : null;
@@ -66,14 +68,16 @@ if (!is_null($char)) {
     }
 }
 
-if (is_null($char)) $modx->sendErrorPage();
+if (is_null($char)) {
+    $modx->sendErrorPage();
+}
 
 $p = &$modx->event->params;
-if(!is_array($p)){
+if (!is_array($p)) {
     $p = array();
 }
 if (!empty($loadfilter)) {
-	$field = explode(".", $field);
+    $field = explode(".", $field);
     $field = end($field);
     if (!empty($p['filters'])) {
         $p['filters'] = rtrim(trim($p['filters']), ";") . ";";

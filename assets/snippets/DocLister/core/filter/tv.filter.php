@@ -4,6 +4,7 @@ if (!defined('MODX_BASE_PATH')) {
 }
 
 require_once 'content.filter.php';
+
 /**
  * Filters DocLister results by value of a given MODx Template Variables (TVs).
  * @author kabachello <kabachnik@hotmail.com>
@@ -80,7 +81,8 @@ class tv_DL_filter extends content_DL_filter
         $alias = $this->DocLister->TableAlias($this->tvName, $this->extTV->tvValuesTable(), $this->getTableAlias());
         $this->field = $alias . ".value";
         if (!$exists) {
-            $join = 'LEFT JOIN ' . $this->DocLister->getTable($this->extTV->tvValuesTable(), $alias) . ' ON `' . $alias . '`.`contentid`=`' . content_DL_filter::TableAlias . '`.`id` AND `' . $alias . '`.`tmplvarid`=' . $this->tv_id;
+            $join = 'LEFT JOIN ' . $this->DocLister->getTable($this->extTV->tvValuesTable(),
+                    $alias) . ' ON `' . $alias . '`.`contentid`=`' . content_DL_filter::TableAlias . '`.`id` AND `' . $alias . '`.`tmplvarid`=' . $this->tv_id;
         } else {
             $this->setTableAlias($alias);
         }

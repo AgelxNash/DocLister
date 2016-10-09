@@ -28,7 +28,7 @@ class tv_DL_Extender extends extDocLister
     public function __construct($DocLister, $name)
     {
         parent::__construct($DocLister, $name);
-        if(!isset($this->modx->_TVnames)){
+        if (!isset($this->modx->_TVnames)) {
             $this->modx->_TVnames = array();
         }
         $this->tvValuesTable = $this->DocLister->getCFGDef('tvValuesTable', $this->tvValuesTable());
@@ -87,7 +87,9 @@ class tv_DL_Extender extends extDocLister
     {
         $out = array();
         $tv = $this->getTVid($tvlist);
-        if (empty($tv)) return $out;
+        if (empty($tv)) {
+            return $out;
+        }
         $tvId = array_keys($tv);
         $tbl_site_tmplvar_contentvalues = $this->DocLister->getTable($this->tvValuesTable());
         $sanitarInIDs = $this->DocLister->sanitarIn($IDs);
@@ -168,7 +170,8 @@ class tv_DL_Extender extends extDocLister
     {
         include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
         include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
-        return getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $iddoc, '');
+        return getTVDisplayFormat($tvname, $tvval, $param['display'], $param['display_params'], $param['type'], $iddoc,
+            '');
     }
 
     /**
@@ -241,16 +244,19 @@ class tv_DL_Extender extends extDocLister
                 if (isset($TVnames[$item[0]])) {
                     $exists = $this->DocLister->checkTableAlias($item[0], $this->tvValuesTable());
                     $prefix = 'dltv_' . $item[0] . '_' . ($i + 1);
-                    $prefix = $this->storeTable ? $this->DocLister->TableAlias($item[0], $this->tvValuesTable(), $prefix) : $prefix;
+                    $prefix = $this->storeTable ? $this->DocLister->TableAlias($item[0], $this->tvValuesTable(),
+                        $prefix) : $prefix;
                     if (!$exists) {
                         $table .= " LEFT JOIN " . $this->DocLister->getTable($this->tvValuesTable(), $prefix) . "
                         on `" . $prefix . "`.`contentid`=`c`.`id` AND `" . $prefix . "`.`tmplvarid`=" . $TVnames[$item[0]];
                     }
                     if (in_array($item[0], $withDefault)) {
                         $exists = $this->DocLister->checkTableAlias($item[0], "site_tmplvars");
-                        $dPrefix = $this->storeTable ? $this->DocLister->TableAlias($item[0], "site_tmplvars", 'd_' . $prefix) : 'd_' . $prefix;
+                        $dPrefix = $this->storeTable ? $this->DocLister->TableAlias($item[0], "site_tmplvars",
+                            'd_' . $prefix) : 'd_' . $prefix;
                         if (!$exists) {
-                            $table .= " LEFT JOIN " . $this->DocLister->getTable("site_tmplvars", $dPrefix) . " on `" . $dPrefix . "`.`id` = " . $TVnames[$item[0]];
+                            $table .= " LEFT JOIN " . $this->DocLister->getTable("site_tmplvars",
+                                    $dPrefix) . " on `" . $dPrefix . "`.`id` = " . $TVnames[$item[0]];
                         }
                         $field = "IFNULL(`{$prefix}`.`value`, `{$dPrefix}`.`default_text`)";
                     } else {

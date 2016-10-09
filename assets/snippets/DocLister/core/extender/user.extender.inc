@@ -14,7 +14,6 @@ if (!defined('MODX_BASE_PATH')) {
  * @param $usertype get information about managers or web users
  *
  */
-
 class user_DL_Extender extends extDocLister
 {
     private $fields = array();
@@ -99,7 +98,9 @@ class user_DL_Extender extends extDocLister
      */
     private function getInfo($user = array())
     {
-        if (!isset($this->table['users'], $this->table['attributes'])) $this->table = $this->getTable();
+        if (!isset($this->table['users'], $this->table['attributes'])) {
+            $this->table = $this->getTable();
+        }
 
         $out = array();
         if (count($user) > 0) {

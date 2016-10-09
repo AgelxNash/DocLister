@@ -8,36 +8,36 @@ class modUsers extends MODxAPI
 {
 
     protected $default_field = array(
-        'user' => array(
+        'user'      => array(
             'username' => null,
             'password' => null,
             'cachepwd' => null
         ),
         'attribute' => array(
-            'fullname' => null,
-            'role' => null,
-            'email' => null,
-            'phone' => null,
-            'mobilephone' => null,
-            'blocked' => null,
-            'blockeduntil' => null,
-            'blockedafter' => null,
-            'logincount' => null,
-            'lastlogin' => null,
-            'thislogin' => null,
+            'fullname'         => null,
+            'role'             => null,
+            'email'            => null,
+            'phone'            => null,
+            'mobilephone'      => null,
+            'blocked'          => null,
+            'blockeduntil'     => null,
+            'blockedafter'     => null,
+            'logincount'       => null,
+            'lastlogin'        => null,
+            'thislogin'        => null,
             'failedlogincount' => null,
-            'sessionid' => null,
-            'dob' => null,
-            'gender' => null,
-            'country' => null,
-            'state' => null,
-	    'city' => null,
-            'zip' => null,
-            'fax' => null,
-            'photo' => null,
-            'comment' => null
+            'sessionid'        => null,
+            'dob'              => null,
+            'gender'           => null,
+            'country'          => null,
+            'state'            => null,
+            'city'             => null,
+            'zip'              => null,
+            'fax'              => null,
+            'photo'            => null,
+            'comment'          => null
         ),
-        'hidden' => array(
+        'hidden'    => array(
             'internalKey'
         )
     );
@@ -50,7 +50,8 @@ class modUsers extends MODxAPI
      */
     public function issetField($key)
     {
-        return (array_key_exists($key, $this->default_field['user']) || array_key_exists($key, $this->default_field['attribute']) || in_array($key, $this->default_field['hidden']));
+        return (array_key_exists($key, $this->default_field['user']) || array_key_exists($key,
+                $this->default_field['attribute']) || in_array($key, $this->default_field['hidden']));
     }
 
     /**
@@ -88,7 +89,7 @@ class modUsers extends MODxAPI
 
             if (!$find = $this->findUser($id)) {
                 $this->id = null;
-            }else {
+            } else {
                 $result = $this->query("
                     SELECT * from {$this->makeTable('web_user_attributes')} as attribute
                     LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
@@ -140,12 +141,14 @@ class modUsers extends MODxAPI
     public function save($fire_events = null, $clearCache = false)
     {
         if ($this->get('email') == '' || $this->get('username') == '' || $this->get('password') == '') {
-            $this->log['EmptyPKField'] = 'Email, username or password is empty <pre>' . print_r($this->toArray(), true) . '</pre>';
+            $this->log['EmptyPKField'] = 'Email, username or password is empty <pre>' . print_r($this->toArray(),
+                    true) . '</pre>';
             return false;
         }
 
         if (!$this->checkUnique('web_users', 'username')) {
-            $this->log['UniqueUsername'] = 'username not unique <pre>' . print_r($this->get('username'), true) . '</pre>';
+            $this->log['UniqueUsername'] = 'username not unique <pre>' . print_r($this->get('username'),
+                    true) . '</pre>';
             return false;
         }
 
@@ -162,8 +165,8 @@ class modUsers extends MODxAPI
         $fld = $this->toArray();
         foreach ($this->default_field['user'] as $key => $value) {
             $tmp = $this->get($key);
-            if ($this->newDoc && ( !is_int($tmp) && $tmp=='')) {
-                if($tmp == $value){
+            if ($this->newDoc && (!is_int($tmp) && $tmp == '')) {
+                if ($tmp == $value) {
                     //take default value from global config
                 }
                 $this->field[$key] = $value;
@@ -175,7 +178,8 @@ class modUsers extends MODxAPI
             if ($this->newDoc) {
                 $SQL = "INSERT into {$this->makeTable('web_users')} SET " . implode(', ', $this->set['user']);
             } else {
-                $SQL = "UPDATE {$this->makeTable('web_users')} SET " . implode(', ', $this->set['user']) . " WHERE id = " . $this->id;
+                $SQL = "UPDATE {$this->makeTable('web_users')} SET " . implode(', ',
+                        $this->set['user']) . " WHERE id = " . $this->id;
             }
             $this->query($SQL);
         }
@@ -186,8 +190,8 @@ class modUsers extends MODxAPI
 
         foreach ($this->default_field['attribute'] as $key => $value) {
             $tmp = $this->get($key);
-            if ($this->newDoc && ( !is_int($tmp) && $tmp=='')) {
-                if($tmp == $value){
+            if ($this->newDoc && (!is_int($tmp) && $tmp == '')) {
+                if ($tmp == $value) {
                     //take default value from global config
                 }
                 $this->field[$key] = $value;
@@ -198,15 +202,19 @@ class modUsers extends MODxAPI
         if (!empty($this->set['attribute'])) {
             if ($this->newDoc) {
                 $this->set('internalKey', $this->id)->Uset('internalKey', 'attribute');
-                $SQL = "INSERT into {$this->makeTable('web_user_attributes')} SET " . implode(', ', $this->set['attribute']);
+                $SQL = "INSERT into {$this->makeTable('web_user_attributes')} SET " . implode(', ',
+                        $this->set['attribute']);
             } else {
-                $SQL = "UPDATE {$this->makeTable('web_user_attributes')} SET " . implode(', ', $this->set['attribute']) . " WHERE  internalKey = " . $this->getID();
+                $SQL = "UPDATE {$this->makeTable('web_user_attributes')} SET " . implode(', ',
+                        $this->set['attribute']) . " WHERE  internalKey = " . $this->getID();
             }
             $this->query($SQL);
         }
 
         foreach ($fld as $key => $value) {
-            if ($value == '') continue;
+            if ($value == '') {
+                continue;
+            }
             $result = $this->query("SELECT `setting_value` FROM {$this->makeTable('web_user_settings')} WHERE `webuser` = '{$this->id}' AND `setting_name` = '{$key}'");
             if ($this->modx->db->getRecordCount($result) > 0) {
                 $this->query("UPDATE {$this->makeTable('web_user_settings')} SET `setting_value` = '{$value}' WHERE `webuser` = '{$this->id}' AND `setting_name` = '{$key}';");
@@ -215,21 +223,21 @@ class modUsers extends MODxAPI
             }
         }
         if (!$this->newDoc && $this->givenPassword) {
-            $this->invokeEvent('OnWebChangePassword',array(
-                'userObj'       => $this,
-                'userid'        => $this->id,
-			    'user'	        => $this->toArray(),
-			    'userpassword'	=> $this->givenPassword,
-                'internalKey'   => $this->id,
-                'username'      => $this->get('username')
-            ),$fire_events);
+            $this->invokeEvent('OnWebChangePassword', array(
+                'userObj'      => $this,
+                'userid'       => $this->id,
+                'user'         => $this->toArray(),
+                'userpassword' => $this->givenPassword,
+                'internalKey'  => $this->id,
+                'username'     => $this->get('username')
+            ), $fire_events);
         }
-        $this->invokeEvent('OnWebSaveUser',array (
-            'userObj'   => $this,
-            'mode'      => $this->newDoc ? "new" : "upd",
-            'id'        => $this->id,
-            'user'      => $this->toArray()
-        ),$fire_events);
+        $this->invokeEvent('OnWebSaveUser', array(
+            'userObj' => $this,
+            'mode'    => $this->newDoc ? "new" : "upd",
+            'id'      => $this->id,
+            'user'    => $this->toArray()
+        ), $fire_events);
 
         if ($clearCache) {
             $this->clearCache($fire_events);
@@ -252,11 +260,11 @@ class modUsers extends MODxAPI
             $this->query("DELETE FROM {$this->makeTable('web_user_settings')} WHERE webuser='{$this->getID()}'");
             $this->query("DELETE FROM {$this->makeTable('web_groups')} WHERE webuser='{$this->getID()}'");
             $this->invokeEvent('OnWebDeleteUser', array(
-                'userObj'       => $this,
-                'userid'        => $this->getID(),
-                'internalKey'   => $this->getID(),
-                'username'      => $this->get('username'),
-                'timestamp'     => time()
+                'userObj'     => $this,
+                'userid'      => $this->getID(),
+                'internalKey' => $this->getID(),
+                'username'    => $this->get('username'),
+                'timestamp'   => time()
             ), $fire_events);
         } else {
             $flag = false;
@@ -275,18 +283,20 @@ class modUsers extends MODxAPI
     public function authUser($id = 0, $fulltime = true, $cookieName = 'WebLoginPE', $fire_events = null)
     {
         $flag = false;
-        if (!$this->getID() && $id) $this->edit($id);
+        if (!$this->getID() && $id) {
+            $this->edit($id);
+        }
         if ($this->getID()) {
             //$this->logOut($cookieName);
             $flag = true;
             $this->SessionHandler('start', $cookieName, $fulltime);
             $this->invokeEvent("OnWebLogin", array(
-                'userObj'       => $this,
-                'userid'        => $this->getID(),
-                'username'      => $this->get('username'),
-                'userpassword'  => $this->givenPassword,
-                'rememberme'    => $fulltime
-            ),$fire_events);
+                'userObj'      => $this,
+                'userid'       => $this->getID(),
+                'username'     => $this->get('username'),
+                'userpassword' => $this->givenPassword,
+                'rememberme'   => $fulltime
+            ), $fire_events);
         }
         return $flag;
     }
@@ -329,13 +339,13 @@ class modUsers extends MODxAPI
         if (
             ($tmp->getID()) && (!$blocker || ($blocker && !$tmp->checkBlock($id)))
         ) {
-            $eventResult = $this->getInvokeEventResult('OnWebAuthentication',array(
+            $eventResult = $this->getInvokeEventResult('OnWebAuthentication', array(
                 'userObj'       => $this,
                 'userid'        => $tmp->getID(),
                 'username'      => $tmp->get('username'),
                 'userpassword'  => $password,
                 'savedpassword' => $tmp->get('password')
-            ),$fire_events);
+            ), $fire_events);
             if (is_array($eventResult)) {
                 foreach ($eventResult as $result) {
                     $pluginFlag = (bool)$result;
@@ -345,7 +355,7 @@ class modUsers extends MODxAPI
             }
             if (!$pluginFlag) {
                 $flag = ($tmp->get('password') == $tmp->getPassword($password));
-            } 
+            }
         }
         unset($tmp);
         return $flag || $pluginFlag;
@@ -365,7 +375,9 @@ class modUsers extends MODxAPI
                 $this->close();
                 $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->escape($cookie[0])}'");
                 $id = $this->modx->db->getValue($q);
-                if ($this->edit($id) && $this->getID() && $this->get('password') == $cookie[1] && $this->testAuth($this->getID(), $cookie[1], true)) {
+                if ($this->edit($id) && $this->getID() && $this->get('password') == $cookie[1] && $this->testAuth($this->getID(),
+                        $cookie[1], true)
+                ) {
                     $flag = $this->authUser($this->getID(), $fulltime, $cookieName, $fire_events);
 
                 }
@@ -380,11 +392,13 @@ class modUsers extends MODxAPI
      */
     public function logOut($cookieName = 'WebLoginPE', $fire_events = null)
     {
-        if (!$uid = $this->modx->getLoginUserID('web')) return;
+        if (!$uid = $this->modx->getLoginUserID('web')) {
+            return;
+        }
         $params = array(
-            'username'      => $_SESSION['webShortname'],
-            'internalKey'   => $uid,
-            'userid'        => $uid // Bugfix by TS
+            'username'    => $_SESSION['webShortname'],
+            'internalKey' => $uid,
+            'userid'      => $uid // Bugfix by TS
         );
         $this->invokeEvent('OnBeforeWebLogout', $params, $fire_events);
         $this->SessionHandler('destroy', $cookieName ? $cookieName : 'WebLoginPE');
@@ -405,8 +419,7 @@ class modUsers extends MODxAPI
     protected function SessionHandler($directive, $cookieName, $remember = true)
     {
         switch ($directive) {
-            case 'start':
-            {
+            case 'start': {
                 if ($this->getID()) {
                     $_SESSION['webShortname'] = $this->get('username');
                     $_SESSION['webFullname'] = $this->get('fullname');
@@ -429,8 +442,7 @@ class modUsers extends MODxAPI
                 }
                 break;
             }
-            case 'destroy':
-            {
+            case 'destroy': {
                 if (isset($_SESSION['mgrValidated'])) {
                     unset($_SESSION['webShortname']);
                     unset($_SESSION['webFullname']);
@@ -464,17 +476,18 @@ class modUsers extends MODxAPI
      * @param int $userID
      * @return array
      */
-    public function getDocumentGroups($userID = 0){
+    public function getDocumentGroups($userID = 0)
+    {
         $out = array();
         $user = $this->switchObject($userID);
-        if($user->getID()){
+        if ($user->getID()) {
             $web_groups = $this->modx->getFullTableName('web_groups');
             $webgroup_access = $this->modx->getFullTableName('webgroup_access');
 
             $sql = "SELECT `uga`.`documentgroup` FROM {$web_groups} as `ug`
                 INNER JOIN {$webgroup_access} as `uga` ON `uga`.`webgroup`=`ug`.`webgroup`
-                WHERE `ug`.`webuser` = ".$user->getID();
-            $out = $this->modx->db->getColumn('documentgroup',$this->query($sql));
+                WHERE `ug`.`webuser` = " . $user->getID();
+            $out = $this->modx->db->getColumn('documentgroup', $this->query($sql));
 
         }
         unset($user);
@@ -485,17 +498,18 @@ class modUsers extends MODxAPI
      * @param int $userID
      * @return array
      */
-    public function getUserGroups($userID = 0){
+    public function getUserGroups($userID = 0)
+    {
         $out = array();
         $user = $this->switchObject($userID);
-        if($user->getID()){
+        if ($user->getID()) {
             $web_groups = $this->makeTable('web_groups');
             $webgroup_names = $this->makeTable('webgroup_names');
 
             $sql = "SELECT `ugn`.`name` FROM {$web_groups} as `ug`
                 INNER JOIN {$webgroup_names} as `ugn` ON `ugn`.`id`=`ug`.`webgroup`
-                WHERE `ug`.`webuser` = ".$user->getID();
-            $out = $this->modx->db->getColumn('name',$this->query($sql));
+                WHERE `ug`.`webuser` = " . $user->getID();
+            $out = $this->modx->db->getColumn('name', $this->query($sql));
         }
         unset($user);
         return $out;
@@ -506,9 +520,10 @@ class modUsers extends MODxAPI
      * @param array $groupIds
      * @return $this
      */
-    public function setUserGroups($userID = 0, $groupIds = array()) {
+    public function setUserGroups($userID = 0, $groupIds = array())
+    {
         $user = $this->switchObject($userID);
-        if(($uid = $user->getID()) && is_array($groupIds)) {
+        if (($uid = $user->getID()) && is_array($groupIds)) {
             foreach ($groupIds as $gid) {
                 $this->query("REPLACE INTO {$this->makeTable('web_groups')} (`webgroup`, `webuser`) VALUES ('{$gid}', '{$uid}')");
             }

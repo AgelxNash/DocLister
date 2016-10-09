@@ -1,6 +1,6 @@
 <?php
 
-require_once (MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
+require_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 
 /**
  * Class AssetsHelper
@@ -62,15 +62,16 @@ class AssetsHelper
     /**
      * @return string
      */
-    public function registerJQuery() {
+    public function registerJQuery()
+    {
         $output = '';
         $plugins = $this->modx->pluginEvent;
-        if((array_search('ManagerManager', $plugins['OnDocFormRender']) === false)) {
-            $output .= $this->registerScript('jQuery',array(
-                'src'=>'assets/js/jquery/jquery-1.9.1.min.js',
-                'version'=>'1.9.1'
+        if ((array_search('ManagerManager', $plugins['OnDocFormRender']) === false)) {
+            $output .= $this->registerScript('jQuery', array(
+                'src'     => 'assets/js/jquery/jquery-1.9.1.min.js',
+                'version' => '1.9.1'
             ));
-            $output .='<script type="text/javascript">var jQuery = jQuery.noConflict(true);</script>';
+            $output .= '<script type="text/javascript">var jQuery = jQuery.noConflict(true);</script>';
         }
         return $output;
     }
@@ -80,25 +81,26 @@ class AssetsHelper
      * @param $params
      * @return string
      */
-    public function registerScript($name, $params) {
+    public function registerScript($name, $params)
+    {
         $out = '';
         if (!isset($this->modx->loadedjscripts[$name])) {
             $src = $params['src'];
             $remote = strpos($src, "http") !== false;
             if (!$remote) {
-                $src = $this->modx->config['site_url'].$src;
+                $src = $this->modx->config['site_url'] . $src;
                 if (!$this->fs->checkFile($params['src'])) {
-                    $this->modx->logEvent(0, 3, 'Cannot load '.$src, 'Assets helper');
+                    $this->modx->logEvent(0, 3, 'Cannot load ' . $src, 'Assets helper');
                     return $out;
                 }
             }
 
-			$tmp = explode('.', $src);
+            $tmp = explode('.', $src);
             $type = isset($params['type']) ? $params['type'] : end($tmp);
             if ($type == 'js') {
                 $out = '<script type="text/javascript" src="' . $src . '"></script>';
             } else {
-                $out = '<link rel="stylesheet" type="text/css" href="'. $src .'">';
+                $out = '<link rel="stylesheet" type="text/css" href="' . $src . '">';
             }
 
             $this->modx->loadedjscripts[$name] = $params;
@@ -111,9 +113,10 @@ class AssetsHelper
      * @param array $list
      * @return string
      */
-    public function registerScriptsList($list = array()) {
+    public function registerScriptsList($list = array())
+    {
         $out = '';
-        foreach ($list as $script=>$params) {
+        foreach ($list as $script => $params) {
             $out .= $this->registerScript($script, $params);
         }
         return $out;

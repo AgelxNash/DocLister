@@ -75,7 +75,8 @@ class sqlHelper
         if (!empty($field) && is_string($field) && is_scalar($value) && $value !== '') {
             $field = sqlHelper::tildeField($field);
             if (is_scalar($escape) && !empty($escape) && !in_array($escape, array("_", "%", "'"))) {
-                $str = str_replace(array($escape, '_', '%'), array($escape . $escape, $escape . '_', $escape . '%'), $value);
+                $str = str_replace(array($escape, '_', '%'), array($escape . $escape, $escape . '_', $escape . '%'),
+                    $value);
                 $escaped = true;
             }
             $str = $modx->db->escape($str);

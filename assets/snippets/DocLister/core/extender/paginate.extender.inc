@@ -54,8 +54,10 @@ class paginate_DL_Extender extends extDocLister
         $pages = $this->getListPages($paginate, 'total');
         $this->DocLister->toPlaceholders($this->currentPage(), 1, "current");
         $this->DocLister->toPlaceholders($this->renderPages($paginate), 1, "pages");
-        $this->DocLister->toPlaceholders(($this->currentPage() == 1 ? 1 : 0), 1, "isstart"); //[+isstart+] – is start page
-        $this->DocLister->toPlaceholders(($this->currentPage() == $pages ? 1 : 0), 1, "isstop"); //[+isstop+] – is end page
+        $this->DocLister->toPlaceholders(($this->currentPage() == 1 ? 1 : 0), 1,
+            "isstart"); //[+isstart+] – is start page
+        $this->DocLister->toPlaceholders(($this->currentPage() == $pages ? 1 : 0), 1,
+            "isstop"); //[+isstop+] – is end page
         $this->DocLister->toPlaceholders($pages, 1, "totalPages"); // [+totalPages+] - total page.
         return $pages;
     }
@@ -80,7 +82,9 @@ class paginate_DL_Extender extends extDocLister
 
             $display = $this->DocLister->getCFGDef('display', 0);
             $this->_pages['total'] = ceil($tmp / $display);
-            if ($this->currentPage() <= $this->totalPage() || $this->totalPage() == 0 || $this->DocLister->getCFGDef('noRedirect', 0)) {
+            if ($this->currentPage() <= $this->totalPage() || $this->totalPage() == 0 || $this->DocLister->getCFGDef('noRedirect',
+                    0)
+            ) {
                 $this->DocLister->toPlaceholders($tmp, 1, "count");
                 $from = ($this->currentPage() - 1) * $display + 1;
                 $this->DocLister->toPlaceholders($from, 1, "from");
@@ -121,9 +125,11 @@ class paginate_DL_Extender extends extDocLister
         $p = new DLpaginate;
         $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE: <a href="[+link+]">[%paginate.next%] ></a>');
         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
-        $p->firstT = $this->DocLister->getChunkByParam('TplFirstP', '@CODE: <a href="[+link+]"><< [%paginate.first%]</a>');
+        $p->firstT = $this->DocLister->getChunkByParam('TplFirstP',
+            '@CODE: <a href="[+link+]"><< [%paginate.first%]</a>');
         $p->lastT = $this->DocLister->getChunkByParam('TplLastP', '@CODE: <a href="[+link+]">[%paginate.last%] >></a>');
-        $p->numberT = $this->DocLister->getChunkByParam('TplPage', '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
+        $p->numberT = $this->DocLister->getChunkByParam('TplPage',
+            '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
         $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
         $p->dotsT = $this->DocLister->getChunkByParam('TplDotsPage', '@CODE: ...');
         $p->prevI = '';
@@ -137,7 +143,8 @@ class paginate_DL_Extender extends extDocLister
             $p->lastI = $this->DocLister->getChunkByParam('TplLastI', '@CODE: >> [%paginate.last%]');
         }
         $p->changeClass($this->DocLister->getCFGDef('PaginateClass', $p->className));
-        $p->mainTpl = $this->DocLister->getChunkByParam('TplWrapPaginate', '@CODE: <div class="[+class+]">[+wrap+]</div>');
+        $p->mainTpl = $this->DocLister->getChunkByParam('TplWrapPaginate',
+            '@CODE: <div class="[+class+]">[+wrap+]</div>');
         $p->Items($this->totalPage());
         $p->limit($this->DocLister->getCFGDef("pageLimit", 1)); //show page count
         $p->adjacents($this->DocLister->getCFGDef("pageAdjacents", 4));
