@@ -127,7 +127,7 @@ class SummaryText
     {
         $tag_counter = 0;
         $quotes_on = FALSE;
-        if (mb_strlen($posttext) > $minimum_length && $truncChars != true) {
+        if (mb_strlen($posttext) > $minimum_length && $truncChars !== true) {
             $c = 0;
             for ($i = 0; $i < mb_strlen($posttext, 'UTF-8'); $i++) {
                 $current_char = mb_substr($posttext, $i, 1, 'UTF-8');

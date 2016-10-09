@@ -194,7 +194,7 @@ class DLpaginate {
             //echo "It is necessary to specify the <strong>number of pages</strong> (\$class->items(1000))<br />";
             $error = true;
         }
-        if ($this->limit == null) {
+        if ( ! is_int($this->limit)) {
             //echo "It is necessary to specify the <strong>limit of items</strong> to show per page (\$class->limit(10))<br />";
             $error = true;
         }

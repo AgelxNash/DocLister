@@ -36,7 +36,7 @@ class site_content_tagsDocLister extends site_contentDocLister
 		
         $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : "";
         $tag = $this->checkTag();
-        if ($tag != false && is_array($tag) && $tag['mode'] == 'get') {
+        if ($tag !== false && is_array($tag) && $tag['mode'] == 'get') {
             $link .= "&tag=" . urlencode($tag['tag']);
         }
         $url = ($id == $this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "") : $this->modx->makeUrl($id, '', $link, 'full');

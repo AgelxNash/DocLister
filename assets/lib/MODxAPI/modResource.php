@@ -468,7 +468,7 @@ class modResource extends MODxAPI
             if(!empty($id)) {
                 $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} where `parent` IN ({$id})");
                 $id = $this->modx->db->getColumn('id', $q);
-                if($depth > 0 || (is_bool($depth) && $depth == true)){
+                if($depth > 0 || $depth === true){
                     $id = $this->childrens($id, is_bool($depth) ? $depth : ($depth - 1));
                 }
                 $_ids = array_merge($_ids, $id);
