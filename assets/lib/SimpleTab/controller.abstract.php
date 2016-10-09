@@ -33,6 +33,11 @@ abstract class AbstractController
 
     );
 
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
+     * @access protected
+     */
     protected $modx = null;
 
     /**

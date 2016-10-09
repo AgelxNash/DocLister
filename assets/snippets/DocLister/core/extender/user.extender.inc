@@ -10,8 +10,8 @@ if (!defined('MODX_BASE_PATH')) {
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author Agel_Nash <Agel_Nash@xaker.ru>
  *
- * @param $userFields fields with user id
- * @param $usertype get information about managers or web users
+ * @param string $userFields fields with user id
+ * @param string $usertype get information about managers or web users
  *
  */
 class user_DL_Extender extends extDocLister

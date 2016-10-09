@@ -379,7 +379,7 @@ class APIhelpers
     /**
      * Переменовывание элементов массива
      *
-     * @param $data массив с данными
+     * @param array $data массив с данными
      * @param string $prefix префикс ключей
      * @param string $suffix суффикс ключей
      * @param string $addPS разделитель суффиксов, префиксов и ключей массива

@@ -169,11 +169,10 @@ class SummaryText
         return $summary;
     }
 
-    /*
-    * @see summary extender for Ditto (truncate::html_substr)
-    * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L142
-    */
     /**
+     * @see summary extender for Ditto (truncate::html_substr)
+     * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L142
+     *
      * @param $posttext
      * @param int $minimum_length
      * @param int $length_offset
@@ -243,11 +242,10 @@ class SummaryText
         return $this->textTrunc($posttext, $minimum_length + $length_offset, $this->_cfg['break']);
     }
 
-    /*
+    /**
      * @see summary extender for Ditto (truncate::textTrunc)
      * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L213
-     */
-    /**
+     *
      * @param $string
      * @param $limit
      * @param string $break
@@ -288,11 +286,10 @@ class SummaryText
         return $str;
     }
 
-    /*
+    /**
      * @see summary extender for Ditto (truncate::closeTags)
      * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L227
-     */
-    /**
+
      * @param $text
      * @return string
      */

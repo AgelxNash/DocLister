@@ -6,6 +6,11 @@ include_once(MODX_BASE_PATH . "assets/lib/Helpers/Collection.php");
  */
 class DLCollection extends \Helpers\Collection
 {
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
+     * @access protected
+     */
     protected $modx = null;
 
     /**

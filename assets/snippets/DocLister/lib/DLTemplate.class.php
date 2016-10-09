@@ -7,6 +7,11 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
  */
 class DLTemplate
 {
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
+     * @access protected
+     */
     protected $modx = null;
 
     /**
@@ -321,7 +326,7 @@ class DLTemplate
     /**
      * Переменовывание элементов массива
      *
-     * @param $data массив с данными
+     * @param array $data массив с данными
      * @param string $prefix префикс ключей
      * @param string $suffix суффикс ключей
      * @param string $sep разделитель суффиксов, префиксов и ключей массива
@@ -334,7 +339,7 @@ class DLTemplate
 
     /**
      * @param $out
-     * @param null $modx
+     * @param DocumentParser|null $modx
      * @return mixed|string
      */
     public function parseDocumentSource($out, $modx = null)

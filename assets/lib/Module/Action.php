@@ -6,6 +6,11 @@
  */
 abstract class Action
 {
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
+     * @access protected
+     */
     protected static $modx = null;
     public static $TPL = null;
     protected static $TABLE = "site_content";

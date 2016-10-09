@@ -12,6 +12,11 @@ require_once(MODX_BASE_PATH . 'assets/lib/Helpers/Assets.php');
  */
 abstract class Plugin
 {
+    /**
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
+     * @access public
+     */
     public $modx = null;
     public $pluginName = '';
     public $params = array();
