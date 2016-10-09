@@ -79,7 +79,7 @@
 ---------
 #### 1. Сделайте ["форк"](http://help.github.com/fork-a-repo/) репозитория AgelxNash/DocLister, а затем клонируйте его в свою локальную среду разработки
 ```bash
-git clone git@github.com:имя-вашего-пользователя/yupe.git
+git clone git@github.com:имя-вашего-пользователя/DocLister.git
 ```
 
 #### 2. Добавьте основой репозиторий DocLister как удаленный (remote) с названием "upstream"
