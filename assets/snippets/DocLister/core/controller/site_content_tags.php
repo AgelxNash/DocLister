@@ -57,6 +57,11 @@ class site_content_tagsDocLister extends site_contentDocLister
                     case 'static':
                     default:
                         $tag = $tmp[1];
+                        $separator = $this->getCFGDef('tagsSeparator','||');
+                        if (!empty($tag) && !empty($separator)) {
+                            $_tag = explode($separator,$tag);
+                            if (count($_tag) > 1) $tag = $_tag;
+                        }
                         break;
                 }
                 $this->tag = array("mode" => $tmp[0], "tag" => $tag);
@@ -81,8 +86,12 @@ class site_content_tagsDocLister extends site_contentDocLister
         if ($tag !== false) {
             $join = "RIGHT JOIN " . $this->getTable('site_content_tags', 'ct') . " on ct.doc_id=c.id
 					RIGHT JOIN " . $this->getTable('tags', 't') . " on t.id=ct.tag_id";
-            $where = "t.`name`='" . $this->modx->db->escape($tag['tag']) . "'" .
-                (($this->getCFGDef('tagsData', '') > 0) ? "AND ct.tv_id=" . (int)$this->getCFGDef('tagsData', '') : "");
+            if (is_array($tag['tag'])) {
+                $where = "t.`name` IN (" . $this->sanitarIn($tag['tag']) . ")";
+            } else {
+                $where = "t.`name`='" . $this->modx->db->escape($tag['tag']) . "'";
+            }
+            $where .= ($this->getCFGDef('tagsData', '') > 0) ? "AND ct.tv_id=" . (int)$this->getCFGDef('tagsData', '') : "";
 
             if (!empty($this->_filters['where'])) {
                 $this->_filters['where'] .= " AND " . $where;

@@ -3,6 +3,7 @@ require_once('MODx.php');
 
 class modResource extends MODxAPI
 {
+    protected $mode = null;
     protected $default_field = array(
         'type' => 'document',
         'contentType' => 'text/html',
@@ -188,14 +189,6 @@ class modResource extends MODxAPI
                         $this->field['publishedon'] = time() + $this->modxConfig('server_offset_time');
                     }
                     break;
-                case 'publishedon':
-                    $value = $this->getTime($value);
-                    if($value){
-                        $this->field['published'] = 1;
-                    }else{
-                        $this->field['published'] = 0;
-                    }
-                    break;
                 case 'pub_date':
                     $value = $this->getTime($value);
                     if($value > 0 && time() + $this->modxConfig('server_offset_time') > $value){
@@ -229,6 +222,7 @@ class modResource extends MODxAPI
                     break;
                 case 'editedon':
                 case 'createdon':
+                case 'publishedon':
                     $value = $this->getTime($value);
                     break;
                 case 'publishedby':
@@ -336,12 +330,13 @@ class modResource extends MODxAPI
         $this->set('alias', $this->getAlias());
 
         $this->invokeEvent('OnBeforeDocFormSave', array(
-            "mode" => $this->newDoc ? "new" : "upd",
-            "id" => $this->id ? $this->id : ''
+            'mode'  => $this->newDoc ? "new" : "upd",
+            'id'    => $this->id ? $this->id : '',
+            'doc'   => $this->toArray(),
+            'docObj'=> $this
         ), $fire_events);
 
         $fld = $this->toArray(null, null, null, false);
-	
         foreach ($this->default_field as $key => $value) {
             $tmp = $this->get($key);
             if ($this->newDoc && ( !is_int($tmp) && $tmp=='')) {
@@ -416,10 +411,15 @@ class modResource extends MODxAPI
                 }
             }
         }
-
+        if (!isset($this->mode)) {
+            $this->mode = $this->newDoc ? "new" : "upd";
+            $this->newDoc = false;
+        }
         $this->invokeEvent('OnDocFormSave', array(
-            "mode" => $this->newDoc ? "new" : "upd",
-            "id" => $this->id
+            'mode'  => $this->mode,
+            'id'    => $this->id,
+            'doc'   => $this->toArray(),
+            'docObj'=> $this
         ), $fire_events);
 
         if ($clearCache) {
