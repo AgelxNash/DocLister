@@ -18,7 +18,7 @@ class tv_DL_filter extends content_DL_filter
     protected $tv_id;
 
     /**
-     * @var null
+     * @var null|string
      */
     protected $tvName = null;
 

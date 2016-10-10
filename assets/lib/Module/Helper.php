@@ -66,8 +66,10 @@ class Helper extends \APIhelpers
     {
         $data = array();
         $request = $post ? $_POST : $_GET;
-        $match = (isset($request[$key]) && is_scalar($request[$key]) && preg_match("/^(.*)_(\d+)$/i", $request[$key],
-                $match)) ? $match : array();
+        $match = (
+            isset($request[$key]) && is_scalar($request[$key]) &&
+            preg_match("/^(.*)_(\d+)$/i", $request[$key], $match)
+        ) ? $match : array();
         if (!empty($match)) {
             $data = array(
                 'key' => $match[1],

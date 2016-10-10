@@ -15,10 +15,10 @@ class DLCollection extends \Helpers\Collection
 
     /**
      * DLCollection constructor.
-     * @param array $modx
+     * @param DocumentParser $modx
      * @param mixed $data
      */
-    public function __construct($modx, $data = array())
+    public function __construct(DocumentParser $modx, $data = array())
     {
         $this->modx = $modx;
         switch (true) {

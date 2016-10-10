@@ -209,7 +209,9 @@ list($lReflect, $rReflect) = $totalReflects->partition(function ($key, $val) use
     $dateFormat
 ) {
     $aDate = DateTime::createFromFormat($dateFormat, $val['id']);
-    $activeReflect = is_null($activeReflect) ? $originalDate : $activeReflect;
+    if (is_null($activeReflect)) {
+        $activeReflect = $originalDate;
+    }
     $bDate = DateTime::createFromFormat($dateFormat, $activeReflect);
 
     return $aDate->getTimestamp() < $bDate->getTimestamp();

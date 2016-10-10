@@ -288,7 +288,7 @@ class DLpaginate
     {
         $flag = (strpos($this->target, '?') === false);
         $value = $this->getPageQuery($id);
-        if ($flag && $this->urlF) {
+        if ($flag && !empty($this->urlF)) {
             $out = str_replace($this->urlF, $value, $this->target);
         } else {
             $out = $this->target;
@@ -309,10 +309,14 @@ class DLpaginate
         $this->calculate = true;
         $error = false;
 
-        if ($this->urlF && $this->urlF != '%' && strpos($this->target, $this->urlF) === false) {
+        if (!empty($this->urlF) && is_scalar($this->urlF) && $this->urlF != '%' && strpos($this->target,
+                $this->urlF) === false
+        ) {
             //Es necesario especificar el comodin para sustituir
             $error = true;
-        } elseif ($this->urlF && $this->urlF == '%' && strpos($this->target, $this->urlF) === false) {
+        } elseif (!empty($this->urlF) && is_scalar($this->urlF) && $this->urlF == '%' && strpos($this->target,
+                $this->urlF) === false
+        ) {
             $error = true;
         }
 

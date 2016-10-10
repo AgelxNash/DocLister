@@ -98,7 +98,7 @@ abstract class Action
         if (!empty($data)) {
             $modObj = self::$classTable;
             $modObj->edit($data['id']);
-            if ($modObj->getID() && ((is_object($callback) && ($callback instanceof \Closure)) || is_callable($callback))) {
+            if ($modObj->getID() !== null && ((is_object($callback) && ($callback instanceof \Closure)) || is_callable($callback))) {
                 $out = call_user_func($callback, $data, $modObj);
             }
         }
@@ -165,7 +165,7 @@ abstract class Action
     }
 
     /**
-     * 
+     *
      */
     public static function lists()
     {

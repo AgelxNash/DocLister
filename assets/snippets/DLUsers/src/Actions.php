@@ -228,13 +228,16 @@ class Actions
         }
 
         $request = parse_url($_SERVER['REQUEST_URI']);
+        if ($request === false) {
+            $request = array();
+        }
         if (!empty($_SERVER['HTTP_REFERER'])) {
             /**
              * Thank you for super protection against hacking in protect.inc.php:-)
              */
             $refer = htmlspecialchars_decode($_SERVER['HTTP_REFERER'], ENT_QUOTES);
         } else {
-             $refer = $this->getBackUrl($request);
+            $refer = $this->getBackUrl($request);
         }
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -248,6 +251,9 @@ class Actions
             $backUrl = $refer;
         }
         $backUrl = parse_url($backUrl);
+        if ($backUrl === false) {
+            $backUrl = array();
+        }
         if (!empty($backUrl['path']) && $request['path'] != $backUrl['path']) {
             $POST['backUrl'] = $backUrl['path'];
         } else {
@@ -285,7 +291,8 @@ class Actions
      * @param array $request
      * @return string
      */
-    protected function getBackUrl(array $request = array()){
+    protected function getBackUrl(array $request = array())
+    {
         $selfHost = rtrim(str_replace("http://", "", $this->config['site_url']), '/');
         if (empty($request['host']) || $request['host'] == $selfHost) {
             $query = !empty($request['query']) ? '?' . $request['query'] : '';
@@ -293,6 +300,7 @@ class Actions
         } else {
             $out = '';
         }
+
         return $out;
     }
 

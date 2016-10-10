@@ -85,12 +85,12 @@ class Video
     protected $info = false;
 
     /**
-     * @param string $link ссылка на видео
+     * @param string|null $link ссылка на видео
      * @param bool $autostart сразу определить превью и клип
      */
     public function __construct($link = null, $autostart = true, $info = false)
     {
-        if ($link) {
+        if (!empty($link)) {
             $this->setLink($link);
             $this->setInfo($info);
             if ($autostart) {

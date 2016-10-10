@@ -285,10 +285,10 @@ class modUsers extends MODxAPI
     public function authUser($id = 0, $fulltime = true, $cookieName = 'WebLoginPE', $fire_events = false)
     {
         $flag = false;
-        if (!$this->getID() && $id) {
+        if (null === $this->getID() && $id) {
             $this->edit($id);
         }
-        if ($this->getID()) {
+        if (null !== $this->getID()) {
             $flag = true;
             $this->SessionHandler('start', $cookieName, $fulltime);
             $this->invokeEvent("OnWebLogin", array(
@@ -340,7 +340,7 @@ class modUsers extends MODxAPI
 
         $flag = $pluginFlag = false;
         if (
-            ($tmp->getID()) && (!$blocker || ($blocker && !$tmp->checkBlock($id)))
+            (null !== $tmp->getID()) && (!$blocker || ($blocker && !$tmp->checkBlock($id)))
         ) {
             $eventResult = $this->getInvokeEventResult('OnWebAuthentication', array(
                 'userObj'       => $this,
@@ -379,7 +379,7 @@ class modUsers extends MODxAPI
                 $this->close();
                 $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->escape($cookie[0])}'");
                 $id = $this->modx->db->getValue($q);
-                if ($this->edit($id) && $this->getID() && $this->get('password') == $cookie[1] && $this->testAuth($this->getID(),
+                if ($this->edit($id) && null !== $this->getID() && $this->get('password') == $cookie[1] && $this->testAuth($this->getID(),
                         $cookie[1], true)
                 ) {
                     $flag = $this->authUser($this->getID(), $fulltime, $cookieName, $fire_events);
@@ -485,7 +485,7 @@ class modUsers extends MODxAPI
     {
         $out = array();
         $user = $this->switchObject($userID);
-        if ($user->getID()) {
+        if (null !== $user->getID()) {
             $web_groups = $this->modx->getFullTableName('web_groups');
             $webgroup_access = $this->modx->getFullTableName('webgroup_access');
 
@@ -508,7 +508,7 @@ class modUsers extends MODxAPI
     {
         $out = array();
         $user = $this->switchObject($userID);
-        if ($user->getID()) {
+        if (null !== $user->getID()) {
             $web_groups = $this->makeTable('web_groups');
             $webgroup_names = $this->makeTable('webgroup_names');
 

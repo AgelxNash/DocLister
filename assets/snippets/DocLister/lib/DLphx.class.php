@@ -50,7 +50,7 @@ class DLphx
         $this->user["usrid"] = isset($_SESSION['webInternalKey']) ? intval($_SESSION['webInternalKey']) : 0;
         $this->user["id"] = ($this->user["usrid"] > 0) ? (-$this->user["usrid"]) : $this->user["mgrid"];
 
-        $this->debug = ($debug != '') ? $debug : 0;
+        $this->debug = ($debug !== '') ? (bool)$debug : false;
 
         $this->maxPasses = ($maxpass != '') ? $maxpass : 50;
 

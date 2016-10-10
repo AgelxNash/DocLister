@@ -25,7 +25,7 @@ class SummaryText
     private $_cfg = array('content' => '', 'summary' => '', 'original' => '', 'break' => '');
 
     /**
-     * @var null
+     * @var bool|null
      */
     private $_useCut = null;
 

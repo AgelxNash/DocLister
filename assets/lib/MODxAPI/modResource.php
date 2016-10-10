@@ -7,9 +7,9 @@ require_once('MODx.php');
 class modResource extends MODxAPI
 {
     /**
-     * @var null
+     * @var string
      */
-    protected $mode = null;
+    protected $mode = 'new';
     /**
      * @var array
      */
@@ -663,7 +663,7 @@ class modResource extends MODxAPI
      * @param int|bool $depth
      * @return array
      */
-    public function childrens($ids, $depth = 0)
+    public function childrens($ids, $depth)
     {
         $_ids = $this->cleanIDs($ids, ',');
         if (is_array($_ids) && $_ids != array()) {

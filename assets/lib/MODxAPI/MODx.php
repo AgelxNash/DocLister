@@ -316,7 +316,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @param null|boolean $fire_events
+     * @param boolean $fire_events
      * @param bool $custom
      */
     final public function clearCache($fire_events = false, $custom = false)
@@ -372,7 +372,7 @@ abstract class MODxAPI extends MODxAPIhelpers
             //Если уже загружен объект, с которым мы хотим временно поработать
             case ($this->getID() == $id && $id):
                 //Если $id не указан, но уже загружен какой-то объект
-            case (!$id && $this->getID()):
+            case (!$id && null !== $this->getID()):
             default:
                 $obj = $this;
                 break;
