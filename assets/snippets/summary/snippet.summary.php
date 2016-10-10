@@ -9,9 +9,7 @@
  * @date 31.07.2013
  * @version 1.0.2
  */
-if (!defined('MODX_BASE_PATH')) {
-    die('HACK?');
-}
+if (!defined('MODX_BASE_PATH')) die('HACK?');
 
 $summary = MODX_BASE_PATH . "assets/lib/class.summary.php";
 

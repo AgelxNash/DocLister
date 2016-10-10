@@ -7,6 +7,9 @@ use Closure;
  */
 class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
 {
+    /**
+     * @var array
+     */
     protected $data = array();
 
     /**

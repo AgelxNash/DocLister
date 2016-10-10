@@ -1,7 +1,6 @@
 <?php
-if (!defined('MODX_BASE_PATH')) {
-    die('HACK???');
-}
+if (!defined('MODX_BASE_PATH')) die('HACK???');
+
 $ID = $modx->documentObject['id'];
 $params = is_array($modx->Event->params) ? $modx->Event->params : array();
 $params = array_merge($params, array(

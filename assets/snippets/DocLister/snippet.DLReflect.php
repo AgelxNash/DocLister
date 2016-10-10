@@ -167,7 +167,7 @@ if ($reflectSource == 'tv') {
     $DLParams['selectFields'] = "DATE_FORMAT(FROM_UNIXTIME(" . $reflectField . "), '" . $sqlDateFormat . "') as `id`";
 }
 $totalReflects = $modx->runSnippet('DocLister', $DLParams);
-//Получаем объект DocLister'a
+/** Получаем объект DocLister'a */
 $DLAPI = $modx->getPlaceholder('DLAPI');
 
 if ($reflectType == 'month') {
@@ -175,7 +175,7 @@ if ($reflectType == 'month') {
     $DLAPI->loadLang('months');
 }
 
-//Разбираем API ответ от DocLister'a
+/** Разбираем API ответ от DocLister'a */
 $totalReflects = json_decode($totalReflects, true);
 if (is_null($totalReflects)) {
     $totalReflects = array();
@@ -214,14 +214,14 @@ list($lReflect, $rReflect) = $totalReflects->partition(function ($key, $val) use
 
     return $aDate->getTimestamp() < $bDate->getTimestamp();
 });
-//Удаляем текущую активную дату из списка дат идущих за текущим
+/** Удаляем текущую активную дату из списка дат идущих за текущим */
 if ($rReflect->indexOf(array('id' => $originalCurrentReflect)) !== false) {
     $rReflect->reindex()->remove(0);
 }
-//Разворачиваем в обратном порядке список дат до текущей даты
+/** Разворачиваем в обратном порядке список дат до текущей даты */
 $lReflect = $lReflect->reverse();
 
-//Расчитываем сколько дат из какого списка взять
+/** Расчитываем сколько дат из какого списка взять */
 $showBefore = ($lReflect->count() < $limitBefore || empty($limitBefore)) ? $lReflect->count() : $limitBefore;
 if (($rReflect->count() < $limitAfter) || empty($limitAfter)) {
     $showAfter = $rReflect->count();
@@ -235,9 +235,9 @@ if (($rReflect->count() < $limitAfter) || empty($limitAfter)) {
 }
 $showBefore += (($showAfter >= $limitAfter || $limitAfter > 0) ? 0 : ($limitAfter - $showAfter));
 
-//Создаем новую коллекцию дат
+/** Создаем новую коллекцию дат */
 $outReflects = new DLCollection($modx);
-//Берем нужное число элементов с левой стороны
+/** Берем нужное число элементов с левой стороны */
 $i = 0;
 foreach ($lReflect as $item) {
     if ((++$i) > $showBefore) {
@@ -245,7 +245,7 @@ foreach ($lReflect as $item) {
     }
     $outReflects->add($item['id']);
 }
-//Добавляем текущую дату
+/** Добавляем текущую дату */
 if (is_null($activeReflect)) {
     if (($hasCurrentReflect && !$selectCurrentReflect) || $appendCurrentReflect) {
         $outReflects->add($originalCurrentReflect);
@@ -254,7 +254,7 @@ if (is_null($activeReflect)) {
     $outReflects->add($activeReflect);
 }
 
-//Берем оставшее число позиций с правой стороны
+/** Берем оставшее число позиций с правой стороны */
 $i = 0;
 foreach ($rReflect as $item) {
     if ((++$i) > $showAfter) {
@@ -264,7 +264,7 @@ foreach ($rReflect as $item) {
 }
 
 $sortDir = APIHelpers::getkey($params, 'sortDir', 'ASC');
-//Сортируем результатирующий список
+/** Сортируем результатирующий список  */
 $outReflects = $outReflects->sort(function ($a, $b) use ($sortDir, $dateFormat) {
     $aDate = DateTime::createFromFormat($dateFormat, $a);
     $bDate = DateTime::createFromFormat($dateFormat, $b);
@@ -281,7 +281,7 @@ $outReflects = $outReflects->sort(function ($a, $b) use ($sortDir, $dateFormat) 
     return $out;
 })->reindex()->unique();
 
-//Применяем шаблон к каждой отображаемой дате
+/** Применяем шаблон к каждой отображаемой дате */
 foreach ($outReflects as $reflectItem) {
     $tpl = (!is_null($activeReflect) && $activeReflect == $reflectItem) ? $activeReflectTPL : $reflectTPL;
 
@@ -307,14 +307,18 @@ foreach ($outReflects as $reflectItem) {
     $out .= $DLAPI->parseChunk($tpl, $data);
 }
 
-//Заворачиваем в шаблон обертку весь список дат
+/**
+ * Заворачиваем в шаблон обертку весь список дат
+ */
 $out = $DLAPI->parseChunk($wrapTPL, array(
     'wrap'            => $out,
     'reflects'        => $totalReflects->count(),
     'displayReflects' => $outReflects->count()
 ));
 
-//Ну и выводим стек отладки если это нужно
+/**
+ * Ну и выводим стек отладки если это нужно
+ */
 if (isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'manager') {
     $debug = $DLAPI->debug->showLog();
 } else {

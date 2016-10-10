@@ -87,4 +87,5 @@ if ($activeReflect) {
     }
 }
 $params['sortBy'] = $reflectField;
+
 return $modx->runSnippet('DocLister', $params);

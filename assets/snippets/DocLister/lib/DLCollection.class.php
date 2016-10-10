@@ -16,7 +16,7 @@ class DLCollection extends \Helpers\Collection
     /**
      * DLCollection constructor.
      * @param array $modx
-     * @param array $data
+     * @param mixed $data
      */
     public function __construct($modx, $data = array())
     {
@@ -40,7 +40,7 @@ class DLCollection extends \Helpers\Collection
     }
 
     /**
-     * @param $q
+     * @param string $q
      * @param bool $exec
      * @return int
      */

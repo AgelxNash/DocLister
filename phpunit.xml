@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
->
+        >
     <testsuites>
         <testsuite name="Package Test Suite">
             <directory>./tests/</directory>
@@ -18,7 +18,7 @@
     <php>
         <includePath>.</includePath>
         <const name="MODX_BASE_PATH" value="./"/>
-        <const name="MODX_SITE_URL" value="http://example.com/" />
-        <server name="REQUEST_URI" value="/index.php?q=news" />
+        <const name="MODX_SITE_URL" value="http://example.com/"/>
+        <server name="REQUEST_URI" value="/index.php?q=news"/>
     </php>
 </phpunit>

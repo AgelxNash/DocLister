@@ -9,6 +9,9 @@ include_once("xnop.class.php");
  */
 class jsonHelper
 {
+    /**
+     * @var array
+     */
     protected static $_error = array(
         0 => 'error_none', //JSON_ERROR_NONE
         1 => 'error_depth', //JSON_ERROR_DEPTH
@@ -146,7 +149,7 @@ class jsonHelper
                     if ($c > 0 && $json[$c - 1] != '\\') {
                         $in_string = !$in_string;
                     }
-                // no break ???
+                    // no break ???
                 default:
                     $new_json .= $char;
                     break;

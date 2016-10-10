@@ -39,7 +39,7 @@ if (!class_exists("DLReflect", false)) {
         }
 
         /**
-         * @param $type
+         * @param string $type
          * @param $monthAction
          * @param $yearAction
          * @return mixed|null

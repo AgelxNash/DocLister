@@ -1,7 +1,6 @@
 <?php
-if (!defined('MODX_BASE_PATH')) {
-    die('HACK???');
-}
+if (!defined('MODX_BASE_PATH')) die('HACK???');
+
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 
 $p = &$modx->event->params;
@@ -43,4 +42,5 @@ if (APIhelpers::getkey($p, 'debug')) {
         $modx->logEvent(0, 1, $debugStack, 'DocLister [DLValueList]');
     }
 }
+
 return implode("||", $out);
