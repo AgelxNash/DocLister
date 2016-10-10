@@ -1,5 +1,5 @@
 <?php
-if (!defined('MODX_BASE_PATH')) die('HACK???');
+if ( ! defined('MODX_BASE_PATH')) die('HACK???');
 
 $ID = $modx->documentObject['id'];
 $params = is_array($modx->Event->params) ? $modx->Event->params : array();
@@ -14,7 +14,7 @@ $children = jsonHelper::jsonDecode($json, array('assoc' => true));
 $children = is_array($children) ? $children : array();
 $self = $prev = $next = null;
 foreach ($children as $key => $data) {
-    if (!empty($self)) {
+    if ( ! empty($self)) {
         $next = $key;
         break;
     }
