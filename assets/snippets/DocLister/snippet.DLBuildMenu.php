@@ -1,5 +1,7 @@
 <?php
-if ( ! defined('MODX_BASE_PATH')) die('HACK???');
+if ( ! defined('MODX_BASE_PATH')) {
+    die('HACK???');
+}
 
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLFixedPrepare.class.php');
