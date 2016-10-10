@@ -1,3 +1,29 @@
+## 2.2.0 (10.10.2016)
+* [Fix] При вызове DocLister с параметрами &makeUrl=0 &api=1 не получается отключить формирование ссылок (Issue #171).
+* [Fix] modResource::delete не удаляет дочерние ресурсы (Issue #184).
+* [Fix] Неверное определение пути к контроллерам в DocLister (Issue #199).
+* [Fix] Не задано поле city в modUsers.
+* [Fix] Некорректная работа плагинов, вызванных из modResource, если в плагинах выполнялся метод save().
+* [Add] Возможность в DocLister указывать несколько тэгов в режиме static через разделитель в параметре tagsSeparator.
+* [Add] Метод modUsers::setUserGroups для помещения пользователя в группы.
+* [Fix] Ошибка в DocLister при фильтрации по TV-параметрам и режиме сортировки doclist (Issue #189).
+* [Add] При вызове событий в классах MODxAPI в плагины передается объект класса, из которого было вызвано событие.
+* [Add] Вызов событий в классе modUsers.
+* [Add] Метод getInvokeEventResult для получения результатов работы плагинов при вызове из MODxAPI.
+* [Fix] Ошибка в modUsers при вызове метода getUserGroups.
+* [Fix] Ошибка в modUsers при вызове метода getUserGroups.
+* [Fix] Некорректная установка поля published в modResource.
+* [Refactor] Метод Assets/Helpers::registerScript возвращает пустую строку вместо false.
+* [Add] Метод Assets/Helpers::registerJQuery.
+* [Add] Загрузка скриптов из массива в Assets/Helpers.
+* [Fix] Бесконечная переадресация в плагине DLLogout
+* [Fix] Плагин DLLogout загружал неверный файл.
+* [Add] Вывод ссылок на первую и последнюю страницу в пагинаторе DocLister. 
+* [Add] Методд MODxAPI checkUnique теперь позволяет проверять уникальность записи по нескольким полям.
+* [Add] В класс Helpers/Assets добавлена возможность загружать скрипты, расположенные на удаленных серверах (Issue #161).
+* [Add] Микроразметка в шаблонах DLCrumb.
+* [Refactor] Модули, плагины и TV-параметры перенесены из основной ветки компонента в ветку full.
+
 ## 2.1.30 (20.12.2015)
 * [Add] При помощи класса [Formatter\SqlFormatter](https://github.com/jdorn/sql-formatter) добавлена подсветка SQL запросов в выводе отладчика DocLister
 * [Add] При помощи класса Formatter\HtmlFormatter добавлена подсветка имен шаблонов, лексиконов и плейсхолдеров
