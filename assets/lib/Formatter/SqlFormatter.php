@@ -308,6 +308,9 @@ class SqlFormatter
 
     // For SQL formatting
     // These keywords will all be on their own line
+    /**
+     * @var array
+     */
     protected static $reserved_toplevel = array(
         'SELECT',
         'FROM',
@@ -330,6 +333,9 @@ class SqlFormatter
         'INTERSECT'
     );
 
+    /**
+     * @var array
+     */
     protected static $reserved_newline = array(
         'LEFT OUTER JOIN',
         'RIGHT OUTER JOIN',
@@ -343,6 +349,9 @@ class SqlFormatter
         'AND'
     );
 
+    /**
+     * @var array
+     */
     protected static $functions = array(
         'ABS',
         'ACOS',

@@ -6,5 +6,8 @@ include_once(dirname(__FILE__) . "/autoTable.abstract.php");
  */
 class modChunk extends autoTable
 {
+    /**
+     * @var string
+     */
     protected $table = "site_htmlsnippets";
 }

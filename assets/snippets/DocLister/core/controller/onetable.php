@@ -16,8 +16,19 @@ if (!defined('MODX_BASE_PATH')) {
  */
 class onetableDocLister extends DocLister
 {
+    /**
+     * @var string
+     */
     protected $table = 'site_content';
+
+    /**
+     * @var string
+     */
     protected $idField = 'id';
+
+    /**
+     * @var string
+     */
     protected $parentField = 'parent';
 
     /**

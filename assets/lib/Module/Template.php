@@ -6,11 +6,26 @@
  */
 abstract class Template
 {
+    /**
+     * @var \DocumentParser|null
+     */
     protected $_modx = null;
+    /**
+     * @var null|string
+     */
     protected $_tplFolder = null;
+    /**
+     * @var string
+     */
     protected $_publicFolder;
+    /**
+     *
+     */
     const TPL_EXT = 'html';
 
+    /**
+     * @var array
+     */
     public $vars = array(
         'modx_lang_attribute',
         'modx_textdir',
@@ -23,6 +38,9 @@ abstract class Template
         'incPath',
         'content'
     );
+    /**
+     * @var bool
+     */
     protected static $_ajax = false;
 
     /**

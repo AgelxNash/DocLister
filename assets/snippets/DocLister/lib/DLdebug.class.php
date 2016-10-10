@@ -69,7 +69,7 @@ class DLdebug
     {
         return count($this->_log);
     }
-    
+
     /**
      * 1 - SQL
      * 2 - Full debug

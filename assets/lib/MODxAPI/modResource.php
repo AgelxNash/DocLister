@@ -6,7 +6,13 @@ require_once('MODx.php');
  */
 class modResource extends MODxAPI
 {
+    /**
+     * @var null
+     */
     protected $mode = null;
+    /**
+     * @var array
+     */
     protected $default_field = array(
         'type'            => 'document',
         'contentType'     => 'text/html',
@@ -46,6 +52,9 @@ class modResource extends MODxAPI
         'hidemenu'        => 0,
         'alias_visible'   => 1
     );
+    /**
+     * @var array
+     */
     private $table = array(
         '"' => '_',
         "'" => '_',

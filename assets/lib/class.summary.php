@@ -19,9 +19,24 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
  */
 class SummaryText
 {
+    /**
+     * @var array
+     */
     private $_cfg = array('content' => '', 'summary' => '', 'original' => '', 'break' => '');
+
+    /**
+     * @var null
+     */
     private $_useCut = null;
+
+    /**
+     * @var bool
+     */
     private $_useSubstr = false;
+
+    /**
+     * @var int
+     */
     private $_dotted = 0;
 
     /**

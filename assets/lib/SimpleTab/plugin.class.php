@@ -18,8 +18,17 @@ abstract class Plugin
      * @access public
      */
     public $modx = null;
+    /**
+     * @var string
+     */
     public $pluginName = '';
+    /**
+     * @var array
+     */
     public $params = array();
+    /**
+     * @var string
+     */
     public $table = '';
     public $tpl = '';
     public $jsListDefault = '';

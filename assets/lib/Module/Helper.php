@@ -14,6 +14,9 @@ class Helper extends \APIhelpers
      * @access protected
      */
     protected static $modx = null;
+    /**
+     * @var string
+     */
     protected static $mode = 'list';
 
     /**

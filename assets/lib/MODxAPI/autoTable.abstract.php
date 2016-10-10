@@ -6,7 +6,13 @@ require_once('MODx.php');
  */
 abstract class autoTable extends MODxAPI
 {
+    /**
+     * @var null
+     */
     protected $table = null;
+    /**
+     * @var bool
+     */
     protected $generateField = false;
 
     /**

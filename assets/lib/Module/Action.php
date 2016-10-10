@@ -164,6 +164,9 @@ abstract class Action
         return $data;
     }
 
+    /**
+     * 
+     */
     public static function lists()
     {
         self::$TPL = 'ajax/lists';
