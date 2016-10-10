@@ -24,7 +24,6 @@ class site_contentDocLister extends DocLister
      * Экземпляр экстендера пагинации
      * @var null|paginate_DL_Extender
      */
-
     protected $extPaginate = null;
 
     /**
@@ -76,7 +75,6 @@ class site_contentDocLister extends DocLister
 
         return $this->_docs;
     }
-
 
     /**
      * @param string $tpl
@@ -263,10 +261,8 @@ class site_contentDocLister extends DocLister
     }
 
     /**
-     * document
+     * @abstract
      */
-
-    // @abstract
     public function getChildrenCount()
     {
         $out = 0;

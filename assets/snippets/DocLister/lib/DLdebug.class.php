@@ -7,7 +7,14 @@ include_once(MODX_BASE_PATH . 'assets/lib/Formatter/HtmlFormatter.php');
  */
 class DLdebug
 {
+    /**
+     * @var array
+     */
     private $_log = array();
+
+    /**
+     * @var array
+     */
     private $_calcLog = array();
 
     /**
@@ -62,11 +69,11 @@ class DLdebug
     {
         return count($this->_log);
     }
-    /*
+    
+    /**
      * 1 - SQL
      * 2 - Full debug
-     */
-    /**
+     *
      * @param $message
      * @param null $key
      * @param int $mode

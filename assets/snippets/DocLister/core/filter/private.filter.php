@@ -10,6 +10,9 @@ require_once 'content.filter.php';
  */
 class private_DL_filter extends content_DL_filter
 {
+    /**
+     *
+     */
     const TableAlias = 'dg';
 
     /**
@@ -21,7 +24,7 @@ class private_DL_filter extends content_DL_filter
     }
 
     /**
-     * @param строка $filter
+     * @param string $filter
      * @return bool
      */
     public function parseFilter($filter)

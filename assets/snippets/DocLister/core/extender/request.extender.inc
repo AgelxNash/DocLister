@@ -12,12 +12,11 @@ if (!defined('MODX_BASE_PATH')) {
  */
 
 //&requestActive=`order:g:(ASC,DESC)||display:g:(*):int`
-/*
- * @TODO: не юзать. сырой, дырявый и вообще удалить нафиг
- */
-
 class request_DL_Extender extends extDocLister
 {
+    /**
+     * @var array
+     */
     private $param = array();
 
     /**
@@ -140,6 +139,9 @@ class request_DL_Extender extends extDocLister
         return $out;
     }
 
+    /**
+     *
+     */
     private function setCFG()
     {
         foreach ($this->param as $name => $item) {

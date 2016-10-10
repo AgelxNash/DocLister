@@ -480,7 +480,6 @@ class Actions
                 $uri = APIhelpers::sanitarTag($uri);
             }
         } else {
-            //$modx->sendRedirect($url, 0, 'REDIRECT_HEADER', 'HTTP/1.1 307 Temporary Redirect');
             header("Location: " . $uri, true, ($code > 0 ? $code : 307));
         }
 

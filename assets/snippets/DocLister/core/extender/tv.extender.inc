@@ -16,8 +16,19 @@ if (!defined('MODX_BASE_PATH')) {
  */
 class tv_DL_Extender extends extDocLister
 {
+    /**
+     * @var mixed|string
+     */
     protected $tvValuesTable = 'site_tmplvar_contentvalues';
+
+    /**
+     * @var mixed|null|string
+     */
     protected $_TVprefix = null;
+
+    /**
+     * @var bool
+     */
     public $storeTable = true;
 
     /**

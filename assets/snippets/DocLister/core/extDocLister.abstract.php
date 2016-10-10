@@ -37,6 +37,9 @@ abstract class extDocLister
      */
     protected $_cfg = array();
 
+    /**
+     * @var bool
+     */
     protected $lang = false;
 
     /**

@@ -79,6 +79,7 @@ abstract class DocLister
      * @access protected
      */
     protected $_customLang = array();
+
     /**
      * Массив настроек переданный через параметры сниппету
      * @var array
@@ -106,6 +107,7 @@ abstract class DocLister
      * @access protected
      */
     protected $parentField = 'parent';
+
     /**
      * Дополнительные условия для SQL запросов
      * @var array
@@ -394,7 +396,6 @@ abstract class DocLister
         return $table;
     }
 
-
     /**
      * @param $name
      * @param $table
@@ -460,7 +461,6 @@ abstract class DocLister
 
         return $config;
     }
-
 
     /**
      * Разбор JSON строки при помощи json_decode
@@ -684,6 +684,7 @@ abstract class DocLister
      *
      * @param string $ext name extender separated by ,
      * @return boolean status load extenders
+     * @throws Exception
      */
     public function loadExtender($ext = '')
     {
@@ -1477,7 +1478,6 @@ abstract class DocLister
 
         return $sort;
     }
-
 
     /**
      * Получение LIMIT вставки в SQL запрос

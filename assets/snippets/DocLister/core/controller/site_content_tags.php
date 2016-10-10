@@ -19,6 +19,9 @@ include_once(dirname(__FILE__) . "/site_content.php");
  */
 class site_content_tagsDocLister extends site_contentDocLister
 {
+    /**
+     * @var array
+     */
     private $tag = array();
 
     /**

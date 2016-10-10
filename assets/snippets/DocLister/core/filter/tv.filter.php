@@ -12,8 +12,16 @@ require_once 'content.filter.php';
  */
 class tv_DL_filter extends content_DL_filter
 {
+    /**
+     * @var
+     */
     protected $tv_id;
+
+    /**
+     * @var null
+     */
     protected $tvName = null;
+
     /**
      * @var tv_DL_Extender
      */
@@ -21,7 +29,7 @@ class tv_DL_filter extends content_DL_filter
 
     /**
      * @param DocLister $DocLister
-     * @param строка $filter
+     * @param string $filter
      * @return bool
      */
     public function init(DocLister $DocLister, $filter)
@@ -32,7 +40,7 @@ class tv_DL_filter extends content_DL_filter
     }
 
     /**
-     * @param строка $filter
+     * @param string $filter
      * @return bool
      */
     protected function parseFilter($filter)

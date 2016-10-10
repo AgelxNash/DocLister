@@ -21,7 +21,6 @@ class template_DL_Extender extends extDocLister
         return ($this->_cfg != '') ? $this->getTemplate($this->_cfg) : '';
     }
 
-    //@TODO load custom rulez for template. For example - load from other DB/Table OR template directory
     /**
      * @param $name
      * @return string

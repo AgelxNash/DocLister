@@ -16,8 +16,19 @@ if (!defined('MODX_BASE_PATH')) {
  */
 class user_DL_Extender extends extDocLister
 {
+    /**
+     * @var array
+     */
     private $fields = array();
+
+    /**
+     * @var array
+     */
     private $userinfo = array();
+
+    /**
+     * @var array
+     */
     private $table = array();
 
     /**
@@ -75,6 +86,7 @@ class user_DL_Extender extends extDocLister
      * get table name
      *
      * @global string $usertype type users (manager or web user). Default web
+     * @return array
      */
     private function getTable()
     {

@@ -13,6 +13,9 @@ if (!defined('MODX_BASE_PATH')) {
 class example_DL_Extender extends extDocLister
 {
 
+    /**
+     *
+     */
     protected function run()
     {
         print_r($this->_cfg);

@@ -32,4 +32,5 @@ include_once(dirname(__FILE__) . "/site_content.php");
  */
 class site_content_filtersDocLister extends site_contentDocLister
 {
+
 }

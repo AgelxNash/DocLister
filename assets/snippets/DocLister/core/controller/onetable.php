@@ -284,9 +284,8 @@ class onetableDocLister extends DocLister
         return $out;
     }
 
-    // @abstract
     /**
-     * @return int|void
+     * @absctract
      */
     public function getChildrenCount()
     {
