@@ -290,7 +290,6 @@ class SummaryText
     /**
      * @see summary extender for Ditto (truncate::closeTags)
      * @link https://github.com/modxcms/evolution/blob/develop/assets/snippets/ditto/extenders/summary.extender.inc.php#L227
-
      * @param $text
      * @return string
      */
