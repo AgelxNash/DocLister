@@ -33,6 +33,9 @@
 * [FormLister](https://github.com/Pathologic/FormLister)
 * [FastImageTV](https://github.com/Pathologic/FastImageTV)
 * [DLRequest](https://github.com/Pathologic/DLRequest)
+* [evoSearch](https://github.com/webber12/evoSearch)
+* [eFilter](https://github.com/webber12/eFilter)
+* [Selector](https://github.com/Pathologic/Selector)
 
 ### Авторы
 ---------
