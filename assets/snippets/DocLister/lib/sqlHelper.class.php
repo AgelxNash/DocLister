@@ -70,7 +70,7 @@ class sqlHelper
      * @param string $tpl шаблон подстановки значения в SQL запрос
      * @return string строка для подстановки в SQL запрос
      */
-    public static function LikeEscape($modx, $field, $value, $escape = '=', $tpl = '%[+value+]%')
+    public static function LikeEscape(DocumentParser $modx, $field, $value, $escape = '=', $tpl = '%[+value+]%')
     {
         $str = '';
         $escaped = false;
@@ -93,4 +93,4 @@ class sqlHelper
 
         return $str;
     }
-} 
+}

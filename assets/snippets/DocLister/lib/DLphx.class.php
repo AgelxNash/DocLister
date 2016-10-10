@@ -126,7 +126,6 @@ class DLphx
         $this->curPass = $this->curPass + 1;
         $st = md5($template);
 
-        //$this->LogSource($template);
         $this->LogPass();
 
         // MODX Chunks

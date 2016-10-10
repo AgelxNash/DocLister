@@ -381,7 +381,7 @@ class modResource extends MODxAPI
         $value = (int)$value;
         if (!empty($value)) {
             $by = $this->findUserBy($value);
-            $exists = $this->managerUsers->exists(function ($key, $val) use ($by, $value) {
+            $exists = $this->managerUsers->exists(function ($key, Helpers\Collection $val) use ($by, $value) {
                 return ($val->containsKey($by) && $val->get($by) === (string)$value);
             });
             if (!$exists) {

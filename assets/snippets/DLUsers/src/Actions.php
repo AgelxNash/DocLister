@@ -149,7 +149,6 @@ class Actions
         $request = parse_url($_SERVER['REQUEST_URI']);
 
         //Во избежании XSS мы не сохраняем весь REQUEST_URI, а берем только path
-        /*$query = (!empty($request['query'])) ? $request['query'].'&' : '';*/
         $query = '?' . $LogoutName;
 
         return $request['path'] . $query;

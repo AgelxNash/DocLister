@@ -163,11 +163,6 @@ class modUsers extends MODxAPI
             return false;
         }
 
-        /*$this->invokeEvent('OnBeforeDocFormSave',array (
-            "mode" => $this->newDoc ? "new" : "upd",
-            "id" => $this->id ? $this->id : ''
-        ),$fire_events);*/
-
         $fld = $this->toArray();
         foreach ($this->default_field['user'] as $key => $value) {
             $tmp = $this->get($key);
@@ -289,7 +284,6 @@ class modUsers extends MODxAPI
             $this->edit($id);
         }
         if ($this->getID()) {
-            //$this->logOut($cookieName);
             $flag = true;
             $this->SessionHandler('start', $cookieName, $fulltime);
             $this->invokeEvent("OnWebLogin", array(

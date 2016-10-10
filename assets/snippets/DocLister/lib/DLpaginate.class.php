@@ -232,7 +232,7 @@ class DLpaginate
      */
     public function urlFriendly($value = "%")
     {
-        if (eregi('^ *$', $value)) {
+        if (preg_match('/^\s/', $value)) {
             $this->urlF = false;
         }
         $this->urlF = $value;
@@ -311,32 +311,22 @@ class DLpaginate
 
         if ($this->urlF && $this->urlF != '%' && strpos($this->target, $this->urlF) === false) {
             //Es necesario especificar el comodin para sustituir
-            //echo "Especificaste un wildcard para sustituir, pero no existe en el target<br />";
             $error = true;
         } elseif ($this->urlF && $this->urlF == '%' && strpos($this->target, $this->urlF) === false) {
-            //echo "Es necesario especificar en el target el comodin % para sustituir el n�mero de p�gina<br />";
             $error = true;
         }
 
         if ($this->total_pages < 0) {
-            //echo "It is necessary to specify the <strong>number of pages</strong> (\$class->items(1000))<br />";
             $error = true;
         }
         if (!is_int($this->limit)) {
-            //echo "It is necessary to specify the <strong>limit of items</strong> to show per page (\$class->limit(10))<br />";
             $error = true;
         }
         if ($error) {
             return false;
         }
 
-        /* Setup vars for query. */
-        if ($this->page) {
-            $start = ($this->page - 1) * $this->limit;
-        } //first item to display on this page
-        else {
-            $start = 0;
-        } //if no page var is given, set start to 0
+        $counter = 0;
 
         /* Setup page vars for display. */
         $prev = ($this->page <= 1) ? 0 : $this->page - 1; //previous page is page - 1

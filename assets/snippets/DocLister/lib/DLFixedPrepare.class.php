@@ -62,14 +62,14 @@ if (!class_exists("DLFixedPrepare", false)) {
         /**
          * @param array $data
          * @param DocumentParser $modx
-         * @param $_DocLister
+         * @param DocLister $_DocLister
          * @param prepare_DL_Extender $_extDocLister
          * @return array
          */
         public static function firstChar(
             array $data = array(),
             DocumentParser $modx,
-            $_DocLister,
+            DocLister $_DocLister,
             prepare_DL_Extender $_extDocLister
         ) {
             $char = mb_substr($data['pagetitle'], 0, 1, 'UTF-8');

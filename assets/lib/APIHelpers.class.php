@@ -346,18 +346,9 @@ class APIhelpers
                         foreach ($tmp as $t) {
                             $data[] = (string)$t;
                         }
-                        //$data = array_merge($data, range('0', '9'));
-                        /*$data = array_merge($data, array(
-                            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
-                        ));*/
                         break;
                     case 'eng':
                         $data = array_merge($data, range('A', 'Z'));
-                        /*$data = array_merge($data, array(
-                            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-                            'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-                            'W', 'X', 'Y', 'Z'
-                        ));*/
                         break;
                 }
             }
