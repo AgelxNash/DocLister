@@ -574,7 +574,8 @@ abstract class DocLister
      * @param int $id уникальный идентификатор страницы
      * @return string URL страницы
      */
-    public function getUrl($id = 0){
+    public function getUrl($id = 0)
+    {
         $id = ((int)$id > 0) ? (int)$id : $this->getCurrentMODXPageID();
 
         $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : $this->getRequest();

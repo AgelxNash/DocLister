@@ -65,7 +65,7 @@ abstract class extDocLister
      * Вызов экстенедара с параметрами полученными в этой функции
      *
      * @param DocLister $DocLister объект класса DocLister
-     * @param mixed $_, ... неограниченное число параметров (используются для конфигурации экстендера)
+     * @param mixed $_ , ... неограниченное число параметров (используются для конфигурации экстендера)
      * @return mixed ответ от экстендера (как правило это string)
      */
     public function init($DocLister, $_ = null)

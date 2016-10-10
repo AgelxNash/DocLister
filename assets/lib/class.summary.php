@@ -185,7 +185,8 @@ class SummaryText
         $quotes_on = false;
         if (mb_strlen($posttext) > $minimum_length && $truncChars !== true) {
             $c = 0;
-            for ($i = 0; $i < mb_strlen($posttext, 'UTF-8'); $i++) {
+            $len = mb_strlen($posttext, 'UTF-8');
+            for ($i = 0; $i < $len; $i++) {
                 $current_char = mb_substr($posttext, $i, 1, 'UTF-8');
                 if ($i < mb_strlen($posttext, 'UTF-8') - 1) {
                     $next_char = mb_substr($posttext, $i + 1, 1, 'UTF-8');
