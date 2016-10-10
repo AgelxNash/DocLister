@@ -181,6 +181,7 @@ abstract class DocLister
      * @param DocumentParser $modx объект DocumentParser - основной класс MODX
      * @param array $cfg массив параметров сниппета
      * @param int $startTime время запуска сниппета
+     * @throws Exception
      */
     public function __construct($modx, $cfg = array(), $startTime = null)
     {
@@ -209,7 +210,7 @@ abstract class DocLister
             $cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
         }
 
-        if (!$this->setConfig($cfg)) {
+        if ($this->setConfig($cfg) === false) {
             throw new Exception('no parameters to run DocLister');
         }
 
@@ -507,15 +508,15 @@ abstract class DocLister
         $flag = true;
         $extenders = $this->getCFGDef('extender', '');
         $extenders = explode(",", $extenders);
-        if (($this->getCFGDef('requestActive', '') != '' || in_array('request',
-                    $extenders)) && !$this->_loadExtender('request')
-        ) { //OR request in extender's parameter
+        $tmp = $this->getCFGDef('requestActive', '') != '' || in_array('request', $extenders);
+        if ($tmp && !$this->_loadExtender('request')) {
+            //OR request in extender's parameter
             throw new Exception('Error load request extender');
         }
 
-        if (($this->getCFGDef('summary', '') != '' || in_array('summary',
-                    $extenders)) && !$this->_loadExtender('summary')
-        ) { //OR summary in extender's parameter
+        $tmp = $this->getCFGDef('summary', '') != '' || in_array('summary', $extenders);
+        if ($tmp && !$this->_loadExtender('summary')) {
+            //OR summary in extender's parameter
             throw new Exception('Error load summary extender');
         }
 
@@ -711,7 +712,7 @@ abstract class DocLister
     /**
      * Сохранение настроек вызова сниппета
      * @param array $cfg массив настроек
-     * @return int результат сохранения настроек
+     * @return int|bool результат сохранения настроек
      */
     public function setConfig($cfg)
     {
@@ -834,7 +835,7 @@ abstract class DocLister
     /**
      * Загрузка языкового пакета
      *
-     * @param string $name ключ языкового пакета
+     * @param array|string $name ключ языкового пакета
      * @param string $lang имя языкового пакета
      * @param boolean $rename Переименовывать ли элементы массива
      * @return array массив с лексиконом

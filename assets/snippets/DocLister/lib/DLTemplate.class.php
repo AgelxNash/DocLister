@@ -277,7 +277,7 @@ class DLTemplate
 
     /**
      *
-     * @param string $value
+     * @param string|array $value
      * @param string $key
      * @param string $path
      */

@@ -270,7 +270,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param null|boolean $fire_events
      * @param bool $custom
      */
-    final public function clearCache($fire_events = null, $custom = false)
+    final public function clearCache($fire_events = false, $custom = false)
     {
         $IDs = array();
         if ($custom === false) {
@@ -366,7 +366,7 @@ abstract class MODxAPI extends MODxAPIhelpers
     }
 
     /**
-     * @return null
+     * @return null|int
      */
     final public function getID()
     {

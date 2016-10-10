@@ -101,18 +101,17 @@ class Actions
             $userID = $this->UserID('web');
             if ($userID) {
                 $this->userObj->edit($userID);
+                $params = array();
                 if ($this->userObj->getID()) {
-                    $this->modx->invokeEvent("OnBeforeWebLogout", array(
+                    $params = array(
                         "userid"   => $this->userObj->getID(),
                         "username" => $this->userObj->get('username')
-                    ));
+                    );
+                    $this->modx->invokeEvent("OnBeforeWebLogout", $params);
                 }
                 $this->userObj->logOut();
                 if ($this->userObj->getID()) {
-                    $this->modx->invokeEvent("OnWebLogout", array(
-                        "userid"   => $this->userObj->getID(),
-                        "username" => $this->userObj->get('username')
-                    ));
+                    $this->modx->invokeEvent("OnWebLogout", $params);
                 }
 
                 $go = APIHelpers::getkey($params, 'url', '');
@@ -236,13 +235,7 @@ class Actions
              */
             $refer = htmlspecialchars_decode($_SERVER['HTTP_REFERER'], ENT_QUOTES);
         } else {
-            $selfHost = rtrim(str_replace("http://", "", $this->config['site_url']), '/');
-            if (empty($request['host']) || $request['host'] == $selfHost) {
-                $query = !empty($request['query']) ? '?' . $request['query'] : '';
-                $refer = !empty($request['path']) ? $request['path'] . $query : '';
-            } else {
-                $refer = '';
-            }
+             $refer = $this->getBackUrl($request);
         }
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -259,13 +252,7 @@ class Actions
         if (!empty($backUrl['path']) && $request['path'] != $backUrl['path']) {
             $POST['backUrl'] = $backUrl['path'];
         } else {
-            $selfHost = rtrim(str_replace("http://", "", $this->config['site_url']), '/');
-            if (empty($backUrl['host']) || $backUrl['host'] == $selfHost) {
-                $query = !empty($backUrl['query']) ? '?' . $backUrl['query'] : '';
-                $POST['backUrl'] = !empty($backUrl['path']) ? $backUrl['path'] . $query : '';
-            } else {
-                $POST['backUrl'] = '';
-            }
+            $POST['backUrl'] = $this->getBackUrl($backUrl);
         }
         if (!empty($POST['backUrl'])) {
             $idURL = $this->moveTo(array(
@@ -293,6 +280,21 @@ class Actions
             'error'      => $error,
             'errorCode'  => $errorCode
         ));
+    }
+
+    /**
+     * @param array $request
+     * @return string
+     */
+    protected function getBackUrl(array $request = array()){
+        $selfHost = rtrim(str_replace("http://", "", $this->config['site_url']), '/');
+        if (empty($request['host']) || $request['host'] == $selfHost) {
+            $query = !empty($request['query']) ? '?' . $request['query'] : '';
+            $out = !empty($request['path']) ? $request['path'] . $query : '';
+        } else {
+            $out = '';
+        }
+        return $out;
     }
 
     /**

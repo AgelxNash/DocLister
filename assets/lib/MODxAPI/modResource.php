@@ -651,7 +651,7 @@ class modResource extends MODxAPI
 
     /**
      * @param $ids
-     * @param int $depth
+     * @param int|bool $depth
      * @return array
      */
     public function childrens($ids, $depth = 0)
