@@ -161,7 +161,7 @@ class modResource extends MODxAPI
         $this->get_TV();
         $uTable = $this->makeTable("manager_users");
         $aTable = $this->makeTable("user_attributes");
-        $query = "SELECT `u`.`id`, `a`.`email`, `u`.`username`  FROM " . $aTable . " as `a` LEFT JOIN " . $uTable . " as `u` ON `u`.`id`=`a`.`internalKey`";
+        $query = "SELECT `u`.`id`, `a`.`email`, `u`.`username`  FROM ".$aTable." as `a` LEFT JOIN ".$uTable." as `u` ON `u`.`id`=`a`.`internalKey`";
         $query = $this->query($query);
         $this->managerUsers = new DLCollection($modx, empty($query) ? array() : $query);
     }
@@ -276,8 +276,8 @@ class modResource extends MODxAPI
     {
         $out = null;
         if ($this->getID() > 0) {
-            include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
-            include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
+            include_once MODX_MANAGER_PATH."includes/tmplvars.format.inc.php";
+            include_once MODX_MANAGER_PATH."includes/tmplvars.commands.inc.php";
             $tvval = $this->get($tvname);
             $param = APIHelpers::getkey($this->tvd, $tvname, array());
             $display = APIHelpers::getkey($param, 'display', '');
@@ -390,7 +390,7 @@ class modResource extends MODxAPI
         $value = (int)$value;
         if (!empty($value)) {
             $by = $this->findUserBy($value);
-            $exists = $this->managerUsers->exists(function ($key, Helpers\Collection $val) use ($by, $value) {
+            $exists = $this->managerUsers->exists(function($key, Helpers\Collection $val) use ($by, $value) {
                 return ($val->containsKey($by) && $val->get($by) === (string)$value);
             });
             if (!$exists) {
@@ -472,9 +472,9 @@ class modResource extends MODxAPI
             $this->close();
             $this->newDoc = false;
 
-            $result = $this->query("SELECT * from {$this->makeTable('site_content')} where `id`=" . (int)$id);
+            $result = $this->query("SELECT * from {$this->makeTable('site_content')} where `id`=".(int)$id);
             $this->fromArray($this->modx->db->getRow($result));
-            $result = $this->query("SELECT * from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid`=" . (int)$id);
+            $result = $this->query("SELECT * from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid`=".(int)$id);
             while ($row = $this->modx->db->getRow($result)) {
                 $this->field[$this->tvid[$row['tmplvarid']]] = $row['value'];
             }
@@ -499,7 +499,7 @@ class modResource extends MODxAPI
     {
         $parent = null;
         if ($this->field['pagetitle'] == '') {
-            $this->log['emptyPagetitle'] = 'Pagetitle is empty in <pre>' . print_r($this->field, true) . '</pre>';
+            $this->log['emptyPagetitle'] = 'Pagetitle is empty in <pre>'.print_r($this->field, true).'</pre>';
 
             return false;
         }
@@ -559,10 +559,10 @@ class modResource extends MODxAPI
 
         if (!empty($this->set)) {
             if ($this->newDoc) {
-                $SQL = "INSERT into {$this->makeTable('site_content')} SET " . implode(', ', $this->set);
+                $SQL = "INSERT into {$this->makeTable('site_content')} SET ".implode(', ', $this->set);
             } else {
-                $SQL = "UPDATE {$this->makeTable('site_content')} SET " . implode(', ',
-                        $this->set) . " WHERE `id` = " . $this->id;
+                $SQL = "UPDATE {$this->makeTable('site_content')} SET ".implode(', ',
+                        $this->set)." WHERE `id` = ".$this->id;
             }
             $this->query($SQL);
 
@@ -622,8 +622,8 @@ class modResource extends MODxAPI
             $id = $this->sanitarIn($_ids);
             $this->query("UPDATE {$this->makeTable('site_content')} SET `deleted`='1' WHERE `id` IN ({$id})");
         } else {
-            throw new Exception('Invalid IDs list for mark trash: <pre>' . print_r($ids,
-                    1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
+            throw new Exception('Invalid IDs list for mark trash: <pre>'.print_r($ids,
+                    1).'</pre> please, check ignore list: <pre>'.print_r($ignore, 1).'</pre>');
         }
 
         return $this;
@@ -705,8 +705,8 @@ class modResource extends MODxAPI
                 ), $fire_events);
             }
         } else {
-            throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids,
-                    1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
+            throw new Exception('Invalid IDs list for delete: <pre>'.print_r($ids,
+                    1).'</pre> please, check ignore list: <pre>'.print_r($ignore, 1).'</pre>');
         }
 
         return $this;
@@ -752,7 +752,7 @@ class modResource extends MODxAPI
                 $suffix = substr($alias, -2);
                 if (preg_match('/-(\d+)/', $suffix, $tmp) && isset($tmp[1]) && (int)$tmp[1] > 1) {
                     $suffix = (int)$tmp[1] + 1;
-                    $alias = substr($alias, 0, -2) . '-' . $suffix;
+                    $alias = substr($alias, 0, -2).'-'.$suffix;
                 } else {
                     $alias .= '-2';
                 }
@@ -779,7 +779,7 @@ class modResource extends MODxAPI
     protected function get_TV($reload = false)
     {
         if (empty($this->modx->_TVnames) || $reload) {
-            $result = $this->query('SELECT `id`,`name` FROM ' . $this->makeTable('site_tmplvars'));
+            $result = $this->query('SELECT `id`,`name` FROM '.$this->makeTable('site_tmplvars'));
             while ($row = $this->modx->db->GetRow($result)) {
                 $this->modx->_TVnames[$row['name']] = $row['id'];
             }
@@ -798,7 +798,7 @@ class modResource extends MODxAPI
      */
     protected function loadTVTemplate()
     {
-        $q = $this->query("SELECT `tmplvarid`, `templateid` FROM " . $this->makeTable('site_tmplvar_templates'));
+        $q = $this->query("SELECT `tmplvarid`, `templateid` FROM ".$this->makeTable('site_tmplvar_templates'));
         $q = $this->modx->db->makeArray($q);
         $this->tvTpl = array();
         foreach ($q as $item) {
@@ -838,14 +838,14 @@ class modResource extends MODxAPI
     {
         if (!is_numeric($tpl) || $tpl != (int)$tpl) {
             if (is_scalar($tpl)) {
-                $sql = "SELECT `id` FROM {$this->makeTable('site_templates')} WHERE `templatename` = '" . $this->escape($tpl) . "'";
+                $sql = "SELECT `id` FROM {$this->makeTable('site_templates')} WHERE `templatename` = '".$this->escape($tpl)."'";
                 $rs = $this->query($sql);
                 if (!$rs || $this->modx->db->getRecordCount($rs) <= 0) {
                     throw new Exception("Template {$tpl} is not exists");
                 }
                 $tpl = $this->modx->db->getValue($rs);
             } else {
-                throw new Exception("Invalid template name: " . print_r($tpl, 1));
+                throw new Exception("Invalid template name: ".print_r($tpl, 1));
             }
         }
 
