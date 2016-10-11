@@ -891,7 +891,8 @@ class modResource extends MODxAPI
      *
      * Пересчет menuindex по полю таблицы site_content
      */
-    public function updateMenuindex($parent, $criteria = 'id', $dir = 'asc') {
+    public function updateMenuindex($parent, $criteria = 'id', $dir = 'asc')
+    {
         $dir = strtolower($dir) == 'desc' ? 'desc' : 'asc';
         if (is_integer($parent) && $criteria !== '') {
             $modx->query("SET @index := 0");
