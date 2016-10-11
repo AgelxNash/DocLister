@@ -6,7 +6,13 @@ require_once('MODx.php');
  */
 class modResource extends MODxAPI
 {
-    protected $mode = null;
+    /**
+     * @var string
+     */
+    protected $mode = 'new';
+    /**
+     * @var array
+     */
     protected $default_field = array(
         'type'            => 'document',
         'contentType'     => 'text/html',
@@ -46,6 +52,9 @@ class modResource extends MODxAPI
         'hidemenu'        => 0,
         'alias_visible'   => 1
     );
+    /**
+     * @var array
+     */
     private $table = array(
         '"' => '_',
         "'" => '_',
@@ -153,7 +162,8 @@ class modResource extends MODxAPI
         $uTable = $this->makeTable("manager_users");
         $aTable = $this->makeTable("user_attributes");
         $query = "SELECT `u`.`id`, `a`.`email`, `u`.`username`  FROM " . $aTable . " as `a` LEFT JOIN " . $uTable . " as `u` ON `u`.`id`=`a`.`internalKey`";
-        $this->managerUsers = new DLCollection($modx, $this->query($query));
+        $query = $this->query($query);
+        $this->managerUsers = new DLCollection($modx, empty($query) ? array() : $query);
     }
 
     /**
@@ -260,7 +270,7 @@ class modResource extends MODxAPI
 
     /**
      * @param $tvname
-     * @return null
+     * @return null|string
      */
     public function renderTV($tvname)
     {
@@ -380,7 +390,7 @@ class modResource extends MODxAPI
         $value = (int)$value;
         if (!empty($value)) {
             $by = $this->findUserBy($value);
-            $exists = $this->managerUsers->exists(function ($key, $val) use ($by, $value) {
+            $exists = $this->managerUsers->exists(function ($key, Helpers\Collection $val) use ($by, $value) {
                 return ($val->containsKey($by) && $val->get($by) === (string)$value);
             });
             if (!$exists) {
@@ -481,11 +491,11 @@ class modResource extends MODxAPI
     }
 
     /**
-     * @param null $fire_events
+     * @param bool $fire_events
      * @param bool $clearCache
      * @return bool|null|void
      */
-    public function save($fire_events = null, $clearCache = false)
+    public function save($fire_events = false, $clearCache = false)
     {
         $parent = null;
         if ($this->field['pagetitle'] == '') {
@@ -494,9 +504,11 @@ class modResource extends MODxAPI
             return false;
         }
 
+        $uid = $this->modx->getLoginUserID('mgr');
+
         if (
             ($this->field['parent'] == 0 && !$this->modxConfig('udperms_allowroot')) ||
-            !(isset($_SESSION['mgrValidated']) && isset($_SESSION['mgrRole']) && $_SESSION['mgrRole'] == 1)
+            !($uid && isset($_SESSION['mgrRole']) && $_SESSION['mgrRole'] == 1)
         ) {
             $this->log['rootForbidden'] = 'Only Administrators can create documents in the root folder because udperms_allowroot setting is off';
 
@@ -629,10 +641,10 @@ class modResource extends MODxAPI
     }
 
     /**
-     * @param null $fire_events
+     * @param bool $fire_events
      * @return $this
      */
-    public function clearTrash($fire_events = null)
+    public function clearTrash($fire_events = false)
     {
         $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} WHERE `deleted`='1'");
         $q = $this->modx->makeArray($q);
@@ -659,10 +671,10 @@ class modResource extends MODxAPI
 
     /**
      * @param $ids
-     * @param int $depth
+     * @param int|bool $depth
      * @return array
      */
-    public function childrens($ids, $depth = 0)
+    public function childrens($ids, $depth)
     {
         $_ids = $this->cleanIDs($ids, ',');
         if (is_array($_ids) && $_ids != array()) {
@@ -681,12 +693,12 @@ class modResource extends MODxAPI
     }
 
     /**
-     * @param $ids
-     * @param null $fire_events
+     * @param string|array $ids
+     * @param bool $fire_events
      * @return $this
      * @throws Exception
      */
-    public function delete($ids, $fire_events = null)
+    public function delete($ids, $fire_events = false)
     {
         $ids = $this->childrens($ids, true);
         $_ids = $this->cleanIDs($ids, ',', $this->systemID());
