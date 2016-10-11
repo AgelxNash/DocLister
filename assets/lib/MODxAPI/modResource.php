@@ -897,6 +897,7 @@ class modResource extends MODxAPI
             $modx->query("SET @index := 0");
             $modx->query("UPDATE {$this->makeTable('site_content')} SET `menuindex` = (@index := @index + 1) WHERE `parent`={$parent} ORDER BY {$criteria} {$dir}");
         }
+        
         return $this;
     }
 }
