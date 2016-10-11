@@ -882,7 +882,6 @@ class modResource extends MODxAPI
         return $this->checkAlias($alias);
     }
 
-
     /**
      * @param int $parent
      * @param string $criteria
@@ -895,8 +894,8 @@ class modResource extends MODxAPI
     {
         $dir = strtolower($dir) == 'desc' ? 'desc' : 'asc';
         if (is_integer($parent) && $criteria !== '') {
-            $modx->query("SET @index := 0");
-            $modx->query("UPDATE {$this->makeTable('site_content')} SET `menuindex` = (@index := @index + 1) WHERE `parent`={$parent} ORDER BY {$criteria} {$dir}");
+            $this->query("SET @index := 0");
+            $this->query("UPDATE {$this->makeTable('site_content')} SET `menuindex` = (@index := @index + 1) WHERE `parent`={$parent} ORDER BY {$criteria} {$dir}");
         }
         
         return $this;
