@@ -132,9 +132,8 @@ class paginate_DL_Extender extends extDocLister
         $p = new DLpaginate;
         $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE: <a href="[+link+]">[%paginate.next%] ></a>');
         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE: <a href="[+link+]">< [%paginate.prev%]</a>');
-        $p->firstT = $this->DocLister->getChunkByParam('TplFirstP',
-            '@CODE: <a href="[+link+]"><< [%paginate.first%]</a>');
-        $p->lastT = $this->DocLister->getChunkByParam('TplLastP', '@CODE: <a href="[+link+]">[%paginate.last%] >></a>');
+        $p->firstT = $this->DocLister->getChunkByParam('TplFirstP');
+        $p->lastT = $this->DocLister->getChunkByParam('TplLastP');
         $p->numberT = $this->DocLister->getChunkByParam('TplPage',
             '@CODE: <a href="[+link+]" class="page">[+num+]</a>');
         $p->currentT = $this->DocLister->getChunkByParam('TplCurrentPage', '@CODE: <b class="current">[+num+]</b>');
@@ -146,8 +145,8 @@ class paginate_DL_Extender extends extDocLister
         if ($this->DocLister->getCFGDef("PrevNextAlwaysShow", 0) == '1') {
             $p->nextI = $this->DocLister->getChunkByParam('TplNextI', '@CODE: [%paginate.next%] >');
             $p->prevI = $this->DocLister->getChunkByParam('TplPrevI', '@CODE: < [%paginate.prev%]');
-            $p->firstI = $this->DocLister->getChunkByParam('TplFirstI', '@CODE: << [%paginate.first%]');
-            $p->lastI = $this->DocLister->getChunkByParam('TplLastI', '@CODE: >> [%paginate.last%]');
+            $p->firstI = $this->DocLister->getChunkByParam('TplFirstI');
+            $p->lastI = $this->DocLister->getChunkByParam('TplLastI');
         }
         $p->changeClass($this->DocLister->getCFGDef('PaginateClass', $p->className));
         $p->mainTpl = $this->DocLister->getChunkByParam('TplWrapPaginate',
