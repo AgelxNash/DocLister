@@ -504,6 +504,17 @@ class modResource extends MODxAPI
             return false;
         }
 
+        $uid = $this->modx->getLoginUserID('mgr');
+
+        if (
+            ($this->field['parent'] == 0 && !$this->modxConfig('udperms_allowroot')) ||
+            !($uid && isset($_SESSION['mgrRole']) && $_SESSION['mgrRole'] == 1)
+        ) {
+            $this->log['rootForbidden'] = 'Only Administrators can create documents in the root folder because udperms_allowroot setting is off';
+
+            return false;
+        }
+
         $this->set('alias', $this->getAlias());
 
         $this->invokeEvent('OnBeforeDocFormSave', array(
@@ -620,7 +631,9 @@ class modResource extends MODxAPI
         $_ids = $this->cleanIDs($ids, ',', $ignore);
         if (is_array($_ids) && $_ids != array()) {
             $id = $this->sanitarIn($_ids);
-            $this->query("UPDATE {$this->makeTable('site_content')} SET `deleted`='1' WHERE `id` IN ({$id})");
+            $uid = (int)$this->modx->getLoginUserId();
+            $deletedon = time();
+            $this->query("UPDATE {$this->makeTable('site_content')} SET `deleted`=1, `deletedby`={$uid}, `deletedon`={$deletedon} WHERE `id` IN ({$id})");
         } else {
             throw new Exception('Invalid IDs list for mark trash: <pre>' . print_r($ids,
                     1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
@@ -636,11 +649,7 @@ class modResource extends MODxAPI
     public function clearTrash($fire_events = false)
     {
         $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} WHERE `deleted`='1'");
-        $q = $this->modx->makeArray($q);
-        $_ids = array();
-        foreach ($q as $item) {
-            $_ids[] = $item['id'];
-        }
+        $_ids = $this->modx->db->getColumn('id', $q);
         if (is_array($_ids) && $_ids != array()) {
             $this->invokeEvent('OnBeforeEmptyTrash', array(
                 "ids" => $_ids
@@ -663,7 +672,7 @@ class modResource extends MODxAPI
      * @param int|bool $depth
      * @return array
      */
-    public function childrens($ids, $depth)
+    public function children($ids, $depth)
     {
         $_ids = $this->cleanIDs($ids, ',');
         if (is_array($_ids) && $_ids != array()) {
@@ -672,7 +681,7 @@ class modResource extends MODxAPI
                 $q = $this->query("SELECT `id` FROM {$this->makeTable('site_content')} where `parent` IN ({$id})");
                 $id = $this->modx->db->getColumn('id', $q);
                 if ($depth > 0 || $depth === true) {
-                    $id = $this->childrens($id, is_bool($depth) ? $depth : ($depth - 1));
+                    $id = $this->children($id, is_bool($depth) ? $depth : ($depth - 1));
                 }
                 $_ids = array_merge($_ids, $id);
             }
@@ -689,25 +698,15 @@ class modResource extends MODxAPI
      */
     public function delete($ids, $fire_events = false)
     {
-        $ids = $this->childrens($ids, true);
+        $ids = $this->children($ids, true);
         $_ids = $this->cleanIDs($ids, ',', $this->systemID());
-        if (is_array($_ids) && $_ids != array()) {
-            $this->invokeEvent('OnBeforeEmptyTrash', array(
-                "ids" => $_ids
-            ), $fire_events);
-
-            $id = $this->sanitarIn($_ids);
-            if (!empty($id)) {
-                $this->query("DELETE from {$this->makeTable('site_content')} where `id` IN ({$id})");
-                $this->query("DELETE from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid` IN ({$id})");
-                $this->invokeEvent('OnEmptyTrash', array(
-                    "ids" => $_ids
-                ), $fire_events);
-            }
-        } else {
-            throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids,
-                    1) . '</pre> please, check ignore list: <pre>' . print_r($ignore, 1) . '</pre>');
-        }
+        $this->invokeEvent('OnBeforeDocFormDelete', array(
+            'ids' => $_ids
+        ), $fire_events);
+        $this->toTrash($_ids);
+        $this->invokeEvent('OnDocFormDelete', array(
+            'ids' => $_ids
+        ), $fire_events);
 
         return $this;
     }
@@ -869,5 +868,24 @@ class modResource extends MODxAPI
         $alias = $this->modx->stripAlias($alias);
 
         return $this->checkAlias($alias);
+    }
+
+    /**
+     * @param int $parent
+     * @param string $criteria
+     * @param string $dir
+     * @return $this
+     *
+     * Пересчет menuindex по полю таблицы site_content
+     */
+    public function updateMenuindex($parent, $criteria = 'id', $dir = 'asc')
+    {
+        $dir = strtolower($dir) == 'desc' ? 'desc' : 'asc';
+        if (is_integer($parent) && $criteria !== '') {
+            $this->query("SET @index := 0");
+            $this->query("UPDATE {$this->makeTable('site_content')} SET `menuindex` = (@index := @index + 1) WHERE `parent`={$parent} ORDER BY {$criteria} {$dir}");
+        }
+
+        return $this;
     }
 }
