@@ -441,9 +441,7 @@ class modUsers extends MODxAPI
                     $_SESSION['webUserGroupNames'] = $this->getUserGroups();
                     $_SESSION['webDocgroups'] = $this->getDocumentGroups();
                     if ($remember) {
-                        $cookieValue = md5($this->get('username')) . '|' . $this->get('password');
-                        $cookieExpires = time() + (is_bool($remember) ? (60 * 60 * 24 * 365 * 5) : (int)$remember);
-                        setcookie($cookieName, $cookieValue, $cookieExpires, '/');
+                        $this->setAutoLoginCookie($cookieName);
                     }
                 }
                 break;
@@ -472,6 +470,32 @@ class modUsers extends MODxAPI
                     session_destroy();
                 }
                 break;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSecure()
+    {
+        $out = $this->modxConfig('server_protocol') == 'http' ? false : true;
+
+        return $out;
+    }
+
+    /**
+     * @param $cookieName
+     * @return $this
+     */
+    protected function setAutoLoginCookie($cookieName)
+    {
+        if (!empty($cookieName)) {
+            $secure = $this->isSecure();
+            $cookieValue = md5($this->get('username')) . '|' . $this->get('password');
+            $cookieExpires = time() + (is_bool($remember) ? (60 * 60 * 24 * 365 * 5) : (int)$remember);
+            setcookie($cookieName, $cookieValue, $cookieExpires, '/', $secure, true);
         }
 
         return $this;
