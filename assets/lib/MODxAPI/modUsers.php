@@ -441,7 +441,7 @@ class modUsers extends MODxAPI
                     $_SESSION['webUserGroupNames'] = $this->getUserGroups();
                     $_SESSION['webDocgroups'] = $this->getDocumentGroups();
                     if ($remember) {
-                        $this->setAutoLoginCookie($cookieName);
+                        $this->setAutoLoginCookie($cookieName, $remember);
                     }
                 }
                 break;
@@ -487,9 +487,10 @@ class modUsers extends MODxAPI
 
     /**
      * @param $cookieName
+     * @param bool $remember
      * @return $this
      */
-    protected function setAutoLoginCookie($cookieName)
+    protected function setAutoLoginCookie($cookieName, $remember = true)
     {
         if (!empty($cookieName)) {
             $secure = $this->isSecure();
