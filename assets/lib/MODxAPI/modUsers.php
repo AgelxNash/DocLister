@@ -125,6 +125,10 @@ class modUsers extends MODxAPI
                     $this->givenPassword = $value;
                     $value = $this->getPassword($value);
                     break;
+                case 'sessionid':
+                    session_regenerate_id(false);
+                    $value = session_id();
+                    break;
             }
             $this->field[$key] = $value;
         }
@@ -167,7 +171,7 @@ class modUsers extends MODxAPI
 
             return false;
         }
-        $this->set('sessionid', session_id());
+        $this->set('sessionid', '');
         $fld = $this->toArray();
         foreach ($this->default_field['user'] as $key => $value) {
             $tmp = $this->get($key);
