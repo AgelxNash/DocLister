@@ -77,6 +77,12 @@ class DLTemplate
      */
     public function setTemplatePath($path)
     {
+        $path = trim($path);
+        $path = preg_replace(array(
+            '/\.*[\/|\\\]/i',
+            '/[\/|\\\]+/i'
+        ), array('/', '/'), $path);
+
         if (!empty($path)) {
             $this->templatePath = $path;
         }
