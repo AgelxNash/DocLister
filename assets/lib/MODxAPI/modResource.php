@@ -507,7 +507,8 @@ class modResource extends MODxAPI
         $uid = $this->modx->getLoginUserID('mgr');
 
         if (
-            ($this->field['parent'] == 0 && !$this->modxConfig('udperms_allowroot')) ||
+            $this->field['parent'] == 0 &&
+            !$this->modxConfig('udperms_allowroot') &&
             !($uid && isset($_SESSION['mgrRole']) && $_SESSION['mgrRole'] == 1)
         ) {
             $this->log['rootForbidden'] = 'Only Administrators can create documents in the root folder because udperms_allowroot setting is off';
@@ -632,7 +633,7 @@ class modResource extends MODxAPI
         if (is_array($_ids) && $_ids != array()) {
             $id = $this->sanitarIn($_ids);
             $uid = (int)$this->modx->getLoginUserId();
-            $deletedon = time();
+            $deletedon = time() + $this->modxConfig('server_offset_time');
             $this->query("UPDATE {$this->makeTable('site_content')} SET `deleted`=1, `deletedby`={$uid}, `deletedon`={$deletedon} WHERE `id` IN ({$id})");
         } else {
             throw new Exception('Invalid IDs list for mark trash: <pre>' . print_r($ids,
