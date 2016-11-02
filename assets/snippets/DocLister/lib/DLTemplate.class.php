@@ -19,6 +19,10 @@ class DLTemplate
      */
     protected static $instance;
 
+    protected $templatePath = 'assets/templates/';
+
+    protected $templateExtension = 'html';
+
     public $phx = null;
 
     /**
@@ -66,6 +70,37 @@ class DLTemplate
     }
 
     /**
+     * Задает относительный путь к папке с шаблонами
+     *
+     * @param $path
+     * @return $this
+     */
+    public function setTemplatePath($path)
+    {
+        if (!empty($path)) {
+            $this->templatePath = $path;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Задает расширение файла с шаблоном
+     *
+     * @param $ext
+     * @return $this
+     */
+    public function setTemplateExtension($ext)
+    {
+        $ext = trim($ext, ". \t\n\r\0\x0B");
+        if (!empty($ext)) {
+            $this->templateExtension = $ext;
+        }
+
+        return $this;
+    }
+
+    /**
      * Сохранение данных в массив плейсхолдеров
      *
      * @param mixed $data данные
@@ -102,13 +137,15 @@ class DLTemplate
             switch ($mode) {
                 case '@FILE':
                     if ($subTmp != '') {
-                        $real = realpath(MODX_BASE_PATH . 'assets/templates');
-                        $path = realpath(MODX_BASE_PATH . 'assets/templates/' . preg_replace(array(
+                        $real = realpath(MODX_BASE_PATH . $this->templatePath);
+                        $path = realpath(MODX_BASE_PATH . $this->templatePath . preg_replace(array(
                                 '/\.*[\/|\\\]/i',
                                 '/[\/|\\\]+/i'
-                            ), array('/', '/'), $subTmp) . '.html');
+                            ), array('/', '/'), $subTmp) . '.' . $this->templateExtension);
                         $fname = explode(".", $path);
-                        if ($real == substr($path, 0, strlen($real)) && end($fname) == 'html' && file_exists($path)) {
+                        if ($real == substr($path, 0,
+                                strlen($real)) && end($fname) == $this->templateExtension && file_exists($path)
+                        ) {
                             $tpl = file_get_contents($path);
                         }
                     }
@@ -317,7 +354,7 @@ class DLTemplate
     public function createPHx($debug = 0, $maxpass = 50)
     {
         if (!class_exists('DLphx', false)) {
-            include_once(dirname(__FILE__) . '/DLphx.class.php');
+            include_once(__DIR__ . '/DLphx.class.php');
         }
 
         return new DLphx($debug, $maxpass);
