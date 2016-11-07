@@ -23,6 +23,15 @@ class DLTemplate
 
     protected $templateExtension = 'html';
 
+    /**
+     * @var null twig object
+     */
+    protected $twig = null;
+
+    protected $twigEnabled = false;
+
+    protected $twigTemplateVars = array();
+
     public $phx = null;
 
     /**
@@ -107,6 +116,17 @@ class DLTemplate
     }
 
     /**
+     * Additional data for twig templates
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function setTwigTemplateVars($data = array()) {
+        if (is_array($data)) $this->twigTemplateVars = $data;
+        return $this;
+    }
+
+    /**
      * Сохранение данных в массив плейсхолдеров
      *
      * @param mixed $data данные
@@ -136,10 +156,15 @@ class DLTemplate
     public function getChunk($name)
     {
         $tpl = '';
+        $this->twigEnabled = false;
+
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
             $mode = (preg_match('/^((@[A-Z]+)[:]{0,1})(.*)/Asu', trim($name),
                     $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
+            $this->twigEnabled = substr($mode,0,3) == '@T_';
+            if ($this->twigEnabled) $mode = '@_'.substr($mode,3);
+
             switch ($mode) {
                 case '@FILE':
                     if ($subTmp != '') {
@@ -295,20 +320,27 @@ class DLTemplate
      */
     public function parseChunk($name, $data, $parseDocumentSource = false)
     {
-        $out = null;
-        if (is_array($data) && ($out = $this->getChunk($name)) != '') {
-            if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
-                $item = $this->renameKeyArr($data, '[', ']', '+');
-                $out = str_replace(array_keys($item), array_values($item), $out);
-            }
-            if (preg_match("/:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?/is", $out)) {
-                if (is_null($this->phx) || !($this->phx instanceof DLphx)) {
-                    $this->phx = $this->createPHx(0, 1000);
+        $out = '';
+        if ($twig = $this->getTwig()) {
+            $plh = $this->twigTemplateVars;
+            $plh['data'] = $data;
+            $plh['modx'] = $this->modx;
+            $out = $twig->render(md5($name),$plh);
+        } else {
+            if (is_array($data) && ($out = $this->getChunk($name)) != '') {
+                if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
+                    $item = $this->renameKeyArr($data, '[', ']', '+');
+                    $out = str_replace(array_keys($item), array_values($item), $out);
                 }
-                $this->phx->placeholders = array();
-                $this->setPHxPlaceholders($data);
-                $out = $this->phx->Parse($out);
-                $out = $this->cleanPHx($out);
+                if (preg_match("/:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?/is", $out)) {
+                    if (is_null($this->phx) || !($this->phx instanceof DLphx)) {
+                        $this->phx = $this->createPHx(0, 1000);
+                    }
+                    $this->phx->placeholders = array();
+                    $this->setPHxPlaceholders($data);
+                    $out = $this->phx->Parse($out);
+                    $out = $this->cleanPHx($out);
+                }
             }
         }
         if ($parseDocumentSource) {
@@ -335,6 +367,24 @@ class DLTemplate
         } else {
             $this->phx->setPHxVariable($keypath, $value);
         }
+    }
+
+    /**
+     * Return clone of twig
+     *
+     * @return null
+     */
+    protected function getTwig() {
+        if (is_null($this->twig) && isset($this->modx->twig)) {
+            $twig = clone($this->modx->twig);
+            $twig->setLoader(new \Twig_Loader_Array(), array(
+                'cache' => MODX_BASE_PATH . 'assets/cache/template/'
+            ));
+        } else {
+            $twig = $this->twig;
+        }
+
+        return $twig;
     }
 
     /**

@@ -1001,7 +1001,11 @@ abstract class DocLister
             "parseChunk",
             2, array('html', null)
         );
-        $out = DLTemplate::getInstance($this->getMODX())->parseChunk($name, $data, $parseDocumentSource);
+        $DLTemplate = DLTemplate::getInstance($this->getMODX());
+        if ($path = $this->getCFGDef('templatePath')) $DLTemplate->setTemplatePath($path);
+        if ($ext = $this->getCFGDef('templateExtension')) $DLTemplate->setTemplateExtension($ext);
+        $DLTemplate->setTwigTemplateVars(array('DocLister'=>$this));
+        $out = $DLTemplate->parseChunk($name, $data, $parseDocumentSource);
         if (empty($out)) {
             $this->debug->debug("Empty chunk: " . $this->debug->dumpData($name), '', 2);
         }
@@ -1175,7 +1179,7 @@ abstract class DocLister
         $this->outData = json_encode($return);
         $this->isErrorJSON($return);
 
-        return $this->outData;
+        return jsonHelper::json_format($this->outData);
     }
 
     /**
