@@ -163,7 +163,7 @@ class DLTemplate
                     $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
             $this->twigEnabled = substr($mode,0,3) == '@T_';
-            if ($this->twigEnabled) $mode = '@_'.substr($mode,3);
+            if ($this->twigEnabled) $mode = '@'.substr($mode,3);
 
             switch ($mode) {
                 case '@FILE':
