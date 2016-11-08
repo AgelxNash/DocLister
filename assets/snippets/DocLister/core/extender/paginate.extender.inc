@@ -36,7 +36,7 @@ class paginate_DL_Extender extends extDocLister
     protected function run()
     {
         if (($paginate = $this->DocLister->getCFGDef('paginate', '')) == '') {
-            $this->DocLister->setConfig(array('start' => 0));
+            $this->DocLister->config->setConfig(array('start' => 0));
         }
         $pages = 0;
         $display = $this->DocLister->getCFGDef('display', 0);
@@ -45,7 +45,7 @@ class paginate_DL_Extender extends extDocLister
                 $requestName = $this->getRequestName('start');
                 $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? intval($_GET[$requestName]) : 0;
                 $this->_pages['current'] = ceil($start / $display) + 1;
-                $this->DocLister->setConfig(array('start' => $start));
+                $this->DocLister->config->setConfig(array('start' => $start));
                 break;
             case 'pages':
             default:
@@ -53,7 +53,7 @@ class paginate_DL_Extender extends extDocLister
                 $requestName = $this->getRequestName('page');
                 $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? (intval($_GET[$requestName]) - 1) : 0;
                 $this->_pages['current'] = $start + 1;
-                $this->DocLister->setConfig(array('start' => $start * $display));
+                $this->DocLister->config->setConfig(array('start' => $start * $display));
                 break;
         }
 

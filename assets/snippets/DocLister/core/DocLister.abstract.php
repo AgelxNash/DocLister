@@ -10,6 +10,7 @@ if (!defined('MODX_BASE_PATH')) {
  */
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 include_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
+include_once(MODX_BASE_PATH . 'assets/lib/Helpers/Config.php');
 require_once(dirname(dirname(__FILE__)) . "/lib/jsonHelper.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/sqlHelper.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/DLTemplate.class.php");
@@ -79,13 +80,6 @@ abstract class DocLister
      * @access protected
      */
     protected $_customLang = array();
-
-    /**
-     * Массив настроек переданный через параметры сниппету
-     * @var array
-     * @access private
-     */
-    private $_cfg = array();
 
     /**
      * Список таблиц уже с префиксами MODX
@@ -177,6 +171,9 @@ abstract class DocLister
     /** @var null|paginate_DL_Extender */
     protected $extPaginate = null;
 
+    /** @var null|Helpers\Config  */
+    public $config = null;
+
     /**
      * Конструктор контроллеров DocLister
      *
@@ -208,11 +205,13 @@ abstract class DocLister
         }
 
         $this->FS = \Helpers\FS::getInstance();
+        $this->config = new \Helpers\Config($cfg);
+
         if (isset($cfg['config'])) {
-            $cfg = array_merge($this->loadConfig($cfg['config']), $cfg);
+            $this->config->loadConfig($cfg['config']);
         }
 
-        if ($this->setConfig($cfg) === false) {
+        if ($this->config->setConfig($cfg) === false) {
             throw new Exception('no parameters to run DocLister');
         }
 
@@ -237,7 +236,7 @@ abstract class DocLister
                     }
                     break;
             }
-            $this->setConfig($cfg);
+            $this->config->setConfig($cfg);
 
             $this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
             $this->idField = $this->getCFGDef('idField', 'id');
@@ -422,47 +421,6 @@ abstract class DocLister
     }
 
     /**
-     * Загрузка конфигов из файла
-     *
-     * @param $name string имя конфига
-     * @return array массив с настройками
-     */
-    public function loadConfig($name)
-    {
-        $this->debug->debug('Load json config: ' . $this->debug->dumpData($name), 'loadconfig', 2);
-        if (!is_scalar($name)) {
-            $name = '';
-        }
-        $config = array();
-        $name = explode(";", $name);
-        foreach ($name as $cfgName) {
-            $cfgName = explode(":", $cfgName, 2);
-            if (empty($cfgName[1])) {
-                $cfgName[1] = 'custom';
-            }
-            $cfgName[1] = rtrim($cfgName[1], '/');
-            switch ($cfgName[1]) {
-                case 'custom':
-                case 'core':
-                    $configFile = dirname(dirname(__FILE__)) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
-                    break;
-                default:
-                    $configFile = $this->FS->relativePath($cfgName[1] . '/' . $cfgName[0] . ".json");
-                    break;
-            }
-
-            if ($this->FS->checkFile($configFile)) {
-                $json = file_get_contents($configFile);
-                $config = array_merge($config, $this->jsonDecode($json, array('assoc' => true), true));
-            }
-        }
-
-        $this->debug->debugEnd("loadconfig");
-
-        return $config;
-    }
-
-    /**
      * Разбор JSON строки при помощи json_decode
      *
      * @param $json string строка c JSON
@@ -540,7 +498,7 @@ abstract class DocLister
             $this->_loadExtender('prepare');
         }
 
-        $this->setConfig(array('extender' => implode(",", $extenders)));
+        $this->config->setConfig(array('extender' => implode(",", $extenders)));
         $this->debug->debugEnd("checkDL");
 
         return $flag;
@@ -702,47 +660,6 @@ abstract class DocLister
     }
 
     /**
-     * Получение всего списка настроек
-     * @return array
-     */
-    public function getConfig()
-    {
-        return $this->_cfg;
-    }
-
-    /**
-     * Сохранение настроек вызова сниппета
-     * @param array $cfg массив настроек
-     * @return int|bool результат сохранения настроек
-     */
-    public function setConfig($cfg)
-    {
-        if (is_array($cfg)) {
-            $this->_cfg = array_merge($this->_cfg, $cfg);
-            $ret = count($this->_cfg);
-        } else {
-            $ret = false;
-        }
-
-        return $ret;
-    }
-
-    /**
-     * Полная перезапись настроек вызова сниппета
-     * @param array $cfg массив настроек
-     * @return int Общее число новых настроек
-     */
-    public function replaceConfig($cfg)
-    {
-        if (!is_array($cfg)) {
-            $cfg = array();
-        }
-        $this->_cfg = $cfg;
-
-        return count($this->_cfg);
-    }
-
-    /**
      * Получение информации из конфига
      *
      * @param string $name имя параметра в конфиге
@@ -751,7 +668,7 @@ abstract class DocLister
      */
     public function getCFGDef($name, $def = null)
     {
-        return \APIHelpers::getkey($this->_cfg, $name, $def);
+        return $this->config->getCFGDef($name, $def);
     }
 
     /**
@@ -1451,7 +1368,7 @@ abstract class DocLister
             case 'doclist':
                 $idList = $this->sanitarIn($this->IDs, ',', false);
                 $out = array('orderBy' => "FIND_IN_SET({$this->getCFGDef('sortBy', $this->getPK())}, '{$idList}')");
-                $this->setConfig($out); //reload config;
+                $this->config->setConfig($out); //reload config;
                 $sort = "ORDER BY " . $out['orderBy'];
                 break;
             default:
@@ -1474,7 +1391,7 @@ abstract class DocLister
                     $out['sortBy'] = (($tmp = $this->getCFGDef('sortBy', '')) != '') ? $tmp : $sortName;
                     $out['orderBy'] = $out['sortBy'] . " " . $out['order'];
                 }
-                $this->setConfig($out); //reload config;
+                $this->config->setConfig($out); //reload config;
                 $sort = "ORDER BY " . $out['orderBy'];
                 break;
         }
