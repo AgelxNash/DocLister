@@ -195,7 +195,6 @@ abstract class DocLister
         if ($modx instanceof DocumentParser) {
             $this->modx = $modx;
             $this->setDebug(1);
-            $this->loadLang(array('core', 'json'));
 
             if (!is_array($cfg) || empty($cfg)) {
                 $cfg = $this->modx->Event->params;
@@ -215,6 +214,7 @@ abstract class DocLister
             throw new Exception('no parameters to run DocLister');
         }
 
+        $this->loadLang(array('core', 'json'));
         $this->setDebug($this->getCFGDef('debug', 0));
 
         if ($this->checkDL()) {
