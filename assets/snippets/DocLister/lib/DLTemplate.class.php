@@ -156,15 +156,12 @@ class DLTemplate
     public function getChunk($name)
     {
         $tpl = '';
-        $this->twigEnabled = false;
-
+        $this->twigEnabled = substr($name,0,3) == '@T_';
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
-            $mode = (preg_match('/^((@[A-Z]+)[:]{0,1})(.*)/Asu', trim($name),
+            $mode = (preg_match('/^((@[A-Z_]+)[:]{0,1})(.*)/Asu', trim($name),
                     $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
-            $this->twigEnabled = substr($mode,0,3) == '@T_';
             if ($this->twigEnabled) $mode = '@'.substr($mode,3);
-
             switch ($mode) {
                 case '@FILE':
                     if ($subTmp != '') {
@@ -320,14 +317,14 @@ class DLTemplate
      */
     public function parseChunk($name, $data, $parseDocumentSource = false)
     {
-        $out = '';
-        if ($twig = $this->getTwig()) {
+        $out = $this->getChunk($name);
+        if ($this->twigEnabled && ($out != '') && ($twig = $this->getTwig($name, $out))) {
             $plh = $this->twigTemplateVars;
             $plh['data'] = $data;
             $plh['modx'] = $this->modx;
             $out = $twig->render(md5($name),$plh);
         } else {
-            if (is_array($data) && ($out = $this->getChunk($name)) != '') {
+            if (is_array($data) && ($out != '')) {
                 if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
                     $item = $this->renameKeyArr($data, '[', ']', '+');
                     $out = str_replace(array_keys($item), array_values($item), $out);
@@ -374,16 +371,19 @@ class DLTemplate
      *
      * @return null
      */
-    protected function getTwig() {
+    protected function getTwig($name, $tpl) {
         if (is_null($this->twig) && isset($this->modx->twig)) {
             $twig = clone($this->modx->twig);
-            $twig->setLoader(new \Twig_Loader_Array(), array(
-                'cache' => MODX_BASE_PATH . 'assets/cache/template/'
-            ));
         } else {
             $twig = $this->twig;
         }
-
+        if (!is_null($twig)) {
+            $twig->setLoader(new \Twig_Loader_Array(array(md5($name) => $tpl)), array(
+                'cache' => MODX_BASE_PATH . 'assets/cache/template/',
+                'debug' => true
+            ));
+            $this->twig = $twig;
+        }
         return $twig;
     }
 
