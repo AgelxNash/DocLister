@@ -379,11 +379,12 @@ class DLTemplate
         }
         if (!is_null($twig)) {
             $twig->setLoader(new \Twig_Loader_Array(array(md5($name) => $tpl)), array(
-                'cache' => MODX_BASE_PATH . 'assets/cache/template/',
-                'debug' => true
+                'cache' => $this->modx->twig->getCache(),
+                'debug' => $this->modx->twig->isDebug()
             ));
             $this->twig = $twig;
         }
+
         return $twig;
     }
 
