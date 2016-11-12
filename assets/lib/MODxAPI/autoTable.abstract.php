@@ -54,6 +54,7 @@ abstract class autoTable extends MODxAPI
         $id = is_scalar($id) ? trim($id) : '';
         if ($this->getID() != $id) {
             $this->close();
+            $this->markAllEncode();
             $this->newDoc = false;
             $result = $this->query("SELECT * from {$this->makeTable($this->table)} where `" . $this->pkName . "`='" . $this->escape($id) . "'");
             $this->fromArray($this->modx->db->getRow($result));

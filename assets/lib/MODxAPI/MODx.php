@@ -769,7 +769,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         $this->field = array();
         $this->set = array();
         $this->store = array();
-        $this->markAllEncode();
+        $this->markAllDecode();
     }
 
     /**
