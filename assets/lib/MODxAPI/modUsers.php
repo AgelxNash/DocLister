@@ -34,6 +34,7 @@ class modUsers extends MODxAPI
             'country'          => null,
             'state'            => null,
             'city'             => null,
+            'street'           => null,
             'zip'              => null,
             'fax'              => null,
             'photo'            => null,
@@ -215,7 +216,7 @@ class modUsers extends MODxAPI
             }
             $this->query($SQL);
         }
-
+        unset($fld['id']);
         foreach ($fld as $key => $value) {
             if ($value == '' || !$this->isChanged($key)) {
                 continue;
