@@ -484,6 +484,7 @@ class modResource extends MODxAPI
                 $this->id = $this->field['id'];
                 $this->set('editedby', null)->touch();
             }
+            $this->store($this->toArray(null, null, null, false));
             unset($this->field['id']);
         }
 
@@ -588,7 +589,7 @@ class modResource extends MODxAPI
         }
 
         foreach ($fld as $key => $value) {
-            if (empty($this->tv[$key])) {
+            if (empty($this->tv[$key]) || !$this->isChanged($key)) {
                 continue;
             }
             if ($value === '') {

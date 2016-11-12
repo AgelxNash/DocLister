@@ -104,6 +104,7 @@ class modUsers extends MODxAPI
                 $this->field = $this->modx->db->getRow($result);
 
                 $this->id = empty($this->field['internalKey']) ? null : $this->get('internalKey');
+                $this->store($this->toArray());
                 unset($this->field['id']);
                 unset($this->field['internalKey']);
             }
@@ -216,7 +217,7 @@ class modUsers extends MODxAPI
         }
 
         foreach ($fld as $key => $value) {
-            if ($value == '') {
+            if ($value == '' || !$this->isChanged($key)) {
                 continue;
             }
             $result = $this->query("SELECT `setting_value` FROM {$this->makeTable('web_user_settings')} WHERE `webuser` = '{$this->id}' AND `setting_name` = '{$key}'");
