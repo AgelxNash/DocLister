@@ -76,7 +76,6 @@ abstract class autoTable extends MODxAPI
      */
     public function save($fire_events = null, $clearCache = false)
     {
-        $result = false;
         $fld = $this->encodeFields()->toArray();
         foreach ($this->default_field as $key => $value) {
             if ($this->newDoc && $this->get($key) === null && $this->get($key) !== $value) {
@@ -95,24 +94,16 @@ abstract class autoTable extends MODxAPI
                 $SQL = ($this->getID() === null) ? null : "UPDATE {$this->ignoreError} {$this->makeTable($this->table)} SET " . implode(', ',
                         $this->set) . " WHERE `" . $this->pkName . "` = " . $this->getID();
             }
-            $result = $this->query($SQL);
-        }
-        if ($result && $this->modx->db->getAffectedRows() >= 0) {
-            if ($this->newDoc && !empty($SQL)) {
+            $this->query($SQL);
+            if ($this->newDoc) {
                 $this->id = $this->modx->db->getInsertId();
             }
-            if ($clearCache) {
-                $this->clearCache($fire_events);
-            }
-            $result = $this->id;
-        } else {
-            if (!empty($SQL)) {
-                $this->log['SqlError'] = $SQL;
-            }
-            $result = false;
+        }
+        if ($clearCache) {
+            $this->clearCache($fire_events);
         }
 
-        return $result;
+        return $this->id;
     }
 
     /**
