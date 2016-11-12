@@ -923,6 +923,7 @@ abstract class DocLister
         if ($ext = $this->getCFGDef('templateExtension')) $DLTemplate->setTemplateExtension($ext);
         $DLTemplate->setTwigTemplateVars(array('DocLister'=>$this));
         $out = $DLTemplate->parseChunk($name, $data, $parseDocumentSource);
+        $out = $this->parseLang($out);
         if (empty($out)) {
             $this->debug->debug("Empty chunk: " . $this->debug->dumpData($name), '', 2);
         }
