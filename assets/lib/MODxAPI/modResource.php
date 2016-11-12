@@ -890,4 +890,50 @@ class modResource extends MODxAPI
 
         return $this;
     }
+
+    /**
+     * Устанавливает значение шаблона согласно системной настройке
+     *
+     * @return $this
+     */
+    public function setDefaultTemplate()
+    {
+        $parent = $this->get('parent');
+        $template = $this->modxConfig('default_template');
+        switch ($this->modxConfig('auto_template_logic')) {
+            case 'sibling':
+                if (!$parent) {
+                    $site_start = $this->modxConfig('site_start');
+                    $where = "sc.isfolder=0 AND sc.id!={$site_start}";
+                    $sibl = $this->modx->getDocumentChildren($parent, 1, 0, 'template', $where, 'menuindex', 'ASC', 1);
+                    if (isset($sibl[0]['template']) && $sibl[0]['template'] !== '') {
+                        $template = $sibl[0]['template'];
+                    }
+                } else {
+                    $sibl = $this->modx->getDocumentChildren($parent, 1, 0, 'template', 'isfolder=0', 'menuindex',
+                        'ASC', 1);
+                    if (isset($sibl[0]['template']) && $sibl[0]['template'] !== '') {
+                        $template = $sibl[0]['template'];
+                    } else {
+                        $sibl = $this->modx->getDocumentChildren($parent, 0, 0, 'template', 'isfolder=0', 'menuindex',
+                            'ASC', 1);
+                        if (isset($sibl[0]['template']) && $sibl[0]['template'] !== '') {
+                            $template = $sibl[0]['template'];
+                        }
+                    }
+                }
+                break;
+            case 'parent':
+                if ($parent) {
+                    $_parent = $this->modx->getPageInfo($parent, 0, 'template');
+                    if (isset($_parent['template'])) {
+                        $template = $_parent['template'];
+                    }
+                }
+                break;
+        }
+        $this->set('template', $template);
+
+        return $this;
+    }
 }
