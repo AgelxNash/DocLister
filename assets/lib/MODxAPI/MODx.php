@@ -517,7 +517,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @return bool
      */
     public function isChanged($key) {
-        $flag = isset($this->store[$key]) && $this->store[$key] != $this->field[$key];
+        $flag = !isset($this->store[$key]) || (isset($this->store[$key]) && $this->store[$key] != $this->field[$key]);
 
         return $flag;
     }
@@ -768,6 +768,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         $this->id = null;
         $this->field = array();
         $this->set = array();
+        $this->store = array();
         $this->markAllDecode();
     }
 

@@ -53,13 +53,11 @@ abstract class autoTable extends MODxAPI
     {
         $id = is_scalar($id) ? trim($id) : '';
         if ($this->getID() != $id) {
+            $this->close();
             $this->newDoc = false;
-            $this->id = null;
-            $this->markAllEncode();
-            $this->field = array();
-            $this->set = array();
             $result = $this->query("SELECT * from {$this->makeTable($this->table)} where `" . $this->pkName . "`='" . $this->escape($id) . "'");
             $this->fromArray($this->modx->db->getRow($result));
+            $this->store($this->toArray());
             $this->id = $this->eraseField($this->pkName);
             if (is_bool($this->id) && $this->id === false) {
                 $this->id = null;
