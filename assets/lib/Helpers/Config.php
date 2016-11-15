@@ -11,6 +11,7 @@ class Config
 {
     private $_cfg = array();
     protected $fs = null;
+    protected $path = '';
 
     public function __construct($cfg = array())
     {
@@ -18,6 +19,16 @@ class Config
             $this->setConfig($cfg);
         }
         $this->fs = \Helpers\FS::getInstance();
+    }
+
+    /**
+     * @param $path
+     * @return $this
+     */
+    public function setPath($path) {
+        $this->path = $path;
+
+        return $this;
     }
 
     /**
@@ -43,7 +54,7 @@ class Config
             switch ($cfgName[1]) {
                 case 'custom':
                 case 'core':
-                    $configFile = dirname(__DIR__) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
+                    $configFile = $this->fs->relativePath($this->path) . "/config/{$cfgName[1]}/{$cfgName[0]}.json";
                     break;
                 default:
                     $configFile = $this->fs->relativePath($cfgName[1] . '/' . $cfgName[0] . ".json");
@@ -51,10 +62,11 @@ class Config
             }
 
             if ($this->fs->checkFile($configFile)) {
-                $json = file_get_contents($configFile);
+                $json = file_get_contents(MODX_BASE_PATH . $configFile);
                 $config = array_merge($config, \jsonHelper::jsonDecode($json, array('assoc' => true), true));
             }
         }
+
         $this->setConfig($config);
 
         return $config;

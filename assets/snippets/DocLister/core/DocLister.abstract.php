@@ -207,7 +207,7 @@ abstract class DocLister
         $this->config = new \Helpers\Config($cfg);
 
         if (isset($cfg['config'])) {
-            $this->config->loadConfig($cfg['config']);
+            $this->config->setPath(dirname(__DIR__))->loadConfig($cfg['config']);
         }
 
         if ($this->config->setConfig($cfg) === false) {
