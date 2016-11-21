@@ -373,18 +373,12 @@ class DLTemplate
      */
     protected function getTwig($name, $tpl) {
         if (is_null($this->twig) && isset($this->modx->twig)) {
-            $twig = clone($this->modx->twig);
+            $twig = clone $this->modx->twig;
+            $this->twig = $twig;
         } else {
             $twig = $this->twig;
         }
-        if (!is_null($twig)) {
-            $twig->setLoader(new \Twig_Loader_Array(array(md5($name) => $tpl)), array(
-                'cache' => $this->modx->twig->getCache(),
-                'debug' => $this->modx->twig->isDebug()
-            ));
-            $this->twig = $twig;
-        }
-
+        if ($twig) $twig->getLoader()->addLoader(new Twig_Loader_Array(array(md5($name)=>$tpl)));
         return $twig;
     }
 
