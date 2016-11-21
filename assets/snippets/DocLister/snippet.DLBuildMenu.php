@@ -64,7 +64,7 @@ $currentWhere = \APIhelpers::getkey($p, 'addWhereList' . $currentDepth, $current
 $p['orderBy'] = $currentOrderBy = \APIhelpers::getkey($p, 'orderBy', 'menuindex ASC, id ASC');
 /** orderByN   Условия сортировки документов N уровня */
 $currentOrderBy = \APIhelpers::getkey($p, 'orderBy' . $currentDepth, $currentOrderBy);
-
+$p['tvList'] = \APIhelpers::getkey($p, 'tvList' . $currentDepth, 'tvList');
 /**
  * Получение prepare сниппетов из параметров BeforePrepare и AfterPrepare
  * для совмещения с обязательным вызовом DLFixedPrepare::buildMenu метода
