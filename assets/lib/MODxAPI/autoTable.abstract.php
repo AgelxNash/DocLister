@@ -103,6 +103,7 @@ abstract class autoTable extends MODxAPI
         if ($clearCache) {
             $this->clearCache($fire_events);
         }
+        $this->decodeFields();
 
         return $this->id;
     }
