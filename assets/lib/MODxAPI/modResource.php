@@ -552,7 +552,7 @@ class modResource extends MODxAPI
                 $this->field[$key] = $value;
             }
             switch (true) {
-                case $key == 'parent':
+                case $key == 'parent' || (!$this->newDoc && $this->isChanged($key)):
                     $parent = (int)$this->get($key);
                     $q = $this->query("SELECT count(`id`) FROM {$this->makeTable('site_content')} WHERE `id`='{$parent}'");
                     if ($this->modx->db->getValue($q) != 1) {
@@ -588,22 +588,47 @@ class modResource extends MODxAPI
             }
         }
 
+        $_deleteTVs = $_updateTVs = $_insertTVs = array();
         foreach ($fld as $key => $value) {
             if (empty($this->tv[$key]) || !$this->isChanged($key)) {
                 continue;
-            }
-            if ($value === '') {
-                $this->query("DELETE FROM {$this->makeTable('site_tmplvar_contentvalues')} WHERE `contentid` = '{$this->id}' AND `tmplvarid` = '{$this->tv[$key]}'");
+            } elseif ($value === '') {
+                $_deleteTVs[] = $this->tv[$key];
             } else {
-                $value = $this->escape($value);
-                $result = $this->query("SELECT `value` FROM {$this->makeTable('site_tmplvar_contentvalues')} WHERE `contentid` = '{$this->id}' AND `tmplvarid` = '{$this->tv[$key]}'");
-                if ($this->modx->db->getRecordCount($result) > 0) {
-                    $this->query("UPDATE {$this->makeTable('site_tmplvar_contentvalues')} SET `value` = '{$value}' WHERE `contentid` = '{$this->id}' AND `tmplvarid` = '{$this->tv[$key]}';");
-                } else {
-                    $this->query("INSERT into {$this->makeTable('site_tmplvar_contentvalues')} SET `contentid` = {$this->id},`tmplvarid` = {$this->tv[$key]},`value` = '{$value}';");
-                }
+                $_insertTVs[$this->tv[$key]] = $this->escape($value);
             }
         }
+
+        if (!$this->newDoc && !empty($_insertTVs)) {
+            $ids = implode(',',array_keys($_insertTVs));
+            $result = $this->query("SELECT `tmplvarid` FROM {$this->makeTable('site_tmplvar_contentvalues')} WHERE `contentid`={$this->id} AND `tmplvarid` IN ({$ids})");
+            $existedTVs = $this->modx->db->getColumn('tmplvarid',$result);
+            foreach ($existedTVs as $id) {
+                $_updateTVs[] = $_insertTVs[$id];
+                unset($_insertTVs[$id]);
+            }
+        }
+
+        if (!empty($_updateTVs)) {
+            foreach($_updateTVs as $id => $value) {
+                $this->query("UPDATE {$this->makeTable('site_tmplvar_contentvalues')} SET `value` = '{$value}' WHERE `contentid` = {$this->id} AND `tmplvarid` = {$id}");
+            }
+        }
+
+        if (!empty($_insertTVs)) {
+            $values = array();
+            foreach ($_insertTVs as $id => $value) {
+                $values[] = "({$this->id}, {$id}, '{$value}')";
+            }
+            $values = implode(',',$values);
+            $this->query("INSERT into {$this->makeTable('site_tmplvar_contentvalues')} (`contentid`,`tmplvarid`,`value`) VALUES {$values}");
+        }
+
+        if (!empty($_deleteTVs)) {
+            $ids = implode(',',$_deleteTVs);
+            $this->query("DELETE FROM {$this->makeTable('site_tmplvar_contentvalues')} WHERE `contentid` = '{$this->id}' AND `tmplvarid` IN ({$ids})");
+        }
+
         if (!isset($this->mode)) {
             $this->mode = $this->newDoc ? "new" : "upd";
             $this->newDoc = false;
