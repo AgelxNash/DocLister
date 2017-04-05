@@ -232,9 +232,8 @@ class site_contentDocLister extends DocLister
             if (array('1') == $fields || in_array(array('menutitle', 'pagetitle'), $fields)) {
                 $row['title'] = ($row['menutitle'] == '' ? $row['pagetitle'] : $row['menutitle']);
             }
-            if ((bool)$this->getCFGDef('makeUrl', 1) && (array('1') == $fields || in_array('type', $fields))
-            ) {
-                if ($row['type'] == 'reference' && (array('1') == $fields || in_array('content', $fields)) {
+            if ((bool)$this->getCFGDef('makeUrl', 1) && (array('1') == $fields || in_array('type', $fields))) {
+                if ($row['type'] == 'reference' && (array('1') == $fields || in_array('content', $fields))) {
                     $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl($row['content'], '', '',
                         $this->getCFGDef('urlScheme', '')) : $row['content'];
                 } else {
