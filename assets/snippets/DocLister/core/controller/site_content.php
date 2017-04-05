@@ -234,7 +234,7 @@ class site_contentDocLister extends DocLister
             }
             if ((bool)$this->getCFGDef('makeUrl', 1) && (array('1') == $fields || in_array('type', $fields))
             ) {
-                if ($row['type'] == 'reference' && in_array('content', $fields)) {
+                if ($row['type'] == 'reference' && (array('1') == $fields || in_array('content', $fields)) {
                     $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl($row['content'], '', '',
                         $this->getCFGDef('urlScheme', '')) : $row['content'];
                 } else {
