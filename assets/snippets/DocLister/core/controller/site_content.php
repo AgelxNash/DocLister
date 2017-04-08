@@ -268,6 +268,8 @@ class site_contentDocLister extends DocLister
         $out = 0;
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+            $q_true = $this->getCFGDef('ignoreEmpty', '0');
+            $q_true = $q_true ? $q_true : $this->getCFGDef('idType', 'parents') == 'parents';
             $where = $this->getCFGDef('addWhereList', '');
             $where = sqlHelper::trimLogicalOp($where);
             $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
@@ -280,6 +282,9 @@ class site_contentDocLister extends DocLister
             $whereArr = array();
             if (!$this->getCFGDef('showNoPublish', 0)) {
                 $whereArr[] = "c.deleted=0 AND c.published=1";
+            }
+            else{
+                $q_true = 1;
             }
 
             $tbl_site_content = $this->getTable('site_content', 'c');
@@ -315,6 +320,8 @@ class site_contentDocLister extends DocLister
             $from = $tbl_site_content . " " . $this->_filters['join'];
             $where = sqlHelper::trimLogicalOp($where);
 
+            $q_true = $q_true ? $q_true : trim($where) != 'WHERE';
+
             if (trim($where) != 'WHERE') {
                 $where .= " AND ";
             }
@@ -329,7 +336,9 @@ class site_contentDocLister extends DocLister
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
             list($from) = $this->injectSortByTV($from, $sort);
 
-            if ( $this->getCFGDef('idType', 'parents') == 'parents' || $this->getCFGDef('ignoreEmpty') || $this->getCFGDef('filters') || $this->getCFGDef('addWhereList') || $group != 'GROUP BY c.id' ){
+            $q_true = $q_true ? $q_true : $group != 'GROUP BY c.id';
+
+            if ( $q_true ){
                 $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
                 $out = $this->modx->db->getValue($rs);
             }
