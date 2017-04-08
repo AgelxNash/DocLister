@@ -328,9 +328,14 @@ class site_contentDocLister extends DocLister
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
             list($from) = $this->injectSortByTV($from, $sort);
-
-            $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
-            $out = $this->modx->db->getValue($rs);
+            
+            if ( $this->getCFGDef('idType', 'parents') == 'parents' || $this->getCFGDef('filters') ){
+                $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
+                $out = $this->modx->db->getValue($rs);
+            }
+            else{
+                $out = count($this->IDs);
+            }
         }
 
         return $out;
