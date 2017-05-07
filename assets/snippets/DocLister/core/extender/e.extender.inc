@@ -26,6 +26,7 @@ class e_DL_Extender extends extDocLister
             if (is_array($eFields)) {
                 foreach ($eFields as $field) {
                     $val = APIHelpers::getkey($out, $field, '');
+                    if ($this->DocLister->getCFGDef('sanitarTags',0)) $val = APIHelpers::sanitarTag($val);
                     $out['e.' . $field] = APIHelpers::e($val);
                 }
             }
