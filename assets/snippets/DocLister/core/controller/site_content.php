@@ -148,10 +148,14 @@ class site_contentDocLister extends DocLister
                         }
                     }
 
-                    $item['date'] = (isset($item[$date]) && $date != 'createdon' && $item[$date] != 0 && $item[$date] == (int)$item[$date]) ? $item[$date] : $item['createdon'];
-                    $item['date'] = $item['date'] + $this->modx->config['server_offset_time'];
-                    if ($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
-                        $item['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $item['date']);
+                    if (isset($item[$date])) {
+                        $_date = $item[$date] != 0 && $item[$date] == (int)$item[$date] ? $item[$date] : strtotime($item[$date]);
+                        if ($_date !== false) {
+                            $_date = $_date + $this->modx->config['server_offset_time'];
+                            if ($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
+                                $item['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $_date);
+                            }
+                        }
                     }
 
                     $findTpl = $this->renderTPL;
@@ -225,9 +229,15 @@ class site_contentDocLister extends DocLister
                 $row['summary'] = $this->getSummary($this->_docs[$num], $extSummary, 'introtext', 'content');
             }
             if (array('1') == $fields || in_array('date', $fields)) {
-                $tmp = (isset($this->_docs[$num][$date]) && $date != 'createdon' && $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date]) ? $this->_docs[$num][$date] : $this->_docs[$num]['createdon'];
-                $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'),
-                    $tmp + $this->modx->config['server_offset_time']);
+                if (isset(isset($this->_docs[$num][$date])) {
+                    $_date = isset($this->_docs[$num][$date] != 0 && isset($this->_docs[$num][$date] == (int)isset($this->_docs[$num][$date] ? isset($this->_docs[$num][$date] : strtotime(isset($this->_docs[$num][$date]);
+                    if ($_date !== false) {
+                        $_date = $_date + $this->modx->config['server_offset_time'];
+                        if ($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
+                            $row['date'] = strftime($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M'), $_date);
+                        }
+                    }
+                }
             }
             if (array('1') == $fields || in_array(array('menutitle', 'pagetitle'), $fields)) {
                 $row['title'] = ($row['menutitle'] == '' ? $row['pagetitle'] : $row['menutitle']);
