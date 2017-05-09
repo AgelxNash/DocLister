@@ -149,7 +149,7 @@ class site_contentDocLister extends DocLister
                     }
 
                     if (isset($item[$date])) {
-                        $_date = $item[$date] != 0 && $item[$date] == (int)$item[$date] ? $item[$date] : strtotime($item[$date]);
+                        $_date = is_numeric($item[$date]) && $item[$date] == (int)$item[$date] ? $item[$date] : strtotime($item[$date]);
                         if ($_date !== false) {
                             $_date = $_date + $this->modx->config['server_offset_time'];
                             if ($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
@@ -230,7 +230,7 @@ class site_contentDocLister extends DocLister
             }
             if (array('1') == $fields || in_array('date', $fields)) {
                 if (isset($this->_docs[$num][$date])) {
-                    $_date = $this->_docs[$num][$date] != 0 && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date] ? $this->_docs[$num][$date] : strtotime($this->_docs[$num][$date]);
+                    $_date = is_numeric($this->_docs[$num][$date]) && $this->_docs[$num][$date] == (int)$this->_docs[$num][$date] ? $this->_docs[$num][$date] : strtotime($this->_docs[$num][$date]);
                     if ($_date !== false) {
                         $_date = $_date + $this->modx->config['server_offset_time'];
                         if ($this->getCFGDef('dateFormat', '%d.%b.%y %H:%M') != '') {
