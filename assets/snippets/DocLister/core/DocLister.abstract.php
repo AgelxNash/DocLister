@@ -238,9 +238,7 @@ abstract class DocLister
             }
             $this->config->setConfig($cfg);
 
-            if (empty($this->table)) {
-                $this->table = $this->getTable($this->getCFGDef('table', 'site_content'));
-            }
+            $this->table = $this->getTable(empty($this->table) ? $this->getCFGDef('table', 'site_content') : $this->table);
             $this->idField = $this->getCFGDef('idField', 'id');
             $this->parentField = $this->getCFGDef('parentField', 'parent');
 
