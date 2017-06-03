@@ -581,7 +581,7 @@ abstract class DocLister
             $out = $this->_render($tpl);
         }
 
-        $this->outData = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
+        if ($out) $this->outData = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
         $this->debug->debugEnd('render');
 
         return $this->outData;

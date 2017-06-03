@@ -131,8 +131,6 @@ class onetableDocLister extends DocLister
                 }
             }
             $out = $this->renderWrap($out);
-        } else {
-            $out = 'none TPL';
         }
 
         return $this->toPlaceholders($out);
