@@ -23,6 +23,8 @@ ftpsync.settings
 /assets/lib/document.class.inc.php
 /assets/lib/resourse.php
 !/assets/js/easy-ui
+!/assets/js/euigrid
+!/assets/js/euiuploader
 !/assets/js/fileapi
 !/assets/js/handlebars
 !/assets/js/jeditable
