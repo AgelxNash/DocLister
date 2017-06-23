@@ -1,3 +1,15 @@
+##2.3.2 (23.06.2017)
+* [Add] Тема modx для Easy UI - для Evolution 1.2.1.
+* [Refactor] Обновление Easy UI до версии 1.5.2.
+* [Fix] Некорретная загрузка параметров в DLBuildMenu и DLCrumbs.
+* [Refactor] В параметре sanitarTags можно указывать список полей через запятую.
+* [Refactor] Возможность переопределить методы checkAlias и getAlias в modResource.
+* [Refactor] Оптимизация работы с tv-параметрами в modResource.
+* [Add] Редирект в пагинаторе с doc.html?page=1 на doc.html.
+* [Refactor]  При расширении контроллера onetable имя таблицы можно указать в свойстве table.
+* [Add] Поддержка конфигов в DLCrumbs и DLBuildMenu.
+* [Fix] Ошибка при выполнении редиректа в пагинаторе.
+* [Refactor] Убрано сообщение о том, что параметр tpl пуст.
 ##2.3.1 (09.05.2017)
 * [Refactor] В параметре dateSource можно указывать tv-параметр.
 * [Add] Параметр sanitarTags для экранирования тэгов MODX при выводе.
