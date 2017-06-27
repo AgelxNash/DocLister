@@ -13,7 +13,6 @@ ftpsync.settings
 /index-ajax.php
 /.htaccess
 /manager/
-/assets/
 !/assets/images/noimage.jpg
 !/assets/snippets/DLUsers
 !/assets/snippets/DocLister
@@ -22,15 +21,6 @@ ftpsync.settings
 /assets/lib/class.modxRTEbridge.php
 /assets/lib/document.class.inc.php
 /assets/lib/resourse.php
-/assets/js/easy-ui
-/assets/js/euigrid
-/assets/js/euiuploader
-/assets/js/fileapi
-/assets/js/handlebars
-/assets/js/jeditable
-/assets/js/jquery
-/assets/js/sortable
-/assets/js/.htaccess
 /install/
 !/install/assets/snippets/DL*.tpl
 !/install/assets/snippets/DocLister.tpl
