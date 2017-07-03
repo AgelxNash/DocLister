@@ -145,7 +145,7 @@ class modResource extends MODxAPI
     private $tvTpl = array();
 
     /** @var array параметры ТВ с массивами */
-    private $tvaFields = array();
+    protected $tvaFields = array();
 
     /**
      * Массив администраторов
@@ -282,6 +282,9 @@ class modResource extends MODxAPI
             include_once MODX_MANAGER_PATH . "includes/tmplvars.format.inc.php";
             include_once MODX_MANAGER_PATH . "includes/tmplvars.commands.inc.php";
             $tvval = $this->get($tvname);
+            if ($this->isTVarrayField($tvname) && is_array($tvval)) {
+                $tvval = implode('||', $tvval);
+            }
             $param = APIHelpers::getkey($this->tvd, $tvname, array());
             $display = APIHelpers::getkey($param, 'display', '');
             $display_params = APIHelpers::getkey($param, 'display_params', '');
@@ -318,7 +321,7 @@ class modResource extends MODxAPI
      */
     public function set($key, $value)
     {
-        if ((is_scalar($value) || $this->isTVarrayField($key)) && is_scalar($key) && !empty($key)) {
+        if ((is_scalar($value) || $this->isTVarrayField($key) || $this->isJsonField($key)) && is_scalar($key) && !empty($key)) {
             switch ($key) {
                 case 'parent':
                     $value = (int)$value;
@@ -457,20 +460,12 @@ class modResource extends MODxAPI
     {
         $this->close();
         $fld = array();
-<<<<<<< HEAD
         foreach ($this->tvd as $name => $tv) {
-=======
-        foreach($this->tvd as $name => $tv) {
->>>>>>> 13c8c126d7a88226c977c0f16e39c73d54855b45
             $fld[$name] = $tv['value'];
         };
         $this->store($fld);
 
-<<<<<<< HEAD
         $this->fromArray(array_merge($fld, $data));
-=======
-        $this->fromArray(array_merge($fld,$data));
->>>>>>> 13c8c126d7a88226c977c0f16e39c73d54855b45
         $this->set('createdby', null)
             ->set('editedby', null)
             ->set('createdon', time())
@@ -835,13 +830,15 @@ class modResource extends MODxAPI
             }
         }
         $arrayTypes = array('checkbox', 'listbox-multiple');
+        $arrayTVs = array();
         foreach ($this->modx->_TVnames as $name => $data) {
             $this->tvid[$data['id']] = $name;
             $this->tv[$name] = $data['id'];
             if (in_array($data['type'], $arrayTypes)) {
-                $this->tvaFields[] = $name;
+                $arrayTVs[] = $name;
             }
         }
+        if (empty($this->tvaFields)) $this->tvaFields = $arrayTVs;
         $this->loadTVTemplate()->loadTVDefault(array_values($this->tv));
 
         return $this;
@@ -1001,7 +998,11 @@ class modResource extends MODxAPI
         $out = array();
         if ($this->isDecodableField($field)) {
             $data = $this->get($field);
-            $out = explode('||', $data);
+            if ($this->isTVarrayField($field)) {
+                $out = explode('||', $data);
+            } else {
+                $out = jsonHelper::jsonDecode($data, array('assoc' => true), true);
+            }
         }
         if ($store) {
             $this->field[$field] = $out;
@@ -1022,7 +1023,11 @@ class modResource extends MODxAPI
         $out = null;
         if ($this->isEncodableField($field)) {
             $data = $this->get($field);
-            $out = is_array($data) ? implode('||', $data) : $data;
+            if ($this->isTVarrayField($field)) {
+                $out = is_array($data) ? implode('||', $data) : $data;
+            } else {
+                $out = json_encode($data);
+            }
         }
         if ($store) {
             $this->field[$field] = $out;
@@ -1048,7 +1053,7 @@ class modResource extends MODxAPI
      */
     public function markAllEncode()
     {
-        $this->_decodedFields->clear();
+        parent::markAllEncode();
         foreach ($this->tvaFields as $field) {
             $this->markAsEncode($field);
         }
@@ -1062,7 +1067,7 @@ class modResource extends MODxAPI
      */
     public function markAllDecode()
     {
-        $this->_decodedFields->clear();
+        parent::markAllDecode();
         foreach ($this->tvaFields as $field) {
             $this->markAsDecode($field);
         }
