@@ -51,6 +51,13 @@ class paginate_DL_Extender extends extDocLister
             default:
                 $paginate = 'pages';
                 $requestName = $this->getRequestName('page');
+		if (
+                    isset($_GET[$requestName])
+                    && intval($_GET[$requestName]) <= 1
+                    && !$this->DocLister->getCFGDef('noRedirect',0)
+                ) {
+                    $this->modx->sendRedirect($this->getUrl());
+                }
                 $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? (intval($_GET[$requestName]) - 1) : 0;
                 $this->_pages['current'] = $start + 1;
                 $this->DocLister->config->setConfig(array('start' => $start * $display));
@@ -97,7 +104,7 @@ class paginate_DL_Extender extends extDocLister
                 $to = ($this->currentPage() == $this->totalPage()) ? $from - 1 + $tmp - ($this->currentPage() - 1) * $display : $from - 1 + $display;
                 $this->DocLister->toPlaceholders($to, 1, "to");
             } else {
-                $this->modx->sendRedirect($this->getUrl('page'));
+                $this->modx->sendRedirect($this->getUrl());
             }
         }
 
@@ -184,12 +191,12 @@ class paginate_DL_Extender extends extDocLister
             switch ($this->DocLister->getCFGDef('paginate', '')) {
                 case 'offset':
                     $requestName = 'start';
-					$url = $this->buildUrl($url, $requestName, $params);
+                    $url = $this->buildUrl($url, $requestName, $params);
                     break;
                 case 'pages':
                 default:
                     $requestName = 'page';
-					$call = $this->DocLister->getCFGDef('makePaginateUrl', '');
+	            $call = $this->DocLister->getCFGDef('makePaginateUrl', '');
                     if((is_object($call) && ($call instanceof Closure)) || is_callable($call)){
                         $url = call_user_func($call, compact('url', 'params'), $this->modx, $this->DocLister, $this);
                     }else{

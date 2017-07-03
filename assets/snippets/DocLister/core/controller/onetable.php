@@ -19,7 +19,7 @@ class onetableDocLister extends DocLister
     /**
      * @var string
      */
-    protected $table = 'site_content';
+    protected $table = '';
 
     /**
      * @var string

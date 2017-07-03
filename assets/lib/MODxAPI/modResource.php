@@ -457,12 +457,20 @@ class modResource extends MODxAPI
     {
         $this->close();
         $fld = array();
+<<<<<<< HEAD
         foreach ($this->tvd as $name => $tv) {
+=======
+        foreach($this->tvd as $name => $tv) {
+>>>>>>> 13c8c126d7a88226c977c0f16e39c73d54855b45
             $fld[$name] = $tv['value'];
         };
         $this->store($fld);
 
+<<<<<<< HEAD
         $this->fromArray(array_merge($fld, $data));
+=======
+        $this->fromArray(array_merge($fld,$data));
+>>>>>>> 13c8c126d7a88226c977c0f16e39c73d54855b45
         $this->set('createdby', null)
             ->set('editedby', null)
             ->set('createdon', time())
