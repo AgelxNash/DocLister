@@ -43,6 +43,8 @@ class site_content_menuDocLister extends site_contentDocLister
         //TODO кэширование
         if ($this->getCFGDef('hideSubMenus', 0) && empty($this->getCFGDef('openIds'))) {
             $maxDepth = $this->setActiveBranch($this->getHereId());
+        } else {
+            $this->setActiveBranch($this->getHereId());
         }
         if ($oIds = $this->getCFGDef('openIds')) {
             $maxDepth = 1;
@@ -280,6 +282,9 @@ class site_content_menuDocLister extends site_contentDocLister
         }
         if ($id == $this->getHereId()) {
             $data['here'] = 1;
+        }
+        if (in_array($id,$this->activeBranch)) {
+            $data['active'] = 1;
         }
         if ($this->getCFGDef('hideSubMenus') && isset($data['isfolder']) && $data['isfolder']) {
             $data['state'] = in_array($data['id'], $this->activeBranch) ? 'open' : 'closed';
