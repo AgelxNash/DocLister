@@ -237,8 +237,8 @@ class site_contentDocLister extends DocLister
                     }
                 }
             }
-            if (array('1') == $fields || in_array(array('menutitle', 'pagetitle'), $fields)) {
-                $row['title'] = ($row['menutitle'] == '' ? $row['pagetitle'] : $row['menutitle']);
+            if (array('1') == $fields || in_array('pagetitle', $fields)) {
+                $row['title'] = ($row['menutitle'] == '') ? $row['pagetitle'] : $row['menutitle'];
             }
             if ((bool)$this->getCFGDef('makeUrl', 1) && (array('1') == $fields || in_array(array('content', 'type'),
                         $fields))
