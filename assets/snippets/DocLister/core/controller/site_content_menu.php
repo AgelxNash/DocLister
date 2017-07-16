@@ -247,12 +247,18 @@ class site_content_menuDocLister extends site_contentDocLister
         }
         unset($data);
         $out = '';
+        $joinMenus = $this->getCFGDef('joinMenus',0) && !$this->getCFGDef('showParents',0);
         foreach ($docs[0] as $id => $data) {
             if (isset($data['wrap'])) {
-                $data['wrap'] = $this->parseRow($data['wrap']);
-                $out .= $this->parseOuter($data);
+                if ($joinMenus) {
+                    $out .= $this->parseRow($data['wrap']);
+                } else {
+                    $data['wrap'] = $this->parseRow($data['wrap']);
+                    $out .= $this->parseOuter($data);
+                }
             }
         }
+        if ($joinMenus) $out = $this->parseOuter(array('wrap'=>$out));
 
         return $out;
     }
@@ -278,6 +284,7 @@ class site_content_menuDocLister extends site_contentDocLister
         if ($this->getCFGDef('hideSubMenus') && isset($data['isfolder']) && $data['isfolder']) {
             $data['state'] = in_array($data['id'], $this->activeBranch) ? 'open' : 'closed';
         }
+
         $titleField = $this->getCFGDef('titleField', 'title');
         $data[$titleField] = isset($data['menutitle']) && !empty($data['menutitle']) ? $data['menutitle'] : $data['pagetitle'];
         $data['level'] = $this->currentLevel;
@@ -315,7 +322,7 @@ class site_content_menuDocLister extends site_contentDocLister
         $tpl = isset($data['_renderOuterTpl']) ? $data['_renderOuterTpl'] : $tpl;
         $out = $this->parseChunk($tpl,
             array_merge($data,
-                array('classes' => $classes, 'classNames' => $classNames, 'level' => $data['level'])));
+                array('classes' => $classes, 'classNames' => $classNames)));
 
         return $out;
     }
@@ -459,14 +466,10 @@ class site_content_menuDocLister extends site_contentDocLister
             $tpl = $this->getCFGDef('innerRowTpl', $tpl);
             if ($data['here']) {
                 $tpl = $this->getCFGDef('innerRowHereTpl', $tpl);
-            } elseif ($data['active']) {
-                $tpl = $this->getCFGDef('innerRowActiveTpl', $tpl);
             }
         } else {
             if ($data['here']) {
                 $tpl = $this->getCFGDef('rowHereTpl', $tpl);
-            } elseif ($data['active']) {
-                $tpl = $this->getCFGDef('rowActiveTpl', $tpl);
             }
         }
 
