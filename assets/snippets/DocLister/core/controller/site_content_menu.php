@@ -219,10 +219,6 @@ class site_content_menuDocLister extends site_contentDocLister
                     $docs[$currentLevel - 1][$data[$this->parentField]]['maxLevel'] = 0;
                 }
 
-                if (isset($data['here']) || isset($data['active'])) {
-                    $docs[$currentLevel - 1][$data[$this->parentField]]['active'] = 1;
-                }
-
                 if ($extPrepare) {
                     $data = $extPrepare->init($this, array(
                         'data'      => $data,
@@ -249,7 +245,7 @@ class site_content_menuDocLister extends site_contentDocLister
         }
         unset($data);
         $out = '';
-        $joinMenus = $this->getCFGDef('joinMenus',0) && !$this->getCFGDef('showParents',0);
+        $joinMenus = $this->getCFGDef('joinMenus', 0) && !$this->getCFGDef('showParents', 0);
         foreach ($docs[0] as $id => $data) {
             if (isset($data['wrap'])) {
                 if ($joinMenus) {
@@ -260,7 +256,9 @@ class site_content_menuDocLister extends site_contentDocLister
                 }
             }
         }
-        if ($joinMenus) $out = $this->parseOuter(array('wrap'=>$out));
+        if ($joinMenus) {
+            $out = $this->parseOuter(array('wrap' => $out));
+        }
 
         return $out;
     }
@@ -283,7 +281,7 @@ class site_content_menuDocLister extends site_contentDocLister
         if ($id == $this->getHereId()) {
             $data['here'] = 1;
         }
-        if (in_array($id,$this->activeBranch)) {
+        if (!isset($data['here']) && in_array($id, $this->activeBranch)) {
             $data['active'] = 1;
         }
         if ($this->getCFGDef('hideSubMenus') && isset($data['isfolder']) && $data['isfolder']) {
@@ -528,8 +526,17 @@ class site_content_menuDocLister extends site_contentDocLister
             $currentLevel--;
         }
         unset($data);
-
-        $out = $docs[0][0]['children'];
+        $out = array();
+        $joinMenus = $this->getCFGDef('joinMenus', 0) && !$this->getCFGDef('showParents', 0);
+        foreach ($docs[0] as $id => $data) {
+            if (isset($data['children'])) {
+                if ($joinMenus) {
+                    $out = array_merge($out, $data['children']);
+                } else {
+                    $out[] = $data['children'];
+                }
+            }
+        }
         unset($docs);
 
         return json_encode($out, JSON_UNESCAPED_UNICODE);
