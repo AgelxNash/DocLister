@@ -292,7 +292,7 @@ class site_content_menuDocLister extends site_contentDocLister
         $data[$titleField] = isset($data['menutitle']) && !empty($data['menutitle']) ? $data['menutitle'] : $data['pagetitle'];
         $data['level'] = $this->currentLevel;
         $data['url'] = $this->makeUrl($data);
-        if ($this->getCFGDef('countChildren', 1)) {
+        if ($this->getCFGDef('countChildren', 0)) {
             $data['count'] = isset($this->countChildren[$data['id']]) ? $this->countChildren[$data['id']] : 0;
         }
 
