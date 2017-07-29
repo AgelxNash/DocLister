@@ -1,4 +1,5 @@
 <?php
+include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 if (!isset($params['config'])) $params['config'] = "sitemap:core";
 if (!isset($schema)) $schema = "http://www.sitemaps.org/schemas/sitemap/0.9";
 $prepare = array();
