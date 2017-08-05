@@ -167,11 +167,13 @@ abstract class DocLister
 
     /** @var string Имя таблицы */
     protected $table = '';
+    /** @var string alias таблицы */
+    protected $alias = '';
 
     /** @var null|paginate_DL_Extender */
     protected $extPaginate = null;
 
-    /** @var null|Helpers\Config  */
+    /** @var null|Helpers\Config */
     public $config = null;
 
     /**
@@ -237,8 +239,11 @@ abstract class DocLister
                     break;
             }
             $this->config->setConfig($cfg);
+            $this->alias = empty($this->alias) ? $this->getCFGDef('tableAlias',
+                'c') : $this->alias;
+            $this->table = $this->getTable(empty($this->table) ? $this->getCFGDef('table',
+                'site_content') : $this->table, $this->alias);
 
-            $this->table = $this->getTable(empty($this->table) ? $this->getCFGDef('table', 'site_content') : $this->table);
             $this->idField = $this->getCFGDef('idField', 'id');
             $this->parentField = $this->getCFGDef('parentField', 'parent');
 
@@ -581,7 +586,9 @@ abstract class DocLister
             $out = $this->_render($tpl);
         }
 
-        if ($out) $this->outData = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
+        if ($out) {
+            $this->outData = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
+        }
         $this->debug->debugEnd('render');
 
         return $this->outData;
@@ -919,9 +926,13 @@ abstract class DocLister
             2, array('html', null)
         );
         $DLTemplate = DLTemplate::getInstance($this->getMODX());
-        if ($path = $this->getCFGDef('templatePath')) $DLTemplate->setTemplatePath($path);
-        if ($ext = $this->getCFGDef('templateExtension')) $DLTemplate->setTemplateExtension($ext);
-        $DLTemplate->setTwigTemplateVars(array('DocLister'=>$this));
+        if ($path = $this->getCFGDef('templatePath')) {
+            $DLTemplate->setTemplatePath($path);
+        }
+        if ($ext = $this->getCFGDef('templateExtension')) {
+            $DLTemplate->setTemplateExtension($ext);
+        }
+        $DLTemplate->setTwigTemplateVars(array('DocLister' => $this));
         $out = $DLTemplate->parseChunk($name, $data, $parseDocumentSource);
         $out = $this->parseLang($out);
         if (empty($out)) {
@@ -1091,7 +1102,7 @@ abstract class DocLister
                 $return['rows'][] = APIHelpers::getkey($item, $key, $item);
             }
             $return['total'] = $this->getChildrenCount();
-        }elseif ('simple' == $this->getCFGDef('JSONformat', 'old')) {
+        } elseif ('simple' == $this->getCFGDef('JSONformat', 'old')) {
             $return = array();
             foreach ($out as $key => $item) {
                 $return[] = APIHelpers::getkey($item, $key, $item);
@@ -1511,7 +1522,12 @@ abstract class DocLister
      */
     public function getPK()
     {
-        return isset($this->idField) ? $this->idField : 'id';
+        $idField = isset($this->idField) ? $this->idField : 'id';
+        if (!empty($this->alias)) {
+            $idField = $this->alias . '`.`' . $idField;
+        }
+
+        return $idField;
     }
 
     /**
@@ -1521,7 +1537,12 @@ abstract class DocLister
      */
     public function getParentField()
     {
-        return isset($this->parentField) ? $this->parentField : '';
+        $parentField = isset($this->parentField) ? $this->parentField : '';
+        if (!empty($parentField) && !empty($this->alias)) {
+            $parentField = $this->alias . '.' . $parentField;
+        }
+
+        return $parentField;
     }
 
     /**
