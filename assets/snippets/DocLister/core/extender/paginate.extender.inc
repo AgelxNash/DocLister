@@ -24,6 +24,7 @@ class paginate_DL_Extender extends extDocLister
      */
     protected $lang = true;
     protected $reverse = false;
+    protected $count = 0;
     /**
      * @var array
      */
@@ -64,12 +65,20 @@ class paginate_DL_Extender extends extDocLister
                 if ($this->reverse) {
                     $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) <= $pages) ? ($pages - intval($_GET[$requestName])) : 0;
                     $this->_pages['current'] = $start + 1;
+                    $offset = $pages * $display - $this->count;
+                    if ($this->_pages['current'] > 1) {
+                        $this->DocLister->config->setConfig(array('start' => $start * $display - $offset));
+                    } else {
+                        $display = $display - $offset;
+                        $this->DocLister->config->setConfig(array('display' => $display));
+                    }
                 } else {
                     $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? (intval($_GET[$requestName]) - 1) : 0;
                     $this->_pages['current'] = $start + 1;
+                    $this->DocLister->config->setConfig(array('start' => $start * $display));
                 }
 
-                $this->DocLister->config->setConfig(array('start' => $start * $display));
+
                 break;
         }
 
@@ -83,7 +92,7 @@ class paginate_DL_Extender extends extDocLister
         $this->DocLister->toPlaceholders($pages, 1, "totalPages"); // [+totalPages+] - total page.
 
         $limit = $this->DocLister->getCFGDef('maxDocs', 0);
-        if ($limit > 0) {
+        if ($limit > 0 && !$this->reverse) {
             switch ($paginate) {
                 case 'offset':
                     $offset = $start;
@@ -116,7 +125,7 @@ class paginate_DL_Extender extends extDocLister
             $this->_pages['total'] = 1;
         } else {
             $addTables = $this->DocLister->AddTable;
-            $tmp = $this->DocLister->getChildrenCount();
+            $tmp = $this->count = $this->DocLister->getChildrenCount();
             $this->DocLister->AddTable = $addTables;
 
             $display = $this->DocLister->getCFGDef('display', 0);
