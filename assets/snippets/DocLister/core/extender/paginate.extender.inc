@@ -165,6 +165,15 @@ class paginate_DL_Extender extends extDocLister
     }
 
     /**
+     * Общее число документов
+     * @return int
+     */
+    public function totalDocs()
+    {
+        return $this->count;
+    }
+
+    /**
      * @param string $mode
      * @return string
      */

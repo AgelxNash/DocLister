@@ -1026,10 +1026,20 @@ abstract class DocLister
 
         $this->renderTPL = $this->getCFGDef('tplId' . $i, $this->renderTPL);
         $this->renderTPL = $this->getCFGDef('tpl' . $iterationName, $this->renderTPL);
+        $iteration = $i;
+
+        if ($this->extPaginate) {
+            $offset = $this->getCFGDef('reversePagination', 0) && $this->extPaginate->currentPage() > 1 ? $this->extPaginate->totalPage() * $this->getCFGDef('display',
+                    0) - $this->extPaginate->totalDocs() : 0;
+            if ($this->getCFGDef('maxDocs', 0) && !$this->getCFGDef('reversePagination', 0) && $this->extPaginate->currentPage() == $this->extPaginate->totalPage()) {
+                $iteration += $this->getCFGDef('display', 0);
+            }
+            $iteration += $this->getCFGDef('display',
+                    0) * ($this->extPaginate->currentPage() - 1)  - $offset;
+        }
 
         $data[$this->getCFGDef("sysKey",
-            "dl") . '.full_iteration'] = ($this->extPaginate) ? ($i + $this->getCFGDef('display',
-                0) * ($this->extPaginate->currentPage() - 1)) : $i;
+            "dl") . '.full_iteration'] = $iteration;
 
         if ($i == 1) {
             $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
