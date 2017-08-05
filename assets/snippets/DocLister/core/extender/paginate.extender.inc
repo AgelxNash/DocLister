@@ -48,8 +48,9 @@ class paginate_DL_Extender extends extDocLister
                 $requestName = $this->getRequestName('start');
                 $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? intval($_GET[$requestName]) : 0;
                 $this->_pages['current'] = ceil($start / $display) + 1;
-                if ($this->_pages['current'] == 1) {
-                    $this->DocLister->config->setConfig(array('display' => $display - ($pages * $display - $this->count)));
+                if ($this->reverse && $this->_pages['current'] > 1) {
+                    $offset = $pages * $display - $this->count;
+                    $start -= $offset;
                 }
                 $this->DocLister->config->setConfig(array('start' => $start));
                 break;
@@ -213,10 +214,12 @@ class paginate_DL_Extender extends extDocLister
         switch (true) {
             case ($mode == 'offset' && $this->totalPage() > 1):
                 $display = $this->DocLister->getCFGDef('display', 0);
-                $offset = $this->reverse && $this->currentPage() > 1? $this->totalPage() * $display - $this->count : 0;
+                $offset = $this->reverse ? $this->totalPage() * $display - $this->count : 0;
+                if ($this->currentPage() == 1) {
+                    $this->DocLister->config->setConfig(array('display'=>$display - $offset));
+                }
                 $p->setMode('offset', array(
-                    'display' => $display,
-                    'offset' => $offset
+                    'display' => $display
                 ))->parameterName($this->getRequestName('start'));
                 break;
             case ($mode == 'pages' && $this->totalPage() > 1):
