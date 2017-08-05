@@ -6,6 +6,27 @@
 class DLpaginateReversed extends DLpaginate
 {
     /**
+     * @param $page
+     * @return int|mixed
+     */
+    protected function getPageQuery($page)
+    {
+        switch ($this->mode) {
+            case 'offset':
+                $display = isset($this->modeConfig['display']) ? $this->modeConfig['display'] : 0;
+                $out = $display * ($this->total_pages - $page) - $this->modeConfig['offset'];
+                break;
+            case 'back':
+            case 'pages':
+            default:
+                $out = $page;
+                break;
+        }
+
+        return $out;
+    }
+
+    /**
      * @param $tpl
      * @param $num
      * @return mixed

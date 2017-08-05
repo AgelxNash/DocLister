@@ -48,6 +48,9 @@ class paginate_DL_Extender extends extDocLister
                 $requestName = $this->getRequestName('start');
                 $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? intval($_GET[$requestName]) : 0;
                 $this->_pages['current'] = ceil($start / $display) + 1;
+                if ($this->_pages['current'] == 1) {
+                    $this->DocLister->config->setConfig(array('display' => $display - ($pages * $display - $this->count)));
+                }
                 $this->DocLister->config->setConfig(array('start' => $start));
                 break;
             case 'pages':
@@ -179,7 +182,6 @@ class paginate_DL_Extender extends extDocLister
      */
     private function renderPages($mode = '')
     {
-        $out = '';
         $p = $this->reverse ? new DLpaginateReversed : new DLpaginate;
         $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE:<a href="[+link+]">[%paginate.next%] ></a>');
         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE:<a href="[+link+]">< [%paginate.prev%]</a>');
@@ -210,8 +212,11 @@ class paginate_DL_Extender extends extDocLister
 
         switch (true) {
             case ($mode == 'offset' && $this->totalPage() > 1):
+                $display = $this->DocLister->getCFGDef('display', 0);
+                $offset = $this->reverse && $this->currentPage() > 1? $this->totalPage() * $display - $this->count : 0;
                 $p->setMode('offset', array(
-                    'display' => $this->DocLister->getCFGDef('display', 0)
+                    'display' => $display,
+                    'offset' => $offset
                 ))->parameterName($this->getRequestName('start'));
                 break;
             case ($mode == 'pages' && $this->totalPage() > 1):
@@ -254,6 +259,12 @@ class paginate_DL_Extender extends extDocLister
         return $url;
     }
 
+    /**
+     * @param $url
+     * @param $requestName
+     * @param $params
+     * @return array|string
+     */
     public function buildUrl($url, $requestName, $params)
     {
         if ($requestName != '' && is_array($params)) {
