@@ -12,6 +12,7 @@ if (!defined('MODX_BASE_PATH')) {
  * @see http://mis-algoritmos.com/2007/05/27/digg-style-pagination-class
  */
 include_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/DLpaginate.class.php");
+include_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/DLpaginateReversed.class.php");
 
 /**
  * Class paginate_DL_Extender
@@ -22,7 +23,7 @@ class paginate_DL_Extender extends extDocLister
      * @var bool
      */
     protected $lang = true;
-
+    protected $reverse = false;
     /**
      * @var array
      */
@@ -38,7 +39,8 @@ class paginate_DL_Extender extends extDocLister
         if (($paginate = $this->DocLister->getCFGDef('paginate', '')) == '') {
             $this->DocLister->config->setConfig(array('start' => 0));
         }
-        $pages = 0;
+        $this->reverse = $this->DocLister->getCFGDef('reversePagination', 1);
+        $pages = $this->getListPages($paginate, 'total');
         $display = $this->DocLister->getCFGDef('display', 0);
         switch ($paginate) {
             case 'offset':
@@ -53,19 +55,26 @@ class paginate_DL_Extender extends extDocLister
                 $requestName = $this->getRequestName('page');
                 if (
                     isset($_GET[$requestName])
-                    && intval($_GET[$requestName]) <= 1
                     && !$this->DocLister->getCFGDef('noRedirect', 0)
                 ) {
-                    $this->modx->sendRedirect($this->getUrl());
+                    if ((!$this->reverse && (intval($_GET[$requestName]) <= 1 || intval($_GET[$requestName]) > $pages)) || ($this->reverse && (intval($_GET[$requestName]) >= $pages || intval($_GET[$requestName]) <1))) {
+                        $this->modx->sendRedirect($this->getUrl());
+                    }
                 }
-                $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? (intval($_GET[$requestName]) - 1) : 0;
-                $this->_pages['current'] = $start + 1;
+                if ($this->reverse) {
+                    $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) <= $pages) ? ($pages - intval($_GET[$requestName])) : 0;
+                    $this->_pages['current'] = $start + 1;
+                } else {
+                    $start = (isset($_GET[$requestName]) && intval($_GET[$requestName]) > 1) ? (intval($_GET[$requestName]) - 1) : 0;
+                    $this->_pages['current'] = $start + 1;
+                }
+
                 $this->DocLister->config->setConfig(array('start' => $start * $display));
                 break;
         }
 
-        $pages = $this->getListPages($paginate, 'total');
-        $this->DocLister->toPlaceholders($this->currentPage(), 1, "current");
+
+        $this->DocLister->toPlaceholders($pages + 1 - $this->currentPage(), 1, "current");
         $this->DocLister->toPlaceholders($this->renderPages($paginate), 1, "pages");
         $this->DocLister->toPlaceholders(($this->currentPage() == 1 ? 1 : 0), 1,
             "isstart"); //[+isstart+] – is start page
@@ -153,7 +162,7 @@ class paginate_DL_Extender extends extDocLister
     private function renderPages($mode = '')
     {
         $out = '';
-        $p = new DLpaginate;
+        $p = $this->reverse ? new DLpaginateReversed : new DLpaginate;
         $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE:<a href="[+link+]">[%paginate.next%] ></a>');
         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE:<a href="[+link+]">< [%paginate.prev%]</a>');
         $p->firstT = $this->DocLister->getChunkByParam('TplFirstP');
