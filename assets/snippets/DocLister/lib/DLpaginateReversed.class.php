@@ -14,7 +14,7 @@ class DLpaginateReversed extends DLpaginate
         switch ($this->mode) {
             case 'offset':
                 $display = isset($this->modeConfig['display']) ? $this->modeConfig['display'] : 0;
-                $out = $display * ($this->total_pages - $page) - $this->modeConfig['offset'];
+                $out = $display * ($this->total_pages - $page);
                 break;
             case 'back':
             case 'pages':
