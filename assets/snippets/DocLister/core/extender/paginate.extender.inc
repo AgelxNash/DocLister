@@ -39,7 +39,7 @@ class paginate_DL_Extender extends extDocLister
         if (($paginate = $this->DocLister->getCFGDef('paginate', '')) == '') {
             $this->DocLister->config->setConfig(array('start' => 0));
         }
-        $this->reverse = $this->DocLister->getCFGDef('reversePagination', 1);
+        $this->reverse = $this->DocLister->getCFGDef('reversePagination', 0);
         $pages = $this->getListPages($paginate, 'total');
         $display = $this->DocLister->getCFGDef('display', 0);
         switch ($paginate) {
@@ -57,7 +57,7 @@ class paginate_DL_Extender extends extDocLister
                     isset($_GET[$requestName])
                     && !$this->DocLister->getCFGDef('noRedirect', 0)
                 ) {
-                    if ((!$this->reverse && (intval($_GET[$requestName]) <= 1 || intval($_GET[$requestName]) > $pages)) || ($this->reverse && (intval($_GET[$requestName]) >= $pages || intval($_GET[$requestName]) <1))) {
+                    if ((!$this->reverse && (intval($_GET[$requestName]) <= 1 || intval($_GET[$requestName]) > $pages)) || ($this->reverse && (intval($_GET[$requestName]) >= $pages || intval($_GET[$requestName]) < 1))) {
                         $this->modx->sendRedirect($this->getUrl());
                     }
                 }
