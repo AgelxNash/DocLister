@@ -350,13 +350,12 @@ class site_contentDocLister extends DocLister
                 $where = '';
             }
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
-            $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
-            list($from) = $this->injectSortByTV($from, $sort);
 
             $q_true = $q_true ? $q_true : $group != '';
-
             if ( $q_true ){
-                $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
+                $maxDocs = $this->getCFGDef('maxDocs', 0);
+                $limit = $maxDocs > 0 ? $this->LimitSQL($this->getCFGDef('maxDocs', 0)) : '';
+                $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group} {$limit}) as `tmp`");
                 $out = $this->modx->db->getValue($rs);
             }
             else {

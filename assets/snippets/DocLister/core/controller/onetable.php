@@ -354,7 +354,9 @@ class onetableDocLister extends DocLister
             }
 
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
-            $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group}) as `tmp`");
+            $maxDocs = $this->getCFGDef('maxDocs', 0);
+            $limit = $maxDocs > 0 ? $this->LimitSQL($this->getCFGDef('maxDocs', 0)) : '';
+            $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group} {$limit}) as `tmp`");
 
             $out = $this->modx->db->getValue($rs);
         }

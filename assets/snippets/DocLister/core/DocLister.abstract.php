@@ -1429,6 +1429,10 @@ abstract class DocLister
         if ($limit == 0) {
             $limit = $this->getCFGDef('display', 0);
         }
+        $maxDocs = $this->getCFGDef('maxDocs',0);
+        if ($maxDocs > 0 && $limit > $maxDocs) {
+            $limit = $maxDocs;
+        }
         if ($offset == 0) {
             $offset = $this->getCFGDef('offset', 0);
         }

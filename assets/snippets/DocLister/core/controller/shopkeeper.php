@@ -204,10 +204,10 @@ class shopkeeperDocLister extends site_contentDocLister
                 $where = '';
             }
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', 'c.id'));
-            $sort = $this->SortOrderSQL("c.createdon");
-            list($from) = $this->injectSortByTV($from, $sort);
+            $maxDocs = $this->getCFGDef('maxDocs', 0);
+            $limit = $maxDocs > 0 ? $this->LimitSQL($this->getCFGDef('maxDocs', 0)) : '';
 
-            $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group}) as `tmp`");
+            $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group} {$limit}) as `tmp`");
             $out = $this->modx->db->getValue($rs);
         }
 
