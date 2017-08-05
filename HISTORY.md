@@ -1,3 +1,11 @@
+## 2.3.7 (05.08.2017)
+* [Add] Обратная пагинация (параметр reversePagination) (Issue #130).
+* [Add] Возможность задать максимальное число выводимых документов (параметр maxDocs) (Issue #166).
+* [Refactor] Поля в json-массиве в режиме api (Issue #246).
+* [Refactor] Метод APIHelpers::_getEnv переименован в getEnv и изменен на публичный (Issue #244).
+* [Fix] Некорректная работа метода \Helpers\FS::relativePath в Windows (Issue #267).
+* [Fix] Ошибка в DLMenu при включенном параметре hideSubMenus.
+
 ## 2.3.6 (23.07.2017)
 * [Add] Сниппет DLSitemap для построения xml-карты сайта.
 * [Refactor] Убран сниппет DLBuildMenu.
