@@ -1,3 +1,12 @@
+## 2.3.8 (06.08.2017)
+* [Add] Метод setDocumentGroups в modResource для привязки создаваемых документов к группам (Issue #71).
+* [Refactor] Методы getDocumentGroups (modResource) и getUserGroups (modUsers, modManagers) возвращают результат в виде ассоциативного массива "id группы => имя группы" (Issue #270).
+* [Refactor] Метод setUserGroups (modUsers, modManagers) удаляет группы, которых нет в заданном списке (Issue #271).
+* [Add] В modResource проверяется при сохранении принадлежность tv-параметров к заданному шаблону (Issue #73).
+* [Add] Обратная пагинация в режиме offset.
+* [Fix] Неверное вычисление dl.full_iteration в режиме обратной пагинации.
+* [Refactor] Изменен алгоритм сохранения tv-параметров (Issue #235).
+
 ## 2.3.7 (05.08.2017)
 * [Add] Обратная пагинация (параметр reversePagination) (Issue #130).
 * [Add] Возможность задать максимальное число выводимых документов (параметр maxDocs) (Issue #166).
