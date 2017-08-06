@@ -604,7 +604,7 @@ class modResource extends MODxAPI
             }
         }
 
-        $_deleteTVs = $_updateTVs = $_insertTVs = array();
+        $_deleteTVs = $_insertTVs = array();
         foreach ($fld as $key => $value) {
             if (empty($this->tv[$key]) || !$this->isChanged($key) || !$this->belongsToTemplate($this->tv[$key])) {
                 continue;
@@ -615,29 +615,14 @@ class modResource extends MODxAPI
             }
         }
 
-        if (!$this->newDoc && !empty($_insertTVs)) {
-            $ids = implode(',', array_keys($_insertTVs));
-            $result = $this->query("SELECT `tmplvarid` FROM {$this->makeTable('site_tmplvar_contentvalues')} WHERE `contentid`={$this->id} AND `tmplvarid` IN ({$ids})");
-            $existedTVs = $this->modx->db->getColumn('tmplvarid', $result);
-            foreach ($existedTVs as $id) {
-                $_updateTVs[$id] = $_insertTVs[$id];
-                unset($_insertTVs[$id]);
-            }
-        }
-
-        if (!empty($_updateTVs)) {
-            foreach ($_updateTVs as $id => $value) {
-                $this->query("UPDATE {$this->makeTable('site_tmplvar_contentvalues')} SET `value` = '{$value}' WHERE `contentid` = {$this->id} AND `tmplvarid` = {$id}");
-            }
-        }
-
         if (!empty($_insertTVs)) {
             $values = array();
             foreach ($_insertTVs as $id => $value) {
                 $values[] = "({$this->id}, {$id}, '{$value}')";
             }
             $values = implode(',', $values);
-            $this->query("INSERT into {$this->makeTable('site_tmplvar_contentvalues')} (`contentid`,`tmplvarid`,`value`) VALUES {$values}");
+            $this->query("INSERT INTO {$this->makeTable('site_tmplvar_contentvalues')} (`contentid`,`tmplvarid`,`value`) VALUES {$values} ON DUPLICATE KEY UPDATE
+    `value` = VALUES(`value`)");
         }
 
         if (!empty($_deleteTVs)) {
@@ -672,6 +657,7 @@ class modResource extends MODxAPI
      */
     protected function belongsToTemplate($tvId) {
         $template = $this->get('template');
+
         return in_array($tvId, $this->tvTpl[$template]);
     }
 
