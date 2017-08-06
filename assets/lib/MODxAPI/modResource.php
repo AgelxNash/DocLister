@@ -1085,9 +1085,14 @@ class modResource extends MODxAPI
         $out = array();
         $doc = $this->switchObject($docId);
         if (null !== $doc->getID()) {
-            $doc_groups = $this->modx->getFullTableName('document_groups');
-            $sql = "SELECT `document_group` FROM {$doc_groups} WHERE `document` = " . $doc->getID();
-            $out = $this->modx->db->getColumn('document_group', $this->query($sql));
+            $doc_groups = $this->makeTable('document_groups');
+            $docgroup_names = $this->makeTable('documentgroup_names');
+
+            $rs = $this->query("SELECT `dg`.`document_group`, `dgn`.`name` FROM {$doc_groups} as `dg` INNER JOIN {$docgroup_names} as `dgn` ON `dgn`.`id`=`dg`.`document_group`
+                WHERE `dg`.`document` = " . $doc->getID());
+            while ($row = $this->modx->db->getRow($rs)) {
+                $out[$row['document_group']] = $row['name'];
+            }
 
         }
         unset($doc);
