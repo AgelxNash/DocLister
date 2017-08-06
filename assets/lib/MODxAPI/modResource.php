@@ -606,7 +606,7 @@ class modResource extends MODxAPI
 
         $_deleteTVs = $_updateTVs = $_insertTVs = array();
         foreach ($fld as $key => $value) {
-            if (empty($this->tv[$key]) || !$this->isChanged($key)) {
+            if (empty($this->tv[$key]) || !$this->isChanged($key) || !$this->belongsToTemplate($this->tv[$key])) {
                 continue;
             } elseif ($value === '') {
                 $_deleteTVs[] = $this->tv[$key];
@@ -664,6 +664,15 @@ class modResource extends MODxAPI
         $this->decodeFields();
 
         return $this->id;
+    }
+
+    /**
+     * @param $tvId
+     * @return bool
+     */
+    protected function belongsToTemplate($tvId) {
+        $template = $this->get('template');
+        return in_array($tvId, $this->tvTpl[$template]);
     }
 
     /**
