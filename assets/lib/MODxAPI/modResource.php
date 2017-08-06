@@ -152,7 +152,8 @@ class modResource extends MODxAPI
      * @var DLCollection
      */
     private $managerUsers = null;
-
+    /** @var array группы документов */
+    protected $groupIds = array();
     /**
      * modResource constructor.
      * @param DocumentParser $modx
@@ -509,7 +510,7 @@ class modResource extends MODxAPI
     /**
      * @param bool $fire_events
      * @param bool $clearCache
-     * @return bool|null|void
+     * @return bool|null
      */
     public function save($fire_events = false, $clearCache = false)
     {
@@ -648,6 +649,8 @@ class modResource extends MODxAPI
             $this->mode = $this->newDoc ? "new" : "upd";
             $this->newDoc = false;
         }
+
+        if ($this->groupIds) $this->setDocumentGroups($this->id, $this->groupIds);
         $this->invokeEvent('OnDocFormSave', array(
             'mode'   => $this->mode,
             'id'     => $this->id,
@@ -1074,4 +1077,50 @@ class modResource extends MODxAPI
 
         return $this;
     }
+
+    /**
+     * @param int $docId
+     */
+    public function getDocumentGroups($docId = 0) {
+        $out = array();
+        $doc = $this->switchObject($docId);
+        if (null !== $doc->getID()) {
+            $doc_groups = $this->modx->getFullTableName('document_groups');
+            $sql = "SELECT `document_group` FROM {$doc_groups} WHERE `document` = " . $doc->getID();
+            $out = $this->modx->db->getColumn('document_group', $this->query($sql));
+
+        }
+        unset($doc);
+
+        return $out;
+    }
+
+    /**
+     * @param int $docId
+     * @param array $groupIds
+     * @return $this
+     */
+    public function setDocumentGroups($docId = 0, $groupIds = array())
+    {
+        if (!is_array($groupIds)) return $this;
+        if ($this->newDoc && $docId == 0) {
+            $this->groupIds = $groupIds;
+        } else {
+            $doc = $this->switchObject($docId);
+            if ($id = $doc->getID()) {
+                foreach ($groupIds as $gid) {
+                    $this->query("REPLACE INTO {$this->makeTable('document_groups')} (`document_group`, `document`) VALUES ('{$gid}', '{$id}')");
+                }
+                if (!$this->newDoc) {
+                    $groupIds = empty($groupIds) ? '0' : implode(',', $groupIds);
+                    $this->query("DELETE FROM {$this->makeTable('document_groups')} WHERE `document`={$id} AND `document_group` NOT IN ({$groupIds})");
+                }
+            }
+            unset($doc);
+            $this->groupIds = array();
+        }
+
+        return $this;
+    }
+
 }
