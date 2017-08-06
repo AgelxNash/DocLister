@@ -658,7 +658,7 @@ class modResource extends MODxAPI
     protected function belongsToTemplate($tvId) {
         $template = $this->get('template');
 
-        return in_array($tvId, $this->tvTpl[$template]);
+        return isset($this->tvTpl[$template]) && in_array($tvId, $this->tvTpl[$template]);
     }
 
     /**
