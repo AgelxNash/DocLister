@@ -41,6 +41,7 @@ class site_content_menuDocLister extends site_contentDocLister
     public function getDocs($tvlist = '')
     {
         $maxDepth = $this->getCFGDef('maxDepth', 10);
+        $this->extTV->getAllTV_Name();
         //TODO кэширование
         if ($this->getCFGDef('hideSubMenus', 0) && empty($this->getCFGDef('openIds'))) {
             $maxDepth = min($maxDepth, $this->setActiveBranch($this->getHereId()));
@@ -70,13 +71,12 @@ class site_content_menuDocLister extends site_contentDocLister
         $joinMenus = $this->getCFGDef('joinMenus', 0) && !$this->getCFGDef('showParents', 0);
         while ($currentLevel <= $maxDepth) {
             $orderBy = $this->getCFGDef('orderBy');
-            if ($this->getCFGDef('showParent', 0)) {
+            if ($this->getCFGDef('showParent', 0) && $currentLevel == 1) {
                 $docs = $this->getDocList();
                 $this->config->setConfig(array('showParent' => 0));
             } else {
                 $docs = $this->getChildrenList();
             }
-
             if ($currentLevel == 1 && $joinMenus) {
                 $tmp = array();
                 $display = 0;
@@ -101,13 +101,13 @@ class site_content_menuDocLister extends site_contentDocLister
                     $item['iteration'] = $this->display[$parent]++;
                 }
             }
-
             $this->config->setConfig(array('orderBy' => $orderBy));
             if (empty($docs)) {
                 break;
             }
             $this->levels[$currentLevel++] = $docs;
             $this->IDs = array_keys($docs);
+            $this->AddTable = array();
         }
 
         if ($tvlist == '') {
@@ -115,7 +115,6 @@ class site_content_menuDocLister extends site_contentDocLister
         }
 
         if ($tvlist != '') {
-            $this->extTV->getAllTV_Name();
             $ids = array();
             foreach ($this->levels as $level => $docs) {
                 $ids = array_merge($ids, array_keys($docs));
@@ -316,7 +315,9 @@ class site_content_menuDocLister extends site_contentDocLister
             $data['state'] = in_array($data['id'], $this->activeBranch) ? 'open' : 'closed';
         }
 
-        if (!isset($data['_display'])) $data['_display'] = $this->display[$data['parent']] - 1;
+        if (!isset($data['_display'])) {
+            $data['_display'] = $this->display[$data['parent']] - 1;
+        }
         if ($data['iteration'] == 1) {
             $data['first'] = 1;
         }
