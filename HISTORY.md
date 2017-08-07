@@ -1,3 +1,8 @@
+## 2.3.9 (07.08.2017)
+* [Refactor] Issue #272.
+* [Refactor] Изменено формирование плейсхолдера iteration в DLMenu, теперь он доступен и в prepare.
+* [Add] Плейсхолдер \_display в DLMenu, показывает количество документов в текущей ветке.
+
 ## 2.3.8 (06.08.2017)
 * [Add] Метод setDocumentGroups в modResource для привязки создаваемых документов к группам (Issue #71).
 * [Refactor] Методы getDocumentGroups (modResource) и getUserGroups (modUsers, modManagers) возвращают результат в виде ассоциативного массива "id группы => имя группы" (Issue #270).
