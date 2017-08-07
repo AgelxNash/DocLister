@@ -17,6 +17,7 @@ class site_content_menuDocLister extends site_contentDocLister
     protected $IDs = array();
     protected $activeBranch = array();
     protected $countChildren = array();
+    protected $display = array();
 
     /**
      * Очистка массива $IDs по которому потом будет производиться выборка документов
@@ -66,17 +67,41 @@ class site_content_menuDocLister extends site_contentDocLister
         if ($this->getCFGDef('showParent', 0) && in_array(0, $this->IDs)) {
             $this->config->setConfig(array('showParent' => 0));
         }
-        if ($this->getCFGDef('showParent', 0)) {
-            $orderBy = $this->getCFGDef('orderBy');
-            $docs = $this->getDocList();
-            $this->config->setConfig(array('orderBy' => $orderBy));
-            $this->levels[$currentLevel++] = $docs;
-            $this->IDs = $ids = array_keys($docs);
-            $this->config->setConfig(array('showParent' => 0));
-        }
+        $joinMenus = $this->getCFGDef('joinMenus', 0) && !$this->getCFGDef('showParents', 0);
         while ($currentLevel <= $maxDepth) {
             $orderBy = $this->getCFGDef('orderBy');
-            $docs = $this->getChildrenList();
+            if ($this->getCFGDef('showParent', 0)) {
+                $docs = $this->getDocList();
+                $this->config->setConfig(array('showParent' => 0));
+            } else {
+                $docs = $this->getChildrenList();
+            }
+
+            if ($currentLevel == 1 && $joinMenus) {
+                $tmp = array();
+                $display = 0;
+                $iteration = 1;
+                foreach ($docs as $id => $item) {
+                    $tmp[$item['parent']][] = $item['id'];
+                    $display++;
+                }
+                foreach ($tmp as $id => $item) {
+                    foreach ($item as $_id) {
+                        $docs[$_id]['_display'] = $display;
+                        $docs[$_id]['iteration'] = $iteration++;
+                    }
+                }
+                unset($tmp);
+            } else {
+                foreach ($docs as $id => &$item) {
+                    $parent = $item['parent'];
+                    if (!isset($this->display[$parent])) {
+                        $this->display[$parent] = 1;
+                    }
+                    $item['iteration'] = $this->display[$parent]++;
+                }
+            }
+
             $this->config->setConfig(array('orderBy' => $orderBy));
             if (empty($docs)) {
                 break;
@@ -209,7 +234,6 @@ class site_content_menuDocLister extends site_contentDocLister
         $docs = $this->levels;
         /** @var prepare_DL_Extender_ $extPrepare */
         $extPrepare = $this->getExtender('prepare');
-
         while ($currentLevel > 0) {
             foreach ($docs[$currentLevel] as $id => &$data) {
                 if ($out = $this->prepareData($data)) {
@@ -217,10 +241,9 @@ class site_content_menuDocLister extends site_contentDocLister
                         $data = $out;
                     }
                 };
-
                 if (!isset($data['maxLevel'])) {
                     $data['maxLevel'] = 1;
-                    $docs[$currentLevel - 1][$data[$this->parentField]]['maxLevel'] = 0;
+                    $docs[$currentLevel - 1][$data['parent']]['maxLevel'] = 0;
                 }
 
                 if ($extPrepare) {
@@ -238,17 +261,17 @@ class site_content_menuDocLister extends site_contentDocLister
                     $data['wrap'] = $this->parseOuter($data);
                 }
                 $hideSubMenus = $this->getCFGDef('hideSubMenus', 0);
-                $hideSubMenus = !$hideSubMenus || ($hideSubMenus && in_array((int)$data[$this->parentField],
+                $hideSubMenus = !$hideSubMenus || ($hideSubMenus && in_array((int)$data['parent'],
                             $this->activeBranch));
                 if ($hideSubMenus) {
-                    $docs[$currentLevel - 1][$data[$this->parentField]]['wrap'][] = $data;
+                    $docs[$currentLevel - 1][$data['parent']]['wrap'][] = $data;
                 }
             }
             unset($docs[$currentLevel]);
             $currentLevel--;
         }
-
         unset($data);
+
         $out = '';
         $joinMenus = $this->getCFGDef('joinMenus', 0) && !$this->getCFGDef('showParents', 0);
         foreach ($docs[0] as $id => $data) {
@@ -291,6 +314,14 @@ class site_content_menuDocLister extends site_contentDocLister
         }
         if ($this->getCFGDef('hideSubMenus') && isset($data['isfolder']) && $data['isfolder']) {
             $data['state'] = in_array($data['id'], $this->activeBranch) ? 'open' : 'closed';
+        }
+
+        if (!isset($data['_display'])) $data['_display'] = $this->display[$data['parent']] - 1;
+        if ($data['iteration'] == 1) {
+            $data['first'] = 1;
+        }
+        if ($data['iteration'] == $data['_display']) {
+            $data['last'] = 1;
         }
 
         $titleField = $this->getCFGDef('titleField', 'title');
@@ -343,15 +374,7 @@ class site_content_menuDocLister extends site_contentDocLister
     public function parseRow($data = array())
     {
         $out = '';
-        $maxIteration = count($data) - 1;
         foreach ($data as $iteration => $item) {
-            $item['iteration'] = $iteration + 1;
-            if ($iteration == 0) {
-                $item['first'] = 1;
-            }
-            if ($iteration == $maxIteration) {
-                $item['last'] = 1;
-            }
             $tpl = isset($item['_renderRowTpl']) ? $item['_renderRowTpl'] : $this->getRowTemplate($item);
             $item = array_merge($item, $this->getClasses($item));
             $out .= $this->parseChunk($tpl, $item);
@@ -507,7 +530,7 @@ class site_content_menuDocLister extends site_contentDocLister
                 };
 
                 if (isset($data['here']) || isset($data['active'])) {
-                    $docs[$currentLevel - 1][$data[$this->parentField]]['active'] = 1;
+                    $docs[$currentLevel - 1][$data['parent']]['active'] = 1;
                 }
 
                 if ($extPrepare) {
@@ -521,10 +544,10 @@ class site_content_menuDocLister extends site_contentDocLister
                 }
 
                 $hideSubMenus = $this->getCFGDef('hideSubMenus', 0);
-                $hideSubMenus = !$hideSubMenus || ($hideSubMenus && in_array((int)$data[$this->parentField],
+                $hideSubMenus = !$hideSubMenus || ($hideSubMenus && in_array((int)$data['parent'],
                             $this->activeBranch));
                 if ($hideSubMenus) {
-                    $docs[$currentLevel - 1][$data[$this->parentField]]['children'][] = $data;
+                    $docs[$currentLevel - 1][$data['parent']]['children'][] = $data;
                 }
             }
             unset($docs[$currentLevel]);

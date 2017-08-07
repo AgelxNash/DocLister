@@ -230,10 +230,9 @@ class onetableDocLister extends DocLister
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
             $rs = $this->dbQuery("SELECT {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
 
-            $rows = $this->modx->db->makeArray($rs);
-            $out = array();
-            foreach ($rows as $item) {
-                $out[$item[$this->getPK()]] = $item;
+            $pk = $this->getPK();
+            while ($item = $this->modx->db->getRow($rs)) {
+                $out[$item[$pk]] = $item;
             }
         }
 
@@ -290,14 +289,14 @@ class onetableDocLister extends DocLister
         $fields = $this->getCFGDef('selectFields', '*');
         $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
-            $sql = $this->dbQuery("SELECT {$fields} FROM " . $this->table . " " . $where . " " .
+            $rs = $this->dbQuery("SELECT {$fields} FROM " . $this->table . " " . $where . " " .
                 $group . " " .
                 $this->SortOrderSQL($this->getPK()) . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
             );
-            $rows = $this->modx->db->makeArray($sql);
-            foreach ($rows as $item) {
-                $out[$item[$this->getPK()]] = $item;
+            $pk = $this->getPK();
+            while ($item = $this->modx->db->getRow($rs)) {
+                $out[$item[$pk]] = $item;
             }
         }
 
@@ -370,6 +369,7 @@ class onetableDocLister extends DocLister
      */
     public function getChildrenFolder($id)
     {
+        $out = array();
         $sanitarInIDs = $this->sanitarIn($id);
 
         $tmp = $this->getCFGDef('addWhereFolder', '');
@@ -379,11 +379,9 @@ class onetableDocLister extends DocLister
         }
 
         $rs = $this->dbQuery("SELECT `{$this->getPK()}` FROM {$this->table} WHERE {$where}");
-
-        $rows = $this->modx->db->makeArray($rs);
-        $out = array();
-        foreach ($rows as $item) {
-            $out[] = $item[$this->getPK()];
+        $pk = $this->getPK();
+        while ($item = $this->modx->db->getRow($rs)) {
+            $out[] = $item[$pk];
         }
 
         return $out;
