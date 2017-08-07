@@ -1029,13 +1029,16 @@ abstract class DocLister
         $iteration = $i;
 
         if ($this->extPaginate) {
-            $offset = $this->getCFGDef('reversePagination', 0) && $this->extPaginate->currentPage() > 1 ? $this->extPaginate->totalPage() * $this->getCFGDef('display',
+            $offset = $this->getCFGDef('reversePagination',
+                0) && $this->extPaginate->currentPage() > 1 ? $this->extPaginate->totalPage() * $this->getCFGDef('display',
                     0) - $this->extPaginate->totalDocs() : 0;
-            if ($this->getCFGDef('maxDocs', 0) && !$this->getCFGDef('reversePagination', 0) && $this->extPaginate->currentPage() == $this->extPaginate->totalPage()) {
+            if ($this->getCFGDef('maxDocs', 0) && !$this->getCFGDef('reversePagination',
+                    0) && $this->extPaginate->currentPage() == $this->extPaginate->totalPage()
+            ) {
                 $iteration += $this->getCFGDef('display', 0);
             }
             $iteration += $this->getCFGDef('display',
-                    0) * ($this->extPaginate->currentPage() - 1)  - $offset;
+                    0) * ($this->extPaginate->currentPage() - 1) - $offset;
         }
 
         $data[$this->getCFGDef("sysKey",
@@ -1439,7 +1442,7 @@ abstract class DocLister
         if ($limit == 0) {
             $limit = $this->getCFGDef('display', 0);
         }
-        $maxDocs = $this->getCFGDef('maxDocs',0);
+        $maxDocs = $this->getCFGDef('maxDocs', 0);
         if ($maxDocs > 0 && $limit > $maxDocs) {
             $limit = $maxDocs;
         }
@@ -1531,14 +1534,17 @@ abstract class DocLister
     /**
      * Получение PrimaryKey основной таблицы.
      * По умолчанию это id. Переопределить можно в контроллере присвоив другое значение переменной idField
-     *
+     * @param bool $full если true то возвращается значение для подстановки в запрос
      * @return string PrimaryKey основной таблицы
      */
-    public function getPK()
+    public function getPK($full = true)
     {
-        $idField = isset($this->idField) ? $this->idField : 'id';
-        if (!empty($this->alias)) {
-            $idField = $this->alias . '.' . $idField;
+        $idField = isset($this->idField) ? $this->idField: 'id';
+        if ($full) {
+            $idField = '`' . $idField . '`';
+            if (!empty($this->alias)) {
+                $idField = '`' . $this->alias . '`.' . $idField;
+            }
         }
 
         return $idField;
@@ -1547,13 +1553,17 @@ abstract class DocLister
     /**
      * Получение Parent key
      * По умолчанию это parent. Переопределить можно в контроллере присвоив другое значение переменной parentField
+     * @param bool $full если true то возвращается значение для подстановки в запрос
      * @return string Parent Key основной таблицы
      */
-    public function getParentField()
+    public function getParentField($full = true)
     {
         $parentField = isset($this->parentField) ? $this->parentField : '';
-        if (!empty($parentField) && !empty($this->alias)) {
-            $parentField = $this->alias . '.' . $parentField;
+        if ($full && !empty($parentField)) {
+            $parentField = '`' . $parentField . '`';
+            if (!empty($this->alias)) {
+                $parentField = '`' . $this->alias . '`.' . $parentField;
+            }
         }
 
         return $parentField;

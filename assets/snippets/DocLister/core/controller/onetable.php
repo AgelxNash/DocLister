@@ -20,7 +20,6 @@ class onetableDocLister extends DocLister
      * @var string
      */
     protected $table = '';
-
     /**
      * @var string
      */
@@ -167,7 +166,6 @@ class onetableDocLister extends DocLister
          * @var $extE e_DL_Extender
          */
         $extE = $this->getExtender('e', true, true);
-
         foreach ($data as $num => $row) {
 
             switch (true) {
@@ -219,7 +217,7 @@ class onetableDocLister extends DocLister
                 $where = array($where);
             }
             if ($sanitarInIDs != "''") {
-                $where[] = "`{$this->getPK()}` IN ({$sanitarInIDs})";
+                $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
             }
 
             if (!empty($where)) {
@@ -230,7 +228,7 @@ class onetableDocLister extends DocLister
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
             $rs = $this->dbQuery("SELECT {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
 
-            $pk = $this->getPK();
+            $pk = $this->getPK(false);
             while ($item = $this->modx->db->getRow($rs)) {
                 $out[$item[$pk]] = $item;
             }
@@ -256,17 +254,17 @@ class onetableDocLister extends DocLister
 
         $tmpWhere = null;
         if ($sanitarInIDs != "''") {
-            $tmpWhere = "(`{$this->getParentField()}` IN (" . $sanitarInIDs . ")";
+            $tmpWhere = "({$this->getParentField()} IN (" . $sanitarInIDs . ")";
             switch ($this->getCFGDef('showParent', '0')) {
                 case -1:
                     $tmpWhere .= ")";
                     break;
                 case 0:
-                    $tmpWhere .= " AND `{$this->getPK()}` NOT IN(" . $sanitarInIDs . "))";
+                    $tmpWhere .= " AND {$this->getPK()} NOT IN(" . $sanitarInIDs . "))";
                     break;
                 case 1:
                 default:
-                    $tmpWhere .= " OR `{$this->getPK()}` IN({$sanitarInIDs}))";
+                    $tmpWhere .= " OR {$this->getPK()} IN({$sanitarInIDs}))";
                     break;
             }
         }
@@ -294,10 +292,13 @@ class onetableDocLister extends DocLister
                 $this->SortOrderSQL($this->getPK()) . " " .
                 $this->LimitSQL($this->getCFGDef('queryLimit', 0))
             );
-            $pk = $this->getPK();
+
+            $pk = $this->getPK(false);
+
             while ($item = $this->modx->db->getRow($rs)) {
                 $out[$item[$pk]] = $item;
             }
+
         }
 
         return $out;
@@ -323,25 +324,25 @@ class onetableDocLister extends DocLister
                         case 'parents':
                             switch ($this->getCFGDef('showParent', '0')) {
                                 case '-1':
-                                    $tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
+                                    $tmpWhere = "{$this->getParentField()} IN ({$sanitarInIDs})";
                                     break;
                                 case 0:
-                                    $tmpWhere = "`{$this->getParentField()}` IN ({$sanitarInIDs}) AND `{$this->getPK()}` NOT IN({$sanitarInIDs})";
+                                    $tmpWhere = "{$this->getParentField()} IN ({$sanitarInIDs}) AND {$this->getPK()} NOT IN({$sanitarInIDs})";
                                     break;
                                 case 1:
                                 default:
-                                    $tmpWhere = "(`{$this->getParentField()}` IN ({$sanitarInIDs}) OR `{$this->getPK()}` IN({$sanitarInIDs}))";
+                                    $tmpWhere = "({$this->getParentField()} IN ({$sanitarInIDs}) OR {$this->getPK()} IN({$sanitarInIDs}))";
                                     break;
                             }
                             if (($addDocs = $this->getCFGDef('documents', '')) != '') {
                                 $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
-                                $where[] = "((" . $tmpWhere . ") OR `{$this->getPK()}` IN({$addDocs}))";
+                                $where[] = "((" . $tmpWhere . ") OR {$this->getPK()} IN({$addDocs}))";
                             } else {
                                 $where[] = $tmpWhere;
                             }
                             break;
                         case 'documents':
-                            $where[] = "`{$this->getPK()}` IN({$sanitarInIDs})";
+                            $where[] = "{$this->getPK()} IN({$sanitarInIDs})";
                             break;
                     }
                 }
@@ -352,11 +353,10 @@ class onetableDocLister extends DocLister
                 $where = '';
             }
 
-            $group = $this->getGroupSQL($this->getCFGDef('groupBy', "`{$this->getPK()}`"));
+            $group = $this->getGroupSQL($this->getCFGDef('groupBy', $this->getPK()));
             $maxDocs = $this->getCFGDef('maxDocs', 0);
             $limit = $maxDocs > 0 ? $this->LimitSQL($this->getCFGDef('maxDocs', 0)) : '';
-            $rs = $this->dbQuery("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group} {$limit}) as `tmp`");
-
+            $rs = ("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group} {$limit}) as `tmp`");
             $out = $this->modx->db->getValue($rs);
         }
 
@@ -373,13 +373,13 @@ class onetableDocLister extends DocLister
         $sanitarInIDs = $this->sanitarIn($id);
 
         $tmp = $this->getCFGDef('addWhereFolder', '');
-        $where = "`{$this->getParentField()}` IN ({$sanitarInIDs})";
+        $where = "{$this->getParentField()} IN ({$sanitarInIDs})";
         if (!empty($tmp)) {
             $where .= " AND " . $tmp;
         }
 
-        $rs = $this->dbQuery("SELECT `{$this->getPK()}` FROM {$this->table} WHERE {$where}");
-        $pk = $this->getPK();
+        $rs = $this->dbQuery("SELECT {$this->getPK()} FROM {$this->table} WHERE {$where}");
+        $pk = $this->getPK(false);
         while ($item = $this->modx->db->getRow($rs)) {
             $out[] = $item[$pk];
         }
