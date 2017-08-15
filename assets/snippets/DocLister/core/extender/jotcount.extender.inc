@@ -21,7 +21,7 @@ class jotcount_DL_Extender extends extDocLister
         $this->DocLister->setFiltersJoin($join);
         $fields = $this->DocLister->getCFGDef('selectFields', 'c.*');
         $this->DocLister->config->setConfig(array(
-            "selectFields" => $fields . ",IFNULL(`jc`.`jotcount`,0)"
+            "selectFields" => $fields . ",IFNULL(`jc`.`jotcount`,0) AS `jotcount`"
         ));
 
         return true;
