@@ -5,9 +5,9 @@
 Если нет правил, то данные отображаются без дополнительной обработки и связи. Т.е. все поля и значения совпадают с базой данных.
 
 Правила для обработки информации описаны в контроллерах.
-Главный контроллер - **site_content** который определяет связь основных документов site_content с данными в TV-параметрах
+Главный контроллер - **site_content**, который определяет связь основных документов site_content с данными в TV-параметрах
 
-На базе класса DocLister сформировано 6 сниппетов:
+На базе класса DocLister сформировано 12 сниппетов:
 * **DocLister** - основной сниппет для вывода информации по принципу сниппетов Ditto и CatalogView
 * **DLcrumbs** - для формирования хлебных крошек по принципу сниппета Breadcrumbs
 * **DLglossary** - для фильтрации документов по первому символу в определенном поле
@@ -15,14 +15,15 @@
 * **DLTemplate** - для замены $modx->parseChunk()
 * **DLFirstChar** - выборка документов и группировках в блоках по первой букве
 * **DLPrevNext** - цикличная навигация вперед/назад между соседними документами
-* **DLBuildMenu** - Построение меню не ограниченой вложенности
+* **DLMenu** - Построение меню неограниченой вложенности
+* **DLSitemap** - Построение xml-карты сайта
 * **DLReflect** - Построение списка дат
 * **DLReflectFilter** - Фильтрация документов по датам
 * **DLBeforeAfter** - Пагинация по прошедшим и предстоящим событиями с учетом текущей даты
 
 ### Полезные ссылки
 ---------
-* **Документация**: https://github.com/evolution-cms/docs/tree/master/03_Extras/04_Snippets/DocLister
+* **Документация**: http://docs.evo.im/extras/doclister.html
 * **Статьи про DocLister**: http://modx.im/tag/doclister/
 
 ### Компоненты на базе DocLister
@@ -30,6 +31,8 @@
 * [SimpleGallery](https://github.com/Pathologic/SimpleGallery)
 * [SimpleTube](https://github.com/Pathologic/SimpleTube)
 * [SimpleFiles](https://github.com/Pathologic/SimpleFiles)
+* [SimplePolls](http://modx.im/blog/addons/4656.html)
+* [LikeDislike](https://github.com/Pathologic/LikeDislike)
 * [FormLister](https://github.com/Pathologic/FormLister)
 * [FastImageTV](https://github.com/Pathologic/FastImageTV)
 * [DLRequest](https://github.com/Pathologic/DLRequest)

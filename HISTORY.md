@@ -1,3 +1,36 @@
+## 2.3.11 (21.08.2017)
+* [Refactor] Сортировка по количеству комментариев при включенном экстендере jot_count (Issue #273).
+* [Refactor] Возможность перезаписывать массив настроек методом \Helpers\Config::setConfig.
+* [Refactor] Метод getPK (DocLister) может возвращать значение как с алиасом таблицы, так и без него.
+* [Add] \Helpers\Mailer - возможность сохранить письмо в файл и загрузить из файла.
+
+## 2.3.10 (09.08.2017)
+* [Fix] Ошибки при формировании запросов в контроллере Onetable.
+* [Add] Возможность задавать значения по умолчанию для json-полей в MODxAPI (Issue #198).
+
+## 2.3.9 (07.08.2017)
+* [Fix] Сортировка по TV в DLMenu.
+* [Refactor] Issue #272.
+* [Refactor] Изменено формирование плейсхолдера iteration в DLMenu, теперь он доступен и в prepare.
+* [Add] Плейсхолдер \_display в DLMenu, показывает количество документов в текущей ветке.
+
+## 2.3.8 (06.08.2017)
+* [Add] Метод setDocumentGroups в modResource для привязки создаваемых документов к группам (Issue #71).
+* [Refactor] Методы getDocumentGroups (modResource) и getUserGroups (modUsers, modManagers) возвращают результат в виде ассоциативного массива "id группы => имя группы" (Issue #270).
+* [Refactor] Метод setUserGroups (modUsers, modManagers) удаляет группы, которых нет в заданном списке (Issue #271).
+* [Add] В modResource проверяется при сохранении принадлежность tv-параметров к заданному шаблону (Issue #73).
+* [Add] Обратная пагинация в режиме offset.
+* [Fix] Неверное вычисление dl.full_iteration в режиме обратной пагинации.
+* [Refactor] Изменен алгоритм сохранения tv-параметров (Issue #235).
+
+## 2.3.7 (05.08.2017)
+* [Add] Обратная пагинация (параметр reversePagination) (Issue #130).
+* [Add] Возможность задать максимальное число выводимых документов (параметр maxDocs) (Issue #166).
+* [Refactor] Поля в json-массиве в режиме api (Issue #246).
+* [Refactor] Метод APIHelpers::_getEnv переименован в getEnv и изменен на публичный (Issue #244).
+* [Fix] Некорректная работа метода \Helpers\FS::relativePath в Windows (Issue #267).
+* [Fix] Ошибка в DLMenu при включенном параметре hideSubMenus.
+
 ## 2.3.6 (23.07.2017)
 * [Add] Сниппет DLSitemap для построения xml-карты сайта.
 * [Refactor] Убран сниппет DLBuildMenu.

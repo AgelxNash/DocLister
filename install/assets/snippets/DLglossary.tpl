@@ -1,6 +1,6 @@
 //<?php
 /**
- * DLglossary
+ * DLGlossary
  * 
  * Фильтрация документов по первому символу
  *
@@ -12,4 +12,4 @@
  * @internal    @installset base, sample
  */
 
-return require MODX_BASE_PATH.'assets/snippets/DocLister/snippet.DLglossary.php';
+return require MODX_BASE_PATH.'assets/snippets/DocLister/snippet.DLGlossary.php';

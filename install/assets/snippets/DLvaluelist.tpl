@@ -1,8 +1,8 @@
 //<?php
 /**
- * DLvaluelist
+ * DLValuelist
  * 
- * DLvaluelist
+ * DLValuelist
  *
  * @category 	snippet
  * @version 	1.1
@@ -12,4 +12,4 @@
  * @internal    @installset base, sample
  */
 
-return require MODX_BASE_PATH.'assets/snippets/DocLister/snippet.DLvaluelist.php';
+return require MODX_BASE_PATH.'assets/snippets/DocLister/snippet.DLValuelist.php';
