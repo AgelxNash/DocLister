@@ -278,6 +278,10 @@ abstract class DocLister
         for ($i = 0; $i <= $strlen; $i++) {
             $e = mb_substr($str, $i, 1, 'UTF-8');
             switch ($e) {
+                case '\\':
+                    $cur .= $e;
+                    $cur .= mb_substr($str, ++$i, 1, 'UTF-8');
+                    break;
                 case ')':
                     $open--;
                     if ($open == 0) {
@@ -1601,7 +1605,7 @@ abstract class DocLister
                         $joins[] = $subfilter['join'];
                     }
                     if ($subfilter['where']) {
-                        $wheres[] = $subfilter['where'];
+                        $wheres[] = str_replace(array('\\\\(','\\\\)','\\\\;'),array('(',')',';'),$subfilter['where']);
                     }
                 }
                 $output['join'] = !empty($joins) ? implode(' ', $joins) : '';
@@ -1616,7 +1620,7 @@ abstract class DocLister
                 $output = false;
             } else {
                 $output['join'] = $filter->get_join();
-                $output['where'] = $filter->get_where();
+                $output['where'] = stripslashes($filter->get_where());
             }
         }
         $this->debug->debug('getFilter');
