@@ -1605,7 +1605,7 @@ abstract class DocLister
                         $joins[] = $subfilter['join'];
                     }
                     if ($subfilter['where']) {
-                        $wheres[] = str_replace(array('\\\\(','\\\\)','\\\\;'),array('(',')',';'),$subfilter['where']);
+                        $wheres[] = $subfilter['where'];
                     }
                 }
                 $output['join'] = !empty($joins) ? implode(' ', $joins) : '';
