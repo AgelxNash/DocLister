@@ -489,9 +489,9 @@ class site_content_menuDocLister extends site_contentDocLister
                         'category') !== false)
             ) {
                 $tpl = $this->getCFGDef('categoryFolderTpl', $tpl);
-            } elseif ($data['here']) {
+            } elseif (isset($data['here'])) {
                 $tpl = $this->getCFGDef('parentRowHereTpl', $tpl);
-            } elseif ($data['active']) {
+            } elseif (isset($data['active'])) {
                 $tpl = $this->getCFGDef('parentRowActiveTpl', $tpl);
             }
         } elseif ($data['level'] > 1) {
