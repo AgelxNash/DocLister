@@ -496,11 +496,11 @@ class site_content_menuDocLister extends site_contentDocLister
             }
         } elseif ($data['level'] > 1) {
             $tpl = $this->getCFGDef('innerRowTpl', $tpl);
-            if ($data['here']) {
+            if (isset($data['here'])) {
                 $tpl = $this->getCFGDef('innerRowHereTpl', $tpl);
             }
         } else {
-            if ($data['here']) {
+            if (isset($data['here'])) {
                 $tpl = $this->getCFGDef('rowHereTpl', $tpl);
             }
         }
