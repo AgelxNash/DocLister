@@ -482,7 +482,7 @@ class site_content_menuDocLister extends site_contentDocLister
     protected function getRowTemplate($data = array())
     {
         $tpl = $this->getCFGDef('rowTpl', '@CODE:<li[+classes+]><a href="[+url+]">[+title+]</a></li>');
-        if ($data['wrap']) {
+        if (!empty($data['wrap'])) {
             $tpl = $this->getCFGDef('parentRowTpl',
                 '@CODE:<li[+classes+]><a href="[+url+]">[+title+]</a>[+wrap+]</li>');
             if ((isset($data['template']) && !$data['template']) || (isset($data['link_attributes']) && strpos($data['link_attributes'],
