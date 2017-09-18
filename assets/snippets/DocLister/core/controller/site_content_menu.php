@@ -469,7 +469,7 @@ class site_content_menuDocLister extends site_contentDocLister
         }
         $classNames = implode(' ', array_filter(array_values($classes)));
         $classes['classNames'] = $classNames;
-        $classes['classes'] = " class=\"{$classNames}\"";
+        $classes['classes'] = $classNames ? " class=\"{$classNames}\"" : "";
 
         return $classes;
     }
