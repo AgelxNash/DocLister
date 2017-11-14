@@ -119,6 +119,8 @@ class Config
             $out = \jsonHelper::jsonDecode($arr, array('assoc' => true));
             if (is_null($out) && $sep) {
                 $out = array_filter(explode($sep, $arr));
+            } else {
+                $out = array();
             }
 
             return $out;
