@@ -96,6 +96,21 @@ class paginate_DL_Extender extends extDocLister
         $this->DocLister->toPlaceholders($from, 1, "from");
         $this->DocLister->toPlaceholders($to, 1, "to");
         $this->DocLister->toPlaceholders($this->renderPages($paginate), 1, "pages");
+        
+		if($pages > 1) {
+			if($this->currentPage() == 1) {
+				$next = 2;
+			} elseif($pages == $this->currentPage()) {
+				$prev = $this->currentPage() - 1;
+			} else {
+				$prev = $this->currentPage() - 1;
+				$next = $this->currentPage() + 1;
+			}
+			
+			if(isset($prev)) $this->modx->regClientStartupHTMLBlock('<link rel="prev" href="' .$this->getUrl(). '?page=' .$prev. '">');
+			if(isset($next)) $this->modx->regClientStartupHTMLBlock('<link rel="next" href="' .$this->getUrl(). '?page=' .$next. '">');
+		}
+        
         $this->DocLister->toPlaceholders(($this->currentPage() == 1 ? 1 : 0), 1,
             "isstart"); //[+isstart+] – is start page
         $this->DocLister->toPlaceholders(($this->currentPage() == $pages ? 1 : 0), 1,
