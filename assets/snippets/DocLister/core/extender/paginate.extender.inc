@@ -241,10 +241,10 @@ class paginate_DL_Extender extends extDocLister
                 $nextPage = $currentPage + 1;
             }
             if ($nextPage) {
-                $this->modx->regClientStartupHTMLBlock('<link rel="next" href="' . $p->get_pagenum_link($nextPage) . '"');
+                $this->modx->regClientStartupHTMLBlock('<link rel="next" href="' . $p->get_pagenum_link($nextPage) . '">');
             }
             if ($prevPage) {
-                $this->modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $p->get_pagenum_link($prevPage) . '"');
+                $this->modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $p->get_pagenum_link($prevPage) . '">');
             }
         }
 
