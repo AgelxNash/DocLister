@@ -2,7 +2,7 @@
 /**
  * DLBeforeAfter
  *
- * Пагинация по прошедшим и предстоящим событиями с учетом текущей даты
+ * Navigation between post and upcoming events relative to the current date.
  *
  * @category 	snippet
  * @version 	1

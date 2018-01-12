@@ -2,7 +2,7 @@
 /**
  * DLFirstChar
  *
- * Группировка документов по первой букве
+ * Grouping documents by the first character
  *
  * @category 	snippet
  * @version 	1
