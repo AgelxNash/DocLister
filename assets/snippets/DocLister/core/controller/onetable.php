@@ -209,6 +209,13 @@ class onetableDocLister extends DocLister
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
+            
+           	//====== block added by Dreamer to enable filters ======
+            $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+            $where = sqlHelper::trimLogicalOp($where);
+        	//------- end of block -------
+
+            
             if ($where != '') {
                 $where = array($where);
             }
@@ -243,6 +250,13 @@ class onetableDocLister extends DocLister
 
         $tmpWhere = $this->getCFGDef('addWhereList', '');
         $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
+        
+    	//====== block added by Dreamer to enable filters ======
+        $tmpWhere = ($tmpWhere ? $tmpWhere . ' AND ' : '') . $this->_filters['where'];
+        $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
+	    //------- end of block -------
+        
+        
         if (!empty($tmpWhere)) {
             $where[] = $tmpWhere;
         }
@@ -309,6 +323,12 @@ class onetableDocLister extends DocLister
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
+            
+        	//====== block added by Dreamer ======
+            $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
+            $where = sqlHelper::trimLogicalOp($where);
+	        //------- end of block -------
+            
             if ($where != '') {
                 $where = array($where);
             } else {
