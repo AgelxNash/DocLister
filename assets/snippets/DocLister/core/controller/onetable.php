@@ -49,6 +49,7 @@ class onetableDocLister extends DocLister
     public function _render($tpl = '')
     {
         $out = '';
+        $separator = $this->getCFGDef('outputSeparator', '');
         if ($tpl == '') {
             $tpl = $this->getCFGDef('tpl', '');
         }
@@ -127,6 +128,9 @@ class onetableDocLister extends DocLister
                             "item[" . $i . "]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
                     }
                     $out .= $tmp;
+                    if (next($this->_docs) !== false) {
+                        $out .= $separator;
+                    }
                     $i++;
                 }
             }
