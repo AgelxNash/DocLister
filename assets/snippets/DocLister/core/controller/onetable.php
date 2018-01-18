@@ -212,6 +212,7 @@ class onetableDocLister extends DocLister
         $out = array();
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+            $from = $this->table . " " . $this->_filters['join'];
             $where = $this->getCFGDef('addWhereList', '');
             
            	//====== block added by Dreamer to enable filters ======
@@ -233,7 +234,8 @@ class onetableDocLister extends DocLister
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
             $fields = $this->getCFGDef('selectFields', '*');
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
-            $rs = $this->dbQuery("SELECT {$fields} FROM {$this->table} {$where} {$group} {$this->SortOrderSQL($this->getPK())} {$limit}");
+            $sort = $this->SortOrderSQL($this->getPK());
+            $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where} {$group} {$sort} {$limit}");
 
             $pk = $this->getPK(false);
             while ($item = $this->modx->db->getRow($rs)) {
@@ -251,7 +253,7 @@ class onetableDocLister extends DocLister
     {
         $where = array();
         $out = array();
-
+        $from = $this->table . " " . $this->_filters['join'];
         $tmpWhere = $this->getCFGDef('addWhereList', '');
         $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
         
@@ -300,12 +302,10 @@ class onetableDocLister extends DocLister
         }
         $fields = $this->getCFGDef('selectFields', '*');
         $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
+        $sort = $this->SortOrderSQL($this->getPK());
+        $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0))
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
-            $rs = $this->dbQuery("SELECT {$fields} FROM " . $this->table . " " . $where . " " .
-                $group . " " .
-                $this->SortOrderSQL($this->getPK()) . " " .
-                $this->LimitSQL($this->getCFGDef('queryLimit', 0))
-            );
+            $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where} {$group} {$sort} {$limit}");
 
             $pk = $this->getPK(false);
 
@@ -326,6 +326,7 @@ class onetableDocLister extends DocLister
         $out = 0;
         $sanitarInIDs = $this->sanitarIn($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
+            $from = $this->table . " " . $this->_filters['join'];
             $where = $this->getCFGDef('addWhereList', '');
             
         	//====== block added by Dreamer ======
@@ -376,7 +377,7 @@ class onetableDocLister extends DocLister
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', $this->getPK()));
             $maxDocs = $this->getCFGDef('maxDocs', 0);
             $limit = $maxDocs > 0 ? $this->LimitSQL($this->getCFGDef('maxDocs', 0)) : '';
-            $rs = ("SELECT count(*) FROM (SELECT count(*) FROM {$this->table} {$where} {$group} {$limit}) as `tmp`");
+            $rs = ("SELECT count(*) FROM (SELECT count(*) FROM {$from} {$where} {$group} {$limit}) as `tmp`");
             $out = $this->modx->db->getValue($rs);
         }
 
