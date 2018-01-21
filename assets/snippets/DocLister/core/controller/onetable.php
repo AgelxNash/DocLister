@@ -303,7 +303,7 @@ class onetableDocLister extends DocLister
         $fields = $this->getCFGDef('selectFields', '*');
         $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
         $sort = $this->SortOrderSQL($this->getPK());
-        $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0))
+        $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $rs = $this->dbQuery("SELECT {$fields} FROM {$from} {$where} {$group} {$sort} {$limit}");
 
