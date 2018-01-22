@@ -2,7 +2,7 @@
 /**
  * DLReflect
  *
- * Построение списка дат для фильтрации по ним документов
+ * Building a list of dates to filter documents
  *
  * @category 	snippet
  * @version 	2

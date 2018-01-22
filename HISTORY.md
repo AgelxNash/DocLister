@@ -1,3 +1,15 @@
+## 2.3.13 (19.01.2018)
+* [Enhancement] Параметр ouputSeparator для разделения документов при выводе.
+* [Refactor] Поддержка фильтров в контроллере onetable.
+* [Fix] Ошибки в js-компоненте EUIGrid.
+* [Fix] Метод loadArray в Helpers\Config не возвращал данные, заданные в виде массива.
+* [Enhancement] Поддержка польского языка в js-компонентах.
+* [Enhancement] Параметр paginationMeta для добавления мета-тегов link rel="next" и link rel="prev".
+* [Enhancement] Валидация данных в APIhelpers::getkey.
+* [Enhancement] Локализация размеров в Helpers\FS::fileSize.
+* [Fix] Некорректная проверка параметра parents на пустоту.
+* [Fix] Параметр pageLimit.
+
 ## 2.3.12 (14.11.2017)
 * [Fix] Метод loadArray в Helpers\Config мог вернуть null.
 * [Fix] Обратная совместимость в Helpers\Mailer.
