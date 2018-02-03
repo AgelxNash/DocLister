@@ -404,8 +404,11 @@ class modUsers extends MODxAPI
     {
         $flag = false;
         if (isset($_COOKIE[$cookieName])) {
-            $cookie = explode('|', $_COOKIE[$cookieName], 3);
+            $cookie = explode('|', $_COOKIE[$cookieName], 4);
             if (isset($cookie[0], $cookie[1], $cookie[2]) && strlen($cookie[0]) == 32 && strlen($cookie[1]) == 32) {
+                if (!$fulltime && isset($cookie[4])) {
+                    $fulltime = (int)$cookie[4];
+                }
                 $this->close();
                 $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->escape($cookie[0])}'");
                 $id = $this->modx->db->getValue($q);
