@@ -26,7 +26,10 @@ if(!class_exists("DLSitemap")){
                 $data['priority'] = '0.25';
                 $data['update'] = 'monthly';
             }
-            $data['date'] = date('c', $data['date']);
+            $dateFormat = $_DocLister->getCFGDef('dateFormat', '%FT%T%z');
+            if ($dateFormat) {
+                $data['date'] = strftime($dateFormat, $data['date']);
+            }
             $priorityField = $_DocLister->getCFGDef('priority', 'tv.sitemap_priority');
             $changefreqField = $_DocLister->getCFGDef('changefreq', 'tv.sitemap_changefreq');
             if (!empty($data[$priorityField])) {
