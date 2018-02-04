@@ -56,8 +56,6 @@ class site_contentDocLister extends DocLister
 
         if ($this->extPaginate = $this->getExtender('paginate')) {
             $this->extPaginate->init($this);
-        } else {
-            $this->config->setConfig(array('start' => 0));
         }
         $type = $this->getCFGDef('idType', 'parents');
         $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
