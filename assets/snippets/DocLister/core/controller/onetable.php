@@ -221,6 +221,8 @@ class onetableDocLister extends DocLister
             
             if ($where != '') {
                 $where = array($where);
+            } else {
+                $where = array();
             }
             if ($sanitarInIDs != "''") {
                 $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
@@ -228,7 +230,10 @@ class onetableDocLister extends DocLister
 
             if (!empty($where)) {
                 $where = "WHERE " . implode(" AND ", $where);
+            } else {
+                $where = '';
             }
+            
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
             $fields = $this->getCFGDef('selectFields', '*');
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
