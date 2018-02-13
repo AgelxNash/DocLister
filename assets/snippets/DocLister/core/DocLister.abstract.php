@@ -49,6 +49,13 @@ abstract class DocLister
      * @access protected
      */
     protected $modx = null;
+    
+    /**
+     * Шаблонизатор чанков
+     * @var DLTemplate
+     * @access protected
+     */
+    protected $DLTemplate = null;
 
     /**
      * Массив загруженных экстендеров
@@ -259,6 +266,15 @@ abstract class DocLister
         }
         $this->_filters = $this->getFilters($this->getCFGDef('filters', ''));
         $this->ownerTPL = $this->getCFGDef("ownerTPL", "");
+        $DLTemplate = DLTemplate::getInstance($modx);
+        if ($path = $this->getCFGDef('templatePath')) {
+            $DLTemplate->setTemplatePath($path);
+        }
+        if ($ext = $this->getCFGDef('templateExtension')) {
+            $DLTemplate->setTemplateExtension($ext);
+        }
+        $DLTemplate->setTwigTemplateVars(array('DocLister' => $this));
+        $this->DLTemplate = $DLTemplate;
     }
 
     /**
@@ -926,15 +942,8 @@ abstract class DocLister
             "parseChunk",
             2, array('html', null)
         );
-        $DLTemplate = DLTemplate::getInstance($this->getMODX());
-        if ($path = $this->getCFGDef('templatePath')) {
-            $DLTemplate->setTemplatePath($path);
-        }
-        if ($ext = $this->getCFGDef('templateExtension')) {
-            $DLTemplate->setTemplateExtension($ext);
-        }
-        $DLTemplate->setTwigTemplateVars(array('DocLister' => $this));
-        $out = $DLTemplate->parseChunk($name, $data, $parseDocumentSource);
+
+        $out = $this->DLTemplate->parseChunk($name, $data, $parseDocumentSource);
         $out = $this->parseLang($out);
         if (empty($out)) {
             $this->debug->debug("Empty chunk: " . $this->debug->dumpData($name), '', 2);
