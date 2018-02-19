@@ -113,13 +113,7 @@ class modUsers extends MODxAPI
                 $this->id = null;
             } else {
                 $this->set('editedon', time());
-                $result = $this->query("
-                    SELECT * from {$this->makeTable('web_user_attributes')} as attribute
-                    LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
-                    WHERE BINARY {$find}='{$this->escape($id)}'
-                ");
-                $this->field = $this->modx->db->getRow($result);
-
+                $this->editQuery($find, $id);
                 $this->id = empty($this->field['internalKey']) ? null : $this->get('internalKey');
                 $this->store($this->toArray());
                 unset($this->field['id']);
@@ -128,6 +122,19 @@ class modUsers extends MODxAPI
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $find
+     * @param string $id
+     */
+    protected function editQuery($find, $id) {
+        $result = $this->query("
+            SELECT * from {$this->makeTable('web_user_attributes')} as attribute
+            LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
+            WHERE BINARY {$find}='{$this->escape($id)}'
+        ");
+        $this->field = $this->modx->db->getRow($result);
     }
 
     /**
@@ -146,6 +153,11 @@ class modUsers extends MODxAPI
                 case 'sessionid':
                     session_regenerate_id(false);
                     $value = session_id();
+                    if ($mid = $this->modx->getLoginUserID('mgr')) {
+                        $this->modx->db->query("UPDATE {$this->makeTable('active_user_locks')} SET `sid`='{$value}' WHERE `internalKey`={$mid}");
+                        $this->modx->db->query("UPDATE {$this->makeTable('active_user_sessions')} SET `sid`='{$value}' WHERE `internalKey`={$mid}");
+                        $this->modx->db->query("UPDATE {$this->makeTable('active_users')} SET `sid`='{$value}' WHERE `internalKey`={$mid}");
+                    }
                     break;
                 case 'editedon':
                 case 'createdon':
@@ -217,26 +229,9 @@ class modUsers extends MODxAPI
             $this->id = $this->modx->db->getInsertId();
         }
 
-        foreach ($this->default_field['attribute'] as $key => $value) {
-            $tmp = $this->get($key);
-            if ($this->newDoc && (!is_int($tmp) && $tmp == '')) {
-                $this->field[$key] = $value;
-            }
-            $this->Uset($key, 'attribute');
-            unset($fld[$key]);
-        }
-        if (!empty($this->set['attribute'])) {
-            if ($this->newDoc) {
-                $this->set('internalKey', $this->id)->Uset('internalKey', 'attribute');
-                $SQL = "INSERT into {$this->makeTable('web_user_attributes')} SET " . implode(', ',
-                        $this->set['attribute']);
-            } else {
-                $SQL = "UPDATE {$this->makeTable('web_user_attributes')} SET " . implode(', ',
-                        $this->set['attribute']) . " WHERE  internalKey = " . $this->getID();
-            }
-            $this->query($SQL);
-        }
+        $this->saveQuery($fld);
         unset($fld['id']);
+
         foreach ($fld as $key => $value) {
             if ($value == '' || !$this->isChanged($key)) {
                 continue;
@@ -276,6 +271,31 @@ class modUsers extends MODxAPI
     }
 
     /**
+     * @param  array  $fld 
+     */
+    protected function saveQuery(array &$fld) {
+        foreach ($this->default_field['attribute'] as $key => $value) {
+            $tmp = $this->get($key);
+            if ($this->newDoc && (!is_int($tmp) && $tmp == '')) {
+                $this->field[$key] = $value;
+            }
+            $this->Uset($key, 'attribute');
+            unset($fld[$key]);
+        }
+        if (!empty($this->set['attribute'])) {
+            if ($this->newDoc) {
+                $this->set('internalKey', $this->id)->Uset('internalKey', 'attribute');
+                $SQL = "INSERT into {$this->makeTable('web_user_attributes')} SET " . implode(', ',
+                        $this->set['attribute']);
+            } else {
+                $SQL = "UPDATE {$this->makeTable('web_user_attributes')} SET " . implode(', ',
+                        $this->set['attribute']) . " WHERE  internalKey = " . $this->getID();
+            }
+            $this->query($SQL);
+        }
+    }
+
+    /**
      * @param $ids
      * @param bool $fire_events
      * @return bool|null|void
@@ -283,10 +303,7 @@ class modUsers extends MODxAPI
     public function delete($ids, $fire_events = false)
     {
         if ($this->edit($ids)) {
-            $flag = $this->query("
-          DELETE user,attribute FROM {$this->makeTable('web_user_attributes')} as attribute
-            LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
-            WHERE attribute.internalKey='{$this->escape($this->getID())}'");
+            $flag = $this->deleteQuery();
             $this->query("DELETE FROM {$this->makeTable('web_user_settings')} WHERE webuser='{$this->getID()}'");
             $this->query("DELETE FROM {$this->makeTable('web_groups')} WHERE webuser='{$this->getID()}'");
             $this->invokeEvent('OnWebDeleteUser', array(
@@ -302,6 +319,13 @@ class modUsers extends MODxAPI
         $this->close();
 
         return $flag;
+    }
+
+    protected function deleteQuery() {
+        return $this->query("
+          DELETE user,attribute FROM {$this->makeTable('web_user_attributes')} as attribute
+            LEFT JOIN {$this->makeTable('web_users')} as user ON user.id=attribute.internalKey
+            WHERE attribute.internalKey='{$this->escape($this->getID())}'");
     }
 
     /**
@@ -404,8 +428,11 @@ class modUsers extends MODxAPI
     {
         $flag = false;
         if (isset($_COOKIE[$cookieName])) {
-            $cookie = explode('|', $_COOKIE[$cookieName], 3);
+            $cookie = explode('|', $_COOKIE[$cookieName], 4);
             if (isset($cookie[0], $cookie[1], $cookie[2]) && strlen($cookie[0]) == 32 && strlen($cookie[1]) == 32) {
+                if (!$fulltime && isset($cookie[4])) {
+                    $fulltime = (int)$cookie[4];
+                }
                 $this->close();
                 $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->escape($cookie[0])}'");
                 $id = $this->modx->db->getValue($q);

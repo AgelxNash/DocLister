@@ -797,6 +797,7 @@ class modResource extends MODxAPI
      */
     protected function get_TV($reload = false)
     {
+        $this->modx->_TVnames = array();
         if (empty($this->modx->_TVnames) || $reload) {
             $result = $this->query('SELECT `id`,`name`,`type` FROM ' . $this->makeTable('site_tmplvars'));
             while ($row = $this->modx->db->GetRow($result)) {

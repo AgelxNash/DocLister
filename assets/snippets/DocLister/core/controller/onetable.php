@@ -33,8 +33,6 @@ class onetableDocLister extends DocLister
     {
         if ($this->checkExtender('paginate')) {
             $this->extender['paginate']->init($this);
-        } else {
-            $this->config->setConfig(array('start' => 0));
         }
         $type = $this->getCFGDef('idType', 'parents');
         $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
@@ -223,6 +221,8 @@ class onetableDocLister extends DocLister
             
             if ($where != '') {
                 $where = array($where);
+            } else {
+                $where = array();
             }
             if ($sanitarInIDs != "''") {
                 $where[] = "{$this->getPK()} IN ({$sanitarInIDs})";
@@ -230,7 +230,10 @@ class onetableDocLister extends DocLister
 
             if (!empty($where)) {
                 $where = "WHERE " . implode(" AND ", $where);
+            } else {
+                $where = '';
             }
+            
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
             $fields = $this->getCFGDef('selectFields', '*');
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
