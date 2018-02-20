@@ -44,7 +44,7 @@ class site_content_menuDocLister extends site_contentDocLister
         if ($ids = $this->getCFGDef('documents')) {
             $this->setIDs($ids);
             $docs = $this->getDocList();
-            $dispay = count($docs);
+            $display = count($docs);
             $iteration = 1;
             foreach ($docs as $id => &$item) {
                 $item['iteration'] = $iteration++;
