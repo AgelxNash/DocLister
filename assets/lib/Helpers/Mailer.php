@@ -6,7 +6,7 @@ include_once(MODX_MANAGER_PATH . 'includes/extenders/modxmailer.class.inc.php');
 
 use MODxMailer;
 use DocumentParser;
-use phpmailerException;
+use PHPMailer\PHPMailer\Exception as phpmailerException;
 
 /**
  * Class Mailer
