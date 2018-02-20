@@ -54,6 +54,11 @@ class modManagers extends MODxAPI
     protected $mgrPermissions = array();
 
     /**
+     * @var integer
+     */
+    private $rememberTime;
+
+    /**
      * MODxAPI constructor.
      * @param DocumentParser $modx
      * @param bool $debug
@@ -61,10 +66,26 @@ class modManagers extends MODxAPI
      */
     public function __construct(DocumentParser $modx, $debug = false)
     {
+        $this->setRememberTime(60 * 60 * 24 * 365 * 5);
         parent::__construct($modx, $debug);
         $this->modx->loadExtension('phpass');
     }
 
+    /**
+     * @param $val
+     * @return $this
+     */
+    protected function setRememberTime($val){
+        $this->rememberTime = (int)$val;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getRememberTime(){
+        return $this->rememberTime;
+    }
 
     /**
      * @param $key
@@ -349,7 +370,7 @@ class modManagers extends MODxAPI
 
     /**
      * @param int $id
-     * @param bool $fulltime
+     * @param bool|integer $fulltime
      * @param string $cookieName
      * @param bool $fire_events
      * @return bool
@@ -488,6 +509,7 @@ class modManagers extends MODxAPI
      *
      * @param string $directive ('start' or 'destroy')
      * @param string $cookieName
+     * @param bool|integer $remember
      * @return modUsers
      * @author Raymond Irving
      * @author Scotty Delicious
@@ -512,7 +534,7 @@ class modManagers extends MODxAPI
                     $_SESSION['mgrPermissions'] = $this->mgrPermissions;
                     $_SESSION['mgrDocgroups'] = $this->getDocumentGroups();
                     $_SESSION['mgrToken'] = md5($this->get('sessionid'));
-                    if ($remember) {
+                    if (!empty($remember)) {
                         $this->setAutoLoginCookie($cookieName, $remember);
                     }
                 }
@@ -557,14 +579,14 @@ class modManagers extends MODxAPI
 
     /**
      * @param $cookieName
-     * @param bool $remember
+     * @param bool|integer $remember
      * @return $this
      */
     public function setAutoLoginCookie($cookieName, $remember = true)
     {
         if (!empty($cookieName) && $this->getID() !== null) {
             $secure = $this->isSecure();
-            $remember = is_bool($remember) ? (60 * 60 * 24 * 365 * 5) : (int)$remember;
+            $remember = is_bool($remember) ? $this->getRememberTime() : (int)$remember;
             $cookieValue = $this->get('username');
             $cookieExpires = time() + $remember;
             setcookie($cookieName, $cookieValue, $cookieExpires, MODX_BASE_URL, '', $secure, true);

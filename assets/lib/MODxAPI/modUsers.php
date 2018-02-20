@@ -54,6 +54,39 @@ class modUsers extends MODxAPI
     protected $groupIds = array();
 
     /**
+     * @var integer
+     */
+    private $rememberTime;
+
+    /**
+     * MODxAPI constructor.
+     * @param DocumentParser $modx
+     * @param bool $debug
+     * @throws Exception
+     */
+    public function __construct(DocumentParser $modx, $debug = false)
+    {
+        $this->setRememberTime(60 * 60 * 24 * 365 * 5);
+        parent::__construct($modx, $debug);
+    }
+
+    /**
+     * @param $val
+     * @return $this
+     */
+    protected function setRememberTime($val){
+        $this->rememberTime = (int)$val;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getRememberTime(){
+        return $this->rememberTime;
+    }
+
+    /**
      * @param $key
      * @return bool
      */
@@ -330,7 +363,7 @@ class modUsers extends MODxAPI
 
     /**
      * @param int $id
-     * @param bool $fulltime
+     * @param bool|integer $fulltime
      * @param string $cookieName
      * @param bool $fire_events
      * @return bool
@@ -420,7 +453,7 @@ class modUsers extends MODxAPI
     }
 
     /**
-     * @param bool $fulltime
+     * @param bool|integer $fulltime
      * @param string $cookieName
      * @return bool
      */
@@ -431,7 +464,7 @@ class modUsers extends MODxAPI
             $cookie = explode('|', $_COOKIE[$cookieName], 4);
             if (isset($cookie[0], $cookie[1], $cookie[2]) && strlen($cookie[0]) == 32 && strlen($cookie[1]) == 32) {
                 if (!$fulltime && isset($cookie[4])) {
-                    $fulltime = (bool)$cookie[4];
+                    $fulltime = (int)$cookie[4];
                 }
                 $this->close();
                 $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->escape($cookie[0])}'");
@@ -477,6 +510,7 @@ class modUsers extends MODxAPI
      *
      * @param string $directive ('start' or 'destroy')
      * @param string $cookieName
+     * @param bool|integer $remember
      * @return modUsers
      * @author Raymond Irving
      * @author Scotty Delicious
@@ -501,7 +535,7 @@ class modUsers extends MODxAPI
                     $_SESSION['webUsrConfigSet'] = array();
                     $_SESSION['webUserGroupNames'] = $this->getUserGroups();
                     $_SESSION['webDocgroups'] = $this->getDocumentGroups();
-                    if ($remember) {
+                    if (!empty($remember)) {
                         $this->setAutoLoginCookie($cookieName, $remember);
                     }
                 }
@@ -548,14 +582,14 @@ class modUsers extends MODxAPI
 
     /**
      * @param $cookieName
-     * @param bool $remember
+     * @param bool|integer $remember
      * @return $this
      */
     public function setAutoLoginCookie($cookieName, $remember = true)
     {
         if (!empty($cookieName) && $this->getID() !== null) {
             $secure = $this->isSecure();
-            $remember = is_bool($remember) ? (60 * 60 * 24 * 365 * 5) : (int)$remember;
+            $remember = is_bool($remember) ? $this->getRememberTime() : (int)$remember;
             $cookieValue = array(md5($this->get('username')), $this->get('password'), $this->get('sessionid'), $remember);
             $cookieValue = implode('|', $cookieValue);
             $cookieExpires = time() + $remember;
