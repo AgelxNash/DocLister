@@ -309,14 +309,14 @@ class DLphx
                         break;
                     case "show":
                         $conditional = implode(' ', $condition);
-                        $isvalid = intval(eval("return (" . $conditional . ");"));
+                        $isvalid = intval($this->runCode($conditional));
                         if (!$isvalid) {
                             $output = null;
                         }
                         break;
                     case "then":
                         $conditional = implode(' ', $condition);
-                        $isvalid = intval(eval("return (" . $conditional . ");"));
+                        $isvalid = intval($this->runCode($conditional));
                         if ($isvalid) {
                             $output = $modifier_value[$i];
                         } else {
@@ -325,7 +325,7 @@ class DLphx
                         break;
                     case "else":
                         $conditional = implode(' ', $condition);
-                        $isvalid = intval(eval("return (" . $conditional . ");"));
+                        $isvalid = intval($this->runCode($condition));
                         if (!$isvalid) {
                             $output = $modifier_value[$i];
                         }
@@ -516,6 +516,9 @@ class DLphx
         return $output;
     }
 
+    private function runCode($code){
+        return eval("return (" . $code . ");");
+    }
     // Event logging (debug)
     /**
      * @return string
