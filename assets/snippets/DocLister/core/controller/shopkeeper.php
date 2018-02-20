@@ -269,7 +269,7 @@ class shopkeeperDocLister extends site_contentDocLister
     }
 
     /**
-     * @param $id
+     * @param $id|array
      * @return array
      */
     public function getChildrenFolder($id)

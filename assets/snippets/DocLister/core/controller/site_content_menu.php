@@ -67,7 +67,7 @@ class site_content_menuDocLister extends site_contentDocLister
             foreach ($this->levels as $level => $docs) {
                 $ids = array_merge($ids, array_keys($docs));
             }
-            if ($ids) {
+            if (!empty($ids)) {
                 $tv = $this->extTV->getTVList($ids, $tvlist);
                 if (!is_array($tv)) {
                     $tv = array();
@@ -232,7 +232,7 @@ class site_content_menuDocLister extends site_contentDocLister
         $this->debug->debug(array('Render data with template ' => $tpl), 'render', 2, array('html'));
         if (empty($this->levels)) {
             $noneTpl = $this->getCFGDef('noneTpl');
-            $out = $noneTpl ? $this->parseChunk($noneTpl) : '';
+            $out = $noneTpl ? $this->parseChunk($noneTpl, array()) : '';
         } else {
             $out = $this->_render($tpl);
         }
@@ -279,7 +279,7 @@ class site_content_menuDocLister extends site_contentDocLister
                 }
 
                 if (isset($data['wrap'])) {
-                    $data['wrap'] = is_array($data['wrap']) ? $this->parseRow($data['wrap']) : $data['wrap'];
+                    if(is_array($data['wrap'])) $data['wrap'] = $this->parseRow($data['wrap']);
                     $data['wrap'] = $this->parseOuter($data);
                 }
                 $hideSubMenus = $this->getCFGDef('hideSubMenus', 0);
@@ -305,9 +305,7 @@ class site_content_menuDocLister extends site_contentDocLister
                 }
             }
         }
-        if ($joinMenus) {
-            $out = $this->parseOuter(array('wrap' => $out));
-        }
+        if ($joinMenus) $out = $this->parseOuter(array('wrap' => $out));
 
         return $out;
     }
@@ -382,9 +380,10 @@ class site_content_menuDocLister extends site_contentDocLister
             $classes = " class=\"{$classNames}\"";
         }
         $tpl = isset($data['_renderOuterTpl']) ? $data['_renderOuterTpl'] : $tpl;
-        $out = $this->parseChunk($tpl,
-            array_merge($data,
-                array('classes' => $classes, 'classNames' => $classNames)));
+        $out = $this->parseChunk(
+            $tpl,
+            array_merge($data, array('classes' => $classes, 'classNames' => $classNames))
+        );
 
         return $out;
     }

@@ -40,17 +40,18 @@ class DLphx
 
     /**
      * DLphx constructor.
-     * @param int $debug
+     * @param int|bool|string $debug
      * @param int $maxpass
      */
-    public function __construct($debug = 0, $maxpass = 50)
+    public function __construct($debug = false, $maxpass = 50)
     {
         global $modx;
+
         $this->user["mgrid"] = isset($_SESSION['mgrInternalKey']) ? intval($_SESSION['mgrInternalKey']) : 0;
         $this->user["usrid"] = isset($_SESSION['webInternalKey']) ? intval($_SESSION['webInternalKey']) : 0;
         $this->user["id"] = ($this->user["usrid"] > 0) ? (-$this->user["usrid"]) : $this->user["mgrid"];
 
-        $this->debug = ($debug !== '') ? (bool)$debug : false;
+        $this->debug = (bool)$debug;
 
         $this->maxPasses = ($maxpass != '') ? $maxpass : 50;
 

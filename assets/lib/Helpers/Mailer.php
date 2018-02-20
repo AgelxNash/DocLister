@@ -1,7 +1,12 @@
 <?php namespace Helpers;
 
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
+include_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 include_once(MODX_MANAGER_PATH . 'includes/extenders/modxmailer.class.inc.php');
+
+use MODxMailer;
+use DocumentParser;
+use phpmailerException;
 
 /**
  * Class Mailer
@@ -10,7 +15,7 @@ include_once(MODX_MANAGER_PATH . 'includes/extenders/modxmailer.class.inc.php');
 class Mailer
 {
     /**
-     * @var \PHPMailer $mail
+     * @var MODxMailer $mail
      */
     protected $mail = null;
     protected $modx = null;
@@ -19,16 +24,25 @@ class Mailer
     protected $queuePath = 'assets/cache/mail/';
 
     /**
+     * @var string
+     */
+    protected $Body = '';
+    /**
+     * @var string
+     */
+    protected $Subject = '';
+
+    /**
      * Mailer constructor.
-     * @param \DocumentParser $modx
+     * @param DocumentParser $modx
      * @param $cfg
      * @param bool $debug
      */
-    public function __construct(\DocumentParser $modx, $cfg, $debug = false)
+    public function __construct(DocumentParser $modx, $cfg, $debug = false)
     {
         $this->modx = $modx;
-        $this->mail = new \MODxMailer();
-        if (method_exists('\MODxMailer', 'init')) {
+        $this->mail = new MODxMailer();
+        if (method_exists('MODxMailer', 'init')) {
             $this->mail->init($modx);
         }
         $this->config = $cfg;
@@ -122,7 +136,7 @@ class Mailer
         $this->Subject = $this->modx->removeSanitizeSeed($this->mail->Subject);
         try {
             $result = $this->mail->preSend() && $this->saveMessage();
-        } catch (\phpmailerException $e) {
+        } catch (phpmailerException $e) {
             $this->mail->SetError($e->getMessage());
 
             $result = false;
@@ -161,11 +175,8 @@ class Mailer
             "config" => $this->config
         ));
         $file = $this->getFileName();
-        $dir = MODX_BASE_PATH . $this->queuePath;
-        if (!is_dir($dir)) {
-            @mkdir($dir);
-        }
-        $result = @file_put_contents($dir . $file, $data) !== false;
+        FS::getInstance()->makeDir($this->queuePath);
+        $result = @file_put_contents(MODX_BASE_PATH . $this->queuePath . $file, $data) !== false;
         if ($result) {
             $result = $file;
         }
@@ -197,7 +208,7 @@ class Mailer
             $result = $this->mail->postSend();
             if ($result) {
                 $this->mail->setMIMEBody()->setMIMEHeader();
-                @unlink($dir . $file);
+                FS::getInstance()->unlink($dir . $file);
             }
         }
 

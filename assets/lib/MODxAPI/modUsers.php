@@ -253,9 +253,9 @@ class modUsers extends MODxAPI
                 'username'     => $this->get('username')
             ), $fire_events);
         }
-        
-        if ($this->groupIds) $this->setUserGroups($this->id, $this->groupIds);
-        
+
+        if (!empty($this->groupIds)) $this->setUserGroups($this->id, $this->groupIds);
+
         $this->invokeEvent('OnWebSaveUser', array(
             'userObj' => $this,
             'mode'    => $this->newDoc ? "new" : "upd",
@@ -271,7 +271,7 @@ class modUsers extends MODxAPI
     }
 
     /**
-     * @param  array  $fld 
+     * @param  array  $fld
      */
     protected function saveQuery(array &$fld) {
         foreach ($this->default_field['attribute'] as $key => $value) {
@@ -431,16 +431,16 @@ class modUsers extends MODxAPI
             $cookie = explode('|', $_COOKIE[$cookieName], 4);
             if (isset($cookie[0], $cookie[1], $cookie[2]) && strlen($cookie[0]) == 32 && strlen($cookie[1]) == 32) {
                 if (!$fulltime && isset($cookie[4])) {
-                    $fulltime = (int)$cookie[4];
+                    $fulltime = (bool)$cookie[4];
                 }
                 $this->close();
                 $q = $this->modx->db->query("SELECT id FROM " . $this->makeTable('web_users') . " WHERE md5(username)='{$this->escape($cookie[0])}'");
                 $id = $this->modx->db->getValue($q);
                 if (
-                    $this->edit($id) 
-                    && null !== $this->getID() 
-                    && $this->get('password') == $cookie[1] 
-                    && $this->get('sessionid') == $cookie[2] 
+                    $this->edit($id)
+                    && null !== $this->getID()
+                    && $this->get('password') == $cookie[1]
+                    && $this->get('sessionid') == $cookie[2]
                     && !$this->checkBlock($this->getID())
                 ) {
                     $flag = $this->authUser($this->getID(), $fulltime, $cookieName, $fire_events);
@@ -454,9 +454,9 @@ class modUsers extends MODxAPI
 
     /**
      * @param string $cookieName
-     * @param null $fire_events
+     * @param bool $fire_events
      */
-    public function logOut($cookieName = 'WebLoginPE', $fire_events = null)
+    public function logOut($cookieName = 'WebLoginPE', $fire_events = false)
     {
         if (!$uid = $this->modx->getLoginUserID('web')) {
             return;
@@ -487,7 +487,7 @@ class modUsers extends MODxAPI
     {
         switch ($directive) {
             case 'start':
-                if ($this->getID()) {
+                if ($this->getID() !== null) {
                     $_SESSION['webShortname'] = $this->get('username');
                     $_SESSION['webFullname'] = $this->get('fullname');
                     $_SESSION['webEmail'] = $this->get('email');
@@ -553,7 +553,7 @@ class modUsers extends MODxAPI
      */
     public function setAutoLoginCookie($cookieName, $remember = true)
     {
-        if (!empty($cookieName) && $this->getID()) {
+        if (!empty($cookieName) && $this->getID() !== null) {
             $secure = $this->isSecure();
             $remember = is_bool($remember) ? (60 * 60 * 24 * 365 * 5) : (int)$remember;
             $cookieValue = array(md5($this->get('username')), $this->get('password'), $this->get('sessionid'), $remember);

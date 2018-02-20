@@ -49,7 +49,7 @@ abstract class DocLister
      * @access protected
      */
     protected $modx = null;
-    
+
     /**
      * Шаблонизатор чанков
      * @var DLTemplate
@@ -728,16 +728,16 @@ abstract class DocLister
      * Если данные в виде строки, то происходит попытка сформировать массив из этой строки по разделителю $sep
      * Точно по тому, по которому потом данные будут собраны обратно
      *
-     * @param mixed $data данные для обработки
+     * @param integer|string|array $data данные для обработки
      * @param string $sep разделитель
      * @param boolean $quote заключать ли данные на выходе в кавычки
      * @return string обработанная строка
      */
     public function sanitarIn($data, $sep = ',', $quote = true)
     {
-        if (!is_array($data)) {
-            $data = explode($sep, $data);
-        }
+        if(is_scalar($data)) $data = explode($sep, $data);
+        if(!is_array($data)) $data = array(); //@TODO: throw
+
         $out = array();
         foreach ($data as $item) {
             if ($item !== '') {
@@ -1366,7 +1366,7 @@ abstract class DocLister
      * Выборка документов которые являются дочерними относительно $id документа и в тоже время
      * являются родителями для каких-нибудь других документов
      *
-     * @param string $id значение PrimaryKey родителя
+     * @param string|array $id значение PrimaryKey родителя
      * @return array массив документов
      */
     abstract public function getChildrenFolder($id);
@@ -1730,7 +1730,7 @@ abstract class DocLister
         if (!$out) {
             $this->debug->error("Error load Filter: '{$this->debug->dumpData($filter)}'", 'Filter');
         }
-            
+
         $this->debug->debugEnd("loadFilter");
 
         return $out;

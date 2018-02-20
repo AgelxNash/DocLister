@@ -181,7 +181,7 @@ class onetableDocLister extends DocLister
                             }
                         }
                     }
-                //nobreak    
+                //nobreak
             }
 
             if ($extE && $tmp = $extE->init($this, array('data' => $row))) {
@@ -212,13 +212,13 @@ class onetableDocLister extends DocLister
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $from = $this->table . " " . $this->_filters['join'];
             $where = $this->getCFGDef('addWhereList', '');
-            
+
            	//====== block added by Dreamer to enable filters ======
             $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             $where = sqlHelper::trimLogicalOp($where);
         	//------- end of block -------
 
-            
+
             if ($where != '') {
                 $where = array($where);
             } else {
@@ -233,7 +233,7 @@ class onetableDocLister extends DocLister
             } else {
                 $where = '';
             }
-            
+
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
             $fields = $this->getCFGDef('selectFields', '*');
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
@@ -259,13 +259,13 @@ class onetableDocLister extends DocLister
         $from = $this->table . " " . $this->_filters['join'];
         $tmpWhere = $this->getCFGDef('addWhereList', '');
         $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
-        
+
     	//====== block added by Dreamer to enable filters ======
         $tmpWhere = ($tmpWhere ? $tmpWhere . ' AND ' : '') . $this->_filters['where'];
         $tmpWhere = sqlHelper::trimLogicalOp($tmpWhere);
 	    //------- end of block -------
-        
-        
+
+
         if (!empty($tmpWhere)) {
             $where[] = $tmpWhere;
         }
@@ -331,12 +331,12 @@ class onetableDocLister extends DocLister
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $from = $this->table . " " . $this->_filters['join'];
             $where = $this->getCFGDef('addWhereList', '');
-            
+
         	//====== block added by Dreamer ======
             $where = ($where ? $where . ' AND ' : '') . $this->_filters['where'];
             $where = sqlHelper::trimLogicalOp($where);
 	        //------- end of block -------
-            
+
             if ($where != '') {
                 $where = array($where);
             } else {
@@ -388,7 +388,7 @@ class onetableDocLister extends DocLister
     }
 
     /**
-     * @param string $id
+     * @param string|array $id
      * @return array
      */
     public function getChildrenFolder($id)

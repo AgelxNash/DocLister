@@ -228,7 +228,7 @@ class modManagers extends MODxAPI
         if(!$this->get('role')) {
             $this->log['UniqueEmail'] = 'Wrong manager role <pre>' . print_r($this->get('role'), true) . '</pre>';
         }
-        
+
         $this->set('sessionid', '');
         $fld = $this->toArray();
         foreach ($this->default_field['user'] as $key => $value) {
@@ -295,7 +295,7 @@ class modManagers extends MODxAPI
             ), $fire_events);
         }
 
-        if ($this->groupIds) {
+        if (!empty($this->groupIds)) {
             $this->setUserGroups($this->id, $this->groupIds);
         }
         // TODO
@@ -463,9 +463,9 @@ class modManagers extends MODxAPI
 
     /**
      * @param string $cookieName
-     * @param null $fire_events
+     * @param bool $fire_events
      */
-    public function logOut($cookieName = 'modx_remember_manager', $fire_events = null)
+    public function logOut($cookieName = 'modx_remember_manager', $fire_events = false)
     {
         if (!$uid = $this->modx->getLoginUserID('mgr')) {
             return;
@@ -498,7 +498,7 @@ class modManagers extends MODxAPI
     {
         switch ($directive) {
             case 'start':
-                if ($this->getID()) {
+                if ($this->getID() !== null) {
                     $_SESSION['usertype'] = 'manager';
                     $_SESSION['mgrShortname'] = $this->get('username');
                     $_SESSION['mgrFullname'] = $this->get('fullname');
@@ -562,7 +562,7 @@ class modManagers extends MODxAPI
      */
     public function setAutoLoginCookie($cookieName, $remember = true)
     {
-        if (!empty($cookieName) && $this->getID()) {
+        if (!empty($cookieName) && $this->getID() !== null) {
             $secure = $this->isSecure();
             $remember = is_bool($remember) ? (60 * 60 * 24 * 365 * 5) : (int)$remember;
             $cookieValue = $this->get('username');

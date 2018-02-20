@@ -516,7 +516,7 @@ class modResource extends MODxAPI
 
         $this->invokeEvent('OnBeforeDocFormSave', array(
             'mode'   => $this->newDoc ? "new" : "upd",
-            'id'     => $this->id ? $this->id : '',
+            'id'     => isset($this->id) ? $this->id : '',
             'doc'    => $this->toArray(),
             'docObj' => $this
         ), $fire_events);
@@ -614,10 +614,10 @@ class modResource extends MODxAPI
             $this->newDoc = false;
         }
 
-        if ($this->groupIds) $this->setDocumentGroups($this->id, $this->groupIds);
+        if (!empty($this->groupIds)) $this->setDocumentGroups($this->id, $this->groupIds);
         $this->invokeEvent('OnDocFormSave', array(
             'mode'   => $this->mode,
-            'id'     => $this->id,
+            'id'     => isset($this->id) ? $this->id : '',
             'doc'    => $this->toArray(),
             'docObj' => $this
         ), $fire_events);
@@ -1011,7 +1011,7 @@ class modResource extends MODxAPI
             $this->field[$field] = $out;
             $this->markAsEncode($field);
         }
-
+        
         return $out;
     }
 

@@ -138,7 +138,7 @@ class dataTable extends \autoTable
 
     /**
      * @param $ids
-     * @param null $fire_events
+     * @param bool $fire_events
      * @return $this
      */
     public function delete($ids, $fire_events = false)
