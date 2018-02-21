@@ -1002,7 +1002,7 @@ class modResource extends MODxAPI
         if ($this->isEncodableField($field)) {
             $data = $this->get($field);
             if ($this->isTVarrayField($field)) {
-                $out = is_array($data) ? implode('||', $data) : $data;
+                $out = is_array($data) ? implode('||', $data) : (string)$data;
             } else {
                 $out = json_encode($data);
             }
@@ -1011,7 +1011,7 @@ class modResource extends MODxAPI
             $this->field[$field] = $out;
             $this->markAsEncode($field);
         }
-        
+
         return $out;
     }
 

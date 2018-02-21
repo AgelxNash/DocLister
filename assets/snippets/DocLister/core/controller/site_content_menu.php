@@ -192,7 +192,7 @@ class site_content_menuDocLister extends site_contentDocLister
                 $_ids[] = $row['parent'];
                 $out[$row['parent']] = $row['count'];
             }
-            if ($_ids) {
+            if (!empty($_ids)) {
                 $ids = $this->diff($ids, $_ids);
             } else {
                 break;

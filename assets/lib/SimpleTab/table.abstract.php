@@ -152,7 +152,7 @@ class dataTable extends \autoTable
     /**
      * @param $ids
      * @param $rid
-     * @param null $fire_events
+     * @param bool $fire_events
      * @return $this
      */
     public function deleteAll($ids, $rid, $fire_events = false)
