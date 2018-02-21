@@ -280,7 +280,9 @@ class site_content_menuDocLister extends site_contentDocLister
                 }
 
                 if (isset($data['wrap'])) {
-                    if(is_array($data['wrap'])) $data['wrap'] = $this->parseRow($data['wrap']);
+                    if(is_array($data['wrap'])) {
+                        $data['wrap'] = $this->parseRow($data['wrap']);
+                    }
                     $data['wrap'] = $this->parseOuter($data);
                 }
                 $hideSubMenus = $this->getCFGDef('hideSubMenus', 0);
@@ -306,7 +308,9 @@ class site_content_menuDocLister extends site_contentDocLister
                 }
             }
         }
-        if ($joinMenus) $out = $this->parseOuter(array('wrap' => $out));
+        if ($joinMenus) {
+            $out = $this->parseOuter(array('wrap' => $out));
+        }
 
         return $out;
     }
@@ -542,7 +546,9 @@ class site_content_menuDocLister extends site_contentDocLister
         $currentLevel = count($this->levels);
         $docs = $this->levels;
 
-        if (empty($docs)) return '[]';
+        if (empty($docs)) {
+            return '[]';
+        }
 
         /** @var prepare_DL_Extender_ $extPrepare */
         $extPrepare = $this->getExtender('prepare');
