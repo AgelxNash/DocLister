@@ -83,7 +83,8 @@ class site_content_menuDocLister extends site_contentDocLister
         return $this->levels;
     }
 
-    public function _getChildren() {
+    public function _getChildren()
+    {
         $maxDepth = $this->getCFGDef('maxDepth', 10);
         if ($this->getCFGDef('hideSubMenus', 0) && empty($this->getCFGDef('openIds'))) {
             $maxDepth = min($maxDepth, $this->setActiveBranch($this->getHereId()));
