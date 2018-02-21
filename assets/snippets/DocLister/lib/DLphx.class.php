@@ -467,7 +467,8 @@ class DLphx
                         $snippetName = 'phx:' . $modifier_cmd[$i];
                         if (isset($modx->snippetCache[$snippetName])) {
                             $snippet = $modx->snippetCache[$snippetName];
-                        } else { // not in cache so let's check the db
+                        } else {
+// not in cache so let's check the db
                             $sql = "SELECT snippet FROM " . $modx->getFullTableName("site_snippets") . " WHERE " . $modx->getFullTableName("site_snippets") . ".name='" . $modx->db->escape($snippetName) . "';";
                             $result = $modx->dbQuery($sql);
                             if ($modx->recordCount($result) == 1) {
@@ -475,7 +476,8 @@ class DLphx
                                 $snippet = $modx->snippetCache[$row['name']] = $row['snippet'];
                                 $this->Log("  |--- DB -> Custom Modifier");
                             } else {
-                                if ($modx->recordCount($result) == 0) { // If snippet not found, look in the modifiers folder
+                                if ($modx->recordCount($result) == 0) {
+// If snippet not found, look in the modifiers folder
                                     $filename = $modx->config['rb_base_dir'] . 'plugins/phx/modifiers/' . $modifier_cmd[$i] . '.phx.php';
                                     if (@file_exists($filename)) {
                                         $file_contents = @file_get_contents($filename);
@@ -516,7 +518,8 @@ class DLphx
         return $output;
     }
 
-    private function runCode($code){
+    private function runCode($code)
+    {
         return eval("return (" . $code . ");");
     }
     // Event logging (debug)

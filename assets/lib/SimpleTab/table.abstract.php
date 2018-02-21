@@ -272,6 +272,8 @@ class dataTable extends \autoTable
      */
     public function setParams($params = array())
     {
-        if (is_array($params)) $this->params = $params;
+        if (is_array($params)) {
+            $this->params = $params;
+        }
     }
 }

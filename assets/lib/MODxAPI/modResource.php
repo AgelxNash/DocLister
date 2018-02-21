@@ -614,7 +614,9 @@ class modResource extends MODxAPI
             $this->newDoc = false;
         }
 
-        if (!empty($this->groupIds)) $this->setDocumentGroups($this->id, $this->groupIds);
+        if (!empty($this->groupIds)) {
+            $this->setDocumentGroups($this->id, $this->groupIds);
+        }
         $this->invokeEvent('OnDocFormSave', array(
             'mode'   => $this->mode,
             'id'     => isset($this->id) ? $this->id : '',
@@ -634,7 +636,8 @@ class modResource extends MODxAPI
      * @param $tvId
      * @return bool
      */
-    protected function belongsToTemplate($tvId) {
+    protected function belongsToTemplate($tvId)
+    {
         $template = $this->get('template');
 
         return isset($this->tvTpl[$template]) && in_array($tvId, $this->tvTpl[$template]);
@@ -816,7 +819,9 @@ class modResource extends MODxAPI
                 $arrayTVs[] = $name;
             }
         }
-        if (empty($this->tvaFields)) $this->tvaFields = $arrayTVs;
+        if (empty($this->tvaFields)) {
+            $this->tvaFields = $arrayTVs;
+        }
         $this->loadTVTemplate()->loadTVDefault(array_values($this->tv));
 
         return $this;
@@ -1056,7 +1061,8 @@ class modResource extends MODxAPI
     /**
      * @param int $docId
      */
-    public function getDocumentGroups($docId = 0) {
+    public function getDocumentGroups($docId = 0)
+    {
         $out = array();
         $doc = $this->switchObject($docId);
         if (null !== $doc->getID()) {
@@ -1082,7 +1088,9 @@ class modResource extends MODxAPI
      */
     public function setDocumentGroups($docId = 0, $groupIds = array())
     {
-        if (!is_array($groupIds)) return $this;
+        if (!is_array($groupIds)) {
+            return $this;
+        }
         if ($this->newDoc && $docId == 0) {
             $this->groupIds = $groupIds;
         } else {

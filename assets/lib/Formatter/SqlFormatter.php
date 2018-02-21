@@ -795,7 +795,8 @@ class SqlFormatter
             if ($string[0] === '-' || $string[0] === '#') {
                 $last = strpos($string, "\n");
                 $type = self::TOKEN_TYPE_COMMENT;
-            } else { // Comment until closing comment tag
+            } else {
+// Comment until closing comment tag
                 $last = strpos($string, "*/", 2) + 2;
                 $type = self::TOKEN_TYPE_BLOCK_COMMENT;
             }
@@ -1044,7 +1045,8 @@ class SqlFormatter
             // Get highlighted token if doing syntax highlighting
             if ($highlight) {
                 $highlighted = self::highlightToken($token);
-            } else { // If returning raw text
+            } else {
+// If returning raw text
                 $highlighted = $token[self::TOKEN_VALUE];
             }
 
