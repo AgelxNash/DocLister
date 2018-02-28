@@ -22,6 +22,7 @@ class Mailer
     public $config = array();
     protected $debug = false;
     protected $queuePath = 'assets/cache/mail/';
+    protected $noemail = false;
 
     /**
      * @var string
@@ -41,13 +42,16 @@ class Mailer
     public function __construct(DocumentParser $modx, $cfg, $debug = false)
     {
         $this->modx = $modx;
-        $this->mail = new MODxMailer();
-        if (method_exists('MODxMailer', 'init')) {
-            $this->mail->init($modx);
+        $this->noemail = (bool)(isset($cfg['noemail']) ? $cfg['noemail'] : 0);
+        if (!$this->noemail) {
+            $this->mail = new MODxMailer();
+            if (method_exists('MODxMailer', 'init')) {
+                $this->mail->init($modx);
+            }
+            $this->config = $cfg;
+            $this->debug = $debug;
+            $this->applyMailConfig();
         }
-        $this->config = $cfg;
-        $this->debug = $debug;
-        $this->applyMailConfig();
     }
 
     /**
@@ -57,7 +61,7 @@ class Mailer
      */
     public function addAddressToMailer($type, $addr)
     {
-        if (!empty($addr)) {
+        if (!$this->noemail && !empty($addr)) {
             $a = array_filter(array_map('trim', explode(',', $addr)));
             foreach ($a as $address) {
                 switch ($type) {
@@ -85,9 +89,13 @@ class Mailer
      */
     public function attachFiles($filelist = array())
     {
-        $contentType = "application/octetstream";
-        foreach ($filelist as $file) {
-            $this->mail->AddAttachment($file['filepath'], $file['filename'], "base64", $contentType);
+        if (!$this->noemail) {
+            $fs = FS::getInstance();
+            $contentType = "application/octetstream";
+            foreach ($filelist as $file) {
+                if (!$fs->checkFile($file['filepath'])) continue;
+                $this->mail->AddAttachment($file['filepath'], $file['filename'], "base64", $contentType);
+            }
         }
 
         return $this;
@@ -100,13 +108,13 @@ class Mailer
     public function send($report)
     {
         //если отправлять некуда или незачем, то делаем вид, что отправили
-        if (!$this->getCFGDef('to') || $this->getCFGDef('noemail')) {
+        if (!$this->getCFGDef('to') || $this->noemail) {
             return true;
         } elseif (empty($report)) {
             return false;
         }
 
-        $this->mail->Body = $report;
+        $this->mail->Body = $this->getCFGDef('isHtml',1) ? $this->mail->msgHTML($report, MODX_BASE_PATH) : $report;
 
         $result = $this->mail->send();
         if ($result) {
@@ -124,13 +132,13 @@ class Mailer
     public function toQueue($report)
     {
         //если отправлять некуда или незачем, то делаем вид, что отправили
-        if (!$this->getCFGDef('to') || $this->getCFGDef('noemail')) {
+        if (!$this->getCFGDef('to') || $this->noemail) {
             return true;
         } elseif (empty($report)) {
             return false;
         }
 
-        $this->mail->Body = $report;
+        $this->mail->Body = $this->getCFGDef('isHtml',1) ? $this->mail->msgHTML($report, MODX_BASE_PATH) : $report;
 
         $this->Body = $this->modx->removeSanitizeSeed($this->mail->Body);
         $this->Subject = $this->modx->removeSanitizeSeed($this->mail->Subject);
@@ -199,7 +207,8 @@ class Mailer
     {
         $result = false;
         $dir = MODX_BASE_PATH . $this->queuePath;
-        if (file_exists($dir . $file) && is_readable($dir . $file)) {
+        $fs = FS::getInstance();
+        if ($fs->checkFile($dir)) {
             $message = unserialize(file_get_contents($dir . $file));
             $this->config = $message['config'];
             $this->applyMailConfig();
