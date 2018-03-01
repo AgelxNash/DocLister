@@ -1,3 +1,17 @@
+## 2.3.14 (02.03.2018)
+* [Refactor] Метод parseChunk в DocLister можно вызывать с одним аргументом.
+* [Add] Методы setRememberTime, getRemeberTime в modManagers.
+* [Fix] Ошибка при сортировке по количеству комментариев Jot в контроллере shopkeeper.
+* [Refactor] Инициализация DLTemplate теперь в конструкторе класса.
+* [Enhancement] Поддержка параметра documents в DLMenu.
+* [Refactor] Запросы в modUsers вынесены в отдельные методы для упрощения расширения класса (Issue #275).
+* [Fix] Некорректная работа параметра start (Issue #287).
+* [Enahancement] Поддержка параметра dateFormat в сниппете DLSitemap.
+* [Refactor] Обработка изменения session id в modManagers.
+* [Fix] Некорректная обработка куки для автологина в modUsers.
+* [Add] Польский язык.
+* [Enahancement] Helpers\Mailer обрабатывает код письма с помощью метода msgHtml, если включен параметр isHtml.
+
 ## 2.3.13 (19.01.2018)
 * [Enhancement] Параметр ouputSeparator для разделения документов при выводе.
 * [Refactor] Поддержка фильтров в контроллере onetable.
