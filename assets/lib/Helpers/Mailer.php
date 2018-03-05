@@ -90,7 +90,6 @@ class Mailer
     public function attachFiles($filelist = array())
     {
         if (!$this->noemail) {
-            $fs = FS::getInstance();
             $contentType = "application/octetstream";
             foreach ($filelist as $file) {
                 if (is_file($file['filepath']) && is_readable($file['filepath'])) {
