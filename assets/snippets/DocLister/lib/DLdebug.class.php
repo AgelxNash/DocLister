@@ -196,7 +196,7 @@ class DLdebug
                                 $msg = $this->dumpData(Formatter\SqlFormatter::format($msg), '', null);
                                 break;
                             case 'html':
-                                $msg = is_numeric($msg) ? $msg : $this->dumpData(Formatter\HtmlFormatter::format($msg),
+                                $msg = is_numeric($msg) ? $msg : $this->dumpData(Formatter\HtmlFormatter::format(!is_scalar($msg) ? print_r($msg, true) : $msg),
                                     '', null);
                                 break;
                             default:
