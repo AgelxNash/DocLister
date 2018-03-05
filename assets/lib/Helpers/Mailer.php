@@ -93,8 +93,9 @@ class Mailer
             $fs = FS::getInstance();
             $contentType = "application/octetstream";
             foreach ($filelist as $file) {
-                if (!$fs->checkFile($file['filepath'])) continue;
-                $this->mail->AddAttachment($file['filepath'], $file['filename'], "base64", $contentType);
+                if (is_file($file['filepath']) && is_readable($file['filepath'])) {
+                    $this->mail->AddAttachment($file['filepath'], $file['filename'], "base64", $contentType);
+                }
             }
         }
 
