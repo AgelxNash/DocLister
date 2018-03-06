@@ -741,7 +741,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if ($where != '') {
             $sql = $this->query("SELECT `" . $this->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE " . $where);
             $id = $this->modx->db->getValue($sql);
-            if (is_null($id) || (!$this->newDoc && $id == $this->getID())) {
+            if (!$id || (!$this->newDoc && $id == $this->getID())) {
                 $flag = true;
             } else {
                 $flag = false;
