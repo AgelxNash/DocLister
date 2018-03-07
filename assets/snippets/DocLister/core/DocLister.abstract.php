@@ -250,7 +250,12 @@ abstract class DocLister
 
             $this->idField = $this->getCFGDef('idField', 'id');
             $this->parentField = $this->getCFGDef('parentField', 'parent');
-
+            $this->extCache = $this->getExtender('cache', true);
+            $this->extCache->init($this, array(
+                'cache'         => $this->getCFGDef('cache', 1),
+                'cacheLifetime' => $this->getCFGDef('cacheLifetime', 0),
+                'cacheStrategy' => $this->getCFGDef('cacheStrategy')
+            ));
             $this->setIDs($IDs);
         }
 

@@ -40,12 +40,6 @@ class site_contentDocLister extends DocLister
     {
         parent::__construct($modx, $cfg, $startTime);
         $this->extTV = $this->getExtender('tv', true, true);
-        $this->extCache = $this->getExtender('cache', true);
-        $this->extCache->init($this, array(
-            'cache'         => $this->getCFGDef('cache', 1),
-            'cacheLifetime' => $this->getCFGDef('cacheLifetime', 0),
-            'cacheStrategy' => $this->getCFGDef('cacheStrategy')
-        ));
     }
 
     /**

@@ -40,46 +40,51 @@ class site_content_menuDocLister extends site_contentDocLister
      */
     public function getDocs($tvlist = '')
     {
-        $this->extTV->getAllTV_Name();
-        if ($ids = $this->getCFGDef('documents')) {
-            $this->setIDs($ids);
-            $docs = $this->getDocList();
-            $display = count($docs);
-            $iteration = 1;
-            foreach ($docs as $id => &$item) {
-                $item['iteration'] = $iteration++;
-                $item['_display'] = $display;
-                $item['_parent'] = $item['parent'];
-                $item['parent'] = 0;
-            }
-            $this->levels[1] = $docs;
-            $this->setActiveBranch($this->getHereId(), 1);
-        } else {
-            $this->_getChildren();
-        }
-
-        if ($tvlist == '') {
-            $tvlist = $this->getCFGDef('tvList', '');
-        }
-
-        if ($tvlist != '') {
-            $ids = array();
-            foreach ($this->levels as $level => $docs) {
-                $ids = array_merge($ids, array_keys($docs));
-            }
-            if (!empty($ids)) {
-                $tv = $this->extTV->getTVList($ids, $tvlist);
-                if (!is_array($tv)) {
-                    $tv = array();
+        $this->levels = $this->extCache->load('menudata');
+        if ($this->levels === false) {
+            $this->levels = array();
+            $this->extTV->getAllTV_Name();
+            if ($ids = $this->getCFGDef('documents')) {
+                $this->setIDs($ids);
+                $docs = $this->getDocList();
+                $display = count($docs);
+                $iteration = 1;
+                foreach ($docs as $id => &$item) {
+                    $item['iteration'] = $iteration++;
+                    $item['_display'] = $display;
+                    $item['_parent'] = $item['parent'];
+                    $item['parent'] = 0;
                 }
-                $this->docTvs = $tv;
+                $this->levels[1] = $docs;
+                $this->setActiveBranch($this->getHereId(), 1);
+            } else {
+                $this->_getChildren();
             }
 
+            if ($tvlist == '') {
+                $tvlist = $this->getCFGDef('tvList', '');
+            }
+
+            if ($tvlist != '') {
+                $ids = array();
+                foreach ($this->levels as $level => $docs) {
+                    $ids = array_merge($ids, array_keys($docs));
+                }
+                if (!empty($ids)) {
+                    $tv = $this->extTV->getTVList($ids, $tvlist);
+                    if (!is_array($tv)) {
+                        $tv = array();
+                    }
+                    $this->docTvs = $tv;
+                }
+
+            }
+            if ($this->getCFGDef('countChildren', 0)) {
+                $this->countChildren();
+            }
+            $this->extCache->save($this->levels, 'menudata');
         }
-        if ($this->getCFGDef('countChildren', 0)) {
-            $this->countChildren();
-        }
-        //TODO кэширование
+
         return $this->levels;
     }
 
