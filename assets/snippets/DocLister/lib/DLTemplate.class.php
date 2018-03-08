@@ -9,7 +9,7 @@ class DLTemplate
 {
     /**
      * Объект DocumentParser - основной класс MODX
-     * @var \DocumentParser
+     * @var DocumentParser $modx
      * @access protected
      */
     protected $modx = null;
@@ -297,8 +297,9 @@ class DLTemplate
     public function getTemplate($id)
     {
         $tpl = null;
+        $id = (int)$id;
         if ($id > 0) {
-            $tpl = $this->modx->db->getValue("SELECT `content` FROM {$this->modx->getFullTableName("site_templates")} WHERE `id` = '{$id}'");
+            $tpl = $this->modx->db->getValue("SELECT `content` FROM {$this->modx->getFullTableName("site_templates")} WHERE `id` = {$id}");
         }
         if (is_null($tpl)) {
             $tpl = '[*content*]';
@@ -369,6 +370,8 @@ class DLTemplate
     /**
      * Return clone of twig
      *
+     * @param string $name
+     * @param string $tpl
      * @return null
      */
     protected function getTwig($name, $tpl) {
@@ -385,6 +388,7 @@ class DLTemplate
                 ))
             );
         }
+
         return $twig;
     }
 
@@ -414,7 +418,7 @@ class DLTemplate
             include_once(__DIR__ . '/DLphx.class.php');
         }
 
-        return new DLphx($debug, $maxpass);
+        return new DLphx($this->modx, $debug, $maxpass);
     }
 
     /**
