@@ -74,6 +74,7 @@ class DLphx
     }
 
     // Parser: Preparation, cleaning and checkup
+
     /**
      * @param string $template
      * @return mixed|string
@@ -115,6 +116,7 @@ class DLphx
     }
 
     // Parser: Tag detection and replacements
+
     /**
      * @param string $template
      * @return mixed|string
@@ -229,6 +231,7 @@ class DLphx
     }
 
     // Parser: modifier detection and eXtended processing if needed
+
     /**
      * @param $input
      * @param $modifiers
@@ -388,7 +391,9 @@ class DLphx
                         break;
                     case "wordwrap": // default: 70
                         $wrapat = intval($modifier_value[$i]) ? intval($modifier_value[$i]) : 70;
-                        $output = preg_replace_callback("@(\b\w+\b)@",function($m) use($wrapat) {return wordwrap($m[1],$wrapat,' ',1);},$output);
+                        $output = preg_replace_callback("@(\b\w+\b)@", function ($m) use ($wrapat) {
+                            return wordwrap($m[1], $wrapat, ' ', 1);
+                        }, $output);
                         break;
                     case "limit": // default: 100
                         $limit = intval($modifier_value[$i]) ? intval($modifier_value[$i]) : 100;
@@ -489,16 +494,12 @@ class DLphx
                                 }
                             }
                         }
-                        $cm = $snippet;
-                        // end //
-
-                        if (!empty($cm)) {
-                            ob_start();
-                            $options = $modifier_value[$i];
-                            $custom = eval($cm);
-                            $msg = ob_get_contents();
-                            $output = $msg . $custom;
-                            ob_end_clean();
+                        if (!empty($snippet)) {
+                            $output = $this->modx->runSnippet($snippetName, array(
+                                'input'   => $output,
+                                'output'  => $output,
+                                'options' => $modifier_value[$i]
+                            ));
                         } else {
                             $output = '';
                         }
@@ -523,6 +524,7 @@ class DLphx
         return eval("return (" . $code . ");");
     }
     // Event logging (debug)
+
     /**
      * @return string
      */
@@ -540,6 +542,7 @@ class DLphx
     }
 
     // Returns a cleaned string escaping the HTML and special MODx characters
+
     /**
      * @param $string
      * @return array|mixed|string
@@ -553,6 +556,7 @@ class DLphx
     }
 
     // Simple log entry
+
     /**
      * @param $string
      */
@@ -566,6 +570,7 @@ class DLphx
     }
 
     // Log snippet output
+
     /**
      * @param $string
      */
@@ -585,6 +590,7 @@ class DLphx
     }
 
     // Log pass
+
     /**
      * @param $string
      */
@@ -618,6 +624,7 @@ class DLphx
     }
 
     // Returns true if the user id is in one the specified webgroups
+
     /**
      * @param int $userid
      * @param array $groupNames
@@ -657,6 +664,7 @@ class DLphx
     }
 
     // Returns the value of a PHx/MODx placeholder.
+
     /**
      * @param $name
      * @return mixed|string
@@ -674,6 +682,7 @@ class DLphx
     }
 
     // Sets a placeholder variable which can only be access by PHx
+
     /**
      * @param $name
      * @param $value
@@ -686,6 +695,7 @@ class DLphx
     }
 
     //mbstring
+
     /**
      * @param $str
      * @param $s
