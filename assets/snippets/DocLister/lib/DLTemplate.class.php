@@ -65,7 +65,6 @@ class DLTemplate
      */
     private function __clone()
     {
-
     }
 
     /**
@@ -75,7 +74,6 @@ class DLTemplate
      */
     private function __wakeup()
     {
-
     }
 
     /**
@@ -162,8 +160,11 @@ class DLTemplate
         $tpl = '';
         $this->twigEnabled = substr($name, 0, 3) == '@T_';
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
-            $mode = (preg_match('/^((@[A-Z_]+)[:]{0,1})(.*)/Asu', trim($name),
-                    $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
+            $mode = (preg_match(
+                '/^((@[A-Z_]+)[:]{0,1})(.*)/Asu',
+                trim($name),
+                $tmp
+            ) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
             if ($this->twigEnabled) {
                 $mode = '@' . substr($mode, 3);
@@ -177,8 +178,11 @@ class DLTemplate
                                 '/[\/|\\\]+/i'
                             ), array('/', '/'), $subTmp) . '.' . $this->templateExtension);
                         $fname = explode(".", $path);
-                        if ($real == substr($path, 0,
-                                strlen($real)) && end($fname) == $this->templateExtension && file_exists($path)
+                        if ($real == substr(
+                            $path,
+                            0,
+                            strlen($real)
+                        ) && end($fname) == $this->templateExtension && file_exists($path)
                         ) {
                             $tpl = file_get_contents($path);
                         }
@@ -454,8 +458,8 @@ class DLTemplate
         if (!is_object($modx)) {
             $modx = $this->modx;
         }
-        $minPasses = empty ($modx->minParserPasses) ? 2 : $modx->minParserPasses;
-        $maxPasses = empty ($modx->maxParserPasses) ? 10 : $modx->maxParserPasses;
+        $minPasses = empty($modx->minParserPasses) ? 2 : $modx->minParserPasses;
+        $maxPasses = empty($modx->maxParserPasses) ? 10 : $modx->maxParserPasses;
         $site_status = $modx->getConfig('site_status');
         $modx->config['site_status'] = 0;
         for ($i = 1; $i <= $maxPasses; $i++) {

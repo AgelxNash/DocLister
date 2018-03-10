@@ -10,6 +10,7 @@ use \Doctrine\Common\Cache\Cache;
  */
 class MODxAPIhelpers
 {
+
     /**
      * @param $email
      * @param bool $dns
@@ -1089,4 +1090,5 @@ abstract class MODxAPI extends MODxAPIhelpers
 
         return $out;
     }
+
 }

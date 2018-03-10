@@ -98,7 +98,7 @@ class cache_DL_Extender extends extDocLister
         } else {
             $config = $this->DocLister->config->getConfig();
             $key = md5(json_encode($config));
-            $strategy = $this->getCFGDef('cacheStrategy','');
+            $strategy = $this->getCFGDef('cacheStrategy', '');
             switch ($strategy) {
                 case 'user':
                     $uid = $this->modx->getLoginUserID('web');
@@ -133,4 +133,5 @@ class cache_DL_Extender extends extDocLister
     {
         return $this->lifetime;
     }
+
 }
