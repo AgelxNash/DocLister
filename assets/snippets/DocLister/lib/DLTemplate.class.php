@@ -121,8 +121,12 @@ class DLTemplate
      * @param array $data
      * @return $this
      */
-    public function setTwigTemplateVars($data = array()) {
-        if (is_array($data)) $this->twigTemplateVars = $data;
+    public function setTwigTemplateVars($data = array())
+    {
+        if (is_array($data)) {
+            $this->twigTemplateVars = $data;
+        }
+
         return $this;
     }
 
@@ -156,12 +160,14 @@ class DLTemplate
     public function getChunk($name)
     {
         $tpl = '';
-        $this->twigEnabled = substr($name,0,3) == '@T_';
+        $this->twigEnabled = substr($name, 0, 3) == '@T_';
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
             $mode = (preg_match('/^((@[A-Z_]+)[:]{0,1})(.*)/Asu', trim($name),
                     $tmp) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
-            if ($this->twigEnabled) $mode = '@'.substr($mode,3);
+            if ($this->twigEnabled) {
+                $mode = '@' . substr($mode, 3);
+            }
             switch ($mode) {
                 case '@FILE':
                     if ($subTmp != '') {
@@ -257,11 +263,13 @@ class DLTemplate
      */
     public function renderDoc($id, $events = false, $tpl = null)
     {
-        if ((int)$id <= 0) {
+        $id = (int)$id;
+        if ($id <= 0) {
             return '';
         }
 
         $m = clone $this->modx; //Чтобы была возможность вызывать события
+        $m->documentIdentifier = $id;
         $m->documentObject = $m->getDocumentObject('id', (int)$id, $events ? 'prepareResponse' : null);
         if ($m->documentObject['type'] == "reference") {
             if (is_numeric($m->documentObject['content']) && $m->documentObject['content'] > 0) {
@@ -323,7 +331,7 @@ class DLTemplate
             $plh = $this->twigTemplateVars;
             $plh['data'] = $data;
             $plh['modx'] = $this->modx;
-            $out = $twig->render(md5($name),$plh);
+            $out = $twig->render(md5($name), $plh);
         } else {
             if (is_array($data) && ($out != '')) {
                 if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
@@ -374,7 +382,8 @@ class DLTemplate
      * @param string $tpl
      * @return null
      */
-    protected function getTwig($name, $tpl) {
+    protected function getTwig($name, $tpl)
+    {
         if (is_null($this->twig) && isset($this->modx->twig)) {
             $twig = clone $this->modx->twig;
             $this->twig = $twig;
@@ -414,7 +423,7 @@ class DLTemplate
      */
     public function createPHx($debug = 0, $maxpass = 50)
     {
-        if (!class_exists('DLphx', false)) {
+        if (!class_exists('DLphx')) {
             include_once(__DIR__ . '/DLphx.class.php');
         }
 
@@ -461,6 +470,7 @@ class DLTemplate
             }
         }
         $out = $modx->rewriteUrls($out);
+        $out = $this->cleanPHx($out);
         $modx->config['site_status'] = $site_status;
 
         return $out;
