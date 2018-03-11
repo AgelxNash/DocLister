@@ -96,8 +96,10 @@ class cache_DL_Extender extends extDocLister
                 'DocLister' => $this
             ));
         } else {
-            $config = $this->DocLister->config->getConfig();
-            $key = md5(json_encode($config));
+            if (!$key = $this->getCFGDef('cacheKey', '')) {
+                $config = $this->DocLister->config->getConfig();
+                $key = md5(json_encode($config));
+            }
             $strategy = $this->getCFGDef('cacheStrategy', '');
             switch ($strategy) {
                 case 'user':
