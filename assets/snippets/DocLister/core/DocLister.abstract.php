@@ -257,6 +257,7 @@ abstract class DocLister
             $this->extCache = $this->getExtender('cache', true);
             $this->extCache->init($this, array(
                 'cache'         => $this->getCFGDef('cache', 1),
+                'cacheKey'      => $this->getCFGDef('cacheKey'),
                 'cacheLifetime' => $this->getCFGDef('cacheLifetime', 0),
                 'cacheStrategy' => $this->getCFGDef('cacheStrategy')
             ));
