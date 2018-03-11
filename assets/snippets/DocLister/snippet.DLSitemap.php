@@ -15,7 +15,8 @@ $prepare[] = 'DLSitemap::prepare';
 $prepare[] = \APIhelpers::getkey($modx->event->params, 'AfterPrepare', '');
 $params['prepare'] = trim(implode(",", $prepare), ',');
 if (!class_exists("DLSitemap")) {
-    class DLSitemap {
+    class DLSitemap
+    {
         public static function prepare(array $data, DocumentParser $modx, $_DocLister)
         {
             $data['date'] = !empty($data['editedon']) ? $data['editedon'] : $data['createdon'];
@@ -50,7 +51,6 @@ if (!class_exists("DLSitemap")) {
 
             return $data;
         }
-
     }
 }
 
