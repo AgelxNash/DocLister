@@ -131,16 +131,22 @@ class site_contentDocLister extends DocLister
 
                     $item['summary'] = $extSummary ? $this->getSummary($item, $extSummary, 'introtext', 'content') : '';
 
-                    $item = array_merge($item,
-                        $sysPlh); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
+                    $item = array_merge(
+                        $item,
+                        $sysPlh
+                    ); //inside the chunks available all placeholders set via $modx->toPlaceholders with prefix id, and with prefix sysKey
                     $item['iteration'] = $i; //[+iteration+] - Number element. Starting from zero
 
                     $item['title'] = ($item['menutitle'] == '' ? $item['pagetitle'] : $item['menutitle']);
 
                     if ($this->getCFGDef('makeUrl', 1)) {
                         if ($item['type'] == 'reference') {
-                            $item['url'] = is_numeric($item['content']) ? $this->modx->makeUrl($item['content'], '', '',
-                                $this->getCFGDef('urlScheme', '')) : $item['content'];
+                            $item['url'] = is_numeric($item['content']) ? $this->modx->makeUrl(
+                                $item['content'],
+                                '',
+                                '',
+                                $this->getCFGDef('urlScheme', '')
+                            ) : $item['content'];
                         } else {
                             $item['url'] = $this->modx->makeUrl($item['id'], '', '', $this->getCFGDef('urlScheme', ''));
                         }
@@ -180,8 +186,11 @@ class site_contentDocLister extends DocLister
                     $tmp = $this->parseChunk($this->renderTPL, $item);
 
                     if ($this->getCFGDef('contentPlaceholder', 0) !== 0) {
-                        $this->toPlaceholders($tmp, 1,
-                            "item[" . $i . "]"); // [+item[x]+] – individual placeholder for each iteration documents on this page
+                        $this->toPlaceholders(
+                            $tmp,
+                            1,
+                            "item[" . $i . "]"
+                        ); // [+item[x]+] – individual placeholder for each iteration documents on this page
                     }
                     $out .= $tmp;
                     if (next($this->_docs) !== false) {
@@ -254,8 +263,12 @@ class site_contentDocLister extends DocLister
             if ((bool)$this->getCFGDef('makeUrl', 1) && (array('1') == $fields || in_array('url', $fields))
             ) {
                 if (isset($row['type']) && $row['type'] == 'reference' && isset($row['content'])) {
-                    $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl($row['content'], '', '',
-                        $this->getCFGDef('urlScheme', '')) : $row['content'];
+                    $row['url'] = is_numeric($row['content']) ? $this->modx->makeUrl(
+                        $row['content'],
+                        '',
+                        '',
+                        $this->getCFGDef('urlScheme', '')
+                    ) : $row['content'];
                 } elseif (isset($row['id'])) {
                     $row['url'] = $this->modx->makeUrl($row['id'], '', '', $this->getCFGDef('urlScheme', ''));
                 }
@@ -408,8 +421,10 @@ class site_contentDocLister extends DocLister
             $fields = $this->getCFGDef('selectFields', 'c.*');
             $group = $this->getGroupSQL($this->getCFGDef('groupBy', ''));
             $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
-            list($tbl_site_content, $sort) = $this->injectSortByTV($tbl_site_content . ' ' . $this->_filters['join'],
-                $sort);
+            list($tbl_site_content, $sort) = $this->injectSortByTV(
+                $tbl_site_content . ' ' . $this->_filters['join'],
+                $sort
+            );
 
             $limit = $this->LimitSQL($this->getCFGDef('queryLimit', 0));
 
@@ -539,8 +554,7 @@ class site_contentDocLister extends DocLister
             $rs = $this->dbQuery("SELECT {$fields} FROM " . $from . " " . $where . " " .
                 $group . " " .
                 $sort . " " .
-                $this->LimitSQL($this->getCFGDef('queryLimit', 0))
-            );
+                $this->LimitSQL($this->getCFGDef('queryLimit', 0)));
 
             while ($item = $this->modx->db->getRow($rs)) {
                 $out[$item['id']] = $item;

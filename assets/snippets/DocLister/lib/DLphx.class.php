@@ -1,13 +1,13 @@
 <?php
 /*####
 #
-#	Name: PHx (Placeholders Xtended)
-#	Version: 2.2.0
-#	Modified by Nick to include external files
-#	Modified by Anton Kuzmin for using of modx snippets cache
-#	Modified by Temus (temus3@gmail.com)
-#	Author: Armand "bS" Pondman (apondman@zerobarrier.nl)
-#	Date: March 22, 2013
+#   Name: PHx (Placeholders Xtended)
+#   Version: 2.2.0
+#   Modified by Nick to include external files
+#   Modified by Anton Kuzmin for using of modx snippets cache
+#   Modified by Temus (temus3@gmail.com)
+#   Author: Armand "bS" Pondman (apondman@zerobarrier.nl)
+#   Date: March 22, 2013
 #
 ####*/
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
@@ -169,7 +169,6 @@ class DLphx
 
         // PHx / MODx Tags
         if (preg_match_all('~\[(\+|\*|\()([^:\+\[\]]+)([^\[\]]*?)(\1|\))\]~s', $template, $matches)) {
-
             //$matches[0] // Complete string that's need to be replaced
             //$matches[1] // Type
             //$matches[2] // The placeholder(s)
@@ -200,8 +199,10 @@ class DLphx
                     default:
                         $this->Log("MODx / PHx placeholder variable: " . $input);
                         // Check if placeholder is set
-                        if (!array_key_exists($input, $this->placeholders) && !array_key_exists($input,
-                                $this->modx->placeholders)
+                        if (!array_key_exists($input, $this->placeholders) && !array_key_exists(
+                            $input,
+                            $this->modx->placeholders
+                        )
                         ) {
                             // not set so try again later.
                             $input = '';
@@ -523,6 +524,7 @@ class DLphx
     {
         return eval("return (" . $code . ");");
     }
+
     // Event logging (debug)
 
     /**
@@ -564,8 +566,10 @@ class DLphx
     {
         if ($this->debug) {
             $this->debugLog = true;
-            $this->console[] = (count($this->console) + 1 - $this->curPass) . " [" . strftime("%H:%M:%S",
-                    time()) . "] " . $this->LogClean($string);
+            $this->console[] = (count($this->console) + 1 - $this->curPass) . " [" . strftime(
+                "%H:%M:%S",
+                time()
+            ) . "] " . $this->LogClean($string);
         }
     }
 
@@ -578,8 +582,10 @@ class DLphx
     {
         if ($this->debug) {
             $this->debugLog = true;
-            $this->console[] = (count($this->console) + 1 - $this->curPass) . " [" . strftime("%H:%M:%S",
-                    time()) . "] " . "  |--- Returns: <div style='margin: 10px;'>" . $this->LogClean($string) . "</div>";
+            $this->console[] = (count($this->console) + 1 - $this->curPass) . " [" . strftime(
+                "%H:%M:%S",
+                time()
+            ) . "] " . "  |--- Returns: <div style='margin: 10px;'>" . $this->LogClean($string) . "</div>";
         }
     }
 
@@ -599,10 +605,10 @@ class DLphx
         $this->console[] = "<div style='margin: 5px 2px 2px;border-bottom: 1px solid black;'>Source:</div>" . $this->LogClean($string);
     }
 
-
     // Returns the specified field from the user record
     // positive userid = manager, negative integer = webuser
-    /**
+    
+/**
      * @param $userid
      * @param $field
      * @return mixed

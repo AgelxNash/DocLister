@@ -272,7 +272,8 @@ class site_content_menuDocLister extends site_contentDocLister
             }
             $depth--;
         }
-        $out = 'branch'.implode('-', $out);
+        $key = $this->getCFGDef('renderCacheKey', '');
+        $out = 'branch' . $key . implode('-', $out);
 
         return $out;
     }
