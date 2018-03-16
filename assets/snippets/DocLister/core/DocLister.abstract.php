@@ -1300,7 +1300,6 @@ abstract class DocLister
         $depth = $this->getCFGDef('depth', '');
         if ($type == 'parents' && $depth > 0) {
             $out = $this->extCache->load('children');
-            var_dump($out);
             if ($out === false) {
                 $tmp = $IDs;
                 do {
