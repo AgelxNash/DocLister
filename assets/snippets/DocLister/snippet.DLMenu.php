@@ -9,7 +9,7 @@ if (!isset($params['sortBy'])) {
     if (isset($params['sortType1']) && $params['sortType1'] === 'doclist') {
         $params['sortBy1'] = 'c.id';
     } else {
-        $params['sortBy1'] = 'c.menuindex';
+        $params['sortBy'] = 'c.menuindex';
     }
 }
 if (!isset($params['sortDir'])) {
