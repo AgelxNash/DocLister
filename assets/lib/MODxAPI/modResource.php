@@ -310,6 +310,7 @@ class modResource extends MODxAPI
             $tvID = APIHelpers::getkey($this->tv, $key, 0);
             if (in_array($tvID, $tvTPL) && is_null($out)) {
                 $out = APIHelpers::getkey($this->tvd, $key, null);
+                $out = $out['default'];
             }
         }
 
