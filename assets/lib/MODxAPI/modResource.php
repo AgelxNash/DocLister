@@ -200,7 +200,7 @@ class modResource extends MODxAPI
                 $out[$key] = $this->renderTV($key);
             }
         }
-
+        //var_dump($out);
         return $out;
     }
 
@@ -469,13 +469,19 @@ class modResource extends MODxAPI
             $this->close();
             $this->markAllEncode();
             $this->newDoc = false;
-
             $result = $this->query("SELECT * from {$this->makeTable('site_content')} where `id`=" . (int)$id);
             $this->fromArray($this->modx->db->getRow($result));
             $result = $this->query("SELECT * from {$this->makeTable('site_tmplvar_contentvalues')} where `contentid`=" . (int)$id);
             while ($row = $this->modx->db->getRow($result)) {
                 $this->field[$this->tvid[$row['tmplvarid']]] = $row['value'];
             }
+            $fld = array();
+            foreach ($this->tvd as $name => $tv) {
+                if ($this->belongsToTemplate($this->tv[$name])) {
+                    $fld[$name] = $tv['default'];
+                }
+            };
+            $this->store(array_merge($fld, $this->field));
             if (empty($this->field['id'])) {
                 $this->id = null;
             } else {
@@ -483,10 +489,8 @@ class modResource extends MODxAPI
                 $this->set('editedby', null)->touch();
                 $this->decodeFields();
             }
-            $this->store($this->toArray(null, null, null, false));
             unset($this->field['id']);
         }
-
         return $this;
     }
 
@@ -591,7 +595,7 @@ class modResource extends MODxAPI
         foreach ($fld as $key => $value) {
             if (empty($this->tv[$key]) || !$this->isChanged($key) || !$this->belongsToTemplate($this->tv[$key])) {
                 continue;
-            } elseif ($value === '') {
+            } elseif ($value === '' || (isset($this->tvd[$key]) && $value == $this->tvd[$key]['default'])) {
                 $_deleteTVs[] = $this->tv[$key];
             } else {
                 $_insertTVs[$this->tv[$key]] = $this->escape($value);
