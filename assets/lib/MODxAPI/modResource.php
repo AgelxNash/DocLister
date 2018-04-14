@@ -200,7 +200,7 @@ class modResource extends MODxAPI
                 $out[$key] = $this->renderTV($key);
             }
         }
-        //var_dump($out);
+
         return $out;
     }
 
@@ -491,6 +491,7 @@ class modResource extends MODxAPI
             }
             unset($this->field['id']);
         }
+        
         return $this;
     }
 
