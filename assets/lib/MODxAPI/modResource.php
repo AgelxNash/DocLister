@@ -596,7 +596,7 @@ class modResource extends MODxAPI
         foreach ($fld as $key => $value) {
             if (empty($this->tv[$key]) || !$this->isChanged($key) || !$this->belongsToTemplate($this->tv[$key])) {
                 continue;
-            } elseif ($value === '' || (isset($this->tvd[$key]) && $value == $this->tvd[$key]['default'])) {
+            } elseif ($value === '' || is_null($value) || (isset($this->tvd[$key]) && $value == $this->tvd[$key]['default'])) {
                 $_deleteTVs[] = $this->tv[$key];
             } else {
                 $_insertTVs[$this->tv[$key]] = $this->escape($value);
