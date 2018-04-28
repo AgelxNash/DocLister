@@ -1,3 +1,15 @@
+## 2.3.15 (28.04.2018)
+
+* [Fix] Не выводились значения tv-параметров по умолчанию в DocLister (Issue #307).
+* [Fix] Ошибка при сохранении tv-параметров в modResource.
+* [Fix] Ошибка при редактировании tv-параметров  в modResource (Issue #304).
+* [Enhancement] Дополнительные лексиконы для js-компонентов.
+* [Fix] Ошибка в классе DLphx при использовании условий (Issue #297).
+* [Refactor] В DLSitemap используется функция date, если формат даты не задан, иначе strftime.
+* [Enhancement] Кэширование данных в DocLister и DLMenu при использовании evoTwig (Issue #298, Issue #303). 
+* [Fix] Ошибка в контроллере site_content_tags при отладке (Issue #300).
+* [Fix] Ошибка при проверке на уникальность в методе checkUnique после обновления DBAPI.
+
 ## 2.3.14 (02.03.2018)
 * [Refactor] Метод parseChunk в DocLister можно вызывать с одним аргументом.
 * [Add] Методы setRememberTime, getRemeberTime в modManagers.
