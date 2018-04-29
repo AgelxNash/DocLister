@@ -43,7 +43,7 @@ class site_contentDocLister extends DocLister
     }
 
     /**
-     * @absctract
+     * @abstract
      */
     public function getDocs($tvlist = '')
     {
