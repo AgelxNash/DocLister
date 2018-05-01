@@ -54,6 +54,14 @@ class site_contentDocLister extends DocLister
         $this->extTV->getAllTV_Name();
 
         /**
+         * @var $multiCategories multicategories_DL_Extender
+         */
+        $multiCategories = $this->getCFGDef('multiCategories', 0) ? $this->getExtender('multicategories', true) : null;
+        if ($multiCategories) {
+            $multiCategories->init($this);
+        }
+
+        /**
          * @var $extJotCount jotcount_DL_Extender
          */
         $extJotCount = $this->getCFGdef('jotcount', 0) ? $this->getExtender('jotcount', true) : null;
