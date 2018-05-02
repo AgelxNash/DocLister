@@ -343,8 +343,6 @@ class DLTemplate
                     $out = str_replace(array_keys($item), array_values($item), $out);
                 }
                 if (!$disablePHx && preg_match("/:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?/is", $out)) {
-                    var_dump(preg_match("/:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?/is", $out));
-                    die(var_dump($out));
                     if (is_null($this->phx) || !($this->phx instanceof DLphx)) {
                         $this->phx = $this->createPHx(0, 1000);
                     }
