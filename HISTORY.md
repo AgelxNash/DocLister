@@ -1,3 +1,41 @@
+## 2.3.15 (28.04.2018)
+
+* [Fix] Не выводились значения tv-параметров по умолчанию в DocLister (Issue #307).
+* [Fix] Ошибка при сохранении tv-параметров в modResource.
+* [Fix] Ошибка при редактировании tv-параметров  в modResource (Issue #304).
+* [Enhancement] Дополнительные лексиконы для js-компонентов.
+* [Fix] Ошибка в классе DLphx при использовании условий (Issue #297).
+* [Refactor] В DLSitemap используется функция date, если формат даты не задан, иначе strftime.
+* [Enhancement] Кэширование данных в DocLister и DLMenu при использовании evoTwig (Issue #298, Issue #303). 
+* [Fix] Ошибка в контроллере site_content_tags при отладке (Issue #300).
+* [Fix] Ошибка при проверке на уникальность в методе checkUnique после обновления DBAPI.
+
+## 2.3.14 (02.03.2018)
+* [Refactor] Метод parseChunk в DocLister можно вызывать с одним аргументом.
+* [Add] Методы setRememberTime, getRemeberTime в modManagers.
+* [Fix] Ошибка при сортировке по количеству комментариев Jot в контроллере shopkeeper.
+* [Refactor] Инициализация DLTemplate теперь в конструкторе класса.
+* [Enhancement] Поддержка параметра documents в DLMenu.
+* [Refactor] Запросы в modUsers вынесены в отдельные методы для упрощения расширения класса (Issue #275).
+* [Fix] Некорректная работа параметра start (Issue #287).
+* [Enahancement] Поддержка параметра dateFormat в сниппете DLSitemap.
+* [Refactor] Обработка изменения session id в modManagers.
+* [Fix] Некорректная обработка куки для автологина в modUsers.
+* [Add] Польский язык.
+* [Enahancement] Helpers\Mailer обрабатывает код письма с помощью метода msgHtml, если включен параметр isHtml.
+
+## 2.3.13 (19.01.2018)
+* [Enhancement] Параметр ouputSeparator для разделения документов при выводе.
+* [Refactor] Поддержка фильтров в контроллере onetable.
+* [Fix] Ошибки в js-компоненте EUIGrid.
+* [Fix] Метод loadArray в Helpers\Config не возвращал данные, заданные в виде массива.
+* [Enhancement] Поддержка польского языка в js-компонентах.
+* [Enhancement] Параметр paginationMeta для добавления мета-тегов link rel="next" и link rel="prev".
+* [Enhancement] Валидация данных в APIhelpers::getkey.
+* [Enhancement] Локализация размеров в Helpers\FS::fileSize.
+* [Fix] Некорректная проверка параметра parents на пустоту.
+* [Fix] Параметр pageLimit.
+
 ## 2.3.12 (14.11.2017)
 * [Fix] Метод loadArray в Helpers\Config мог вернуть null.
 * [Fix] Обратная совместимость в Helpers\Mailer.

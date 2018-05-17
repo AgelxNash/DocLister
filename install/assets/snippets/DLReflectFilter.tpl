@@ -2,7 +2,7 @@
 /**
  * DLReflectFilter
  *
- * Фильтрация документов по датам которые были выведены сниппетом DLReflect
+ * Filtering documents by dates provided by DLReflect snippet
  *
  * @category 	snippet
  * @version 	2
