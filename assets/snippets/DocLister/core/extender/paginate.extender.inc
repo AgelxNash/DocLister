@@ -213,6 +213,7 @@ class paginate_DL_Extender extends extDocLister
         $p->adjacents($this->DocLister->getCFGDef("pageAdjacents", 4));
         $p->target($this->getUrl());
         $p->currentPage($currentPage);
+        $p->urlFriendly = $this->DocLister->getCFGDef('PaginateUrlFriendly', null);
 
         switch (true) {
             case ($mode == 'offset' && $this->totalPage() > 1):

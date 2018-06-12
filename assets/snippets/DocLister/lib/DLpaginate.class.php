@@ -25,6 +25,7 @@ class DLpaginate
     public $className = "pagination";
     public $parameterName = "page";
     public $urlF = null; //urlFriendly
+    public $urlFriendly = '';
 
     /**Buttons next and previous*/
     public $nextT = ' <a href="[+link+]">Next</a> ';
@@ -291,8 +292,8 @@ class DLpaginate
     {
         $flag = (strpos($this->target, '?') === false);
         $value = $this->getPageQuery($id);
-        if ($flag && !empty($this->urlF)) {
-            $out = str_replace($this->urlF, $value, $this->target);
+        if ($flag && !empty($this->urlFriendly)) {
+            $out = $this->target . $this->urlFriendly . $value;
         } else {
             $out = $this->target;
             if ($id > 1) {
