@@ -1,5 +1,6 @@
 <?php namespace DocLister\Tests;
 
+
 abstract class ModxAbstract extends TestAbstract
 {
     protected $modx = null;
@@ -7,7 +8,7 @@ abstract class ModxAbstract extends TestAbstract
     public function setUp()
     {
         $this->modx = $this->mockMODX();
-        $this->assertTrue($this->modx instanceof \DocumentParser);
+        $this->assertTrue($this->modx instanceof \EvolutionCMS\Core);
         $this->assertTrue($this->modx->db instanceof \DBAPI);
     }
 
@@ -34,7 +35,7 @@ abstract class ModxAbstract extends TestAbstract
 
     protected function mockMODX(array $config = array())
     {
-        $modx = $this->getMockBuilder('DocumentParser')
+        $modx = $this->getMockBuilder('\EvolutionCMS\Core')
             ->setMethods(array('getFullTableName'))
             ->getMock();
 
