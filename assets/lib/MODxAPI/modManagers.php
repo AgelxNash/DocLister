@@ -68,7 +68,6 @@ class modManagers extends MODxAPI
     {
         $this->setRememberTime(60 * 60 * 24 * 365 * 5);
         parent::__construct($modx, $debug);
-        $this->modx->loadExtension('phpass');
     }
 
     /**
@@ -207,7 +206,7 @@ class modManagers extends MODxAPI
      */
     public function getPassword($pass)
     {
-        return $this->modx->phpass->HashPassword($pass);
+        return $this->modx->getPasswordHash()->HashPassword($pass);
     }
 
     /**
@@ -455,7 +454,7 @@ class modManagers extends MODxAPI
                 $hashType = $this->getPasswordHashType($_password);
                 switch ($hashType) {
                     case 'phpass':
-                        $flag = $this->modx->phpass->CheckPassword($password, $_password);
+                        $flag = $this->modx->getPasswordHash()->CheckPassword($password, $_password);
                         break;
                     case 'md5':
                         $flag = $_password == md5($password);
