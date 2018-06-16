@@ -56,7 +56,7 @@ abstract class Plugin
     public function __construct($modx, $lang_attribute = 'en')
     {
         $this->modx = $modx;
-        $this->_table = $modx->getFullTableName($this->table);
+        $this->_table = $modx->getDatabase()->getFullTableName($this->table);
         $this->lang_attribute = $lang_attribute;
         $this->params = $modx->event->params;
         if ($this->checkTemplate && !isset($this->params['template']) && $modx->event->name != 'OnEmptyTrash') {
@@ -245,7 +245,7 @@ abstract class Plugin
      */
     public function registerEvents($events = array(), $eventsType = '6')
     {
-        $eventsTable = $this->modx->getFullTableName('system_eventnames');
+        $eventsTable = $this->modx->getDatabase()->getFullTableName('system_eventnames');
         foreach ($events as $event) {
             $result = $this->modx->getDatabase()->select('`id`', $eventsTable, "`name` = '{$event}'");
             if (!$this->modx->getDatabase()->getRecordCount($result)) {

@@ -497,9 +497,9 @@ class modManagers extends MODxAPI
         );
         $this->invokeEvent('OnBeforeManagerLogout', $params, $fire_events);
         $this->SessionHandler('destroy', $cookieName ? $cookieName : 'modx_remember_manager');
-        $this->modx->getDatabase()->delete($this->modx->getFullTableName('active_user_locks'), "sid = '{$this->modx->sid}'");
+        $this->modx->getDatabase()->delete($this->modx->getDatabase()->getFullTableName('active_user_locks'), "sid = '{$this->modx->sid}'");
         // Clean up active_user_sessions
-        $this->modx->getDatabase()->delete($this->modx->getFullTableName('active_user_sessions'), "sid = '{$this->modx->sid}'");
+        $this->modx->getDatabase()->delete($this->modx->getDatabase()->getFullTableName('active_user_sessions'), "sid = '{$this->modx->sid}'");
         $this->invokeEvent('OnManagerLogout', $params, $fire_events);
     }
 
@@ -604,8 +604,8 @@ class modManagers extends MODxAPI
         $out = array();
         $user = $this->switchObject($userID);
         if (null !== $user->getID()) {
-            $member_groups = $this->modx->getFullTableName('member_groups');
-            $membergroup_access = $this->modx->getFullTableName('membergroup_access');
+            $member_groups = $this->modx->getDatabase()->getFullTableName('member_groups');
+            $membergroup_access = $this->modx->getDatabase()->getFullTableName('membergroup_access');
 
             $sql = "SELECT `uga`.`documentgroup` FROM {$member_groups} as `ug`
                 INNER JOIN {$membergroup_access} as `uga` ON `uga`.`membergroup`=`ug`.`user_group` WHERE `ug`.`member` = " . $user->getID();
