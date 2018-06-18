@@ -184,12 +184,9 @@ class DLTemplate
                                 '/\.*[\/|\\\]/i',
                                 '/[\/|\\\]+/i'
                             ), array('/', '/'), $subTmp) . '.' . $this->templateExtension);
-                        $fname = basename($path, '.' . $this->templateExtension);
-                        if ($real == substr(
-                            $path,
-                            0,
-                            strlen($real)
-                        ) && end($fname) == $this->templateExtension && file_exists($path)
+                        if (basename($path, '.' . $this->templateExtension) !== '' &&
+                            0 === strpos($path, $real) &&
+                            file_exists($path)
                         ) {
                             $tpl = file_get_contents($path);
                         }
