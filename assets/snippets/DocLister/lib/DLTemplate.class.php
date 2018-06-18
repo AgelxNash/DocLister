@@ -81,16 +81,18 @@ class DLTemplate
      * Задает относительный путь к папке с шаблонами
      *
      * @param $path
+     * @param bool $supRoot
      * @return $this
      */
-    public function setTemplatePath($path)
+    public function setTemplatePath($path, $supRoot = false)
     {
         $path = trim($path);
-        $path = preg_replace(array(
-            '/\.*[\/|\\\]/i',
-            '/[\/|\\\]+/i'
-        ), array('/', '/'), $path);
-
+        if ($supRoot === false) {
+            $path = preg_replace(array(
+                '/\.*[\/|\\\]/i',
+                '/[\/|\\\]+/i'
+            ), array('/', '/'), $path);
+        }
         if (!empty($path)) {
             $this->templatePath = $path;
         }
@@ -106,7 +108,11 @@ class DLTemplate
      */
     public function setTemplateExtension($ext)
     {
-        $ext = trim($ext, ". \t\n\r\0\x0B");
+        $ext = preg_replace(array(
+            '/\.*[\/|\\\]/i',
+            '/[\/|\\\]+/i'
+        ), array('/', '/'), trim($ext, ". \t\n\r\0\x0B"));
+
         if (!empty($ext)) {
             $this->templateExtension = $ext;
         }
