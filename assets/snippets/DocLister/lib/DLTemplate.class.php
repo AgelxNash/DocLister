@@ -29,7 +29,14 @@ class DLTemplate
      */
     protected $twig = null;
 
+    /**
+     * @var null|Jenssegers\Blade\Blade blade object
+     */
+    protected $blade = null;
+
     protected $twigEnabled = false;
+
+    protected $bladeEnabled = false;
 
     protected $twigTemplateVars = array();
 
@@ -93,6 +100,7 @@ class DLTemplate
                 '/[\/|\\\]+/i'
             ), array('/', '/'), $path);
         }
+
         if (!empty($path)) {
             $this->templatePath = $path;
         }
@@ -165,7 +173,8 @@ class DLTemplate
     public function getChunk($name)
     {
         $tpl = '';
-        $this->twigEnabled = substr($name, 0, 3) == '@T_';
+        $this->twigEnabled = (0 === strpos($name, '@T_'));
+        $this->bladeEnabled = (0 === strpos($name, '@B_'));
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
             $mode = (preg_match(
                 '/^((@[A-Z_]+)[:]{0,1})(.*)/Asu',
@@ -174,6 +183,8 @@ class DLTemplate
             ) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
             if ($this->twigEnabled) {
+                $mode = '@' . substr($mode, 3);
+            } elseif ($this->bladeEnabled) {
                 $mode = '@' . substr($mode, 3);
             }
             switch ($mode) {
@@ -335,13 +346,17 @@ class DLTemplate
     public function parseChunk($name, $data = array(), $parseDocumentSource = false, $disablePHx = false)
     {
         $out = $this->getChunk($name);
-        if ($this->twigEnabled && ($out != '') && ($twig = $this->getTwig($name, $out))) {
-            $plh = $this->twigTemplateVars;
-            $plh['data'] = $data;
-            $plh['modx'] = $this->modx;
-            $out = $twig->render(md5($name), $plh);
-        } else {
-            if (is_array($data) && ($out != '')) {
+        switch (true) {
+            case $this->twigEnabled && $out !== '' && ($twig = $this->getTwig($name, $out)):
+                $plh = $this->twigTemplateVars;
+                $plh['data'] = $data;
+                $plh['modx'] = $this->modx;
+                $out = $twig->render(md5($name), $plh);
+                break;
+            case $this->bladeEnabled && $out !== '' && ($blade = $this->getBlade($name, $out)):
+                $out = $blade->with($data);
+                break;
+            case is_array($data) && ($out != ''):
                 if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
                     $item = $this->renameKeyArr($data, '[', ']', '+');
                     $out = str_replace(array_keys($item), array_values($item), $out);
@@ -355,7 +370,7 @@ class DLTemplate
                     $out = $this->phx->Parse($out);
                     $out = $this->cleanPHx($out);
                 }
-            }
+                break;
         }
         if ($parseDocumentSource) {
             $out = $this->parseDocumentSource($out);
@@ -407,6 +422,33 @@ class DLTemplate
         }
 
         return $twig;
+    }
+
+    /**
+     * Return clone of blade
+     *
+     * @param string $name
+     * @param string $tpl
+     * @return null
+     */
+    protected function getBlade($name, $tpl)
+    {
+        if ($this->blade === null && isset($this->modx->blade)) {
+            $blade = clone $this->modx->blade;
+            $this->blade = $blade;
+        } else {
+            $blade = $this->blade;
+        }
+
+        $cache = md5($name). '-'. sha1($tpl);
+        $path = $blade->viewPaths . '/~cache/' . $cache . '.blade.php';
+        if (! file_exists($path)) {
+            file_put_contents($path, $tpl);
+        }
+
+        return $blade->make('~cache/' . $cache, [
+            'modx'  => $this->modx
+        ]);
     }
 
     /**
