@@ -46,8 +46,8 @@ class DLpaginateReversed extends DLpaginate
     {
         $flag = (strpos($this->target, '?') === false);
         $value = $this->getPageQuery($id);
-        if ($flag && !empty($this->urlF)) {
-            $out = str_replace($this->urlF, $value, $this->target);
+        if ($flag && !empty($this->urlFriendly)) {
+            $out = $this->target . $this->urlFriendly . $value;
         } else {
             $out = $this->target;
             if ($id > 0 && $id < $this->total_pages) {
