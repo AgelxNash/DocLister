@@ -178,7 +178,7 @@ class DLTemplate
                                 '/\.*[\/|\\\]/i',
                                 '/[\/|\\\]+/i'
                             ), array('/', '/'), $subTmp) . '.' . $this->templateExtension);
-                        $fname = explode(".", $path);
+                        $fname = basename($path, '.' . $this->templateExtension);
                         if ($real == substr(
                             $path,
                             0,
