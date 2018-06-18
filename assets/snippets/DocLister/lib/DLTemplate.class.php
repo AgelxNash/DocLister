@@ -38,7 +38,7 @@ class DLTemplate
 
     protected $bladeEnabled = false;
 
-    protected $twigTemplateVars = array();
+    protected $templateData = array();
 
     public $phx = null;
 
@@ -129,18 +129,31 @@ class DLTemplate
     }
 
     /**
-     * Additional data for twig templates
+     * Additional data for external templates
      *
      * @param array $data
      * @return $this
      */
-    public function setTwigTemplateVars($data = array())
+    public function setTemplateData($data = array())
     {
         if (is_array($data)) {
-            $this->twigTemplateVars = $data;
+            $this->templateData = $data;
         }
 
         return $this;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function getTemplateData($data = array())
+    {
+        $plh = $this->templateData;
+        $plh['data'] = $data;
+        $plh['modx'] = $this->modx;
+
+        return $plh;
     }
 
     /**
@@ -348,13 +361,10 @@ class DLTemplate
         $out = $this->getChunk($name);
         switch (true) {
             case $this->twigEnabled && $out !== '' && ($twig = $this->getTwig($name, $out)):
-                $plh = $this->twigTemplateVars;
-                $plh['data'] = $data;
-                $plh['modx'] = $this->modx;
-                $out = $twig->render(md5($name), $plh);
+                $out = $twig->render(md5($name), $this->getTemplateData($data));
                 break;
             case $this->bladeEnabled && $out !== '' && ($blade = $this->getBlade($name, $out)):
-                $out = $blade->with($data);
+                $out = $blade->with($this->getTemplateData($data))->render();
                 break;
             case is_array($data) && ($out != ''):
                 if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
@@ -446,9 +456,7 @@ class DLTemplate
             file_put_contents($path, $tpl);
         }
 
-        return $blade->make('~cache/' . $cache, [
-            'modx'  => $this->modx
-        ]);
+        return $blade->make('~cache/' . $cache);
     }
 
     /**

@@ -284,8 +284,7 @@ abstract class DocLister
         if ($ext = $this->getCFGDef('templateExtension')) {
             $DLTemplate->setTemplateExtension($ext);
         }
-        $DLTemplate->setTwigTemplateVars(array('DocLister' => $this));
-        $this->DLTemplate = $DLTemplate;
+        $this->DLTemplate = $DLTemplate->setTemplateData(array('DocLister' => $this));
     }
 
     /**
