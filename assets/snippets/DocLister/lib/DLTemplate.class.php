@@ -29,11 +29,6 @@ class DLTemplate
      */
     protected $twig = null;
 
-    /**
-     * @var null|Jenssegers\Blade\Blade blade object
-     */
-    protected $blade = null;
-
     protected $twigEnabled = false;
 
     protected $bladeEnabled = false;
@@ -439,24 +434,28 @@ class DLTemplate
      *
      * @param string $name
      * @param string $tpl
-     * @return null
+     * @return Illuminate\View\Factory
      */
     protected function getBlade($name, $tpl)
     {
-        if ($this->blade === null && isset($this->modx->blade)) {
-            $blade = clone $this->modx->blade;
-            $this->blade = $blade;
-        } else {
-            $blade = $this->blade;
+        $out = null;
+        try {
+            /**
+             * @var Illuminate\View\Factory $blade
+             */
+            $blade = $this->modx->laravel->get('view');
+            $cache = md5($name). '-'. sha1($tpl);
+            $path = MODX_BASE_PATH . '/assets/cache/blade/' . $cache . '.blade.php';
+            if (! file_exists($path)) {
+                file_put_contents($path, $tpl);
+            }
+
+            $out = $blade->make('cache::' . $cache);
+        } catch(\Exception $exception ) {
+            $this->modx->messageQuit($exception->getMessage());
         }
 
-        $cache = md5($name). '-'. sha1($tpl);
-        $path = $blade->viewPaths . '/~cache/' . $cache . '.blade.php';
-        if (! file_exists($path)) {
-            file_put_contents($path, $tpl);
-        }
-
-        return $blade->make('~cache/' . $cache);
+        return $out;
     }
 
     /**
