@@ -771,7 +771,7 @@ class modResource extends MODxAPI
      */
     protected function checkAlias($alias)
     {
-        $alias = strtolower($alias);
+        $alias = mb_strtolower($alias);
         if ($this->modxConfig('friendly_urls')) {
             $_alias = $this->escape($alias);
             if ((!$this->modxConfig('allow_duplicate_alias') && !$this->modxConfig('use_alias_path')) || ($this->modxConfig('allow_duplicate_alias') && $this->modxConfig('use_alias_path'))) {
