@@ -103,6 +103,11 @@ class DLTemplate
         return $this;
     }
 
+    public function getTemplatePath()
+    {
+        return $this->templatePath;
+    }
+
     /**
      * Задает расширение файла с шаблоном
      *
@@ -121,6 +126,11 @@ class DLTemplate
         }
 
         return $this;
+    }
+
+    public function getTemplateExtension()
+    {
+        return $this->templateExtension;
     }
 
     /**
