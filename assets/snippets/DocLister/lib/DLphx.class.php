@@ -522,7 +522,13 @@ class DLphx
      */
     private function runCode($code)
     {
-        return eval("return (" . $code . ");");
+        try {
+            $out = eval("return (" . $code . ");");
+        } catch (ParseError $e) {
+            $this->modx->phpError(E_PARSE, $e->getMessage(), $e->getFile(), $e->getLine());
+            $out = false;
+        }
+        return null;
     }
 
     // Event logging (debug)
