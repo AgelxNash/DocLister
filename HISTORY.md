@@ -1,3 +1,18 @@
+## 2.3.17 (08.08.2018)
+* [Fix] Ошибка в modResource::checkAlias.
+* [Fix] Ошибка в методе checkVersion.
+* [Fix] Не выполнялись сниппеты из prepareWrap (Issue #317).
+* [Fix] Утечка памяти в DLPHx.
+* [Fix] Исправлена ошибка SQL в strict-режиме.
+* [Fix] Некорректный вывод плейсхолдера dl.full_iteration.
+* [Add] Перевод на японский для лексикона paginate.
+* [Refactor] Уменьшено количество запросов в классе modUsers (Issue #309).
+* [Fix] Неправильная установка локали в лексиконе paginate.
+* [Refactor] Метод cleandIDs перенесен в APIHelpers (Issue #308).
+* [Fix] Некорректная проверка существования поля в modResource.
+* [Add] Параметр disablePHx для отключения PHx в DLTemplate.
+* [Add] Поддержка плагина MultiCategories.
+
 ## 2.3.15 (28.04.2018)
 
 * [Fix] Не выводились значения tv-параметров по умолчанию в DocLister (Issue #307).

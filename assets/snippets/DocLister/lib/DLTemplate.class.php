@@ -2,7 +2,6 @@
 
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 
-use EvolutionCMS\Core as DocumentParser;
 /**
  * Class DLTemplate
  */
@@ -31,9 +30,7 @@ class DLTemplate
 
     protected $twigEnabled = false;
 
-    protected $bladeEnabled = false;
-
-    protected $templateData = array();
+    protected $twigTemplateVars = array();
 
     public $phx = null;
 
@@ -83,29 +80,21 @@ class DLTemplate
      * Задает относительный путь к папке с шаблонами
      *
      * @param $path
-     * @param bool $supRoot
      * @return $this
      */
-    public function setTemplatePath($path, $supRoot = false)
+    public function setTemplatePath($path)
     {
         $path = trim($path);
-        if ($supRoot === false) {
-            $path = preg_replace(array(
-                '/\.*[\/|\\\]/i',
-                '/[\/|\\\]+/i'
-            ), array('/', '/'), $path);
-        }
+        $path = preg_replace(array(
+            '/\.*[\/|\\\]/i',
+            '/[\/|\\\]+/i'
+        ), array('/', '/'), $path);
 
         if (!empty($path)) {
             $this->templatePath = $path;
         }
 
         return $this;
-    }
-
-    public function getTemplatePath()
-    {
-        return $this->templatePath;
     }
 
     /**
@@ -116,11 +105,7 @@ class DLTemplate
      */
     public function setTemplateExtension($ext)
     {
-        $ext = preg_replace(array(
-            '/\.*[\/|\\\]/i',
-            '/[\/|\\\]+/i'
-        ), array('/', '/'), trim($ext, ". \t\n\r\0\x0B"));
-
+        $ext = trim($ext, ". \t\n\r\0\x0B");
         if (!empty($ext)) {
             $this->templateExtension = $ext;
         }
@@ -128,37 +113,19 @@ class DLTemplate
         return $this;
     }
 
-    public function getTemplateExtension()
-    {
-        return $this->templateExtension;
-    }
-
     /**
-     * Additional data for external templates
+     * Additional data for twig templates
      *
      * @param array $data
      * @return $this
      */
-    public function setTemplateData($data = array())
+    public function setTwigTemplateVars($data = array())
     {
         if (is_array($data)) {
-            $this->templateData = $data;
+            $this->twigTemplateVars = $data;
         }
 
         return $this;
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    public function getTemplateData($data = array())
-    {
-        $plh = $this->templateData;
-        $plh['data'] = $data;
-        $plh['modx'] = $this->modx;
-
-        return $plh;
     }
 
     /**
@@ -191,8 +158,7 @@ class DLTemplate
     public function getChunk($name)
     {
         $tpl = '';
-        $this->twigEnabled = (0 === strpos($name, '@T_'));
-        $this->bladeEnabled = (0 === strpos($name, '@B_'));
+        $this->twigEnabled = substr($name, 0, 3) == '@T_';
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
             $mode = (preg_match(
                 '/^((@[A-Z_]+)[:]{0,1})(.*)/Asu',
@@ -201,8 +167,6 @@ class DLTemplate
             ) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
             if ($this->twigEnabled) {
-                $mode = '@' . substr($mode, 3);
-            } elseif ($this->bladeEnabled) {
                 $mode = '@' . substr($mode, 3);
             }
             switch ($mode) {
@@ -213,9 +177,12 @@ class DLTemplate
                                 '/\.*[\/|\\\]/i',
                                 '/[\/|\\\]+/i'
                             ), array('/', '/'), $subTmp) . '.' . $this->templateExtension);
-                        if (basename($path, '.' . $this->templateExtension) !== '' &&
-                            0 === strpos($path, $real) &&
-                            file_exists($path)
+                        $fname = explode(".", $path);
+                        if ($real == substr(
+                            $path,
+                            0,
+                            strlen($real)
+                        ) && end($fname) == $this->templateExtension && file_exists($path)
                         ) {
                             $tpl = file_get_contents($path);
                         }
@@ -344,7 +311,7 @@ class DLTemplate
         $tpl = null;
         $id = (int)$id;
         if ($id > 0) {
-            $tpl = $this->modx->getDatabase()->getValue("SELECT `content` FROM {$this->modx->getDatabase()->getFullTableName("site_templates")} WHERE `id` = {$id}");
+            $tpl = $this->modx->db->getValue("SELECT `content` FROM {$this->modx->getFullTableName("site_templates")} WHERE `id` = {$id}");
         }
         if (is_null($tpl)) {
             $tpl = '[*content*]';
@@ -364,14 +331,13 @@ class DLTemplate
     public function parseChunk($name, $data = array(), $parseDocumentSource = false, $disablePHx = false)
     {
         $out = $this->getChunk($name);
-        switch (true) {
-            case $this->twigEnabled && $out !== '' && ($twig = $this->getTwig($name, $out)):
-                $out = $twig->render(md5($name), $this->getTemplateData($data));
-                break;
-            case $this->bladeEnabled && $out !== '' && ($blade = $this->getBlade($name, $out)):
-                $out = $blade->with($this->getTemplateData($data))->render();
-                break;
-            case is_array($data) && ($out != ''):
+        if ($this->twigEnabled && ($out != '') && ($twig = $this->getTwig($name, $out))) {
+            $plh = $this->twigTemplateVars;
+            $plh['data'] = $data;
+            $plh['modx'] = $this->modx;
+            $out = $twig->render(md5($name), $plh);
+        } else {
+            if (is_array($data) && ($out != '')) {
                 if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
                     $item = $this->renameKeyArr($data, '[', ']', '+');
                     $out = str_replace(array_keys($item), array_values($item), $out);
@@ -385,7 +351,7 @@ class DLTemplate
                     $out = $this->phx->Parse($out);
                     $out = $this->cleanPHx($out);
                 }
-                break;
+            }
         }
         if ($parseDocumentSource) {
             $out = $this->parseDocumentSource($out);
@@ -437,35 +403,6 @@ class DLTemplate
         }
 
         return $twig;
-    }
-
-    /**
-     * Return clone of blade
-     *
-     * @param string $name
-     * @param string $tpl
-     * @return Illuminate\View\Factory
-     */
-    protected function getBlade($name, $tpl)
-    {
-        $out = null;
-        try {
-            /**
-             * @var Illuminate\View\Factory $blade
-             */
-            $blade = $this->modx->laravel->get('view');
-            $cache = md5($name). '-'. sha1($tpl);
-            $path = MODX_BASE_PATH . '/assets/cache/blade/' . $cache . '.blade.php';
-            if (! file_exists($path)) {
-                file_put_contents($path, $tpl);
-            }
-
-            $out = $blade->make('cache::' . $cache);
-        } catch(\Exception $exception ) {
-            $this->modx->messageQuit($exception->getMessage());
-        }
-
-        return $out;
     }
 
     /**

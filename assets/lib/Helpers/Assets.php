@@ -8,7 +8,8 @@ require_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 class AssetsHelper
 {
     /**
-     * @var EvolutionCMS\Core
+     * Объект DocumentParser - основной класс MODX
+     * @var \DocumentParser
      * @access protected
      */
     protected $modx = null;
@@ -24,7 +25,7 @@ class AssetsHelper
      *
      * @return self
      */
-    public static function getInstance(EvolutionCMS\Core $modx)
+    public static function getInstance(DocumentParser $modx)
     {
 
         if (null === self::$instance) {
@@ -38,7 +39,7 @@ class AssetsHelper
      * is not allowed to call from outside: private!
      *
      */
-    private function __construct(EvolutionCMS\Core $modx)
+    private function __construct(DocumentParser $modx)
     {
         $this->modx = $modx;
         $this->fs = \Helpers\FS::getInstance();

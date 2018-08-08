@@ -2,8 +2,6 @@
 
 require_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 
-use EvolutionCMS\Core as DocumentParser;
-
 /**
  * Class AbstractController
  * @package SimpleTab
@@ -40,16 +38,16 @@ abstract class AbstractController
 
     /**
      * Объект DocumentParser - основной класс MODX
-     * @var DocumentParser
+     * @var \DocumentParser
      * @access protected
      */
     protected $modx = null;
 
     /**
      * AbstractController constructor.
-     * @param DocumentParser $modx
+     * @param \DocumentParser $modx
      */
-    public function __construct(DocumentParser $modx)
+    public function __construct(\DocumentParser $modx)
     {
         $this->FS = \Helpers\FS::getInstance();
         $this->modx = $modx;

@@ -14,7 +14,6 @@ require_once(dirname(dirname(__FILE__)) . "/lib/DLTemplate.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/DLCollection.class.php");
 require_once(dirname(dirname(__FILE__)) . "/lib/xnop.class.php");
 
-use EvolutionCMS\Core as DocumentParser;
 /**
  * Class DocLister
  */
@@ -284,7 +283,8 @@ abstract class DocLister
         if ($ext = $this->getCFGDef('templateExtension')) {
             $DLTemplate->setTemplateExtension($ext);
         }
-        $this->DLTemplate = $DLTemplate->setTemplateData(array('DocLister' => $this));
+        $DLTemplate->setTwigTemplateVars(array('DocLister' => $this));
+        $this->DLTemplate = $DLTemplate;
     }
 
     /**
@@ -417,7 +417,7 @@ abstract class DocLister
     public function getTable($name, $alias = '')
     {
         if (!isset($this->_table[$name])) {
-            $this->_table[$name] = $this->modx->getDatabase()->getFullTableName($name);
+            $this->_table[$name] = $this->modx->getFullTableName($name);
         }
         $table = $this->_table[$name];
         if (!empty($alias) && is_scalar($alias)) {
@@ -759,7 +759,7 @@ abstract class DocLister
         $out = array();
         foreach ($data as $item) {
             if ($item !== '') {
-                $out[] = $this->modx->getDatabase()->escape($item);
+                $out[] = $this->modx->db->escape($item);
             }
         }
         $q = $quote ? "'" : "";
@@ -1798,7 +1798,7 @@ abstract class DocLister
     public function dbQuery($q)
     {
         $this->debug->debug($q, "query", 1, 'sql');
-        $out = $this->modx->getDatabase()->query($q);
+        $out = $this->modx->db->query($q);
         $this->debug->debugEnd("query");
 
         return $out;
