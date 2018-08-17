@@ -349,7 +349,6 @@ class DLTemplate
                     $this->phx->placeholders = array();
                     $this->setPHxPlaceholders($data);
                     $out = $this->phx->Parse($out);
-                    $out = $this->cleanPHx($out);
                 }
             }
         }
