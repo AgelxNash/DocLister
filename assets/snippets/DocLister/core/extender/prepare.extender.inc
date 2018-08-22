@@ -42,15 +42,18 @@ class prepare_DL_Extender extends extDocLister
         if (($prepare = $this->DocLister->getCFGDef($nameParam, '')) != '') {
             $params = $this->getParams($out);
             if (is_scalar($prepare)) {
-                $names = explode(",", $prepare);
-                foreach ($names as $item) {
+                $prepare = explode(",", $prepare);
+            } else if (!is_array($prepare)) {
+                $prepare = [$prepare];
+            }
+
+            if (!empty($prepare)) {
+                foreach ($prepare as $item) {
                     $params['data'] = $this->callPrepare($item, $params);
                     if ($params['data'] === false) {
                         break;
                     }
                 }
-            } else {
-                $params['data'] = $this->callPrepare($prepare, $params);
             }
             $out = $params['data'];
         }
