@@ -266,8 +266,8 @@ abstract class DocLister
 
         $this->setLocate();
 
-        if ($this->getCFGDef("customLang")) {
-            $this->getCustomLang();
+        if ($customLang = $this->getCFGDef("customLang")) {
+            $this->getCustomLang($customLang);
         }
         $this->loadExtender($this->getCFGDef("extender", ""));
 
@@ -784,9 +784,18 @@ abstract class DocLister
         if (empty($lang)) {
             $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
         }
-        if (file_exists(dirname(dirname(__FILE__)) . "/lang/" . $lang . ".php")) {
-            $tmp = include(dirname(__FILE__) . "/lang/" . $lang . ".php");
-            $this->_customLang = is_array($tmp) ? $tmp : array();
+
+        $files = [
+            __DIR__ . "/../lang/$lang.php",
+            MODX_BASE_PATH . $lang,
+        ];
+
+        foreach ($files as $file) {
+            if (is_readable($file) && is_file($file)) {
+                $tmp = include $file;
+                $this->_customLang = is_array($tmp) ? $tmp : array();
+                break;
+            }
         }
 
         return $this->_customLang;
