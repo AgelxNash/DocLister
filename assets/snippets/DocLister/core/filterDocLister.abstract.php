@@ -198,6 +198,10 @@ abstract class filterDocLister
                 } else {
                     $output = '';
                 }
+                // Make sure, the result is never () as this will break SQLs
+                if ($output == '()'){
+                    $output = '';
+                }
                 break;
             case 'in':
                 $output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')';
