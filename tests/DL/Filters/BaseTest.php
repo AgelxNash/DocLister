@@ -1,6 +1,8 @@
-<?php namespace DocLister\Tests\DL;
+<?php namespace DocLister\Tests\DL\Filters;
 
-class FiltersTest extends DLAbstract
+use DocLister\Tests\DL\DLAbstract;
+
+class BaseTest extends DLAbstract
 {
     public function testEmptyFilterSuccess()
     {
