@@ -77,6 +77,19 @@ class FiltersTest extends DLAbstract
         $this->assertEquals($out, $filters);
     }
 
+    public function testContainsOneEmptyFilter()
+    {
+        $out = array(
+            'join'  => "",
+            'where' => ""
+        );
+
+        $method = $this->getMethod($this->DL, "getFilters");
+        $filters = $method->invoke($this->DL, 'tv:testA:containsOne:');
+
+        $this->assertEquals($out, $filters);
+    }
+
     public function testContainsOneFilterFilterSuccess()
     {
         $out = array(

@@ -1669,8 +1669,10 @@ abstract class DocLister
                 $this->debug->warning('Error while loading DocLister filter "' . $this->debug->dumpData($filter_string) . '": check syntax!');
                 $output = false;
             } else {
-                $output['join'] = $filter->get_join();
                 $output['where'] = stripslashes($filter->get_where());
+                if (!empty($output['where'])) {
+                    $output['join'] = $filter->get_join();
+                }
             }
         }
         $this->debug->debug('getFilter');
