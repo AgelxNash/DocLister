@@ -1670,7 +1670,7 @@ abstract class DocLister
                 $output = false;
             } else {
                 $output['join'] = $filter->get_join();
-                $output['where'] = stripslashes($filter->get_where());
+                $output['where'] = $filter->get_where();
 
             }
         }
