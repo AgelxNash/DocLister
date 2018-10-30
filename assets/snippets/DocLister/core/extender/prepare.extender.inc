@@ -101,7 +101,7 @@ class prepare_DL_Extender extends extDocLister
             case is_array($data):
                 $out = $data;
                 break;
-            case ($data === '' || (is_bool($data) && $data === false)):
+            case ($data === '' || $data === false):
                 $out = false;
                 break;
             case is_string($data):

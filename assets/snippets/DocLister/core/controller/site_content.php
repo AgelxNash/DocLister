@@ -186,7 +186,7 @@ class site_contentDocLister extends DocLister
                             'data'      => $item,
                             'nameParam' => 'prepare'
                         ));
-                        if (is_bool($item) && $item === false) {
+                        if ($item === false) {
                             $this->skippedDocs++;
                             continue;
                         }
@@ -289,7 +289,7 @@ class site_contentDocLister extends DocLister
 
             if ($extPrepare) {
                 $row = $extPrepare->init($this, array('data' => $row));
-                if (is_bool($row) && $row === false) {
+                if ($row === false) {
                     continue;
                 }
             }

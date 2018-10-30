@@ -1017,7 +1017,7 @@ abstract class DocLister
                     'nameParam' => 'prepareWrap',
                     'return'    => 'placeholders'
                 ));
-                if (is_bool($params) && $params === false) {
+                if ($params === false) {
                     $out = $data;
                     $parse = false;
                 }
