@@ -80,7 +80,7 @@ class FiltersTest extends DLAbstract
     public function testContainsOneEmptyFilter()
     {
         $out = array(
-            'join'  => "",
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_testA_1` ON `dltv_testA_1`.`contentid`=`c`.`id` AND `dltv_testA_1`.`tmplvarid`=1",
             'where' => ""
         );
 

@@ -197,7 +197,7 @@ abstract class filterDocLister
                      * искомый $word = " когда". С trim найдем "...мне некогда..." и "...тут когда-то...";
                      * Без trim будт обнаружено только "...тут когда-то..."
                      */
-                    if(($likeWord = $this->DocLister->LikeEscape($output, $word)) !== '') {
+                    if (($likeWord = $this->DocLister->LikeEscape($output, $word)) !== '') {
                         $word_arr[] = $likeWord;
                     }
                 }
