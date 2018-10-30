@@ -142,14 +142,14 @@ abstract class filterDocLister
             case '!=':
             case 'no':
             case 'isnot':
-                $output .= " != '" . $this->modx->db->escape($value) . "' OR " . $output . " IS NULL";
+                $output = '(' . $output . " != '" . $this->modx->db->escape($value) . "' OR " . $output . ' IS NULL)';
                 break;
-			case 'isnull':
-                $output .= " IS NULL";
+            case 'isnull':
+                $output .= ' IS NULL';
                 break;
             case 'isnotnull':
-                $output .= " IS NOT NULL";
-                break;	
+                $output .= ' IS NOT NULL';
+                break;
             case '>':
             case 'gt':
                 $output .= ' > ' . str_replace(',', '.', floatval($value));
@@ -209,7 +209,7 @@ abstract class filterDocLister
                 $output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')';
                 break;
             case 'notin':
-                $output .= ' NOT IN(' . $this->DocLister->sanitarIn($value, ',', true) . ') OR ' . $output . ' IS NULL';
+                $output = '(' . $output . ' NOT IN(' . $this->DocLister->sanitarIn($value, ',', true) . ') OR ' . $output . ' IS NULL)';
                 break;
             default:
                 $output = '';
