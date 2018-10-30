@@ -7,8 +7,8 @@ class getChildrenListTest extends DLAbstract
     public function testShowParent()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND (c.parent IN ('5') OR c.id IN('5')) GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE (c.parent IN ('5') OR c.id IN('5')) AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND (c.parent IN ('5') OR c.id IN('5')) GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE (c.parent IN ('5') OR c.id IN('5')) AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
         $DL = $this->mockDocLister('shopkeeper', array(
             'debug'      => 1,
@@ -36,8 +36,8 @@ class getChildrenListTest extends DLAbstract
     public function testHideParent()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND c.parent IN ('5') AND c.id NOT IN('5') GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE c.parent IN ('5') AND c.id NOT IN('5') AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND c.parent IN ('5') AND c.id NOT IN('5') GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE c.parent IN ('5') AND c.id NOT IN('5') AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
 
         $DL = $this->mockDocLister('shopkeeper', array(
@@ -65,8 +65,8 @@ class getChildrenListTest extends DLAbstract
     public function testIgnoreParent()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND c.parent IN ('5') GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE c.parent IN ('5') AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND c.parent IN ('5') GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE c.parent IN ('5') AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
         $DL = $this->mockDocLister('shopkeeper', array(
             'debug'      => 1,
@@ -93,8 +93,8 @@ class getChildrenListTest extends DLAbstract
     public function testShowParentAndDocs()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
         $DL = $this->mockDocLister('shopkeeper', array(
             'debug'      => 1,
@@ -122,8 +122,8 @@ class getChildrenListTest extends DLAbstract
     public function testHideParentAndDocs()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND ((c.parent IN ('5') AND c.id NOT IN('5')) OR c.id IN('10','12')) GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE ((c.parent IN ('5') AND c.id NOT IN('5')) OR c.id IN('10','12')) AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND ((c.parent IN ('5') AND c.id NOT IN('5')) OR c.id IN('10','12')) GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE ((c.parent IN ('5') AND c.id NOT IN('5')) OR c.id IN('10','12')) AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
 
         $DL = $this->mockDocLister('shopkeeper', array(
@@ -152,8 +152,8 @@ class getChildrenListTest extends DLAbstract
     public function testIgnoreParentAndDocs()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND ((c.parent IN ('5')) OR c.id IN('10','12')) GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE ((c.parent IN ('5')) OR c.id IN('10','12')) AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE c.published=1 AND ((c.parent IN ('5')) OR c.id IN('10','12')) GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE ((c.parent IN ('5')) OR c.id IN('10','12')) AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
         $DL = $this->mockDocLister('shopkeeper', array(
             'debug'      => 1,
@@ -181,8 +181,8 @@ class getChildrenListTest extends DLAbstract
     public function testShowParentAndDocsAndWhere()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE `price`>0 AND c.published=1 AND (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE `price`>0 AND (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE `price`>0 AND c.published=1 AND (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE `price`>0 AND (((c.parent IN ('5') OR c.id IN('5'))) OR c.id IN('10','12')) AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
 
         $DL = $this->mockDocLister('shopkeeper', array(
@@ -212,8 +212,8 @@ class getChildrenListTest extends DLAbstract
     public function testHideParentAndDocsAndWhere()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE `price`>0 AND c.published=1 AND ((c.parent IN ('5') AND c.id NOT IN('5')) OR c.id IN('10','12')) GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE `price`>0 AND ((c.parent IN ('5') AND c.id NOT IN('5')) OR c.id IN('10','12')) AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE `price`>0 AND c.published=1 AND ((c.parent IN ('5') AND c.id NOT IN('5')) OR c.id IN('10','12')) GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE `price`>0 AND ((c.parent IN ('5') AND c.id NOT IN('5')) OR c.id IN('10','12')) AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
 
         $DL = $this->mockDocLister('shopkeeper', array(
@@ -243,8 +243,8 @@ class getChildrenListTest extends DLAbstract
     public function testIgnoreParentAndDocsAndWhere()
     {
         $out = array(
-            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE `price`>0 AND c.published=1 AND ((c.parent IN ('5')) OR c.id IN('10','12')) GROUP BY c.id) as `tmp`",
-            "SELECT c.* FROM catalog as `c`  WHERE `price`>0 AND ((c.parent IN ('5')) OR c.id IN('10','12')) AND c.published=1 GROUP BY c.id ORDER BY c.createdon DESC LIMIT 0,10"
+            "SELECT count(*) FROM (SELECT count(*) FROM catalog as `c`  WHERE `price`>0 AND c.published=1 AND ((c.parent IN ('5')) OR c.id IN('10','12')) GROUP BY `c`.`id`) as `tmp`",
+            "SELECT c.* FROM catalog as `c`  WHERE `price`>0 AND ((c.parent IN ('5')) OR c.id IN('10','12')) AND c.published=1 GROUP BY `c`.`id` ORDER BY c.createdon DESC LIMIT 0,10"
         );
 
         $DL = $this->mockDocLister('shopkeeper', array(

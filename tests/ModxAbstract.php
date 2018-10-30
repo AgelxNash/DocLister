@@ -8,19 +8,23 @@ abstract class ModxAbstract extends TestAbstract
     public function setUp()
     {
         $this->modx = $this->mockMODX();
-        $this->assertTrue($this->modx instanceof \EvolutionCMS\Core);
+        $this->assertTrue($this->modx instanceof \DocumentParser);
         $this->assertTrue($this->modx->db instanceof \DBAPI);
     }
 
     protected function mockDBAPI()
     {
         $DBAPI = $this->getMockBuilder('DBAPI')
-            ->setMethods(array('query', 'makeArray', 'escape', 'getValue'))
+            ->setMethods(array('query', 'makeArray', 'getRow', 'escape', 'getValue'))
             ->getMock();
 
         $DBAPI->expects($this->any())
             ->method('makeArray')
             ->will($this->returnValue(array()));
+
+        $DBAPI->expects($this->any())
+            ->method('getRow')
+            ->will($this->returnValue([]));
 
         $DBAPI->expects($this->any())
             ->method('escape')
@@ -35,7 +39,7 @@ abstract class ModxAbstract extends TestAbstract
 
     protected function mockMODX(array $config = array())
     {
-        $modx = $this->getMockBuilder('\EvolutionCMS\Core')
+        $modx = $this->getMockBuilder('\DocumentParser')
             ->setMethods(array('getFullTableName'))
             ->getMock();
 
@@ -91,6 +95,23 @@ abstract class ModxAbstract extends TestAbstract
             'site_start'       => 1,
             'site_url'         => 'http://example.com/',
         ), $config);
+
+        $modx->_TVnames = array(
+            'testA' => array(
+                'id'   => 1,
+                'type' => 'string',
+                'default' => '',
+                'display' => '',
+                'display_params' => ''
+            ),
+            'testB' => array(
+                'id'   => 2,
+                'type' => 'string',
+                'default' => '',
+                'display' => '',
+                'display_params' => ''
+            )
+        );
 
         return $modx;
 
