@@ -188,11 +188,6 @@ class DLTemplate
                         }
                     }
                     break;
-                case '@CHUNK':
-                    if ($subTmp != '') {
-                        $tpl = $this->modx->getChunk($subTmp);
-                    }
-                    break;
                 case '@INLINE':
                 case '@TPL':
                 case '@CODE':
@@ -237,13 +232,38 @@ class DLTemplate
                 case '@TEMPLATE':
                     $tpl = $this->getTemplate($subTmp);
                     break;
+                case '@CHUNK':
+                    $tpl = $this->getBaseChunk($subTmp);
+                    break;
                 default:
-                    $tpl = $this->modx->getChunk($name);
+                    $tpl = $this->getBaseChunk($name);
             }
             $this->modx->chunkCache[$name] = $tpl;
         } else {
-            if ($name != '') {
-                $tpl = $this->modx->getChunk($name);
+            $tpl = $this->getBaseChunk($name);
+        }
+
+        return $tpl;
+    }
+
+    protected function getBaseChunk($name)
+    {
+        if (empty($name)) {
+            return null;
+        }
+
+        if (isset ($this->modx->chunkCache[$name])) {
+            $tpl = $this->modx->chunkCache[$name];
+        } else {
+            $table = $this->modx->getFullTableName('site_htmlsnippets');
+            $query = $this->modx->db->query(
+                "SELECT `snippet` FROM " . $table . " WHERE `name`='" . $this->modx->db->escape($name) . "' AND `disabled`=0"
+            );
+            if ($this->modx->db->getRecordCount($query) == 1) {
+                $row = $this->modx->db->getRow($query);
+                $tpl = $row['snippet'];
+            } else {
+                $tpl = null;
             }
         }
 
