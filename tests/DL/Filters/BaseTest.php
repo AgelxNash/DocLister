@@ -43,8 +43,8 @@ class BaseTest extends DLAbstract
     public function testTwoFilterSuccess()
     {
         $out = array(
-            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_testA_1` ON `dltv_testA_1`.`contentid`=`c`.`id` AND `dltv_testA_1`.`tmplvarid`=1 LEFT JOIN site_tmplvar_contentvalues as `dltv_testB_2` ON `dltv_testB_2`.`contentid`=`c`.`id` AND `dltv_testB_2`.`tmplvarid`=2",
-            'where' => "((`dltv_testA_1`.`value` != 'asd' OR `dltv_testA_1`.`value` IS NULL) AND (`dltv_testB_2`.`value` != 'qwe' OR `dltv_testB_2`.`value` IS NULL))"
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_testA_2` ON `dltv_testA_2`.`contentid`=`c`.`id` AND `dltv_testA_2`.`tmplvarid`=1 LEFT JOIN site_tmplvar_contentvalues as `dltv_testB_1` ON `dltv_testB_1`.`contentid`=`c`.`id` AND `dltv_testB_1`.`tmplvarid`=2",
+            'where' => "((`dltv_testA_2`.`value` != 'asd' OR `dltv_testA_2`.`value` IS NULL) AND (`dltv_testB_1`.`value` != 'qwe' OR `dltv_testB_1`.`value` IS NULL))"
         );
 
         $method = $this->getMethod($this->DL, "getFilters");

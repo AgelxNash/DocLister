@@ -51,8 +51,8 @@ class Issue276Test extends DLAbstract
     public function testD()
     {
         $out = array(
-            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_testA_1` ON `dltv_testA_1`.`contentid`=`c`.`id` AND `dltv_testA_1`.`tmplvarid`=1 LEFT JOIN site_tmplvars as `d_dltv_testA_1` on `d_dltv_testA_1`.`id` = 1 LEFT JOIN site_tmplvar_contentvalues as `dltv_testB_2` ON `dltv_testB_2`.`contentid`=`c`.`id` AND `dltv_testB_2`.`tmplvarid`=2",
-            'where' => "(IFNULL(`dltv_testA_1`.`value`, `d_dltv_testA_1`.`default_text`) = 'x(Y)z' AND `dltv_testB_2`.`value` = 'q(W)e))')"
+            'join'  => "LEFT JOIN site_tmplvar_contentvalues as `dltv_testA_2` ON `dltv_testA_2`.`contentid`=`c`.`id` AND `dltv_testA_2`.`tmplvarid`=1 LEFT JOIN site_tmplvars as `d_dltv_testA_2` on `d_dltv_testA_2`.`id` = 1 LEFT JOIN site_tmplvar_contentvalues as `dltv_testB_1` ON `dltv_testB_1`.`contentid`=`c`.`id` AND `dltv_testB_1`.`tmplvarid`=2",
+            'where' => "(IFNULL(`dltv_testA_2`.`value`, `d_dltv_testA_2`.`default_text`) = 'x(Y)z' AND `dltv_testB_1`.`value` = 'q(W)e))')"
         );
 
         $method = $this->getMethod($this->DL, "getFilters");
