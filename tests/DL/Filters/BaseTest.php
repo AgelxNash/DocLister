@@ -11,7 +11,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, '');
 
-        $this->assertEquals($out, $filters);
+        $this->assertNull($filters);
     }
 
     public function testOneFilterSuccess()
@@ -37,7 +37,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'AND(tv:testB:isnot:asd)');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testTwoFilterSuccess()
@@ -50,7 +50,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'AND(tv:testA:isnot:asd;tv:testB:isnot:qwe)');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testOneLikeFilterSuccess()
@@ -63,7 +63,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'tv:testB:like:asd%qwe=');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testORFilterFilterSuccess()
@@ -76,7 +76,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'OR(tv:testA:eq:черный;tv:testA:eq:белый;tv:testA:eq:красный)');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testContainsOneEmptyFilter()
@@ -89,7 +89,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'tv:testA:containsOne:');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testContainsOneFilterFilterSuccess()
@@ -102,7 +102,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'tv:testA:containsOne:белый,синий,красный');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testInFilterFilterSuccess()
@@ -115,7 +115,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'tv:testA:in:белый,синий,красный');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testTVDFilterFilterSuccess()
@@ -128,7 +128,7 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'tvd:testA:is:белый');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testContentFilterFilterSuccess()
@@ -141,6 +141,6 @@ class BaseTest extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'content:hidemenu:is:1');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 }

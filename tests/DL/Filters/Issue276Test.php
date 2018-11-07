@@ -18,7 +18,7 @@ class Issue276Test extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'tvd:testA:is:x(Y)z');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
 
@@ -32,7 +32,7 @@ class Issue276Test extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'AND(tvd:testA:is:x(Y)z)');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testC()
@@ -45,7 +45,7 @@ class Issue276Test extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'AND(tvd:testA:is:x(Y))z)');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testD()
@@ -58,7 +58,7 @@ class Issue276Test extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'AND(tvd:testA:is:x(Y)z;tv:testB:is:q(W)e)))');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testE()
@@ -71,6 +71,6 @@ class Issue276Test extends DLAbstract
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, 'OR(tv:testA:is:x(Y)z);tv:testA:is:a(B)c))');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 }

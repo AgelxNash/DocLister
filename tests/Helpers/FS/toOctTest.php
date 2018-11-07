@@ -13,12 +13,12 @@ class toOctTest extends \PHPUnit_Framework_TestCase
 
     public function test8StringTo8Success644()
     {
-        $this->assertEquals(0644, $this->FS->toOct('0644'));
+        $this->assertSame(0644, $this->FS->toOct('0644'));
     }
 
     public function test8to8Success644()
     {
-        $this->assertEquals(0644, $this->FS->toOct(0644));
+        $this->assertSame(0644, $this->FS->toOct(0644));
     }
 
     public function test10to8Error644()
@@ -28,17 +28,17 @@ class toOctTest extends \PHPUnit_Framework_TestCase
 
     public function test10StringTo8Success644()
     {
-        $this->assertEquals(0644, $this->FS->toOct('644'));
+        $this->assertSame(0644, $this->FS->toOct('644'));
     }
 
     public function test8StringTo8Success755()
     {
-        $this->assertEquals(0755, $this->FS->toOct('0755'));
+        $this->assertSame(0755, $this->FS->toOct('0755'));
     }
 
     public function test8to8Success755()
     {
-        $this->assertEquals(0755, $this->FS->toOct(0755));
+        $this->assertSame(0755, $this->FS->toOct(0755));
     }
 
     public function test10to8Error755()
@@ -48,17 +48,17 @@ class toOctTest extends \PHPUnit_Framework_TestCase
 
     public function test10StringTo8Success755()
     {
-        $this->assertEquals(0755, $this->FS->toOct('755'));
+        $this->assertSame(0755, $this->FS->toOct('755'));
     }
 
     public function test8StringTo8Success400()
     {
-        $this->assertEquals(0400, $this->FS->toOct('0400'));
+        $this->assertSame(0400, $this->FS->toOct('0400'));
     }
 
     public function test8to8Success400()
     {
-        $this->assertEquals(0400, $this->FS->toOct(0400));
+        $this->assertSame(0400, $this->FS->toOct(0400));
     }
 
     public function test10to8Error400()
@@ -68,6 +68,6 @@ class toOctTest extends \PHPUnit_Framework_TestCase
 
     public function test10StringTo8Success400()
     {
-        $this->assertEquals(0400, $this->FS->toOct('400'));
+        $this->assertSame(0400, $this->FS->toOct('400'));
     }
 }

@@ -28,8 +28,8 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
 
     }
 
@@ -58,8 +58,8 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
     }
 
     public function testIgnoreParent()
@@ -86,8 +86,8 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
     }
 
     public function testShowParentAndDocs()
@@ -115,8 +115,8 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
     }
 
     public function testHideParentAndDocs()
@@ -145,8 +145,8 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
     }
 
     public function testIgnoreParentAndDocs()
@@ -174,8 +174,8 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
     }
 
     public function testShowParentAndDocsAndWhere()
@@ -205,8 +205,8 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
     }
 
     public function testHideParentAndDocsAndWhere()
@@ -236,8 +236,8 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
     }
 
     public function testIgnoreParentAndDocsAndWhere()
@@ -267,7 +267,7 @@ class getChildrenListTest extends DLAbstract
         $getChildrenCount = $debug->get(0);
         $getChildrenList = $debug->get(1);
 
-        $this->assertEquals($out[0], trim($getChildrenCount['msg']));
-        $this->assertEquals($out[1], trim($getChildrenList['msg']));
+        $this->assertSame($out[0], trim($getChildrenCount['msg']));
+        $this->assertSame($out[1], trim($getChildrenList['msg']));
     }
 }

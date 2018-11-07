@@ -18,7 +18,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV("site_content as c", "ORDER BY price ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testNoTableAndExistTVPriceAndImage()
@@ -35,7 +35,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV("site_content as c", "ORDER BY price ASC, id DESC, image ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testNoTableAndNoExistTV()
@@ -52,7 +52,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV("site_content as c", "ORDER BY example ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testChangeTypeInNoExistsTv()
@@ -71,7 +71,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV('site_content as c', "ORDER BY example ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testTableExistsAndExistTVOther()
@@ -93,7 +93,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV($out[0], "ORDER BY other ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testNoTableAndExistDoubleTVOtherWithChangeTypeSkipFirst()
@@ -113,7 +113,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV('site_content as c', "ORDER BY other ASC, other DESC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testNoTableAndExistTVOtherWithFirstChangeTypeAndDefaultValue()
@@ -133,7 +133,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV('site_content as c', "ORDER BY other ASC, price DESC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testTvOtherTypeTVDATETIME()
@@ -153,7 +153,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV('site_content as c', "ORDER BY other ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testTvOtherTypeDATETIME()
@@ -173,7 +173,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV('site_content as c', "ORDER BY other ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testTvOtherTypeBINARY()
@@ -193,7 +193,7 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV('site_content as c', "ORDER BY other ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 
     public function testTvOtherErrorType()
@@ -213,6 +213,6 @@ class injectSortByTVTest extends TVAbstract
 
         $TVs = $extTV->injectSortByTV('site_content as c', "ORDER BY other ASC");
 
-        $this->assertEquals($out, $this->fixDebugSQL($TVs));
+        $this->assertSame($out, $this->fixDebugSQL($TVs));
     }
 }

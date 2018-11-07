@@ -10,9 +10,8 @@ class Issue333Test extends DLAbstract
     public function testA()
     {
         $method = $this->getMethod($this->DL, 'getFilters');
-        $filters = $method->invoke($this->DL, 'testA:is:no');
 
-        $this->assertEquals(false, $filters);
+        $this->assertFalse($method->invoke($this->DL, 'testA:is:no'));
     }
 
 
@@ -26,7 +25,7 @@ class Issue333Test extends DLAbstract
         $method = $this->getMethod($this->DL, 'getFilters');
         $filters = $method->invoke($this->DL, 'AND( tv:testA:is:no )');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testC()
@@ -39,7 +38,7 @@ class Issue333Test extends DLAbstract
         $method = $this->getMethod($this->DL, 'getFilters');
         $filters = $method->invoke($this->DL, 'AND( tv:testA:is:no; )');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testD()
@@ -52,6 +51,6 @@ class Issue333Test extends DLAbstract
         $method = $this->getMethod($this->DL, 'getFilters');
         $filters = $method->invoke($this->DL, 'AND( tvd:testA:is:no ; tv:testB:is:yes; )');
 
-        $this->assertEquals($out, $filters);
+        $this->assertSame($out, $filters);
     }
 }

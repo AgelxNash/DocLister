@@ -18,18 +18,18 @@ class APIhelpersTest extends \PHPUnit_Framework_TestCase
 
     public function testGetKeyWithEmptyKey()
     {
-        $this->assertEquals(null, APIhelpers::getkey($this->data, 'empty'));
-        $this->assertEquals(null, APIhelpers::getkey($this->data, 'empty', 'my default'));
+        $this->assertNull(APIhelpers::getkey($this->data, 'empty'));
+        $this->assertNull(APIhelpers::getkey($this->data, 'empty', 'my default'));
     }
 
     public function testGetKeyWithNoKey()
     {
-        $this->assertEquals('only_value', APIhelpers::getkey($this->data, 0));
-        $this->assertEquals('value_with_number_key', APIhelpers::getkey($this->data, 10));
+        $this->assertSame('only_value', APIhelpers::getkey($this->data, 0));
+        $this->assertSame('value_with_number_key', APIhelpers::getkey($this->data, 10));
     }
 
     public function testGetKeyWithArrayKey()
     {
-        $this->assertEquals(array('a', 'b', 'c'), APIhelpers::getkey($this->data, 'subArray'));
+        $this->assertSame(array('a', 'b', 'c'), APIhelpers::getkey($this->data, 'subArray'));
     }
 }
