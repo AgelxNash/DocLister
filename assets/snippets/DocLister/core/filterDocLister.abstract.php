@@ -207,6 +207,18 @@ abstract class filterDocLister
                     $output = '';
                 }
                 break;
+            case 'containsAll':
+                $words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $value);
+                $word_arr = array();
+                foreach ($words as $word) {
+                    $word_arr[] = $this->DocLister->LikeEscape($output, $word);
+                }
+                if (!empty($word_arr)) {
+                    $output = '(' . implode(' AND ', $word_arr) . ')';
+                } else {
+                    $output = '';
+                }
+            break;
             case 'in':
                 $output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')';
                 break;
