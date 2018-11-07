@@ -211,7 +211,9 @@ abstract class filterDocLister
                 $words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $value);
                 $word_arr = array();
                 foreach ($words as $word) {
-                    $word_arr[] = $this->DocLister->LikeEscape($output, $word);
+                    if (($likeWord = $this->DocLister->LikeEscape($output, $word)) !== '') {
+                        $word_arr[] = $likeWord;
+                    }
                 }
                 if (!empty($word_arr)) {
                     $output = '(' . implode(' AND ', $word_arr) . ')';
