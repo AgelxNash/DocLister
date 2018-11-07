@@ -1635,7 +1635,7 @@ abstract class DocLister
     {
         $this->debug->debug("getFilters: " . $this->debug->dumpData($filter_string), 'getFilter', 1);
         // the filter parameter tells us, which filters can be used in this query
-        $filter_string = trim($filter_string, ' ;');
+        $filter_string = ltrim(trim($filter_string, ';'));
         if (!$filter_string) {
             return;
         }
@@ -1652,7 +1652,7 @@ abstract class DocLister
                     /**
                      * С правой стороны не выполняется trim, т.к. там находятся значения. А они могу быть чувствительны к пробелам
                      */
-                    $subfilter = $this->getFilters(ltrim($filter) . $lastFilter);
+                    $subfilter = $this->getFilters(ltrim($filter) . ltrim($lastFilter));
                     if (!$subfilter) {
                         $lastFilter = explode(';', $filter, 2);
                         $subfilter = isset($lastFilter[1]) ? $this->getFilters($lastFilter[1]) : '';
