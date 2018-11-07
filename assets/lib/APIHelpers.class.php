@@ -80,7 +80,7 @@ class APIhelpers
         if (is_array($data) && (is_int($key) || is_string($key)) && $key !== '' && array_key_exists($key, $data)) {
             $out = $data[$key];
         }
-        if (!empty($validate) && is_callable($validate)) {
+        if (! empty($validate) && is_callable($validate)) {
             $out = (($validate($out) === true) ? $out : $default);
         }
         return $out;
@@ -101,7 +101,7 @@ class APIhelpers
     {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             list(, $domain) = explode("@", $email, 2);
-            if (!$dns || ($dns && checkdnsrr($domain, "MX") && checkdnsrr($domain, "A"))) {
+            if (! $dns || ($dns && checkdnsrr($domain, "MX") && checkdnsrr($domain, "A"))) {
                 $error = false;
             } else {
                 $error = 'dns';
@@ -232,7 +232,7 @@ class APIhelpers
             case ($tmp = self::getEnv('HTTP_X_FORWARDED_FOR')):
                 $out = $tmp;
                 break;
-            case (!empty($_SERVER['REMOTE_ADDR'])):
+            case (! empty($_SERVER['REMOTE_ADDR'])):
                 $out = $_SERVER['REMOTE_ADDR'];
                 break;
             default:

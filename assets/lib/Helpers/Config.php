@@ -21,7 +21,7 @@ class Config
      */
     public function __construct($cfg = array())
     {
-        if (!empty($cfg)) {
+        if (! empty($cfg)) {
             $this->setConfig($cfg);
         }
         $this->fs = FS::getInstance();
