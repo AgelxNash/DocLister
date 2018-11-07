@@ -48,14 +48,14 @@ abstract class DocLister
      * @var DocumentParser
      * @access protected
      */
-    protected $modx = null;
+    protected $modx;
 
     /**
      * Шаблонизатор чанков
      * @var DLTemplate
      * @access protected
      */
-    protected $DLTemplate = null;
+    protected $DLTemplate;
 
     /**
      * Массив загруженных экстендеров
@@ -133,7 +133,7 @@ abstract class DocLister
      * @var DLdebug|xNop
      * @access public
      */
-    public $debug = null;
+    public $debug;
 
     /**
      * Массив дополнительно подключаемых таблиц с псевдонимами
@@ -160,7 +160,8 @@ abstract class DocLister
     /** @var string имя шаблона обертки для записей */
     public $ownerTPL = '';
 
-    public $FS = null;
+    /** @var \Helpers\FS */
+    public $FS;
     /** @var string результатирующая строка которая была последний раз сгенирирована
      *               вызовами методов DocLister::render и DocLister::getJSON
      */
@@ -175,16 +176,21 @@ abstract class DocLister
     protected $alias = '';
 
     /** @var null|paginate_DL_Extender */
-    protected $extPaginate = null;
+    protected $extPaginate;
 
     /** @var null|Helpers\Config */
-    public $config = null;
+    public $config;
+
+    /**
+     * @var cache_DL_Extender
+     */
+    protected $extCache;
 
     /**
      * Конструктор контроллеров DocLister
      *
      * @param DocumentParser $modx объект DocumentParser - основной класс MODX
-     * @param array $cfg массив параметров сниппета
+     * @param mixed $cfg массив параметров сниппета
      * @param int $startTime время запуска сниппета
      * @throws Exception
      */
@@ -202,7 +208,7 @@ abstract class DocLister
             $this->modx = $modx;
             $this->setDebug(1);
 
-            if (!is_array($cfg) || empty($cfg)) {
+            if (! is_array($cfg) || empty($cfg)) {
                 $cfg = $this->modx->Event->params;
             }
         } else {
@@ -419,7 +425,7 @@ abstract class DocLister
             $this->_table[$name] = $this->modx->getFullTableName($name);
         }
         $table = $this->_table[$name];
-        if (!empty($alias) && is_scalar($alias)) {
+        if (! empty($alias) && is_scalar($alias)) {
             $table .= " as `" . $alias . "`";
         }
 

@@ -17,8 +17,8 @@ class Mailer
     /**
      * @var MODxMailer $mail
      */
-    protected $mail = null;
-    protected $modx = null;
+    protected $mail;
+    protected $modx;
     public $config = array();
     protected $debug = false;
     protected $queuePath = 'assets/cache/mail/';
@@ -127,7 +127,7 @@ class Mailer
 
     /**
      * @param $report
-     * @return bool
+     * @return bool|string
      */
     public function toQueue($report)
     {

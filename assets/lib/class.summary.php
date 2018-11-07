@@ -41,9 +41,9 @@ class SummaryText
 
     /**
      * SummaryText constructor.
-     * @param $text
-     * @param $action
-     * @param null $break
+     * @param string $text
+     * @param string $action
+     * @param null|string $break
      */
     public function __construct($text, $action, $break = null)
     {

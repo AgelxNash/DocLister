@@ -94,7 +94,7 @@ class APIhelpers
      * @license    GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
      * @param string $email проверяемый email
      * @param boolean $dns проверять ли DNS записи
-     * @return boolean Результат проверки почтового ящика
+     * @return boolean|string Результат проверки почтового ящика
      * @author Anton Shevchuk
      */
     public static function emailValidate($email, $dns = true)
@@ -402,9 +402,7 @@ class APIhelpers
         foreach ($IDs as $item) {
             $item = trim($item);
             if (is_scalar($item) && (int)$item >= 0) { //Fix 0xfffffffff
-                if (!empty($ignore) && in_array((int)$item, $ignore, true)) {
-                    $this->log[] = 'Ignore id ' . (int)$item;
-                } else {
+                if (empty($ignore) || !\in_array((int)$item, $ignore, true)) {
                     $out[] = (int)$item;
                 }
             }
