@@ -4,10 +4,37 @@ php:
   - 5.6
   - 7.0
   - 7.1
+  - 7.2
 
-before_install: composer self-update
+env:
+  global:
+  - DB_HOST='127.0.0.1'
+  - DB_BASE='doclister'
+  - DB_USER='root'
+  - DB_PASSWORD=''
+  - DB_PREFIX='modx_'
+  - DB_CHARSET='utf8mb4'
+  - DB_METHOD='SET NAMES'
+  - DB_COLLATION='utf8mb4_unicode_ci'
+
+services:
+  - mysql
+
+before_install:
+  - composer self-update
 
 install: composer install
+
+before_script:
+  - mysql -h 127.0.0.1 -u root -e "SET GLOBAL sql_mode = ''"
+  - mysql -h 127.0.0.1 -u root -e 'create database doclister'
+  - mysql -h 127.0.0.1 -u root doclister < database/site_templates.sql
+  - mysql -h 127.0.0.1 -u root doclister < database/site_tmplvars.sql
+  - mysql -h 127.0.0.1 -u root doclister < database/site_tmplvar_templates.sql
+  - mysql -h 127.0.0.1 -u root doclister < database/site_content.sql
+  - mysql -h 127.0.0.1 -u root doclister < database/site_tmplvar_contentvalues.sql
+  - mysql -h 127.0.0.1 -u root doclister < database/user_attributes.sql
+  - mysql -h 127.0.0.1 -u root doclister < database/manager_users.sql
 
 script: phpunit
 

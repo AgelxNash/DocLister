@@ -326,6 +326,9 @@ class modResource extends MODxAPI
     {
         if ((is_scalar($value) || $this->isTVarrayField($key) || $this->isJsonField($key)) && is_scalar($key) && ! empty($key)) {
             switch ($key) {
+                case 'donthit':
+                    $value = (int)((bool)$value);
+                    break;
                 case 'parent':
                     $value = (int)$value;
                     break;
@@ -512,7 +515,7 @@ class modResource extends MODxAPI
         $uid = $this->modx->getLoginUserID('mgr');
 
         if (
-            $this->field['parent'] == 0 &&
+            empty($this->field['parent']) &&
             ! $this->modxConfig('udperms_allowroot') &&
             !($uid && isset($_SESSION['mgrRole']) && $_SESSION['mgrRole'] == 1)
         ) {
@@ -537,19 +540,19 @@ class modResource extends MODxAPI
                 if ($tmp == $value) {
                     switch ($key) {
                         case 'cacheable':
-                            $value = $this->modxConfig('cache_default');
+                            $value = (int)$this->modxConfig('cache_default');
                             break;
                         case 'template':
-                            $value = $value = $this->modxConfig('default_template');
+                            $value = (int)$this->modxConfig('default_template');
                             break;
                         case 'published':
-                            $value = $this->modxConfig('publish_default');
+                            $value = (int)$this->modxConfig('publish_default');
                             break;
                         case 'searchable':
-                            $value = $this->modxConfig('search_default');
+                            $value = (int)$this->modxConfig('search_default');
                             break;
                         case 'donthit':
-                            $value = $this->modxConfig('track_visitors');
+                            $value = (int)$this->modxConfig('track_visitors');
                             break;
                     }
                 }
