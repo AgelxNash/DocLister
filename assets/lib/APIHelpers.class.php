@@ -270,13 +270,14 @@ class APIhelpers
                 $out = str_replace(
                     array_keys($chars),
                     array_values($chars),
-                    is_null($charset) ? $data : self::e($data, $charset)
+                    $charset === null ? $data : self::e($data, $charset)
                 );
                 break;
             case is_array($data):
-                $out = $data;
-                foreach ($out as $key => &$val) {
-                    $val = self::sanitarTag($val, $charset, $chars);
+                $out = array();
+                foreach ($data as $key => $val) {
+                    $key = self::sanitarTag($key, $charset, $chars);
+                    $out[$key] = self::sanitarTag($val, $charset, $chars);
                 }
                 break;
             default:
