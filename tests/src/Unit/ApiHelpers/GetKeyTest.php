@@ -1,8 +1,8 @@
-<?php namespace DocLister\Tests\Unit;
+<?php namespace DocLister\Tests\Unit\ApiHelpers;
 
 use APIhelpers;
 
-class APIhelpersTest extends \PHPUnit_Framework_TestCase
+class GetKeyTest extends \PHPUnit_Framework_TestCase
 {
     protected $data = array(
         'subArray' => array(
