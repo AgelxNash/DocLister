@@ -620,7 +620,7 @@ abstract class DocLister
             $out = $this->_render($tpl);
         }
 
-        if ($out) {
+        if ($out && $this->getCFGDef('parseDocumentSource', 1)) {
             $this->outData = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
         }
         $this->debug->debugEnd('render');
