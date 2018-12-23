@@ -609,6 +609,10 @@ abstract class DocLister
      */
     public function render($tpl = '')
     {
+        if ($this->extPaginate === null) {
+            $this->toPlaceholders(count($this->_docs), 1, 'count');
+        }
+
         $this->debug->debug(array('Render data with template ' => $tpl), 'render', 2, array('html'));
         $out = '';
         if (1 == $this->getCFGDef('tree', '0')) {
@@ -1120,7 +1124,7 @@ abstract class DocLister
         } else {
             $data[$this->getCFGDef("sysKey", "dl") . '.is_last'] = 0;
         }
-        
+
         if ($this->modx->documentIdentifier == $data['id']) {
             $this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
             $data[$this->getCFGDef(
