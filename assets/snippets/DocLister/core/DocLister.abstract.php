@@ -1108,11 +1108,19 @@ abstract class DocLister
         if ($i == 1) {
             $this->renderTPL = $this->getCFGDef('tplFirst', $this->renderTPL);
             $class[] = $this->getCFGDef('firstClass', 'first');
+            $data[$this->getCFGDef("sysKey", "dl") . '.is_first'] = 1;
+        } else {
+            $data[$this->getCFGDef("sysKey", "dl") . '.is_first'] = 0;
         }
+
         if ($i == (count($this->_docs) - $this->skippedDocs)) {
             $this->renderTPL = $this->getCFGDef('tplLast', $this->renderTPL);
             $class[] = $this->getCFGDef('lastClass', 'last');
+            $data[$this->getCFGDef("sysKey", "dl") . '.is_last'] = 1;
+        } else {
+            $data[$this->getCFGDef("sysKey", "dl") . '.is_last'] = 0;
         }
+        
         if ($this->modx->documentIdentifier == $data['id']) {
             $this->renderTPL = $this->getCFGDef('tplCurrent', $this->renderTPL);
             $data[$this->getCFGDef(
