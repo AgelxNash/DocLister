@@ -229,6 +229,7 @@ class paginate_DL_Extender extends extDocLister
                 $p->parameterName($this->getRequestName('page'));
                 break;
         }
+        
         if ($this->DocLister->getCFGDef('paginationMeta', 0)) {
             $nextPage = $prevPage = 0;
             if ($this->reverse) {
@@ -240,12 +241,19 @@ class paginate_DL_Extender extends extDocLister
             if ($currentPage < $this->totalPage()) {
                 $nextPage = $currentPage + 1;
             }
+            $paginationMetaHtml = '';
             if ($nextPage) {
-                $this->modx->regClientStartupHTMLBlock('<link rel="next" href="' . $p->get_pagenum_link($nextPage) . '">');
+                $paginationMetaHtml .= '<link rel="next" href="' . $p->get_pagenum_link($nextPage) . '">';
             }
             if ($prevPage) {
-                $this->modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $p->get_pagenum_link($prevPage) . '">');
+                $paginationMetaHtml .= '<link rel="prev" href="' . $p->get_pagenum_link($prevPage) . '">';
             }
+            if ($this->DocLister->getCFGDef('paginationMetaPlaceholder', 0)) {
+                $this->modx->setPlaceholder('paginationMeta', $paginationMetaHtml);
+            } else {
+                $this->modx->regClientStartupHTMLBlock($paginationMetaHtml);
+            }
+
         }
 
         return $p->getOutput();
