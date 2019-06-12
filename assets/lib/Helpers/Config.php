@@ -134,8 +134,10 @@ class Config
                 }
                 break;
             case 'array':
-            case 'object':
                 $out = $arr;
+                break;
+            case 'object':
+                $out = array($arr);
                 break;
             default:
                 $out = array();
