@@ -30,7 +30,7 @@ class DLTemplate
 
     protected $twigEnabled = false;
     protected $bladeEnabled = false;
-
+        
     protected $templateData = array();
 
     public $phx;
@@ -539,11 +539,18 @@ class DLTemplate
      */
     public function parseDocumentSource($out, $modx = null)
     {
+        if ($this->twigEnabled || $this->bladeEnabled) {
+            return $out;
+        }
+        
         if (!is_object($modx)) {
             $modx = $this->modx;
         }
-        $minPasses = empty($modx->minParserPasses) ? 2 : $modx->minParserPasses;
-        $maxPasses = empty($modx->maxParserPasses) ? 10 : $modx->maxParserPasses;
+        $_minPasses = (int)$modx->minParserPasses;
+        $minPasses = $_minPasses <= 0 ? 2 : $_minPasses;
+        $_maxPasses = (int)$modx->maxParserPasses;
+        $maxPasses = $_maxPasses <= 0 ? 10 : $_maxPasses;
+        $modx->minParserPasses = $modx->maxParserPasses = 1;
         $site_status = $modx->getConfig('site_status');
         $modx->config['site_status'] = 0;
         for ($i = 1; $i <= $maxPasses; $i++) {
@@ -560,7 +567,9 @@ class DLTemplate
         $out = $modx->rewriteUrls($out);
         $out = $this->cleanPHx($out);
         $modx->config['site_status'] = $site_status;
-
+        $modx->minParserPasses = $_minPasses;
+        $modx->maxParserPasses = $_maxPasses;
+        
         return $out;
     }
 }
