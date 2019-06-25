@@ -389,7 +389,7 @@ class site_content_menuDocLister extends site_contentDocLister
          * @var e_DL_Extender $extE
          */
         $extE = $this->getExtender('e', true, true);
-        $id = $data['id'];
+        $id = empty($data['id']) ? 0 : $data['id'];
         if (isset($this->docTvs[$id])) {
             $data = array_merge($data, $this->docTvs[$id]);
         }
