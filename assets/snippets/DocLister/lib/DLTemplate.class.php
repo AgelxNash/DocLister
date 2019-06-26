@@ -539,10 +539,6 @@ class DLTemplate
      */
     public function parseDocumentSource($out, $modx = null)
     {
-        if ($this->twigEnabled || $this->bladeEnabled) {
-            return $out;
-        }
-        
         if (!is_object($modx)) {
             $modx = $this->modx;
         }
