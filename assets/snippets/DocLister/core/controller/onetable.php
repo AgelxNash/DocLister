@@ -40,6 +40,16 @@ class onetableDocLister extends DocLister
         if ($this->extPaginate = $this->getExtender('paginate')) {
             $this->extPaginate->init($this);
         }
+
+        /**
+         * @var $extCommentsCount commentscount_DL_Extender
+         */
+        $extCommentsCount = $this->getCFGdef('commentsCount', 0) ? $this->getExtender('commentscount', true) : null;
+
+        if ($extCommentsCount) {
+            $extCommentsCount->init($this);
+        }
+
         $type = $this->getCFGDef('idType', 'parents');
         $this->_docs = ($type == 'parents') ? $this->getChildrenList() : $this->getDocList();
 
