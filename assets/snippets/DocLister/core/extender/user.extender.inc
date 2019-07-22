@@ -113,47 +113,48 @@ class user_DL_Extender extends extDocLister
         if (!isset($this->table['users'], $this->table['attributes'])) {
             $this->table = $this->getTable();
         }
-
         $out = array();
         if (count($user) > 0) {
             $user = implode(",", $this->DocLister->cleanIDs($user));
-            //without a.sessionid and u.password
-            $sql = $this->modx->db->query("
-                SELECT
-                    u.id,
-                    u.username,
-                    a.fullname,
-                    a.role,
-                    a.email,
-                    a.phone,
-                    a.mobilephone,
-                    a.blocked,
-                    a.blockeduntil,
-                    a.blockedafter,
-                    a.logincount,
-                    a.lastlogin,
-                    a.thislogin,
-                    a.failedlogincount,
-                    a.dob,
-                    a.gender,
-                    a.country,
-                    a.state,
-                    a.city,
-                    a.zip,
-                    a.fax,
-                    a.photo,
-                    a.comment
-                FROM
-                    {$this->table['users']} as u
-                LEFT JOIN
-                    {$this->table['attributes']} as a
-                ON
-                    a.internalKey=u.id
-                WHERE
-                    u.id IN ({$user})
-            ");
-            while ($tmp = $this->modx->db->getRow($sql)) {
-                $out[$tmp['id']] = $tmp;
+            if (!empty($user)) {
+                //without a.sessionid and u.password
+                $sql = $this->modx->db->query("
+                    SELECT
+                        u.id,
+                        u.username,
+                        a.fullname,
+                        a.role,
+                        a.email,
+                        a.phone,
+                        a.mobilephone,
+                        a.blocked,
+                        a.blockeduntil,
+                        a.blockedafter,
+                        a.logincount,
+                        a.lastlogin,
+                        a.thislogin,
+                        a.failedlogincount,
+                        a.dob,
+                        a.gender,
+                        a.country,
+                        a.state,
+                        a.city,
+                        a.zip,
+                        a.fax,
+                        a.photo,
+                        a.comment
+                    FROM
+                        {$this->table['users']} as u
+                    LEFT JOIN
+                        {$this->table['attributes']} as a
+                    ON
+                        a.internalKey=u.id
+                    WHERE
+                        u.id IN ({$user})
+                ");
+                while ($tmp = $this->modx->db->getRow($sql)) {
+                    $out[$tmp['id']] = $tmp;
+                }
             }
         }
 

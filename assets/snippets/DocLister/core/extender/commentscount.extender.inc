@@ -8,7 +8,6 @@
  */
 class commentscount_DL_Extender extends extDocLister
 {
-
     /**
      * @return bool
      */
@@ -16,11 +15,25 @@ class commentscount_DL_Extender extends extDocLister
     {
         $context = $this->DocLister->getCFGDef('context', 'site_content');
         $context = $this->modx->db->escape($context);
-        $join = "LEFT JOIN (SELECT `thread`, COUNT(`id`) AS `comments_count` FROM {$this->DocLister->getTable('comments')} WHERE `context`='{$context}' AND `published`=1 AND `deleted`=0 GROUP BY `thread`) `cc` ON `cc`.`thread` = {$this->DocLister->getPK()}";
+        $countDeleted = $this->DocLister->getCFGDef('countDeletedComments', 0);
+        $countUnpublished = $this->DocLister->getCFGDef('countUnpublishedComments', 0);
+        if (!$countDeleted && !$countUnpublished) {
+            $join = "LEFT JOIN {$this->DocLister->getTable('comments_stat')} `s` ON  `s`.`context`='{$context}' AND `s`.`thread` = {$this->DocLister->getPK()}";
+        } else {
+            $where = array();
+            if (!$countDeleted) {
+                $where[] = '`deleted`=0';
+            }
+            if (!$countUnpublished) {
+                $where[] = '`published`=1';
+            }
+            $where = implode(' AND ', $where);
+            $join = "LEFT JOIN (SELECT `thread`, COUNT(`id`) AS `comments_count` FROM {$this->DocLister->getTable('comments')} WHERE `context`='{$context}' {$where} GROUP BY `thread`) `s` ON `s`.`thread` = {$this->DocLister->getPK()}";
+        }
         $this->DocLister->setFiltersJoin($join);
         $fields = $this->DocLister->getCFGDef('selectFields', 'c.*');
         $this->DocLister->config->setConfig(array(
-            "selectFields" => $fields . ",IFNULL(`cc`.`comments_count`,0) AS `comments_count`"
+            "selectFields" => $fields . ",IFNULL(`s`.`comments_count`,0) AS `comments_count`"
         ));
 
         return true;
