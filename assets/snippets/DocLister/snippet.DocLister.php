@@ -48,11 +48,13 @@ if (class_exists($class, false) && $class != 'DocLister') {
             $out = $DocLister->render();
             break;
     }
+
     if (isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'manager') {
         $debug = $DocLister->debug->showLog();
     } else {
         $debug = '';
     }
+
     if ($DocLister->getCFGDef('debug', 0)) {
         if ($DocLister->getCFGDef("api", 0)) {
             $modx->setPlaceholder($DocLister->getCFGDef("sysKey", "dl") . ".debug", $debug);
