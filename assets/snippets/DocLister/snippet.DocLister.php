@@ -33,16 +33,26 @@ if ($class !== 'DocLister' && file_exists($path) && !class_exists($class, false)
 if (class_exists($class, false) && $class != 'DocLister') {
     $DocLister = new $class($modx, $modx->Event->params, $_time);
     $data = $DocLister->getDocs();
-    $out = isset($modx->Event->params['api']) ? $DocLister->getJSON(
-        $data,
-        $modx->Event->params['api']
-    ) : $DocLister->render();
+    $api = isset($modx->event->params['api']) ? $modx->event->params['api'] : NULL;
+    switch ($api) {
+        case '1':
+            $out = $DocLister->getJSON(
+                $data,
+                $modx->event->params['api']
+            );
+            break;
+        case 'array':
+            $out = $data;
+            break;
+        default:
+            $out = $DocLister->render();
+            break;
+    }
     if (isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'manager') {
         $debug = $DocLister->debug->showLog();
     } else {
         $debug = '';
     }
-
     if ($DocLister->getCFGDef('debug', 0)) {
         if ($DocLister->getCFGDef("api", 0)) {
             $modx->setPlaceholder($DocLister->getCFGDef("sysKey", "dl") . ".debug", $debug);
