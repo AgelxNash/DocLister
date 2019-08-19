@@ -1,3 +1,18 @@
+## 2.5.0 (19.08.2019)
+* [Add] Изменение работы idType=parents в onetable для связанных таблиц (Issue #349)
+* [Refactor] Переделана работа с шаблонами Twig в DLTemplate.
+* [Add] Получение групп пользователей в экстендере user.
+* [Refactor] Оптимизация картинок в Helpers/PHPThumb работает только при наличии библиотеки spatie/image-optimizer (Issue #299)
+* [Fix] Ошибка подсчета [+from+] && [+to+] при пустом результате (Issue #344)
+* [Fix] Исправлена загрузка параметра, содержащего объект, в Helpers\Config
+* [Add] paginationMeta to placeholder
+* [Add] Set the count placeholder without pagination extender
+* [Add] is_first and is_last placeholders
+* [Add] parseDocumentSource parameter.
+* [Refactor] trim в prepare
+* [Add] New filter containsAll: for queries like contains all the listed words
+* [Fix] Правка бага генерации урла для только что созданного документа
+
 ## 2.4.1 (02.11.2018)
 * [Fix] Исправлена фатальная ошибка допущенная в версии 2.3.16 (Issue #317)
 

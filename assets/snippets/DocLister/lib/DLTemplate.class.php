@@ -98,6 +98,9 @@ class DLTemplate
 
         if (!empty($path)) {
             $this->templatePath = $path;
+            if ($this->twigEnabled) {
+                $this->twig->setLoader(new Twig_Loader_Filesystem(MODX_BASE_PATH . $path));
+            }
         }
 
         return $this;
@@ -158,6 +161,7 @@ class DLTemplate
         $plh = $this->templateData;
         $plh['data'] = $data;
         $plh['modx'] = $this->modx;
+
         return $plh;
     }
 
@@ -192,7 +196,6 @@ class DLTemplate
     {
         $tpl = '';
         $ext = null;
-        $this->twigEnabled = substr($name, 0, 3) == '@T_';
         $this->bladeEnabled = substr($name, 0, 3) == '@B_';//(0 === strpos($name, '@B_'));
         if ($name != '' && !isset($this->modx->chunkCache[$name])) {
             $mode = (preg_match(
@@ -201,14 +204,30 @@ class DLTemplate
                 $tmp
             ) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
-            if ($this->twigEnabled) {
-                $mode = '@' . substr($mode, 3);
-            } elseif ($this->bladeEnabled) {
+            if ($this->bladeEnabled) {
                 $mode = '@' . substr($mode, 3);
                 $ext = $this->getTemplateExtension();
                 $this->setTemplateExtension('blade.php');
             }
             switch ($mode) {
+                case '@T_FILE':
+                    if ($subTmp != '' && $this->twigEnabled) {
+                        $real = realpath(MODX_BASE_PATH . $this->templatePath);
+                        $path = realpath(MODX_BASE_PATH . $this->templatePath . $this->cleanPath($subTmp) . '.' . $this->templateExtension);
+                        if (basename($path, '.' . $this->templateExtension) !== '' &&
+                            0 === strpos($path, $real) &&
+                            file_exists($path)
+                        ) {
+                            $tpl = $this->twig->loadTemplate($this->cleanPath($subTmp) . '.' . $this->templateExtension);
+                        }
+                    }
+                    break;
+                case '@T_CODE':
+                    if ($this->twigEnabled) {
+                        $tpl = $tmp[3];
+                        $tpl = $this->twig->createTemplate($tpl);
+                    }
+                    break;
                 case '@FILE':
                     if ($subTmp != '') {
                         $real = realpath(MODX_BASE_PATH . $this->templatePath);
@@ -387,9 +406,10 @@ class DLTemplate
     public function parseChunk($name, $data = array(), $parseDocumentSource = false, $disablePHx = false)
     {
         $out = $this->getChunk($name);
+        $twig = strpos($name, '@T_') === 0;
         switch (true) {
-            case $this->twigEnabled && $out !== '' && ($twig = $this->getTwig($name, $out)):
-                $out = $twig->render(md5($name), $this->getTemplateData($data));
+            case $twig:
+                $out = $out->render($this->getTemplateData($data));
                 break;
             case $this->bladeEnabled && $out !== '' && ($blade = $this->getBlade($name, $out)):
                 $out = $blade->with($this->getTemplateData($data))->render();
@@ -409,7 +429,7 @@ class DLTemplate
                 }
                 break;
         }
-        if ($parseDocumentSource) {
+        if ($parseDocumentSource && !$twig) {
             $out = $this->parseDocumentSource($out);
         }
 
@@ -435,30 +455,11 @@ class DLTemplate
         }
     }
 
-    /**
-     * Return clone of twig
-     *
-     * @param string $name
-     * @param string $tpl
-     * @return null
-     */
-    protected function getTwig($name, $tpl)
-    {
+    public function loadTwig() {
         if (is_null($this->twig) && isset($this->modx->twig)) {
-            $twig = clone $this->modx->twig;
-            $this->twig = $twig;
-        } else {
-            $twig = $this->twig;
+            $this->twig = clone $this->modx->twig;
+            $this->twigEnabled = true;
         }
-        if ($twig && class_exists('Twig_Loader_Array')) {
-            $twig->getLoader()->addLoader(
-                new Twig_Loader_Array(array(
-                    md5($name) => $tpl
-                ))
-            );
-        }
-
-        return $twig;
     }
 
     /**
