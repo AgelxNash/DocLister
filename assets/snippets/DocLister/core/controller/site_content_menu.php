@@ -295,7 +295,6 @@ class site_content_menuDocLister extends site_contentDocLister
         } else {
             $out = $this->_render($tpl);
         }
-
         if ($out) {
             $this->outData = DLTemplate::getInstance($this->modx)->parseDocumentSource($out);
         }
@@ -598,14 +597,11 @@ class site_content_menuDocLister extends site_contentDocLister
     }
 
     /**
-     * @param array $data
-     * @param mixed $fields
-     * @param array $array
-     * @return string
+     * @return array
      */
-    public function getJSON($data, $fields, $array = array())
+    protected function getMenuData()
     {
-        $key = $this->getBranchCacheKey();
+        $key = 'raw' . $this->getBranchCacheKey();
         $out = $this->extCache->load($key);
         if ($out === false) {
             $currentLevel = &$this->currentLevel;
@@ -663,12 +659,30 @@ class site_content_menuDocLister extends site_contentDocLister
                     }
                 }
                 unset($docs);
-                $out = json_encode($out, JSON_UNESCAPED_UNICODE);
             }
             $this->extCache->save($out, $key);
         }
 
         return $out;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMenu() {
+        $this->getDocs();
+
+        return $this->getMenuData();
+    }
+
+    /**
+     * @param array $data
+     * @param mixed $fields
+     * @param array $array
+     * @return string
+     */
+    public function getJSON($data = array(), $fields = array(), $array = array()) {
+        return json_encode($this->getMenuData(), JSON_UNESCAPED_UNICODE);
     }
 
     /**

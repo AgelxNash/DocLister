@@ -22,16 +22,23 @@ if (isset($controller)) {
 } else {
     $controller = "site_content";
 }
-$class = $controller . "DocLister";
-
-$dir = isset($dir) ? MODX_BASE_PATH . $dir : $DLDir . "core/controller/";
-$path = $dir . $controller . '.php';
-if ($class !== 'DocLister' && file_exists($path) && !class_exists($class, false)) {
-    require_once($path);
+$class = $controller;
+if (!class_exists($class) || !is_subclass_of($class, '\\DocLister', true)) {
+    $class .= 'DocLister';
+}
+if (!class_exists($class)) {
+    $dir = isset($dir) ? MODX_BASE_PATH . $dir : $DLDir . "core/controller/";
+    $path = $dir . $controller . '.php';
+    if ($class !== 'DocLister' && file_exists($path)) {
+        require_once($path);
+    }
 }
 
-if (class_exists($class, false) && $class != 'DocLister') {
+if (class_exists($class) && is_subclass_of($class, '\\DocLister', true)) {
     $DocLister = new $class($modx, $modx->Event->params, $_time);
+    if ($DocLister->getCFGDef('returnObject')) {
+        return $DocLister;
+    }
     $data = $DocLister->getDocs();
     $out = isset($modx->Event->params['api']) ? $DocLister->getJSON(
         $data,
@@ -56,4 +63,5 @@ if (class_exists($class, false) && $class != 'DocLister') {
         $modx->setPlaceholder($saveDLObject, $DocLister);
     }
 }
+
 return $out;
