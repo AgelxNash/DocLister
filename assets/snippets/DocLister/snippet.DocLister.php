@@ -36,7 +36,7 @@ if (!class_exists($class)) {
 
 if (class_exists($class) && is_subclass_of($class, '\\DocLister', true)) {
     $DocLister = new $class($modx, $modx->Event->params, $_time);
-    if ($DocLister->getCFGDef('returnObject')) {
+    if ($DocLister->getCFGDef('returnDLObject')) {
         return $DocLister;
     }
     $data = $DocLister->getDocs();
