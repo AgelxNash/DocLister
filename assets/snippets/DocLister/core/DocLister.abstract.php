@@ -258,8 +258,8 @@ abstract class DocLister
                 'site_content'
             ) : $this->table, $this->alias);
 
-            $this->idField = $this->getCFGDef('idField', 'id');
-            $this->parentField = $this->getCFGDef('parentField', 'parent');
+            $this->idField = !empty($this->idField) ? $this->idField : $this->getCFGDef('idField', 'id');
+            $this->parentField =  !empty($this->parentField) ? $this->parentField : $this->getCFGDef('parentField', 'parent');
             $this->extCache = $this->getExtender('cache', true);
             $this->extCache->init($this, array(
                 'cache'         => $this->getCFGDef('cache', 1),
@@ -771,23 +771,7 @@ abstract class DocLister
      */
     public function sanitarIn($data, $sep = ',', $quote = true)
     {
-        if (is_scalar($data)) {
-            $data = explode($sep, $data);
-        }
-        if (!is_array($data)) {
-            $data = array(); //@TODO: throw
-        }
-
-        $out = array();
-        foreach ($data as $item) {
-            if ($item !== '') {
-                $out[] = $this->modx->db->escape($item);
-            }
-        }
-        $q = $quote ? "'" : "";
-        $out = $q . implode($q . "," . $q, $out) . $q;
-
-        return $out;
+        return APIhelpers::sanitarIn($data, $sep, $quote);
     }
 
     /**
@@ -1182,26 +1166,23 @@ abstract class DocLister
             $out[$num] = $tmp;
         }
 
-        if ('new' == $this->getCFGDef('JSONformat', 'old')) {
-            $return = array();
-
-            $return['rows'] = array();
-            foreach ($out as $key => $item) {
-                $return['rows'][] = $item;
-            }
-            $return['total'] = $this->getChildrenCount();
-        } elseif ('simple' == $this->getCFGDef('JSONformat', 'old')) {
-            $return = array();
-            foreach ($out as $key => $item) {
-                $return[] = $item;
-            }
-        } else {
-            $return = $out;
+        $format = $this->getCFGDef('JSONformat', 'old');
+        switch ($format) {
+            case 'new':
+                $return['rows'] = array_values($out);
+                $return['total'] = $this->getChildrenCount();
+                break;
+            case 'simple':
+                $return = array_values($out);
+                break;
+            default:
+                $return = $out;
+            break;
         }
         $this->outData = json_encode($return);
         $this->isErrorJSON($return);
 
-        return jsonHelper::json_format($this->outData);
+        return $this->getCFGDef('debug') ? jsonHelper::json_format($this->outData) : $this->outData;
     }
 
     /**
