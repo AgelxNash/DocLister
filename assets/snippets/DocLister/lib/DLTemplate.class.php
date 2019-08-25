@@ -24,9 +24,13 @@ class DLTemplate
     protected $templateExtension = 'html';
 
     /**
-     * @var null|Twig_Environment twig object
+     * @var null|Twig_Environment
      */
     protected $twig;
+    /*
+     * @var Illuminate\View\Factory
+     */
+    protected $blade;
 
     protected $twigEnabled = false;
     protected $bladeEnabled = false;
@@ -100,6 +104,11 @@ class DLTemplate
             $this->templatePath = $path;
             if ($this->twigEnabled) {
                 $this->twig->setLoader(new Twig_Loader_Filesystem(MODX_BASE_PATH . $path));
+            }
+            if ($this->bladeEnabled) {
+                $filesystem = new Illuminate\Filesystem\Filesystem;
+                $viewFinder = new Illuminate\View\FileViewFinder($filesystem, [MODX_BASE_PATH . $path]);
+                $this->blade->setFinder($viewFinder);
             }
         }
 
@@ -205,7 +214,6 @@ class DLTemplate
             ) && isset($tmp[2], $tmp[3])) ? $tmp[2] : false;
             $subTmp = (isset($tmp[3])) ? trim($tmp[3]) : null;
             if ($this->bladeEnabled) {
-                $mode = '@' . substr($mode, 3);
                 $ext = $this->getTemplateExtension();
                 $this->setTemplateExtension('blade.php');
             }
@@ -227,6 +235,26 @@ class DLTemplate
                         $tpl = $tmp[3];
                         $tpl = $this->twig->createTemplate($tpl);
                     }
+                    break;
+                case '@B_FILE':
+                    if ($subTmp != '' && $this->bladeEnabled) {
+                        $real = realpath(MODX_BASE_PATH . $this->templatePath);
+                        $path = realpath(MODX_BASE_PATH . $this->templatePath . $this->cleanPath($subTmp) . '.' . $this->templateExtension);
+                        if (basename($path, '.' . $this->templateExtension) !== '' &&
+                            0 === strpos($path, $real) &&
+                            file_exists($path)
+                        ) {
+                            $tpl = $this->cleanPath($subTmp);
+                        }
+                    }
+                    break;
+                case '@B_CODE':
+                    $cache = md5($name). '-'. sha1($subTmp);
+                    $path = MODX_BASE_PATH . '/assets/cache/blade/' . $cache . '.blade.php';
+                    if (! file_exists($path)) {
+                        file_put_contents($path, $tpl);
+                    }
+                    $tpl = 'cache::' . $cache;
                     break;
                 case '@FILE':
                     if ($subTmp != '') {
@@ -406,13 +434,14 @@ class DLTemplate
     public function parseChunk($name, $data = array(), $parseDocumentSource = false, $disablePHx = false)
     {
         $out = $this->getChunk($name);
-        $twig = strpos($name, '@T_') === 0;
+        $twig = strpos($name, '@T_') === 0 && $this->twigEnabled;
+        $blade = strpos($name, '@B_') === 0 && $this->bladeEnabled;
         switch (true) {
             case $twig:
                 $out = $out->render($this->getTemplateData($data));
                 break;
-            case $this->bladeEnabled && $out !== '' && ($blade = $this->getBlade($name, $out)):
-                $out = $blade->with($this->getTemplateData($data))->render();
+            case $blade:
+                $out = $this->blade->make($out)->with($this->getTemplateData($data))->render();
                 break;
             case is_array($data) && ($out != ''):
                 if (preg_match("/\[\+[A-Z0-9\.\_\-]+\+\]/is", $out)) {
@@ -429,7 +458,7 @@ class DLTemplate
                 }
                 break;
         }
-        if ($parseDocumentSource && !$twig) {
+        if ($parseDocumentSource && !$twig && !$blade) {
             $out = $this->parseDocumentSource($out);
         }
 
@@ -462,32 +491,11 @@ class DLTemplate
         }
     }
 
-    /**
-     * Return clone of blade
-     *
-     * @param string $name
-     * @param string $tpl
-     * @return Illuminate\View\Factory
-     */
-    protected function getBlade($name, $tpl)
-    {
-        $out = null;
-        try {
-            /**
-             * Illuminate\View\Factory $blade
-             */
-            $blade = $this->modx->blade;
-            $cache = md5($name). '-'. sha1($tpl);
-            $path = MODX_BASE_PATH . '/assets/cache/blade/' . $cache . '.blade.php';
-            if (! file_exists($path)) {
-                file_put_contents($path, $tpl);
-            }
-            $out = $blade->make('cache::' . $cache);
-        } catch (\Exception $exception) {
-            $this->modx->messageQuit($exception->getMessage());
+    public function loadBlade() {
+        if (is_null($this->blade) && isset($this->modx->blade)) {
+            $this->blade = clone $this->modx->blade;
+            $this->bladeEnabled = true;
         }
-
-        return $out;
     }
 
     /**

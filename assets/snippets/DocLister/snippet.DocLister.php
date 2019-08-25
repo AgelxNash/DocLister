@@ -34,9 +34,12 @@ if (!class_exists($class)) {
     }
 }
 
+$DLTemplate = DLTemplate::getInstance($modx);
+$templatePath = $DLTemplate->getTemplatePath();
+$templateExtension = $DLTemplate->getTemplateExtension();
 if (class_exists($class) && is_subclass_of($class, '\\DocLister', true)) {
     $DocLister = new $class($modx, $modx->Event->params, $_time);
-    if ($DocLister->getCFGDef('returnDLObject')) {
+    if ($DocLister->getCFGDef('returnObject')) {
         return $DocLister;
     }
     $data = $DocLister->getDocs();
@@ -63,5 +66,6 @@ if (class_exists($class) && is_subclass_of($class, '\\DocLister', true)) {
         $modx->setPlaceholder($saveDLObject, $DocLister);
     }
 }
+$DLTemplate->setTemplatePath($templatePath)->setTemplateExtension($templateExtension);
 
 return $out;

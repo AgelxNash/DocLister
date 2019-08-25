@@ -1,6 +1,6 @@
 ## 2.5.0 (19.08.2019)
 * [Add] Изменение работы idType=parents в onetable для связанных таблиц (Issue #349)
-* [Refactor] Переделана работа с шаблонами Twig в DLTemplate.
+* [Refactor] Переделана работа с шаблонами Twig и Blade в DLTemplate.
 * [Add] Получение групп пользователей в экстендере user.
 * [Refactor] Оптимизация картинок в Helpers/PHPThumb работает только при наличии библиотеки spatie/image-optimizer (Issue #299)
 * [Fix] Ошибка подсчета [+from+] && [+to+] при пустом результате (Issue #344)
