@@ -258,8 +258,8 @@ abstract class DocLister
                 'site_content'
             ) : $this->table, $this->alias);
 
-            $this->idField = !empty($this->idField) ? $this->idField : $this->getCFGDef('idField', 'id');
-            $this->parentField =  !empty($this->parentField) ? $this->parentField : $this->getCFGDef('parentField', 'parent');
+            $this->idField = $this->getCFGDef('idField', $this->idField);
+            $this->parentField =  $this->getCFGDef('parentField', $this->parentField);
             $this->extCache = $this->getExtender('cache', true);
             $this->extCache->init($this, array(
                 'cache'         => $this->getCFGDef('cache', 1),
