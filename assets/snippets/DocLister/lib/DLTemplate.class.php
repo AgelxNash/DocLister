@@ -1,5 +1,5 @@
 <?php
-
+if (class_exists('\\DLTemplate')) return;
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 
 /**
