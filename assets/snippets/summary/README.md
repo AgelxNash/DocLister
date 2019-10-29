@@ -32,7 +32,6 @@ Note
 -------
 if <cut /> in text, then you give text before this tag
 
-
 *I'm sorry for my english and thanks for using summary!
 
 Borisov Evgeniy aka Agel_Nash

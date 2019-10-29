@@ -10,12 +10,11 @@ if (!defined('MODX_BASE_PATH')) {
 }
 $_time = microtime(true);
 $out = null;
-$DLDir = 'assets/snippets/DocLister/';
-$DLDir = realpath(MODX_BASE_PATH . $DLDir);
+$DLDir = MODX_BASE_PATH . 'assets/snippets/DocLister/';
 
-require_once($DLDir . "/core/DocLister.abstract.php");
-require_once($DLDir . "/core/extDocLister.abstract.php");
-require_once($DLDir . "/core/filterDocLister.abstract.php");
+require_once($DLDir . "core/DocLister.abstract.php");
+require_once($DLDir . "core/extDocLister.abstract.php");
+require_once($DLDir . "core/filterDocLister.abstract.php");
 
 if (isset($controller)) {
     preg_match('/^(\w+)$/iu', $controller, $controller);
@@ -23,27 +22,50 @@ if (isset($controller)) {
 } else {
     $controller = "site_content";
 }
-$classname = $controller . "DocLister";
-$dir = isset($dir) ? $dir : $DLDir . "/core/controller/";
-if ($classname != 'DocLister' && file_exists($dir . $controller . ".php") && !class_exists($classname, false)) {
-    require_once($dir . $controller . ".php");
+$class = $controller;
+if (!class_exists($class) || !is_subclass_of($class, '\\DocLister', true)) {
+    $class .= 'DocLister';
+}
+if (!class_exists($class)) {
+    $dir = isset($dir) ? MODX_BASE_PATH . $dir : $DLDir . "core/controller/";
+    $path = $dir . $controller . '.php';
+    if ($class !== 'DocLister' && file_exists($path)) {
+        require_once($path);
+    }
 }
 
-if (class_exists($classname, false) && $classname != 'DocLister') {
-    $DocLister = new $classname($modx, $modx->Event->params, $_time);
+$DLTemplate = DLTemplate::getInstance($modx);
+$templatePath = $DLTemplate->getTemplatePath();
+$templateExtension = $DLTemplate->getTemplateExtension();
+if (class_exists($class) && is_subclass_of($class, '\\DocLister', true)) {
+    $DocLister = new $class($modx, $modx->Event->params, $_time);
+    if ($DocLister->getCFGDef('returnDLObject')) {
+        return $DocLister;
+    }
     $data = $DocLister->getDocs();
-    $out = isset($modx->Event->params['api']) ? $DocLister->getJSON($data, $modx->Event->params['api']) : $DocLister->render();
+    $out = isset($modx->Event->params['api']) ? $DocLister->getJSON(
+        $data,
+        $modx->Event->params['api']
+    ) : $DocLister->render();
     if (isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'manager') {
         $debug = $DocLister->debug->showLog();
     } else {
         $debug = '';
     }
+
     if ($DocLister->getCFGDef('debug', 0)) {
-        if (isset($modx->Event->params['api'])) {
+        if ($DocLister->getCFGDef("api", 0)) {
             $modx->setPlaceholder($DocLister->getCFGDef("sysKey", "dl") . ".debug", $debug);
         } else {
             $out = ($DocLister->getCFGDef('debug') > 0) ? $debug . $out : $out . $debug;
         }
     }
+
+    $saveDLObject = $DocLister->getCFGDef('saveDLObject');
+    if ($saveDLObject && is_scalar($saveDLObject)) {
+        $modx->setPlaceholder($saveDLObject, $DocLister);
+    }
 }
+$DLTemplate->setTemplatePath($templatePath)->setTemplateExtension($templateExtension);
+
 return $out;

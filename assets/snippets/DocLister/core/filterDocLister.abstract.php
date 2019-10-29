@@ -3,10 +3,10 @@
  * @license GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
  * @author kabachello <kabachnik@hotmail.com>
  */
-if (!defined('MODX_BASE_PATH')) {
-    die('HACK???');
-}
 
+/**
+ * Class filterDocLister
+ */
 abstract class filterDocLister
 {
     /**
@@ -61,8 +61,8 @@ abstract class filterDocLister
     /**
      * Запуск фильтра
      *
-     * @param $DocLister экземпляр класса DocLister
-     * @param $filter строка с условиями фильтрации
+     * @param DocLister $DocLister экземпляр класса DocLister
+     * @param string $filter строка с условиями фильтрации
      * @return bool
      */
     public function init(DocLister $DocLister, $filter)
@@ -70,6 +70,7 @@ abstract class filterDocLister
         $this->DocLister = $DocLister;
         $this->modx = $this->DocLister->getMODX();
         $this->totalFilters = $this->DocLister->getCountFilters();
+
         return $this->parseFilter($filter);
     }
 
@@ -90,16 +91,17 @@ abstract class filterDocLister
     /**
      * Разбор строки фильтрации
      *
-     * @param $filter строка фильтрации
+     * @param string $filter строка фильтрации
      * @return bool результат разбора фильтра
      */
     protected function parseFilter($filter)
     {
         // first parse the give filter string
         $parsed = explode(':', $filter, 4);
-        $this->field = isset($parsed[1]) ? $parsed[1] : null;
-        $this->operator = isset($parsed[2]) ? $parsed[2] : null;
-        $this->value = isset($parsed[3]) ? $parsed[3] : null;
+        $this->field = APIHelpers::getkey($parsed, 1);
+        $this->operator = APIHelpers::getkey($parsed, 2);
+        $this->value = APIHelpers::getkey($parsed, 3);
+
         // exit if something is wrong
         return !(empty($this->field) || empty($this->operator) || is_null($this->value));
     }
@@ -116,16 +118,22 @@ abstract class filterDocLister
     /**
      * Конструктор условий для WHERE секции
      *
-     * @param $table_alias алиас таблицы
-     * @param $field поле для фильтрации
-     * @param $operator оператор сопоставления
-     * @param $value искомое значение
+     * @param string $table_alias алиас таблицы
+     * @param string $field поле для фильтрации
+     * @param string $operator оператор сопоставления
+     * @param string $value искомое значение
      * @return string
      */
     protected function build_sql_where($table_alias, $field, $operator, $value)
     {
-        $this->DocLister->debug->debug('Build SQL query for filters: ' . $this->DocLister->debug->dumpData(func_get_args()), 'buildQuery', 2);
+        $this->DocLister->debug->debug(
+            'Build SQL query for filters: ' . $this->DocLister->debug->dumpData(func_get_args()),
+            'buildQuery',
+            2
+        );
         $output = sqlHelper::tildeField($field, $table_alias);
+
+        $delimiter = $this->DocLister->getCFGDef('filter_delimiter', ',');
 
         switch ($operator) {
             case '=':
@@ -136,23 +144,29 @@ abstract class filterDocLister
             case '!=':
             case 'no':
             case 'isnot':
-                $output .= " != '" . $this->modx->db->escape($value) . "'";
+                $output = '(' . $output . " != '" . $this->modx->db->escape($value) . "' OR " . $output . ' IS NULL)';
+                break;
+            case 'isnull':
+                $output .= ' IS NULL';
+                break;
+            case 'isnotnull':
+                $output .= ' IS NOT NULL';
                 break;
             case '>':
             case 'gt':
-                $output .= ' > ' . floatval($value);
+                $output .= ' > ' . str_replace(',', '.', floatval($value));
                 break;
             case '<':
             case 'lt':
-                $output .= ' < ' . floatval($value);
+                $output .= ' < ' . str_replace(',', '.', floatval($value));
                 break;
             case '<=':
             case 'elt':
-                $output .= ' <= ' . floatval($value);
+                $output .= ' <= ' . str_replace(',', '.', floatval($value));
                 break;
             case '>=':
             case 'egt':
-                $output .= ' >= ' . floatval($value);
+                $output .= ' >= ' . str_replace(',', '.', floatval($value));
                 break;
             case '%':
             case 'like':
@@ -168,7 +182,6 @@ abstract class filterDocLister
                 $output .= " REGEXP '" . $this->modx->db->escape($value) . "'";
                 break;
             case 'against':
-            {
                 /** content:pagetitle,description,content,introtext:against:искомая строка */
                 if (trim($value) != '') {
                     $field = explode(",", $this->field);
@@ -176,9 +189,9 @@ abstract class filterDocLister
                     $output = "MATCH ({$field}) AGAINST ('{$this->modx->db->escape($value)}*')";
                 }
                 break;
-            }
-            case 'containsOne' :
-                $words = explode($this->DocLister->getCFGDef('filter_delimiter', ','), $value);
+            case 'containsOne':
+                $containsOneDelimiter = $this->DocLister->getCFGDef('filter_delimiter:containsOne', $delimiter);
+                $words = explode($containsOneDelimiter, $value);
                 $word_arr = array();
                 foreach ($words as $word) {
                     /**
@@ -187,7 +200,9 @@ abstract class filterDocLister
                      * искомый $word = " когда". С trim найдем "...мне некогда..." и "...тут когда-то...";
                      * Без trim будт обнаружено только "...тут когда-то..."
                      */
-                    $word_arr[] = $this->DocLister->LikeEscape($output, $word);
+                    if (($likeWord = $this->DocLister->LikeEscape($output, $word)) !== '') {
+                        $word_arr[] = $likeWord;
+                    }
                 }
                 if (!empty($word_arr)) {
                     $output = '(' . implode(' OR ', $word_arr) . ')';
@@ -195,16 +210,34 @@ abstract class filterDocLister
                     $output = '';
                 }
                 break;
+            case 'containsAll':
+                $containsAllDelimiter = $this->DocLister->getCFGDef('filter_delimiter:containsAll', $delimiter);
+                $words = explode($containsAllDelimiter, $value);
+                $word_arr = array();
+                foreach ($words as $word) {
+                    if (($likeWord = $this->DocLister->LikeEscape($output, $word)) !== '') {
+                        $word_arr[] = $likeWord;
+                    }
+                }
+                if (!empty($word_arr)) {
+                    $output = '(' . implode(' AND ', $word_arr) . ')';
+                } else {
+                    $output = '';
+                }
+            break;
             case 'in':
-                $output .= ' IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')';
+                $inDelimiter = $this->DocLister->getCFGDef('filter_delimiter:in', $delimiter);
+                $output .= ' IN(' . $this->DocLister->sanitarIn($value, $inDelimiter, true) . ')';
                 break;
             case 'notin':
-                $output .= ' NOT IN(' . $this->DocLister->sanitarIn($value, ',', true) . ')';
+                $notinDelimiter = $this->DocLister->getCFGDef('filter_delimiter:notin', $delimiter);
+                $output = '(' . $output . ' NOT IN(' . $this->DocLister->sanitarIn($value, $notinDelimiter, true) . ') OR ' . $output . ' IS NULL)';
                 break;
             default:
                 $output = '';
         }
         $this->DocLister->debug->debugEnd("buildQuery");
+
         return $output;
     }
 
@@ -216,4 +249,5 @@ abstract class filterDocLister
     {
         return $this->tableAlias;
     }
+
 }

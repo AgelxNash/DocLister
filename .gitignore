@@ -1,3 +1,6 @@
 modx_evolution.IDEhelper.php
 .DS_Store
 /.idea
+/vendor
+composer.lock
+ftpsync.settings
