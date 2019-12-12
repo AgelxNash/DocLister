@@ -43,10 +43,12 @@ if (class_exists($class) && is_subclass_of($class, '\\DocLister', true)) {
         return $DocLister;
     }
     $data = $DocLister->getDocs();
-    $out = isset($modx->Event->params['api']) ? $DocLister->getJSON(
-        $data,
-        $modx->Event->params['api']
-    ) : $DocLister->render();
+    if($DocLister->getCFGDef("api", 0)){
+        $out = $DocLister->getJSON($data,$DocLister->getCFGDef("api", 0));
+    }
+    else{
+        $out = $DocLister->render();
+    }
     if (isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'manager') {
         $debug = $DocLister->debug->showLog();
     } else {
