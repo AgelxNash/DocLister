@@ -40,7 +40,8 @@ class modUsers extends MODxAPI
             'photo'            => '',
             'comment'          => '',
             'createdon'        => 0,
-            'editedon'         => 0
+            'editedon'         => 0,
+            'verified'         => 0
         ),
         'hidden'    => array(
             'internalKey'
