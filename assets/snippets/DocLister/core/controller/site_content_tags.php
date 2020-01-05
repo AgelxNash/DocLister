@@ -73,7 +73,7 @@ class site_content_tagsDocLister extends site_contentDocLister
                         $tag = $tmp[1];
                         $separator = $this->getCFGDef('tagsSeparator', '||');
                         if (!empty($tag) && !empty($separator)) {
-                            $_tag = explode($separator, $tag);
+                            $_tag = array_map('trim', explode($separator, $tag));
                             if (count($_tag) > 1) {
                                 $tag = $_tag;
                             }
