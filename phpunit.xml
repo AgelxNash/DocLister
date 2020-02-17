@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="vendor/autoload.php"
+         bootstrap="tests/bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -11,13 +11,18 @@
          syntaxCheck="false"
         >
     <testsuites>
-        <testsuite name="Package Test Suite">
-            <directory>./tests/</directory>
+        <testsuite name="Unit">
+            <directory>./tests/src/Unit</directory>
+        </testsuite>
+
+        <testsuite name="Real">
+            <directory>./tests/src/Real</directory>
         </testsuite>
     </testsuites>
     <php>
         <includePath>.</includePath>
         <const name="MODX_BASE_PATH" value="./"/>
+        <const name="MODX_MANAGER_PATH" value="./tests/modx/"/>
         <const name="MODX_SITE_URL" value="http://example.com/"/>
         <server name="REQUEST_URI" value="/index.php?q=news"/>
     </php>

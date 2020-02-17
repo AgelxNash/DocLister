@@ -33,7 +33,7 @@ class site_content_tagsDocLister extends site_contentDocLister
     }
 
     /**
-     * @absctract
+     * @abstract
      */
     public function getUrl($id = 0)
     {
@@ -42,10 +42,17 @@ class site_content_tagsDocLister extends site_contentDocLister
         $link = $this->checkExtender('request') ? $this->extender['request']->getLink() : "";
         $tag = $this->checkTag();
         if ($tag !== false && is_array($tag) && $tag['mode'] == 'get') {
+            if (is_array($tag['tag'])) {
+                $tag['tag'] = implode($this->getCFGDef('tagsSeparator', '||'), $tag['tag']);
+            }
             $link .= "&tag=" . urlencode($tag['tag']);
         }
-        $url = ($id == $this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "") : $this->modx->makeUrl($id,
-            '', $link, 'full');
+        $url = ($id == $this->modx->config['site_start']) ? $this->modx->config['site_url'] . ($link != '' ? "?{$link}" : "") : $this->modx->makeUrl(
+            $id,
+            '',
+            $link,
+            'full'
+        );
 
         return $url;
     }
@@ -67,15 +74,17 @@ class site_content_tagsDocLister extends site_contentDocLister
                     case 'static':
                     default:
                         $tag = $tmp[1];
-                        $separator = $this->getCFGDef('tagsSeparator', '||');
-                        if (!empty($tag) && !empty($separator)) {
-                            $_tag = explode($separator, $tag);
-                            if (count($_tag) > 1) {
-                                $tag = $_tag;
-                            }
-                        }
                         break;
                 }
+
+                $separator = $this->getCFGDef('tagsSeparator', '||');
+                if (!empty($tag) && !empty($separator)) {
+                    $_tag = array_map('trim', explode($separator, $tag));
+                    if (count($_tag) > 1) {
+                        $tag = $_tag;
+                    }
+                }
+
                 $this->tag = array("mode" => $tmp[0], "tag" => $tag);
                 $this->toPlaceholders($this->sanitarData($tag), 1, "tag");
             }
@@ -112,8 +121,10 @@ class site_content_tagsDocLister extends site_contentDocLister
             } else {
                 $where = "t.`name`='" . $this->modx->db->escape($tag['tag']) . "'";
             }
-            $where .= ($this->getCFGDef('tagsData', '') > 0) ? "AND ct.tv_id=" . (int)$this->getCFGDef('tagsData',
-                    '') : "";
+            $where .= ($this->getCFGDef('tagsData', '') > 0) ? "AND ct.tv_id=" . (int)$this->getCFGDef(
+                'tagsData',
+                ''
+            ) : "";
 
             if (!empty($this->_filters['where'])) {
                 $this->_filters['where'] .= " AND " . $where;

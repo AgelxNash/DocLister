@@ -42,15 +42,18 @@ class prepare_DL_Extender extends extDocLister
         if (($prepare = $this->DocLister->getCFGDef($nameParam, '')) != '') {
             $params = $this->getParams($out);
             if (is_scalar($prepare)) {
-                $names = explode(",", $prepare);
-                foreach ($names as $item) {
-                    $params['data'] = $this->callPrepare($item, $params, $ret);
+                $prepare = array_map('trim', explode(',', $prepare));
+            } else if (!is_array($prepare) || is_callable($prepare)) {
+                $prepare = [$prepare];
+            }
+
+            if (!empty($prepare)) {
+                foreach ($prepare as $item) {
+                    $params['data'] = $this->callPrepare($item, $params);
                     if ($params['data'] === false) {
                         break;
                     }
                 }
-            } else {
-                $params['data'] = $this->callPrepare($prepare, $params, $ret);
             }
             $out = $params['data'];
         }
@@ -75,18 +78,22 @@ class prepare_DL_Extender extends extDocLister
     /**
      * @param $name
      * @param array $params
-     * @param null $ret
      * @return array|bool|mixed|null|string|xNop
      */
-    public function callPrepare($name, array $params, $ret = null)
+    public function callPrepare($name, array $params)
     {
         $out = null;
         if (empty($name)) {
             return $params['data'];
         }
         if ((is_object($name) && ($name instanceof Closure)) || is_callable($name)) {
-            $data = call_user_func($name, $params['data'], $params['modx'], $params['_DocLister'],
-                $params['_extDocLister']);
+            $data = call_user_func(
+                $name,
+                $params['data'],
+                $params['modx'],
+                $params['_DocLister'],
+                $params['_extDocLister']
+            );
         } else {
             $data = $this->modx->runSnippet($name, $params);
         }
@@ -94,7 +101,7 @@ class prepare_DL_Extender extends extDocLister
             case is_array($data):
                 $out = $data;
                 break;
-            case ($data === '' || (is_bool($data) && $data === false)):
+            case ($data === '' || $data === false):
                 $out = false;
                 break;
             case is_string($data):
@@ -107,4 +114,5 @@ class prepare_DL_Extender extends extDocLister
 
         return is_null($out) ? $params['data'] : $out;
     }
+
 }

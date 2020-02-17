@@ -92,9 +92,9 @@ class paginate_DL_Extender extends extDocLister
             $from = ($this->currentPage() - 1) * $display + 1;
             $to = $currentPage == $this->totalPage() ? $this->count : $from - 1 + $display;
         }
-        $this->DocLister->toPlaceholders($currentPage, 1, "current");
-        $this->DocLister->toPlaceholders($from, 1, "from");
-        $this->DocLister->toPlaceholders($to, 1, "to");
+        $this->DocLister->toPlaceholders($this->count ? $currentPage : 0, 1, "current");
+        $this->DocLister->toPlaceholders($this->count ? $from : 0, 1, "from");
+        $this->DocLister->toPlaceholders($this->count ? $to : 0, 1, "to");
         $this->DocLister->toPlaceholders($this->renderPages($paginate), 1, "pages");
         $this->DocLister->toPlaceholders(($this->currentPage() == 1 ? 1 : 0), 1,
             "isstart"); //[+isstart+] – is start page
@@ -185,6 +185,7 @@ class paginate_DL_Extender extends extDocLister
      */
     private function renderPages($mode = '')
     {
+        $currentPage = $this->currentPage();
         $p = $this->reverse ? new DLpaginateReversed : new DLpaginate;
         $p->nextT = $this->DocLister->getChunkByParam('TplNextP', '@CODE:<a href="[+link+]">[%paginate.next%] ></a>');
         $p->prevT = $this->DocLister->getChunkByParam('TplPrevP', '@CODE:<a href="[+link+]">< [%paginate.prev%]</a>');
@@ -211,13 +212,13 @@ class paginate_DL_Extender extends extDocLister
         $p->limit($this->DocLister->getCFGDef("pageLimit", 1)); //show page count
         $p->adjacents($this->DocLister->getCFGDef("pageAdjacents", 4));
         $p->target($this->getUrl());
-        $p->currentPage($this->currentPage());
+        $p->currentPage($currentPage);
 
         switch (true) {
             case ($mode == 'offset' && $this->totalPage() > 1):
                 $display = $this->DocLister->getCFGDef('display', 0);
                 $offset = $this->reverse ? $this->totalPage() * $display - $this->count : 0;
-                if ($this->currentPage() == 1) {
+                if ($currentPage == 1) {
                     $this->DocLister->config->setConfig(array('display'=>$display - $offset));
                 }
                 $p->setMode('offset', array(
@@ -227,6 +228,32 @@ class paginate_DL_Extender extends extDocLister
             case ($mode == 'pages' && $this->totalPage() > 1):
                 $p->parameterName($this->getRequestName('page'));
                 break;
+        }
+        
+        if ($this->DocLister->getCFGDef('paginationMeta', 0)) {
+            $nextPage = $prevPage = 0;
+            if ($this->reverse) {
+                $currentPage = $this->totalPage() + 1 - $currentPage;
+            } 
+            if ($currentPage > 1) {
+                $prevPage = $currentPage - 1;
+            }
+            if ($currentPage < $this->totalPage()) {
+                $nextPage = $currentPage + 1;
+            }
+            $paginationMetaHtml = '';
+            if ($nextPage) {
+                $paginationMetaHtml .= '<link rel="next" href="' . $p->get_pagenum_link($nextPage) . '">';
+            }
+            if ($prevPage) {
+                $paginationMetaHtml .= '<link rel="prev" href="' . $p->get_pagenum_link($prevPage) . '">';
+            }
+            if ($this->DocLister->getCFGDef('paginationMetaPlaceholder', 0)) {
+                $this->modx->setPlaceholder('paginationMeta', $paginationMetaHtml);
+            } else {
+                $this->modx->regClientStartupHTMLBlock($paginationMetaHtml);
+            }
+
         }
 
         return $p->getOutput();

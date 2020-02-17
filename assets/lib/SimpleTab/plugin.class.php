@@ -65,8 +65,11 @@ abstract class Plugin
             $this->params['template'] = is_array($doc) ? end($doc) : null;
         }
         //overload plugin and class properties
-        $_params = $modx->parseProperties('&template=;;' . $this->params['template'] . ' &id=;;' . $this->params['id'],
-            $modx->event->activePlugin, 'plugin');
+        $_params = $modx->parseProperties(
+            '&template=;;' . $this->params['template'] . ' &id=;;' . $this->params['id'],
+            $modx->event->activePlugin,
+            'plugin'
+        );
         foreach ($_params as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->$key = $value;
@@ -93,22 +96,30 @@ abstract class Plugin
 
     /**
      * @return bool
+     * false если можно выводить
      */
     public function checkPermissions()
     {
         $templates = isset($this->params['templates']) ? explode(',', $this->params['templates']) : false;
-        $roles = isset($this->params['roles']) ? explode(',', $this->params['roles']) : false;
-
-        $tplFlag = ($this->checkTemplate && !$templates || ($templates && !in_array($this->params['template'],
-                    $templates)));
-
         $documents = isset($this->params['documents']) ? explode(',', $this->params['documents']) : false;
-        $docFlag = ($this->checkId && $tplFlag) ? !($documents && in_array($this->params['id'], $documents)) : $tplFlag;
-
         $ignoreDocs = isset($this->params['ignoreDoc']) ? explode(',', $this->params['ignoreDoc']) : false;
-        $ignoreFlag = ($this->checkId && $ignoreDocs && in_array($this->params['id'], $ignoreDocs));
+        $roles = isset($this->params['roles']) ? explode(',', $this->params['roles']) : false;
+        if ($this->checkTemplate && $templates !== false && in_array($this->params['template'], $templates)) {
+            $out = false;
+        } elseif ($this->checkId && $documents !== false && in_array($this->params['id'], $documents)) {
+            $out = false;
+        } else {
+            $out = true;
+        }
 
-        return ($docFlag || $ignoreFlag || ($roles && !in_array($_SESSION['mgrRole'], $roles)));
+        if (!$out && $this->checkId && $ignoreDocs !== false && in_array($this->params['id'], $ignoreDocs)) {
+            $out = true;
+        }
+        if (!$out && $roles !== false && in_array($_SESSION['mgrRole'], $roles)) {
+            $out = false;
+        }
+
+        return $out;
     }
 
     /**
@@ -116,9 +127,9 @@ abstract class Plugin
      */
     public function prerender()
     {
-        if (!$this->checkTable()) {
+        if (! $this->checkTable()) {
             $result = $this->createTable();
-            if (!$result) {
+            if (! $result) {
                 $this->modx->logEvent(0, 3, "Cannot create {$this->table} table.", $this->pluginName);
 
                 return;
@@ -179,13 +190,15 @@ abstract class Plugin
      */
     public function render()
     {
-        if (!$this->checkPermissions()) {
+        if (! $this->checkPermissions()) {
             $output = $this->prerender();
             if ($output !== false) {
                 $ph = $this->getTplPlaceholders();
                 $ph['js'] = $this->renderJS($this->jsListDefault, $ph) . $this->renderJS($this->jsListCustom, $ph);
-                $ph['styles'] = $this->renderJS($this->cssListDefault, $ph) . $this->renderJS($this->cssListCustom,
-                        $ph);
+                $ph['styles'] = $this->renderJS($this->cssListDefault, $ph) . $this->renderJS(
+                    $this->cssListCustom,
+                    $ph
+                );
                 $output = $this->DLTemplate->parseChunk('@CODE:' . $output, $ph);
             }
 
@@ -198,7 +211,7 @@ abstract class Plugin
      */
     public function renderEmpty()
     {
-        if (!$this->checkPermissions()) {
+        if (! $this->checkPermissions()) {
             $tpl = MODX_BASE_PATH . $this->emptyTpl;
             if ($this->fs->checkFile($tpl)) {
                 $output = '[+js+]' . file_get_contents($tpl);
@@ -218,7 +231,8 @@ abstract class Plugin
      */
     public function checkTable()
     {
-        $sql = "SHOW TABLES LIKE '{$this->_table}'";
+        $table = $this->modx->db->config['table_prefix'] . $this->table;
+        $sql = "SHOW TABLES LIKE '{$table}'";
 
         return $this->modx->db->getRecordCount($this->modx->db->query($sql));
     }
@@ -242,12 +256,13 @@ abstract class Plugin
         $eventsTable = $this->modx->getFullTableName('system_eventnames');
         foreach ($events as $event) {
             $result = $this->modx->db->select('`id`', $eventsTable, "`name` = '{$event}'");
-            if (!$this->modx->db->getRecordCount($result)) {
+            if (! $this->modx->db->getRecordCount($result)) {
                 $sql = "INSERT INTO {$eventsTable} VALUES (NULL, '{$event}', '{$eventsType}', '{$this->pluginName} Events')";
-                if (!$this->modx->db->query($sql)) {
+                if (! $this->modx->db->query($sql)) {
                     $this->modx->logEvent(0, 3, "Cannot register {$event} event.", $this->pluginName);
                 }
             }
         }
     }
+
 }

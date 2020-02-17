@@ -1,4 +1,6 @@
 <?php namespace Helpers;
+use Exception;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 include_once(MODX_BASE_PATH . 'assets/snippets/phpthumb/phpthumb.class.php');
 require_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
@@ -10,9 +12,11 @@ require_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 class PHPThumb
 {
 
-    private $thumb = null;
-    protected $fs = null;
-    public $debugMessages = '';
+    /** @var \phpthumb */
+    private $thumb;
+    /** @var FS */
+    protected $fs;
+    public $debugMessages = ''; //TODO refactor debug
 
     /**
      * PHPThumb constructor.
@@ -39,33 +43,30 @@ class PHPThumb
         if ($this->thumb->GenerateThumbnail() && $this->thumb->RenderToFile($outputFile)) {
             return true;
         } else {
-            $this->debugMessages = implode('<br/>', $this->thumb->debugmessages);
+            if (!empty($this->thumb->debugmessages)) {
+                $this->debugMessages = implode('<br>', $this->thumb->debugmessages);
+            }
 
             return false;
         }
     }
 
     /**
-     * @param $file
      * @param string $type
      */
-    public function optimize($file, $type = 'jpg')
+    public function optimize($file)
     {
-        switch ($type) {
-            case 'jpg':
-                $ext = $this->fs->takeFileExt($file);
-                if ($ext == 'jpeg' || $ext == 'jpg') {
-                    $cmd = '/usr/bin/jpegtran -optimize -progressive -copy none -outfile ' . escapeshellarg($file . '_') . ' ' . escapeshellarg($file);
-                    exec($cmd, $result, $return_var);
-                    if ($this->fs->fileSize($file) > $this->fs->fileSize($file . '_')) {
-                        $this->fs->moveFile($file . '_', $file);
-                    } else {
-                        $this->fs->unlink($file . '_');
-                    }
+        $file = MODX_BASE_PATH . $this->fs->relativePath($file);
+        if (class_exists('Spatie\ImageOptimizer\OptimizerChain') && function_exists('proc_open')) {
+            try {
+                $optimizerChain = OptimizerChainFactory::create();
+                $optimizerChain->optimize($file);
+            } catch (Exception $e) {
+                if (!empty($this->debugMessages)) {
+                    $this->debugMessages .= '<br>';
                 }
-                break;
-            default:
-                break;
+                $this->debugMessages .= $e->getMessage();
+            };
         }
     }
 
@@ -74,10 +75,21 @@ class PHPThumb
      */
     private function setOptions($options)
     {
-        $options = strtr($options, Array("," => "&", "_" => "=", '{' => '[', '}' => ']'));
+        $options = strtr($options, array("," => "&", "_" => "=", '{' => '[', '}' => ']'));
         parse_str($options, $params);
+        if (!is_array($params)) {
+            $params = array();
+        }
+
         foreach ($params as $key => $value) {
             $this->thumb->setParameter($key, $value);
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessages() {
+        return $this->debugMessages;
     }
 }

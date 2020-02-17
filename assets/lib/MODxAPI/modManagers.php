@@ -54,6 +54,11 @@ class modManagers extends MODxAPI
     protected $mgrPermissions = array();
 
     /**
+     * @var integer
+     */
+    private $rememberTime;
+
+    /**
      * MODxAPI constructor.
      * @param DocumentParser $modx
      * @param bool $debug
@@ -61,10 +66,26 @@ class modManagers extends MODxAPI
      */
     public function __construct(DocumentParser $modx, $debug = false)
     {
+        $this->setRememberTime(60 * 60 * 24 * 365 * 5);
         parent::__construct($modx, $debug);
         $this->modx->loadExtension('phpass');
     }
 
+    /**
+     * @param $val
+     * @return $this
+     */
+    protected function setRememberTime($val){
+        $this->rememberTime = (int)$val;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getRememberTime(){
+        return $this->rememberTime;
+    }
 
     /**
      * @param $key
@@ -122,14 +143,14 @@ class modManagers extends MODxAPI
             $this->close();
             $this->newDoc = false;
 
-            if (!$find = $this->findUser($id)) {
+            if (! $find = $this->findUser($id)) {
                 $this->id = null;
             } else {
                 $this->set('editedon', time());
                 $result = $this->query("
                     SELECT * from {$this->makeTable('user_attributes')} as attribute
                     LEFT JOIN {$this->makeTable('manager_users')} as user ON user.id=attribute.internalKey
-                    WHERE BINARY {$find}='{$this->escape($id)}'
+                    WHERE {$find}='{$this->escape($id)}'
                 ");
                 $this->field = $this->modx->db->getRow($result);
 
@@ -154,7 +175,7 @@ class modManagers extends MODxAPI
      */
     public function set($key, $value)
     {
-        if (is_scalar($value) && is_scalar($key) && !empty($key)) {
+        if (is_scalar($value) && is_scalar($key) && ! empty($key)) {
             switch ($key) {
                 case 'password':
                     $this->givenPassword = $value;
@@ -163,6 +184,11 @@ class modManagers extends MODxAPI
                 case 'sessionid':
                     session_regenerate_id(false);
                     $value = session_id();
+                    if ($mid = $this->modx->getLoginUserID('mgr')) {
+                        $this->modx->db->query("UPDATE {$this->makeTable('active_user_locks')} SET `sid`='{$value}' WHERE `internalKey`={$mid}");
+                        $this->modx->db->query("UPDATE {$this->makeTable('active_user_sessions')} SET `sid`='{$value}' WHERE `internalKey`={$mid}");
+                        $this->modx->db->query("UPDATE {$this->makeTable('active_users')} SET `sid`='{$value}' WHERE `internalKey`={$mid}");
+                    }
                     break;
                 case 'editedon':
                 case 'createdon':
@@ -207,23 +233,23 @@ class modManagers extends MODxAPI
             return false;
         }
 
-        if (!$this->checkUnique('manager_users', 'username')) {
+        if (! $this->checkUnique('manager_users', 'username')) {
             $this->log['UniqueUsername'] = 'username not unique <pre>' . print_r($this->get('username'),
                     true) . '</pre>';
 
             return false;
         }
 
-        if (!$this->checkUnique('user_attributes', 'email', 'internalKey')) {
+        if (! $this->checkUnique('user_attributes', 'email', 'internalKey')) {
             $this->log['UniqueEmail'] = 'Email not unique <pre>' . print_r($this->get('email'), true) . '</pre>';
 
             return false;
         }
 
-        if(!$this->get('role')) {
+        if(! $this->get('role')) {
             $this->log['UniqueEmail'] = 'Wrong manager role <pre>' . print_r($this->get('role'), true) . '</pre>';
         }
-        
+
         $this->set('sessionid', '');
         $fld = $this->toArray();
         foreach ($this->default_field['user'] as $key => $value) {
@@ -234,7 +260,7 @@ class modManagers extends MODxAPI
             $this->Uset($key, 'user');
             unset($fld[$key]);
         }
-        if (!empty($this->set['user'])) {
+        if (! empty($this->set['user'])) {
             if ($this->newDoc) {
                 $SQL = "INSERT into {$this->makeTable('manager_users')} SET " . implode(', ', $this->set['user']);
             } else {
@@ -256,7 +282,7 @@ class modManagers extends MODxAPI
             $this->Uset($key, 'attribute');
             unset($fld[$key]);
         }
-        if (!empty($this->set['attribute'])) {
+        if (! empty($this->set['attribute'])) {
             if ($this->newDoc) {
                 $this->set('internalKey', $this->id)->Uset('internalKey', 'attribute');
                 $SQL = "INSERT into {$this->makeTable('user_attributes')} SET " . implode(', ',
@@ -269,7 +295,7 @@ class modManagers extends MODxAPI
         }
         unset($fld['id']);
         foreach ($fld as $key => $value) {
-            if ($value == '' || !$this->isChanged($key)) {
+            if ($value == '' || ! $this->isChanged($key)) {
                 continue;
             }
             $result = $this->query("SELECT `setting_value` FROM {$this->makeTable('user_settings')} WHERE `user` = '{$this->id}' AND `setting_name` = '{$key}'");
@@ -280,7 +306,7 @@ class modManagers extends MODxAPI
             }
         }
         // TODO
-        if (!$this->newDoc && $this->givenPassword) {
+        if (! $this->newDoc && $this->givenPassword) {
             $this->invokeEvent('OnManagerChangePassword', array(
                 'userObj'      => $this,
                 'userid'       => $this->id,
@@ -290,7 +316,7 @@ class modManagers extends MODxAPI
             ), $fire_events);
         }
 
-        if ($this->groupIds) {
+        if (! empty($this->groupIds)) {
             $this->setUserGroups($this->id, $this->groupIds);
         }
         // TODO
@@ -314,28 +340,30 @@ class modManagers extends MODxAPI
     }
 
     /**
-     * @param $ids
+     * @param string|int $ids
      * @param bool $fire_events
-     * @return bool|null|void
+     * @return bool
      */
     public function delete($ids, $fire_events = false)
     {
+        $flag = false;
         if ($this->edit($ids)) {
-            $flag = $this->query("
+            $q = $this->query("
           DELETE user,attribute FROM {$this->makeTable('user_attributes')} as attribute
             LEFT JOIN {$this->makeTable('manager_users')} as user ON user.id=attribute.internalKey
             WHERE attribute.internalKey='{$this->escape($this->getID())}'");
-            $this->query("DELETE FROM {$this->makeTable('user_settings')} WHERE user='{$this->getID()}'");
-            $this->query("DELETE FROM {$this->makeTable('member_groups')} WHERE member='{$this->getID()}'");
-            $this->invokeEvent('OnManagerDeleteUser', array(
-                'userObj'     => $this,
-                'userid'      => $this->getID(),
-                'internalKey' => $this->getID(),
-                'username'    => $this->get('username'),
-                'timestamp'   => time()
-            ), $fire_events);
-        } else {
-            $flag = false;
+            if ($this->modx->db->getAffectedRows($q)) {
+                $flag = true;
+                $this->query("DELETE FROM {$this->makeTable('user_settings')} WHERE user='{$this->getID()}'");
+                $this->query("DELETE FROM {$this->makeTable('member_groups')} WHERE member='{$this->getID()}'");
+                $this->invokeEvent('OnManagerDeleteUser', array(
+                    'userObj'     => $this,
+                    'userid'      => $this->getID(),
+                    'internalKey' => $this->getID(),
+                    'username'    => $this->get('username'),
+                    'timestamp'   => time()
+                ), $fire_events);
+            }
         }
         $this->close();
 
@@ -344,7 +372,7 @@ class modManagers extends MODxAPI
 
     /**
      * @param int $id
-     * @param bool $fulltime
+     * @param bool|integer $fulltime
      * @param string $cookieName
      * @param bool $fire_events
      * @return bool
@@ -386,7 +414,7 @@ class modManagers extends MODxAPI
         $b = $tmp->get('blocked');
         $bu = $tmp->get('blockeduntil');
         $ba = $tmp->get('blockedafter');
-        $flag = (($b && !$bu && !$ba) || ($bu && $now < $bu) || ($ba && $now > $ba));
+        $flag = (($b && ! $bu && ! $ba) || ($bu && $now < $bu) || ($ba && $now > $ba));
         unset($tmp);
 
         return $flag;
@@ -408,7 +436,7 @@ class modManagers extends MODxAPI
 
         $flag = $pluginFlag = false;
         if (
-            (null !== $tmp->getID()) && (!$blocker || ($blocker && !$tmp->checkBlock($id)))
+            (null !== $tmp->getID()) && (! $blocker || ($blocker && ! $tmp->checkBlock($id)))
         ) {
             $_password = $tmp->get('password');
             $eventResult = $this->getInvokeEventResult('OnManagerAuthentication', array(
@@ -425,7 +453,7 @@ class modManagers extends MODxAPI
             } else {
                 $pluginFlag = (bool)$eventResult;
             }
-            if (!$pluginFlag) {
+            if (! $pluginFlag) {
                 $hashType = $this->getPasswordHashType($_password);
                 switch ($hashType) {
                     case 'phpass':
@@ -458,11 +486,11 @@ class modManagers extends MODxAPI
 
     /**
      * @param string $cookieName
-     * @param null $fire_events
+     * @param bool $fire_events
      */
-    public function logOut($cookieName = 'modx_remember_manager', $fire_events = null)
+    public function logOut($cookieName = 'modx_remember_manager', $fire_events = false)
     {
-        if (!$uid = $this->modx->getLoginUserID('mgr')) {
+        if (! $uid = $this->modx->getLoginUserID('mgr')) {
             return;
         }
         $params = array(
@@ -483,6 +511,7 @@ class modManagers extends MODxAPI
      *
      * @param string $directive ('start' or 'destroy')
      * @param string $cookieName
+     * @param bool|integer $remember
      * @return modUsers
      * @author Raymond Irving
      * @author Scotty Delicious
@@ -493,7 +522,7 @@ class modManagers extends MODxAPI
     {
         switch ($directive) {
             case 'start':
-                if ($this->getID()) {
+                if ($this->getID() !== null) {
                     $_SESSION['usertype'] = 'manager';
                     $_SESSION['mgrShortname'] = $this->get('username');
                     $_SESSION['mgrFullname'] = $this->get('fullname');
@@ -506,7 +535,8 @@ class modManagers extends MODxAPI
                     $_SESSION['mgrRole'] = $this->get('role');
                     $_SESSION['mgrPermissions'] = $this->mgrPermissions;
                     $_SESSION['mgrDocgroups'] = $this->getDocumentGroups();
-                    if ($remember) {
+                    $_SESSION['mgrToken'] = md5($this->get('sessionid'));
+                    if (! empty($remember)) {
                         $this->setAutoLoginCookie($cookieName, $remember);
                     }
                 }
@@ -524,7 +554,7 @@ class modManagers extends MODxAPI
                     unset($_SESSION['mgrLogincount']);
                     unset($_SESSION['mgrDocgroups']);
                     unset($_SESSION['mgrPermissions']);
-
+                    unset($_SESSION['mgrToken']);
                     setcookie($cookieName, '', time() - 60, MODX_BASE_URL);
                 } else {
                     if (isset($_COOKIE[session_name()])) {
@@ -551,14 +581,14 @@ class modManagers extends MODxAPI
 
     /**
      * @param $cookieName
-     * @param bool $remember
+     * @param bool|integer $remember
      * @return $this
      */
     public function setAutoLoginCookie($cookieName, $remember = true)
     {
-        if (!empty($cookieName) && $this->getID()) {
+        if (! empty($cookieName) && $this->getID() !== null) {
             $secure = $this->isSecure();
-            $remember = is_bool($remember) ? (60 * 60 * 24 * 365 * 5) : (int)$remember;
+            $remember = is_bool($remember) ? $this->getRememberTime() : (int)$remember;
             $cookieValue = $this->get('username');
             $cookieExpires = time() + $remember;
             setcookie($cookieName, $cookieValue, $cookieExpires, MODX_BASE_URL, '', $secure, true);
@@ -631,7 +661,7 @@ class modManagers extends MODxAPI
                 foreach ($groupIds as $gid) {
                     $this->query("REPLACE INTO {$this->makeTable('member_groups')} (`user_group`, `member`) VALUES ('{$gid}', '{$uid}')");
                 }
-                if (!$this->newDoc) {
+                if (! $this->newDoc) {
                     $groupIds = empty($groupIds) ? '0' : implode(',', $groupIds);
                     $this->query("DELETE FROM {$this->makeTable('member_groups')} WHERE `member`={$uid} AND `user_group` NOT IN ({$groupIds})");
                 }

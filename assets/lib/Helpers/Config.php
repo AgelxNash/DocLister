@@ -4,25 +4,35 @@ include_once(MODX_BASE_PATH . 'assets/lib/Helpers/FS.php');
 include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 require_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/jsonHelper.class.php");
 
+use jsonHelper;
+use APIhelpers;
+
 class Config
 {
     private $_cfg = array();
-    protected $fs = null;
+    /** @var FS */
+    protected $fs;
     protected $path = '';
 
+    /**
+     * Config constructor.
+     *
+     * @param array $cfg
+     */
     public function __construct($cfg = array())
     {
-        if ($cfg) {
+        if (! empty($cfg)) {
             $this->setConfig($cfg);
         }
-        $this->fs = \Helpers\FS::getInstance();
+        $this->fs = FS::getInstance();
     }
 
     /**
      * @param $path
      * @return $this
      */
-    public function setPath($path) {
+    public function setPath($path)
+    {
         $this->path = $path;
 
         return $this;
@@ -60,7 +70,9 @@ class Config
 
             if ($this->fs->checkFile($configFile)) {
                 $json = file_get_contents(MODX_BASE_PATH . $configFile);
-                $config = array_merge($config, \jsonHelper::jsonDecode($json, array('assoc' => true), true));
+                /** @var array $json */
+                $json = jsonHelper::jsonDecode($json, array('assoc' => true), true);
+                $config = array_merge($config, $json);
             }
         }
 
@@ -81,7 +93,7 @@ class Config
     /**
      * Сохранение массива настроек
      * @param array $cfg массив настроек
-     * @return int результат сохранения настроек
+     * @return int|bool результат сохранения настроек
      */
     public function setConfig($cfg, $overwrite = false)
     {
@@ -97,12 +109,12 @@ class Config
 
     /**
      * @param $name
-     * @param null $def
+     * @param mixed $def
      * @return mixed
      */
     public function getCFGDef($name, $def = null)
     {
-        return \APIhelpers::getkey($this->_cfg, $name, $def);
+        return APIhelpers::getkey($this->_cfg, $name, $def);
     }
 
     /**
@@ -114,22 +126,22 @@ class Config
      */
     public function loadArray($arr, $sep = ',')
     {
-
-        if (is_scalar($arr)) {
-            $out = \jsonHelper::jsonDecode($arr, array('assoc' => true));
-            if (!is_array($out)) {
-                if ($sep) {
-                    $out = array_filter(explode($sep, $arr));
-                } else {
-                    $out = array();
+        switch (gettype($arr)) {
+            case 'string':
+                $out = jsonHelper::jsonDecode($arr, array('assoc' => true));
+                if (!is_array($out)) {
+                    $out = $sep ? array_filter(explode($sep, $arr)) : array();
                 }
-            }
-
-            return $out;
-        } elseif (is_array($arr)) {
-            return $arr;
-        } else {
-            return array();
+                break;
+            case 'array':
+                $out = $arr;
+                break;
+            case 'object':
+                $out = array($arr);
+                break;
+            default:
+                $out = array();
         }
+        return $out;
     }
 }

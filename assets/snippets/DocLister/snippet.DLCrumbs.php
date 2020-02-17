@@ -50,7 +50,7 @@ if (!empty($_parents) && count($_parents) >= (empty($minDocs) ? 0 : (int)$minDoc
             'documents' => implode(",", $_parents)
         )
     );
-
     $_out = $modx->runSnippet("DocLister", $_options);
 }
+
 return $_out;

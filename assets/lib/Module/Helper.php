@@ -70,7 +70,7 @@ class Helper extends \APIhelpers
             isset($request[$key]) && is_scalar($request[$key]) &&
             preg_match("/^(.*)_(\d+)$/i", $request[$key], $match)
         ) ? $match : array();
-        if (!empty($match)) {
+        if (! empty($match)) {
             $data = array(
                 'key' => $match[1],
                 'id'  => $match[2]
@@ -96,7 +96,7 @@ class Helper extends \APIhelpers
         if ($post) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
-        if (!empty($header)) {
+        if (! empty($header)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         }
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
@@ -152,4 +152,5 @@ class Helper extends \APIhelpers
 
         return array('line' => $i, 'add' => $total);
     }
+
 }

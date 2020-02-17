@@ -795,7 +795,8 @@ class SqlFormatter
             if ($string[0] === '-' || $string[0] === '#') {
                 $last = strpos($string, "\n");
                 $type = self::TOKEN_TYPE_COMMENT;
-            } else { // Comment until closing comment tag
+            } else {
+// Comment until closing comment tag
                 $last = strpos($string, "*/", 2) + 2;
                 $type = self::TOKEN_TYPE_BLOCK_COMMENT;
             }
@@ -833,7 +834,7 @@ class SqlFormatter
             } // Non-quoted variable name
             else {
                 preg_match('/^(' . $string[0] . '[a-zA-Z0-9\._\$]+)/', $string, $matches);
-                if ($matches) {
+                if (! empty($matches)) {
                     $ret[self::TOKEN_VALUE] = $matches[1];
                 }
             }
@@ -862,7 +863,7 @@ class SqlFormatter
 
         // A reserved word cannot be preceded by a '.'
         // this makes it so in "mytable.from", "from" is not considered a reserved word
-        if (!$previous || !isset($previous[self::TOKEN_VALUE]) || $previous[self::TOKEN_VALUE] !== '.') {
+        if (! $previous || !isset($previous[self::TOKEN_VALUE]) || $previous[self::TOKEN_VALUE] !== '.') {
             $upper = strtoupper($string);
             // Top Level Reserved Word
             if (preg_match('/^(' . self::$regex_reserved_toplevel . ')($|\s|' . self::$regex_boundaries . ')/', $upper,
@@ -973,7 +974,7 @@ class SqlFormatter
             }
 
             // See if the token is already cached
-            if ($cacheKey && isset(self::$token_cache[$cacheKey])) {
+            if ($cacheKey !== false && isset(self::$token_cache[$cacheKey])) {
                 // Retrieve from cache
                 $token = self::$token_cache[$cacheKey];
                 $token_length = strlen($token[self::TOKEN_VALUE]);
@@ -985,7 +986,7 @@ class SqlFormatter
                 self::$cache_misses++;
 
                 // If the token is shorter than the max length, store it in cache
-                if ($cacheKey && $token_length < self::$max_cachekey_size) {
+                if ($cacheKey !== false && $token_length < self::$max_cachekey_size) {
                     self::$token_cache[$cacheKey] = $token;
                 }
             }
@@ -1044,7 +1045,8 @@ class SqlFormatter
             // Get highlighted token if doing syntax highlighting
             if ($highlight) {
                 $highlighted = self::highlightToken($token);
-            } else { // If returning raw text
+            } else {
+// If returning raw text
                 $highlighted = $token[self::TOKEN_VALUE];
             }
 
@@ -1156,7 +1158,7 @@ class SqlFormatter
                     $return = rtrim($return, ' ');
                 }
 
-                if (!$inline_parentheses) {
+                if (! $inline_parentheses) {
                     $increase_block_indent = true;
                     // Add a newline after the parentheses
                     $newline = true;
@@ -1189,7 +1191,7 @@ class SqlFormatter
                 }
 
                 // Add a newline before the closing parentheses (if not already added)
-                if (!$added_newline) {
+                if (! $added_newline) {
                     $return .= "\n" . str_repeat($tab, $indent_level);
                 }
             } // Top level reserved words start a new line and increase the special indent level
@@ -1206,7 +1208,7 @@ class SqlFormatter
                 // Add a newline after the top level reserved word
                 $newline = true;
                 // Add a newline before the top level reserved word (if not already added)
-                if (!$added_newline) {
+                if (! $added_newline) {
                     $return .= "\n" . str_repeat($tab, $indent_level);
                 } // If we already added a newline, redo the indentation since it may be different now
                 else {
@@ -1220,14 +1222,14 @@ class SqlFormatter
                     $highlighted = preg_replace('/\s+/', ' ', $highlighted);
                 }
                 //if SQL 'LIMIT' clause, start variable to reset newline
-                if ($token[self::TOKEN_VALUE] === 'LIMIT' && !$inline_parentheses) {
+                if ($token[self::TOKEN_VALUE] === 'LIMIT' && ! $inline_parentheses) {
                     $clause_limit = true;
                 }
             } // Checks if we are out of the limit clause
             elseif ($clause_limit && $token[self::TOKEN_VALUE] !== "," && $token[self::TOKEN_TYPE] !== self::TOKEN_TYPE_NUMBER && $token[self::TOKEN_TYPE] !== self::TOKEN_TYPE_WHITESPACE) {
                 $clause_limit = false;
             } // Commas start a new line (unless within inline parentheses or SQL 'LIMIT' clause)
-            elseif ($token[self::TOKEN_VALUE] === ',' && !$inline_parentheses) {
+            elseif ($token[self::TOKEN_VALUE] === ',' && ! $inline_parentheses) {
                 //If the previous TOKEN_VALUE is 'LIMIT', resets new line
                 if ($clause_limit === true) {
                     $newline = false;
@@ -1239,7 +1241,7 @@ class SqlFormatter
             } // Newline reserved words start a new line
             elseif ($token[self::TOKEN_TYPE] === self::TOKEN_TYPE_RESERVED_NEWLINE) {
                 // Add a newline before the reserved word (if not already added)
-                if (!$added_newline) {
+                if (! $added_newline) {
                     $return .= "\n" . str_repeat($tab, $indent_level);
                 }
 
@@ -1333,7 +1335,7 @@ class SqlFormatter
         foreach ($tokens as $token) {
             // If this is a query separator
             if ($token[self::TOKEN_VALUE] === ';') {
-                if (!$empty) {
+                if (! $empty) {
                     $queries[] = $current_query . ';';
                 }
                 $current_query = '';
@@ -1349,7 +1351,7 @@ class SqlFormatter
             $current_query .= $token[self::TOKEN_VALUE];
         }
 
-        if (!$empty) {
+        if (! $empty) {
             $queries[] = trim($current_query);
         }
 

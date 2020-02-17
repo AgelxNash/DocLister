@@ -71,16 +71,16 @@ abstract class autoTable extends MODxAPI
     }
 
     /**
-     * @param null $fire_events
+     * @param bool $fire_events
      * @param bool $clearCache
      * @return bool|null|void
      */
-    public function save($fire_events = null, $clearCache = false)
+    public function save($fire_events = false, $clearCache = false)
     {
         foreach ($this->jsonFields as $field) {
-            if ($this->get($field) === null 
-                && isset($this->default_field[$field]) 
-                && is_array($this->default_field[$field])) 
+            if ($this->get($field) === null
+                && isset($this->default_field[$field])
+                && is_array($this->default_field[$field]))
             {
                 $this->set($field, $this->default_field[$field]);
             }
@@ -90,12 +90,12 @@ abstract class autoTable extends MODxAPI
             if ($this->newDoc && $this->get($key) === null && $this->get($key) !== $value) {
                 $this->set($key, $value);
             }
-            if ((!$this->generateField || isset($fld[$key])) && $this->get($key) !== null) {
+            if ((! $this->generateField || isset($fld[$key])) && $this->get($key) !== null) {
                 $this->Uset($key);
             }
             unset($fld[$key]);
         }
-        if (!empty($this->set)) {
+        if (! empty($this->set)) {
             if ($this->newDoc) {
                 $SQL = "INSERT {$this->ignoreError} INTO {$this->makeTable($this->table)} SET " . implode(', ',
                         $this->set);
@@ -118,19 +118,18 @@ abstract class autoTable extends MODxAPI
 
     /**
      * @param $ids
-     * @param null $fire_events
+     * @param bool $fire_events
      * @return $this
      * @throws Exception
      */
-    public function delete($ids, $fire_events = null)
+    public function delete($ids, $fire_events = false)
     {
         $_ids = $this->cleanIDs($ids, ',');
-        if (is_array($_ids) && $_ids != array()) {
+        if (is_array($_ids) && $_ids !== array()) {
             $id = $this->sanitarIn($_ids);
-            if (!empty($id)) {
+            if (! empty($id)) {
                 $this->query("DELETE from {$this->makeTable($this->table)} where `" . $this->pkName . "` IN ({$id})");
             }
-            $this->clearCache($fire_events);
         } else {
             throw new Exception('Invalid IDs list for delete: <pre>' . print_r($ids, 1) . '</pre>');
         }

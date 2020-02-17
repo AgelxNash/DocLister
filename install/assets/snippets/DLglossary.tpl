@@ -2,7 +2,7 @@
 /**
  * DLGlossary
  * 
- * Фильтрация документов по первому символу
+ * Filtering documents by the first character
  *
  * @category 	snippet
  * @version 	0.1

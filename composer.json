@@ -11,10 +11,14 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "DocLister\\Tests\\": "tests/"
-    }
+      "DocLister\\Tests\\": "tests/src/"
+    },
+    "classmap": [
+      "tests/modx/"
+    ]
   },
   "require-dev": {
-    "phpunit/phpunit": "4.2.*"
+    "phpunit/phpunit": "4.2.*",
+    "agelxnash/modx-evo-database": "1.4.*"
   }
 }

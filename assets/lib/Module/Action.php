@@ -95,7 +95,7 @@ abstract class Action
         self::$TPL = 'ajax/getValue';
         $data = Helper::jeditable('data');
         $out = array();
-        if (!empty($data)) {
+        if (! empty($data)) {
             $modObj = self::$classTable;
             $modObj->edit($data['id']);
             if ($modObj->getID() !== null && ((is_object($callback) && ($callback instanceof \Closure)) || is_callable($callback))) {
@@ -179,4 +179,5 @@ abstract class Action
     {
         return self::$classTable;
     }
+
 }

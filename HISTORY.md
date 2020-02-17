@@ -1,3 +1,87 @@
+## 2.5.0 (19.08.2019)
+* [Add] Изменение работы idType=parents в onetable для связанных таблиц (Issue #349)
+* [Refactor] Переделана работа с шаблонами Twig и Blade в DLTemplate.
+* [Add] Получение групп пользователей в экстендере user.
+* [Refactor] Оптимизация картинок в Helpers/PHPThumb работает только при наличии библиотеки spatie/image-optimizer (Issue #299)
+* [Fix] Ошибка подсчета [+from+] && [+to+] при пустом результате (Issue #344)
+* [Fix] Исправлена загрузка параметра, содержащего объект, в Helpers\Config
+* [Add] paginationMeta to placeholder
+* [Add] Set the count placeholder without pagination extender
+* [Add] is_first and is_last placeholders
+* [Add] parseDocumentSource parameter.
+* [Refactor] trim в prepare
+* [Add] New filter containsAll: for queries like contains all the listed words
+* [Fix] Правка бага генерации урла для только что созданного документа
+
+## 2.4.1 (02.11.2018)
+* [Fix] Исправлена фатальная ошибка допущенная в версии 2.3.16 (Issue #317)
+
+## 2.4.0 (01.11.2018)
+* [Add] Добавлена поддержка шаблонизатора Blade 
+* [Add] Поддержка массивов параметром prepare (PR #323)
+* [Add] Добавлен фильтр isnotnull (PR #330)
+* [Add] Метод AssetsHelper::registerScript теперь поддержкивает подключение удаленных скриптов, путь к которым начинается с //
+* [Fix] Метод AssetsHelper::registerScript некорректно подключал файлы в имени которых встречалось http
+* [Fix] Корректная работа фильтров для NULL значений в выборке (PR #330)
+* [Fix] На уровне чанка не работали глобальные плейсхолдеры (Issue #321)
+* [Fix] Убрано экранирование (добавленно при решении Issue #276) WHERE услоий (Issue #322)
+* [Fix] Обработка "(, ), ;" в фильрах. Решение может вызвать конфликт обратной совместимости из-за смены имен подключаемых таблиц (Issue #276)
+* [Fix] Если фильтр containsOne получает пустой список, то на выходе получался некорректный SQL запрос (PR #328)
+* [Refactor] Класс DLTemplate теперь не использует метод $modx->getChunk()
+
+## 2.3.17 (08.08.2018)
+* [Fix] Ошибка в modResource::checkAlias.
+* [Fix] Ошибка в методе checkVersion.
+* [Fix] Не выполнялись сниппеты из prepareWrap (Issue #317).
+* [Fix] Утечка памяти в DLPHx.
+* [Fix] Исправлена ошибка SQL в strict-режиме.
+* [Fix] Некорректный вывод плейсхолдера dl.full_iteration.
+* [Add] Перевод на японский для лексикона paginate.
+* [Refactor] Уменьшено количество запросов в классе modUsers (Issue #309).
+* [Fix] Неправильная установка локали в лексиконе paginate.
+* [Refactor] Метод cleandIDs перенесен в APIHelpers (Issue #308).
+* [Fix] Некорректная проверка существования поля в modResource.
+* [Add] Параметр disablePHx для отключения PHx в DLTemplate.
+* [Add] Поддержка плагина MultiCategories.
+
+## 2.3.15 (28.04.2018)
+
+* [Fix] Не выводились значения tv-параметров по умолчанию в DocLister (Issue #307).
+* [Fix] Ошибка при сохранении tv-параметров в modResource.
+* [Fix] Ошибка при редактировании tv-параметров  в modResource (Issue #304).
+* [Enhancement] Дополнительные лексиконы для js-компонентов.
+* [Fix] Ошибка в классе DLphx при использовании условий (Issue #297).
+* [Refactor] В DLSitemap используется функция date, если формат даты не задан, иначе strftime.
+* [Enhancement] Кэширование данных в DocLister и DLMenu при использовании evoTwig (Issue #298, Issue #303). 
+* [Fix] Ошибка в контроллере site_content_tags при отладке (Issue #300).
+* [Fix] Ошибка при проверке на уникальность в методе checkUnique после обновления DBAPI.
+
+## 2.3.14 (02.03.2018)
+* [Refactor] Метод parseChunk в DocLister можно вызывать с одним аргументом.
+* [Add] Методы setRememberTime, getRemeberTime в modManagers.
+* [Fix] Ошибка при сортировке по количеству комментариев Jot в контроллере shopkeeper.
+* [Refactor] Инициализация DLTemplate теперь в конструкторе класса.
+* [Enhancement] Поддержка параметра documents в DLMenu.
+* [Refactor] Запросы в modUsers вынесены в отдельные методы для упрощения расширения класса (Issue #275).
+* [Fix] Некорректная работа параметра start (Issue #287).
+* [Enahancement] Поддержка параметра dateFormat в сниппете DLSitemap.
+* [Refactor] Обработка изменения session id в modManagers.
+* [Fix] Некорректная обработка куки для автологина в modUsers.
+* [Add] Польский язык.
+* [Enahancement] Helpers\Mailer обрабатывает код письма с помощью метода msgHtml, если включен параметр isHtml.
+
+## 2.3.13 (19.01.2018)
+* [Enhancement] Параметр ouputSeparator для разделения документов при выводе.
+* [Refactor] Поддержка фильтров в контроллере onetable.
+* [Fix] Ошибки в js-компоненте EUIGrid.
+* [Fix] Метод loadArray в Helpers\Config не возвращал данные, заданные в виде массива.
+* [Enhancement] Поддержка польского языка в js-компонентах.
+* [Enhancement] Параметр paginationMeta для добавления мета-тегов link rel="next" и link rel="prev".
+* [Enhancement] Валидация данных в APIhelpers::getkey.
+* [Enhancement] Локализация размеров в Helpers\FS::fileSize.
+* [Fix] Некорректная проверка параметра parents на пустоту.
+* [Fix] Параметр pageLimit.
+
 ## 2.3.12 (14.11.2017)
 * [Fix] Метод loadArray в Helpers\Config мог вернуть null.
 * [Fix] Обратная совместимость в Helpers\Mailer.

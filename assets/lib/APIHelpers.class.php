@@ -1,10 +1,11 @@
 <?php
-// extension_loaded('mbstring') ???
+
 /**
  * Class APIhelpers
  */
 class APIhelpers
 {
+
     /**
      * Преобразует первый символ в нижний регистр
      * @param $str
@@ -13,8 +14,12 @@ class APIhelpers
      */
     public static function mb_lcfirst($str, $encoding = 'UTF-8')
     {
-        return mb_strtolower(mb_substr($str, 0, 1, $encoding), $encoding) . mb_substr($str, 1, mb_strlen($str),
-            $encoding);
+        return mb_strtolower(mb_substr($str, 0, 1, $encoding), $encoding) . mb_substr(
+            $str,
+            1,
+            mb_strlen($str),
+            $encoding
+        );
     }
 
     /**
@@ -26,8 +31,12 @@ class APIhelpers
     public static function mb_ucfirst($str, $encoding = 'UTF-8')
     {
         $str = mb_ereg_replace('^[\ ]+', '', $str);
-        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) . mb_substr($str, 1, mb_strlen($str),
-                $encoding);
+        $str = mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) . mb_substr(
+            $str,
+            1,
+            mb_strlen($str),
+            $encoding
+        );
 
         return $str;
     }
@@ -57,16 +66,22 @@ class APIhelpers
     }
 
     /**
-     * @param  mixed $data
-     * @param string $key
-     * @param mixed $default null
+     * Получение значения по ключу из массива, либо возврат значения по умолчанию
+     *
+     * @param mixed $data массив
+     * @param string $key ключ массива
+     * @param mixed $default null значение по умолчанию
+     * @param Closure $validate null функция дополнительной валидации значения (должна возвращать true или false)
      * @return mixed
      */
-    public static function getkey($data, $key, $default = null)
+    public static function getkey($data, $key, $default = null, $validate = null)
     {
         $out = $default;
         if (is_array($data) && (is_int($key) || is_string($key)) && $key !== '' && array_key_exists($key, $data)) {
             $out = $data[$key];
+        }
+        if (! empty($validate) && is_callable($validate)) {
+            $out = (($validate($out) === true) ? $out : $default);
         }
 
         return $out;
@@ -80,14 +95,14 @@ class APIhelpers
      * @license    GNU General Public License (GPL), http://www.gnu.org/copyleft/gpl.html
      * @param string $email проверяемый email
      * @param boolean $dns проверять ли DNS записи
-     * @return boolean Результат проверки почтового ящика
+     * @return boolean|string Результат проверки почтового ящика
      * @author Anton Shevchuk
      */
     public static function emailValidate($email, $dns = true)
     {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             list(, $domain) = explode("@", $email, 2);
-            if (!$dns || ($dns && checkdnsrr($domain, "MX") && checkdnsrr($domain, "A"))) {
+            if (! $dns || ($dns && checkdnsrr($domain, "MX") && checkdnsrr($domain, "A"))) {
                 $error = false;
             } else {
                 $error = 'dns';
@@ -218,7 +233,7 @@ class APIhelpers
             case ($tmp = self::getEnv('HTTP_X_FORWARDED_FOR')):
                 $out = $tmp;
                 break;
-            case (!empty($_SERVER['REMOTE_ADDR'])):
+            case (! empty($_SERVER['REMOTE_ADDR'])):
                 $out = $_SERVER['REMOTE_ADDR'];
                 break;
             default:
@@ -256,13 +271,14 @@ class APIhelpers
                 $out = str_replace(
                     array_keys($chars),
                     array_values($chars),
-                    is_null($charset) ? $data : self::e($data, $charset)
+                    $charset === null ? $data : self::e($data, $charset)
                 );
                 break;
             case is_array($data):
-                $out = $data;
-                foreach ($out as $key => &$val) {
-                    $val = self::sanitarTag($val, $charset, $chars);
+                $out = array();
+                foreach ($data as $key => $val) {
+                    $key = self::sanitarTag($key, $charset, $chars);
+                    $out[$key] = self::sanitarTag($val, $charset, $chars);
                 }
                 break;
             default:
@@ -365,6 +381,69 @@ class APIhelpers
         }
 
         return $flag;
+    }
+
+    /**
+     * @param $IDs
+     * @param string $sep
+     * @param integer[] $ignore
+     * @return array
+     * @throws Exception
+     */
+    public static function cleanIDs($IDs, $sep = ',', $ignore = array())
+    {
+        $out = array();
+        if (!is_array($IDs)) {
+            if (is_scalar($IDs)) {
+                $IDs = explode($sep, $IDs);
+            } else {
+                $IDs = array();
+                throw new Exception('Invalid IDs list <pre>' . print_r($IDs, 1) . '</pre>');
+            }
+        }
+        foreach ($IDs as $item) {
+            $item = trim($item);
+            if (is_scalar($item) && (int)$item >= 0) { //Fix 0xfffffffff
+                if (empty($ignore) || !\in_array((int)$item, $ignore, true)) {
+                    $out[] = (int)$item;
+                }
+            }
+        }
+        $out = array_unique($out);
+
+        return $out;
+    }
+
+    /**
+     * Предварительная обработка данных перед вставкой в SQL запрос вида IN
+     * Если данные в виде строки, то происходит попытка сформировать массив из этой строки по разделителю $sep
+     * Точно по тому, по которому потом данные будут собраны обратно
+     *
+     * @param integer|string|array $data данные для обработки
+     * @param string $sep разделитель
+     * @param boolean $quote заключать ли данные на выходе в кавычки
+     * @return string обработанная строка
+     */
+    public static function sanitarIn($data, $sep = ',', $quote = true)
+    {
+        $modx = evolutionCMS();
+        if (is_scalar($data)) {
+            $data = explode($sep, $data);
+        }
+        if (!is_array($data)) {
+            $data = array(); //@TODO: throw
+        }
+
+        $out = array();
+        foreach ($data as $item) {
+            if ($item !== '') {
+                $out[] = $modx->db->escape($item);
+            }
+        }
+        $q = $quote ? "'" : "";
+        $out = $q . implode($q . "," . $q, $out) . $q;
+
+        return $out;
     }
 
     /**

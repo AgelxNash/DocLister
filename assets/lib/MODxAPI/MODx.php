@@ -3,12 +3,14 @@ include_once(MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php');
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/jsonHelper.class.php');
 include_once(MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLCollection.class.php');
 
+use \Doctrine\Common\Cache\Cache;
 
 /**
  * Class MODxAPIhelpers
  */
 class MODxAPIhelpers
 {
+
     /**
      * @param $email
      * @param bool $dns
@@ -88,9 +90,9 @@ abstract class MODxAPI extends MODxAPIhelpers
     protected $default_field = array();
 
     /**
-     * @var null
+     * @var mixed
      */
-    protected $id = null;
+    protected $id;
 
     /**
      * @var array
@@ -142,6 +144,8 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     private $_table = array();
 
+    private $cache = false;
+
     /**
      * MODxAPI constructor.
      * @param DocumentParser $modx
@@ -151,12 +155,9 @@ abstract class MODxAPI extends MODxAPIhelpers
     public function __construct(DocumentParser $modx, $debug = false)
     {
         $this->modx = $modx;
-        if (function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) {
-            throw new Exception('Magic Quotes is a deprecated and mostly useless setting that should be disabled. Please ask your server administrator to disable it in php.ini or in your webserver config.');
-        }
-
         $this->setDebug($debug);
         $this->_decodedFields = new DLCollection($this->modx);
+        $this->cache = isset($this->modx->cache) && $this->modx->cache instanceof Cache;
     }
 
     /**
@@ -193,11 +194,11 @@ abstract class MODxAPI extends MODxAPIhelpers
     protected function getTime($value)
     {
         $value = trim($value);
-        if (!empty($value)) {
-            if (!is_numeric($value)) {
+        if (! empty($value)) {
+            if (! is_numeric($value)) {
                 $value = (int)strtotime($value);
             }
-            if (!empty($value)) {
+            if (! empty($value)) {
                 $value += $this->modxConfig('server_offset_time');
             }
         }
@@ -221,7 +222,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     public function addQuery($q)
     {
-        if (is_scalar($q) && !empty($q)) {
+        if (is_scalar($q) && ! empty($q)) {
             $this->_query[] = $q;
         }
 
@@ -255,7 +256,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final public function escape($value)
     {
-        if (!is_scalar($value)) {
+        if (! is_scalar($value)) {
             $value = '';
         } else {
             $value = $this->modx->db->escape($value);
@@ -272,8 +273,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final public function invokeEvent($name, $data = array(), $flag = false)
     {
-        $flag = (isset($flag) && $flag != '') ? (bool)$flag : false;
-        if ($flag) {
+        if ((bool)$flag === true) {
             $this->modx->invokeEvent($name, $data);
         }
 
@@ -288,7 +288,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final public function getInvokeEventResult($name, $data = array(), $flag = null)
     {
-        $flag = (isset($flag) && $flag != '') ? (bool)$flag : false;
+        $flag = (isset($flag) && $flag !== '') ? (bool)$flag : false;
 
         return $flag ? $this->modx->invokeEvent($name, $data) : false;
     }
@@ -396,7 +396,7 @@ abstract class MODxAPI extends MODxAPIhelpers
             //Если уже загружен объект, с которым мы хотим временно поработать
             case ($this->getID() == $id && $id):
                 //Если $id не указан, но уже загружен какой-то объект
-            case (!$id && null !== $this->getID()):
+            case (! $id && null !== $this->getID()):
             default:
                 $obj = $this;
                 break;
@@ -431,7 +431,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     public function set($key, $value)
     {
-        if ((is_scalar($value) || $this->isJsonField($key)) && is_scalar($key) && !empty($key)) {
+        if ((is_scalar($value) || $this->isJsonField($key)) && is_scalar($key) && ! empty($key)) {
             $this->field[$key] = $value;
         }
 
@@ -480,7 +480,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final protected function Uset($key, $id = '')
     {
-        if (!isset($this->field[$key])) {
+        if (! isset($this->field[$key])) {
             $tmp = "`{$key}`=''";
             $this->log[] = "{$key} is empty";
         } else {
@@ -490,7 +490,7 @@ abstract class MODxAPI extends MODxAPIhelpers
                 throw new Exception("{$key} is invalid <pre>" . print_r($this->field[$key], true) . "</pre>");
             }
         }
-        if (!empty($tmp) && $this->isChanged($key)) {
+        if (! empty($tmp) && $this->isChanged($key)) {
             if ($id == '') {
                 $this->set[] = $tmp;
             } else {
@@ -507,8 +507,11 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param array $data
      * @return $this
      */
-    public function store($data = array()) {
-        if (is_array($data)) $this->store = $data;
+    public function store($data = array())
+    {
+        if (is_array($data)) {
+            $this->store = $data;
+        }
 
         return $this;
     }
@@ -519,9 +522,10 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param string $key
      * @return MODxAPI
      */
-    public function rollback($key = '') {
-        if (!empty($key) && isset($this->store[$key])) {
-            $this->set($key,$this->store[$key]);
+    public function rollback($key = '')
+    {
+        if (! empty($key) && isset($this->store[$key])) {
+            $this->set($key, $this->store[$key]);
         } else {
             $this->fromArray($this->store);
         }
@@ -535,8 +539,9 @@ abstract class MODxAPI extends MODxAPIhelpers
      * @param $key
      * @return bool
      */
-    public function isChanged($key) {
-        $flag = !isset($this->store[$key]) || (isset($this->store[$key]) && $this->store[$key] != $this->field[$key]);
+    public function isChanged($key)
+    {
+        $flag = ! isset($this->store[$key]) || (isset($this->store[$key], $this->field[$key]) && $this->store[$key] != $this->field[$key]);
 
         return $flag;
     }
@@ -550,26 +555,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final public function cleanIDs($IDs, $sep = ',', $ignore = array())
     {
-        $out = array();
-        if (!is_array($IDs)) {
-            if (is_scalar($IDs)) {
-                $IDs = explode($sep, $IDs);
-            } else {
-                $IDs = array();
-                throw new Exception('Invalid IDs list <pre>' . print_r($IDs, 1) . '</pre>');
-            }
-        }
-        foreach ($IDs as $item) {
-            $item = trim($item);
-            if (is_scalar($item) && (int)$item >= 0) { //Fix 0xfffffffff
-                if (!empty($ignore) && in_array((int)$item, $ignore, true)) {
-                    $this->log[] = 'Ignore id ' . (int)$item;
-                } else {
-                    $out[] = (int)$item;
-                }
-            }
-        }
-        $out = array_unique($out);
+        $out = APIhelpers::cleanIDs($IDs, $sep, $ignore);
 
         return $out;
     }
@@ -582,7 +568,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final public function fromJson($data, $callback = null)
     {
-        if (is_scalar($data) && !empty($data)) {
+        if (is_scalar($data) && ! empty($data)) {
             $json = json_decode($data);
         } else {
             throw new Exception("json is not string with json data");
@@ -664,7 +650,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         $out = array();
         $fields = $this->field;
         $fields[$this->fieldPKName()] = $this->getID();
-        if ($tpl != $plh) {
+        if ($tpl !== $plh) {
             foreach ($fields as $key => $value) {
                 $out[str_replace($plh, $key, $tpl)] = $value;
             }
@@ -700,7 +686,7 @@ abstract class MODxAPI extends MODxAPIhelpers
      */
     final public function sanitarIn($data, $sep = ',')
     {
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             $data = explode($sep, $data);
         }
         $out = array();
@@ -742,11 +728,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if ($where != '') {
             $sql = $this->query("SELECT `" . $this->escape($PK) . "` FROM " . $this->makeTable($table) . " WHERE " . $where);
             $id = $this->modx->db->getValue($sql);
-            if (is_null($id) || (!$this->newDoc && $id == $this->getID())) {
-                $flag = true;
-            } else {
-                $flag = false;
-            }
+            $flag = (! $id || (! $this->newDoc && $id == $this->getID()));
         } else {
             $flag = false;
         }
@@ -808,11 +790,11 @@ abstract class MODxAPI extends MODxAPIhelpers
     abstract public function edit($id);
 
     /**
-     * @param null $fire_events
+     * @param bool $fire_events
      * @param bool $clearCache
      * @return mixed
      */
-    abstract public function save($fire_events = null, $clearCache = false);
+    abstract public function save($fire_events = false, $clearCache = false);
 
     /**
      * @param $ids
@@ -846,7 +828,7 @@ abstract class MODxAPI extends MODxAPIhelpers
         if (version_compare($tmp, $version, '>=')) {
             $flag = true;
             if ($dmi3yy) {
-                $flag = (boolean)preg_match('/^' . $tmp . '(.*)\-d/', $currentVer);
+                $flag = $flag || (boolean)preg_match('/^' . $tmp . '(.*)\-d/', $currentVer);
             }
         }
 
@@ -855,7 +837,7 @@ abstract class MODxAPI extends MODxAPIhelpers
 
     /**
      * @param string $name
-     * @return bool|mixed
+     * @return bool|string|int
      */
     protected function eraseField($name)
     {
@@ -1052,4 +1034,34 @@ abstract class MODxAPI extends MODxAPIhelpers
 
         return $this;
     }
+
+    /**
+     * @param mixed $data
+     * @param string $key
+     * @return bool
+     */
+    protected function saveToCache($data, $key)
+    {
+        $out = false;
+        if ($this->cache) {
+            $out = $this->modx->cache->save($key, $data, 0);
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    protected function loadFromCache($key)
+    {
+        $out = false;
+        if ($this->cache) {
+            $out = $this->modx->cache->fetch($key);
+        }
+
+        return $out;
+    }
+
 }
