@@ -75,12 +75,14 @@ class Lexicon
             $name = array($name);
         }
 
-        foreach ($name as $n) {
-            if ($lang != 'english' && $lang != 'en') {
-                $this->loadLexiconFile($n, 'en', $langDir);
+	if (is_array($name)) {
+    	    foreach ($name as $n) {
+        	if ($lang != 'english' && $lang != 'en') {
+            	    $this->loadLexiconFile($n, 'en', $langDir);
+                }
+	        $this->loadLexiconFile($n, $lang, $langDir);
             }
-            $this->loadLexiconFile($n, $lang, $langDir);
-        }
+	}	
 
         return $this->getLexicon();
     }
