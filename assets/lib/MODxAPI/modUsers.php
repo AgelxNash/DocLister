@@ -287,7 +287,7 @@ class modUsers extends MODxAPI
             return false;
         }
 
-        if ($this->isChanged('username') && ! $this->checkUnique('web_users', 'username')) {
+        if ($this->isChanged('username') && ! $this->isUnique('username')) {
             $this->log['UniqueUsername'] = 'username not unique <pre>' . print_r(
                 $this->get('username'),
                 true
@@ -296,7 +296,7 @@ class modUsers extends MODxAPI
             return false;
         }
 
-        if ($this->isChanged('username') && ! $this->checkUnique('web_user_attributes', 'email', 'internalKey')) {
+        if ($this->isChanged('email') && ! $this->isUnique('email')) {
             $this->log['UniqueEmail'] = 'Email not unique <pre>' . print_r($this->get('email'), true) . '</pre>';
 
             return false;
@@ -357,6 +357,21 @@ class modUsers extends MODxAPI
         }
 
         return $this->id;
+    }
+    
+    /**
+     * @param $field
+     * @return bool
+     */
+    public function isUnique($field) {
+        $out = false;
+        if (isset($this->default_field['user'][$field])) {
+            $out = $this->checkUnique('web_users', $field);
+        } elseif(isset($this->default_field['user'][$field])) {
+            $out = $this->checkUnique('web_user_attributes', $field, 'primaryKey');
+        }
+
+        return $out;
     }
 
     /**
