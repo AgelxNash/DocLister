@@ -52,7 +52,8 @@ class modUsers extends MODxAPI
      * @var string
      */
     protected $givenPassword = '';
-    protected $groupIds = array();
+    protected $groups = [];
+    protected $groupIds = [];
     protected $userIdCache = array(
         'attribute.internalKey' => '',
         'attribute.email' => '',
@@ -728,6 +729,31 @@ class modUsers extends MODxAPI
         unset($user);
 
         return $out;
+    }
+    
+    /**
+     * @param  int  $userID
+     * @param  array  $groupNames
+     * @return $this
+     */
+    public function setUserGroupsByName($userID = 0, $groupNames = array()) 
+    {
+        if (!is_array($groupIds)) {
+            return $this;
+        }
+        
+        if (empty($this->groups)) {
+            $q = $this->query("SELECT `id`,`name` FROM {$this->makeTable('webgroup_names')}");
+            while ($this->modx->db->getRow($q)) {
+                $this->groups[$row['name']] = $row['id'];
+            }
+        }
+        $groupIds = [];
+        foreach ($groupNames as $group) {
+            $groupIds[] = $this->groups[$group];
+        }
+        
+        return $this->setUserGroups($userID, $groupIds);
     }
 
     /**
