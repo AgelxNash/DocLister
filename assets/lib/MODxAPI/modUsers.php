@@ -744,7 +744,7 @@ class modUsers extends MODxAPI
         
         if (empty($this->groups)) {
             $q = $this->query("SELECT `id`,`name` FROM {$this->makeTable('webgroup_names')}");
-            while ($this->modx->db->getRow($q)) {
+            while ($row = $this->modx->db->getRow($q)) {
                 $this->groups[$row['name']] = $row['id'];
             }
         }
