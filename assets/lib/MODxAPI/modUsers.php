@@ -738,7 +738,7 @@ class modUsers extends MODxAPI
      */
     public function setUserGroupsByName($userID = 0, $groupNames = array()) 
     {
-        if (!is_array($groupIds)) {
+        if (!is_array($groupNames)) {
             return $this;
         }
         
