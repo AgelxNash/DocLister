@@ -42,9 +42,9 @@ if ($next == $prev) {
 $TPL = DLTemplate::getInstance($modx);
 return ($prev == $ID)
     ? ''
-    : isset($api) && $api == 1
+    : (isset($api) && $api == 1
         ? ['prev' => empty($prev) ? '' : $children[$prev], 'next' => empty($next) ? '' : $children[$next]]
         : $TPL->parseChunk($prevnextTPL, array(
             'prev' => empty($prev) ? '' : $TPL->parseChunk($prevTPL, $children[$prev]),
             'next' => empty($next) ? '' : $TPL->parseChunk($nextTPL, $children[$next]),
-        ));
+        )));
