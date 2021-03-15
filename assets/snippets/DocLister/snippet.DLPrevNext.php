@@ -8,7 +8,8 @@ $params = is_array($modx->Event->params) ? $modx->Event->params : array();
 $params = array_merge($params, array(
     'api'   => 1,
     'debug' => '0',
-    'parents' => isset($parents) ? $parents : $modx->documentObject['parent']
+    'parents' => isset($parents) ? $parents : $modx->documentObject['parent'],
+    'loop' => '0'
 ));
 
 $json = $modx->runSnippet("DocLister", $params);
@@ -22,7 +23,7 @@ foreach ($children as $key => $data) {
     }
     if ($key == $ID) {
         $self = $key;
-        if (empty($prev)) {
+        if (empty($prev) && ! $loop) {
             $prev = end($children);
             $prev = $prev['id'];
         }
@@ -30,7 +31,7 @@ foreach ($children as $key => $data) {
         $prev = $key;
     }
 }
-if (empty($next)) {
+if (empty($next) && ! $loop) {
     reset($children);
     $next = current($children);
     $next = $next['id'];
