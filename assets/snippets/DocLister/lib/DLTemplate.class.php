@@ -77,8 +77,9 @@ if (!class_exists('\\DLTemplate')) {
          *
          * @return void
          */
-        private function __wakeup()
+        public function __wakeup()
         {
+            return;
         }
 
         public function getTemplatePath()
