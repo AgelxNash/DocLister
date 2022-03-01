@@ -22,7 +22,7 @@ tools:
 build:
   environment:
     php:
-      version: 5.6
+      version: 7.4
       ini:
         'date.timezone': 'Europe/Moscow'
     rabbitmq: false
