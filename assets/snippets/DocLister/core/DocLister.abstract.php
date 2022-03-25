@@ -1303,7 +1303,7 @@ abstract class DocLister
         );
         $out = array();
         if (!is_array($IDs)) {
-            $IDs = explode($sep, $IDs);
+            $IDs = explode($sep, $IDs ?? '');
         }
         foreach ($IDs as $item) {
             $item = trim($item);
