@@ -1796,9 +1796,9 @@ abstract class DocLister
      */
     public function getRequest()
     {
-        $URL = null;
-        parse_str(parse_url(MODX_SITE_URL . $_SERVER['REQUEST_URI'], PHP_URL_QUERY), $URL);
+        $query = parse_url(MODX_SITE_URL . $_SERVER['REQUEST_URI'], PHP_URL_QUERY) ?? '';
+        parse_str($query, $url);
 
-        return http_build_query(array_merge($URL, array(DocLister::AliasRequest => null)));
+        return http_build_query(array_merge($url, array(DocLister::AliasRequest => null)));
     }
 }
