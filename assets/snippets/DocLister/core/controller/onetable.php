@@ -144,7 +144,7 @@ class onetableDocLister extends DocLister
                             $_date = $_date + $this->modx->config['server_offset_time'];
                             $dateFormat = $this->getCFGDef('dateFormat', '%d.%b.%y %H:%M');
                             if ($dateFormat) {
-                                $item['date'] = date_format(date_create('@' . $_date), $dateFormat);
+                                $item['date'] = strftime($dateFormat, $_date);
                             }
                         }
                     }
@@ -225,7 +225,7 @@ class onetableDocLister extends DocLister
                             $_date = $_date + $this->modx->config['server_offset_time'];
                             $dateFormat = $this->getCFGDef('dateFormat', '%d.%b.%y %H:%M');
                             if ($dateFormat) {
-                                $row['date'] = date_format(date_create('@' . $_date), $dateFormat);
+                                $row['date'] = strftime($dateFormat, $_date);
                             }
                         }
                     }
