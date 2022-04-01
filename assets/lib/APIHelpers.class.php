@@ -86,6 +86,19 @@ class APIhelpers
             $out = (($validate($out) === true) ? $out : $default);
         }
 
+        if($key=='dateFormat' && !empty($out) && preg_match('/%/', $out)) {
+            $caracs = array(
+                '%d' => 'd', '%a' => 'D', '%e' => 'j', '%A' => 'l', '%u' => 'N', '%w' => 'w', '%j' => 'z',
+                '%V' => 'W', 
+                '%B' => 'F', '%m' => 'm', '%b' => 'M',
+                '%G' => 'o', '%Y' => 'Y', '%y' => 'y',
+                '%P' => 'a', '%p' => 'A', '%l' => 'g', '%I' => 'h', '%H' => 'H', '%M' => 'i', '%S' => 's',
+                '%z' => 'O', '%Z' => 'T',
+                '%s' => 'U'
+            );
+            $out =  strtr((string)$out, $caracs);
+        }
+
         return $out;
     }
 
