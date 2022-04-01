@@ -30,7 +30,7 @@ if (!class_exists("DLSitemap")) {
             }
             $dateFormat = $_DocLister->getCFGDef('dateFormat');
             if ($dateFormat) {
-                $data['date'] = strftime($dateFormat, $data['date']);
+                $data['date'] = date($dateFormat, $data['date']);
             } else {
                 $data['date'] = date('c', $data['date']);
             }
