@@ -566,7 +566,7 @@ class DLphx
     {
         if ($this->debug) {
             $this->debugLog = true;
-            $this->console[] = (count($this->console) + 1 - $this->curPass) . " [" . datee(
+            $this->console[] = (count($this->console) + 1 - $this->curPass) . " [" . date(
                 "H:i:S",
                 time()
             ) . "] " . $this->LogClean($string);
