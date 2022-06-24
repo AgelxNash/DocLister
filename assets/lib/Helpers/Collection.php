@@ -33,7 +33,8 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * @return \ArrayIterator
      */
-    public function getIterator(): \ArrayIterator
+    #[\ReturnTypeWillChange]
+    public function getIterator()
     {
         return new \ArrayIterator($this->data);
     }
@@ -149,7 +150,8 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
     /**
      * @return int
      */
-    public function count(): int
+    #[\ReturnTypeWillChange]
+    public function count()
     {
         return count($this->data);
     }
@@ -259,7 +261,8 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($offset): bool
+    #[\ReturnTypeWillChange]
+    public function offsetExists($offset)
     {
         return $this->containsKey($offset);
     }
@@ -268,7 +271,8 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      * @param mixed $offset
      * @return mixed|null
      */
-    public function offsetGet($offset): mixed
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
     {
         return $this->get($offset);
     }
@@ -278,22 +282,26 @@ class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
      * @param mixed $value
      * @return Collection
      */
-    public function offsetSet($offset, $value): void
+    #[\ReturnTypeWillChange]
+    public function offsetSet($offset, $value)
     {
         if ($offset !== null) {
             $this->set($offset, $value);
         } else {
             $this->add($value);
         }
+
+        return $this;
     }
 
     /**
      * @param mixed $offset
      * @return mixed|null
      */
-    public function offsetUnset($offset): void
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($offset)
     {
-        $this->remove($offset);
+        return $this->remove($offset);
     }
 
     /**
