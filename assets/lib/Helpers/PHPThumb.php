@@ -26,6 +26,10 @@ class PHPThumb
     public function __construct()
     {
         $this->thumb = new \phpthumb();
+        $defaultCacheFolder = 'assets/cache';
+        $phpThumb->config_cache_directory = MODX_BASE_PATH . $defaultCacheFolder;
+        $phpThumb->config_temp_directory = $defaultCacheFolder;
+        $phpThumb->config_document_root = MODX_BASE_PATH;
         $this->fs = FS::getInstance();
     }
 
