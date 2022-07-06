@@ -27,9 +27,9 @@ class PHPThumb
     {
         $this->thumb = new \phpthumb();
         $defaultCacheFolder = 'assets/cache';
-        $phpThumb->config_cache_directory = MODX_BASE_PATH . $defaultCacheFolder;
-        $phpThumb->config_temp_directory = $defaultCacheFolder;
-        $phpThumb->config_document_root = MODX_BASE_PATH;
+        $this->thumb->config_cache_directory = MODX_BASE_PATH . $defaultCacheFolder;
+        $this->thumb->config_temp_directory = $defaultCacheFolder;
+        $this->thumb->config_document_root = MODX_BASE_PATH;
         $this->fs = FS::getInstance();
     }
 
