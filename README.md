@@ -57,9 +57,7 @@
 	</td>
 	<td valign="top">
 		<h4>Реквизиты для доната<br /><br /></h4>
-		<br /><br />
-		<strong>WMZ</strong>: Z762708026453<br />
-		<strong>WMR</strong>: R203864025267<br />
+		<br /><br /><br /><br /><br />
 	</td>
   </tr>
   <tr>
