@@ -4,11 +4,11 @@ if (! defined('MODX_BASE_PATH')) {
 }
 
 $ID = $modx->documentIdentifier;
-$params = array_merge($params, array(
+$params = array_merge($params, [
     'returnDLObject' => 1,
     'debug' => '0',
     'parents' => $parents ?? $modx->documentObject['parent'],
-));
+]);
 $loop = $loop ?? 0;
 $dl = $modx->runSnippet("DocLister", array_merge($params, ['selectFields' => 'c.id']));
 $children = $dl->getDocs();
