@@ -218,7 +218,7 @@ abstract class DocLister
         }
         $this->lexicon = new \Helpers\Lexicon($this->modx, [
             'langDir' => 'assets/snippets/DocLister/core/lang/',
-            'lang'    => $this->getCFGDef('lang', $this->modx->getConfig('lang_code')),
+            'lang'    => $this->getCFGDef('lang', $this->modx ? null : $this->modx->getConfig('lang_code')),
             'handler' => $this->getCFGDef('lexiconHandler', '\\Helpers\\Lexicon\\EvoBabelLexiconHandler')
         ]);
 
