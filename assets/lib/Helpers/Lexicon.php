@@ -3,6 +3,7 @@
 use APIhelpers;
 use DocumentParser;
 use Helpers\Lexicon\AbstractLexiconHandler;
+use Illuminate\Support\Facades\Lang;
 
 /**
  * Class Lexicon
@@ -151,6 +152,9 @@ class Lexicon
         $out = APIhelpers::getkey($this->lexicon, $key, $default);
         if (!is_null($this->lexiconHandler)) {
             $out = $this->lexiconHandler->get($key, $out);
+        }
+        if($out == $default && class_exists(Lang::class)) {
+            $out = Lang::has($key) ? Lang::get($key) : $default;
         }
 
         return $out;
