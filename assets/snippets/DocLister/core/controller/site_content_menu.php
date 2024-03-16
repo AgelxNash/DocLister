@@ -211,32 +211,21 @@ class site_content_menuDocLister extends site_contentDocLister
         }
         $this->countChildren = $this->extCache->load('countChildren');
         if ($this->countChildren === false) {
-            $this->countChildren = array();
-            $ids = array();
+            $this->countChildren = [];
+            $ids = [];
             $out = &$this->countChildren;
-            foreach ($this->levels as $level => $docs) {
+            foreach ($this->levels as $docs) {
                 $ids = array_merge($ids, array_keys($docs));
             }
-            $maxDepth = count($this->levels);
-            $currentDepth = 1;
-            while ($currentDepth <= $maxDepth) {
-                $_ids = implode(',', $ids);
-                if (empty($_ids)) {
-                    break;
-                }
-                $q = $this->dbQuery("SELECT `parent`,COUNT(*) as `count` FROM {$this->getTable('site_content')} WHERE `parent` IN ({$_ids}) AND `published`=1 AND `deleted`=0 GROUP BY `parent`");
-                $_ids = array();
-                while ($row = $this->modx->db->getRow($q)) {
-                    $_ids[] = $row['parent'];
-                    $out[$row['parent']] = $row['count'];
-                }
-                if (!empty($_ids)) {
-                    $ids = $this->diff($ids, $_ids);
-                } else {
-                    break;
-                }
-                $currentDepth++;
+            foreach ($ids as $id) {
+                $out[$id] = 0;
             }
+            $ids = implode(',', $ids);
+            $q = $this->dbQuery("SELECT `parent`,COUNT(*) as `count` FROM {$this->getTable('site_content')} WHERE `parent` IN ({$ids}) AND `published`=1 AND `deleted`=0 AND `isfolder` = 0 GROUP BY `parent`");
+            while ($row = $this->modx->db->getRow($q)) {
+                $out[$row['parent']] += $row['count'];
+            }
+
             $this->extCache->save($this->countChildren, 'countChildren');
         }
     }
@@ -321,8 +310,10 @@ class site_content_menuDocLister extends site_contentDocLister
             $docs = $this->levels;
             /** @var prepare_DL_Extender_ $extPrepare */
             $extPrepare = $this->getExtender('prepare');
+            $countChildren = !empty($this->countChildren);
             while ($currentLevel > 0) {
                 foreach ($docs[$currentLevel] as $id => &$data) {
+
                     if ($out = $this->prepareData($data)) {
                         if (is_array($out)) {
                             $data = $out;
@@ -421,6 +412,9 @@ class site_content_menuDocLister extends site_contentDocLister
         $data['url'] = $this->makeUrl($data);
         if ($this->getCFGDef('countChildren', 0)) {
             $data['count'] = isset($this->countChildren[$data['id']]) ? $this->countChildren[$data['id']] : 0;
+            if(isset($this->countChildren[$data['parent']])) {
+                $this->countChildren[$data['parent']] += $data['count'];
+            }
         }
 
         if ($out = $extE->init($this, compact('data'))) {
