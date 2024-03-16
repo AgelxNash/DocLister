@@ -225,7 +225,12 @@ class site_content_menuDocLister extends site_contentDocLister
             while ($row = $this->modx->db->getRow($q)) {
                 $out[$row['parent']] += $row['count'];
             }
-
+            if($this->getCFGDef('multiCategories', 0)) {
+                $q = $this->dbQuery("SELECT `category`,COUNT(*) as `count` FROM {$this->getTable('site_content_categories')} WHERE `category` IN ({$ids}) GROUP BY `category`");
+                while ($row = $this->modx->db->getRow($q)) {
+                    $out[$row['category']] += $row['count'];
+                }
+            }
             $this->extCache->save($this->countChildren, 'countChildren');
         }
     }
