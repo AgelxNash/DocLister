@@ -268,7 +268,7 @@ abstract class DocLister
 
         $this->setLocate();
 
-        $this->getCustomLang($this->getCFGDef('customLang', $this->getCFGDef('lexicon')));
+        $this->getCustomLang($this->getCFGDef('customLang', $this->getCFGDef('lexicon', '')));
 
         $this->loadExtender($this->getCFGDef("extender", ""));
 
