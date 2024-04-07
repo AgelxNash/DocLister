@@ -180,7 +180,7 @@ class Lexicon
     public function parse ($tpl)
     {
         if (is_scalar($tpl) && !empty($tpl)) {
-            if (preg_match_all("/\[\%([a-zA-Z0-9\.\_\-]+)\%\]/", $tpl, $match)) {
+            if (preg_match_all("/\[\%([a-zA-Z0-9\.\_\-:]+)\%\]/", $tpl, $match)) {
                 $langVal = array();
                  foreach ($match[1] as $item) {
                     $langVal[] = $this->get($item);
