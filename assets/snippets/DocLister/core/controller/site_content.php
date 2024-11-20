@@ -319,7 +319,7 @@ class site_contentDocLister extends DocLister
         $out = $this->extCache->load('childrenCount');
         if ($out === false) {
             $out = 0;
-            $sanitarInIDs = implode(',', $this->cleanIDs($this->IDs));
+            $sanitarInIDs = $this->cleanIDs($this->IDs);
             if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
                 $q_true = $this->getCFGDef('ignoreEmpty', '0');
                 $q_true = $q_true ? $q_true : $this->getCFGDef('idType', 'parents') == 'parents';
@@ -357,7 +357,7 @@ class site_contentDocLister extends DocLister
                                     break;
                             }
                             if (($addDocs = $this->getCFGDef('documents', '')) != '') {
-                                $addDocs = implode(',', $this->cleanIDs($addDocs));
+                                $addDocs = $this->sanitarIn($this->cleanIDs($addDocs));
                                 $whereArr[] = "((" . $tmpWhere . ") OR c.id IN({$addDocs}))";
                             } else {
                                 $whereArr[] = $tmpWhere;
@@ -408,7 +408,7 @@ class site_contentDocLister extends DocLister
     protected function getDocList()
     {
         $out = array();
-        $sanitarInIDs = implode(',', $this->cleanIDs($this->IDs));
+        $sanitarInIDs = $this->cleanIDs($this->IDs);
         if ($sanitarInIDs != "''" || $this->getCFGDef('ignoreEmpty', '0')) {
             $where = $this->getCFGDef('addWhereList', '');
             $where = sqlHelper::trimLogicalOp($where);
@@ -471,7 +471,7 @@ class site_contentDocLister extends DocLister
         }
 
         $tbl_site_content = $this->getTable('site_content', 'c');
-        $sanitarInIDs = implode(',', $this->cleanIDs($id));
+        $sanitarInIDs = $this->cleanIDs($id);
         if ($this->getCFGDef('showNoPublish', 0)) {
             $where = "WHERE {$where} c.parent IN ({$sanitarInIDs}) AND c.isfolder=1";
         } else {
@@ -525,7 +525,7 @@ class site_contentDocLister extends DocLister
 
         $sort = $this->SortOrderSQL("if(c.pub_date=0,c.createdon,c.pub_date)");
         list($from, $sort) = $this->injectSortByTV($tbl_site_content . ' ' . $this->_filters['join'], $sort);
-        $sanitarInIDs = implode(',', $this->cleanIDs($this->IDs));
+        $sanitarInIDs = $this->cleanIDs($this->IDs);
 
         $tmpWhere = null;
         if ($sanitarInIDs != "''") {
@@ -543,7 +543,7 @@ class site_contentDocLister extends DocLister
             }
         }
         if (($addDocs = $this->getCFGDef('documents', '')) != '') {
-            $addDocs = implode(',', $this->cleanIDs($addDocs));
+            $addDocs = $this->cleanIDs($addDocs);
             if (empty($tmpWhere)) {
                 $tmpWhere = "c.id IN({$addDocs})";
             } else {
