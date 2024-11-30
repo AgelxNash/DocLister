@@ -1312,6 +1312,12 @@ abstract class DocLister
      */
     public function cleanIDs($IDs, $sep = ',')
     {
+        $this->debug->debug(
+            'clean IDs ' . $this->debug->dumpData($IDs) . ' with separator ' . $this->debug->dumpData($sep),
+            'cleanIDs',
+            2
+        );
+        
         return APIHelpers::cleanIDs($IDs, $sep);
     }
 
