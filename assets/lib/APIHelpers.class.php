@@ -404,10 +404,10 @@ class APIhelpers
             }
         }
         foreach ($IDs as $item) {
-            $item = trim($item);
             if (is_scalar($item) && (int)$item >= 0) { //Fix 0xfffffffff
+                $item = (int)$item;
                 if (empty($ignore) || !\in_array((int)$item, $ignore, true)) {
-                    $out[] = (int)$item;
+                    $out[] = $item;
                 }
             }
         }
