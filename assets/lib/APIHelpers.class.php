@@ -394,12 +394,13 @@ class APIhelpers
      */
     public static function cleanIDs($IDs, $sep = ',', $ignore = array())
     {
-        $out = array();
+        if(empty($IDs)) return [];
+        $out = [];
         if (!is_array($IDs)) {
             if (is_scalar($IDs)) {
                 $IDs = explode($sep, $IDs);
             } else {
-                $IDs = array();
+                $IDs = [];
                 throw new Exception('Invalid IDs list <pre>' . print_r($IDs, 1) . '</pre>');
             }
         }
