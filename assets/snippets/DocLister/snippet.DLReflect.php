@@ -32,11 +32,7 @@ if (!in_array($reflectType, array('year', 'month'))) {
 $wrapTPL = APIHelpers::getkey(
     $params,
     'wrapTpl',
-    APIHelpers::getkey(
-        $params,
-        'wrapTPL',
-        '@CODE: <div class="reflect-list"><ul>[+wrap+]</ul></div>'
-    )
+    '@CODE: <div class="reflect-list"><ul>[+wrap+]</ul></div>'
 );
 /**
  * reflectTpl
@@ -52,11 +48,7 @@ $wrapTPL = APIHelpers::getkey(
 $reflectTPL = APIHelpers::getkey(
     $params,
     'reflectTpl',
-    APIHelpers::getkey(
-        $params,
-        'reflectTPL',
-        '@CODE: <li><a href="[+url+]" title="[+title+]">[+title+]</a></li>'
-    )
+    '@CODE: <li><a href="[+url+]" title="[+title+]">[+title+]</a></li>'
 );
 /**
  * activeReflectTpl
@@ -66,11 +58,7 @@ $reflectTPL = APIHelpers::getkey(
 $activeReflectTPL = APIHelpers::getkey(
     $params,
     'activeReflectTpl',
-    APIHelpers::getkey(
-        $params,
-        'activeReflectTPL',
-        '@CODE: <li><span>[+title+]</span></li>'
-    )
+    '@CODE: <li><span>[+title+]</span></li>'
 );
 
 list($dateFormat, $sqlDateFormat, $reflectValidator) = DLReflect::switchReflect($reflectType, function () {

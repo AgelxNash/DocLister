@@ -50,9 +50,11 @@ $dl->setIDs([$next, $prev]);
 $children = $dl->getJSON($dl->getDocs($tvList ?? ''), ($api ?? 1));
 $children = json_decode($children, true);
 
+// обратная совместимость с параметрами где TPL, а не Tpl
 $prevnextTpl = $prevnextTpl ?? ($prevnextTPL ?? '@CODE: [+prev+] | [+next+]');
 $prevTpl = $prevTpl ?? ($prevTPL ?? '@CODE: <a href="[+url+]">&larr; [+title+]</a>');
 $nextTpl = $nextTpl ?? ($nextTPL ?? '@CODE: <a href="[+url+]">[+title+] &rarr;</a>');
+
 if (isset($api) && $api == 1) {
     $out = ['prev' => empty($prev) ? '' : $children[$prev], 'next' => empty($next) ? '' : $children[$next]];
 } else {
