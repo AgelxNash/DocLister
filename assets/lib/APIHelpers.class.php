@@ -394,7 +394,6 @@ class APIhelpers
      */
     public static function cleanIDs($IDs, $sep = ',', $ignore = array())
     {
-        if(empty($IDs)) return [];
         $out = [];
         if (!is_array($IDs)) {
             if (is_scalar($IDs)) {
