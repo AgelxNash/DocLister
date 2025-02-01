@@ -400,13 +400,12 @@ class APIhelpers
                 $IDs = explode($sep, $IDs);
             } else {
                 $IDs = [];
-                throw new Exception('Invalid IDs list <pre>' . print_r($IDs, 1) . '</pre>');
             }
         }
         foreach ($IDs as $item) {
             if (is_scalar($item) && (int)$item >= 0) { //Fix 0xfffffffff
                 $item = (int)$item;
-                if (empty($ignore) || !\in_array((int)$item, $ignore, true)) {
+                if (empty($ignore) || !\in_array($item, $ignore, true)) {
                     $out[] = $item;
                 }
             }
