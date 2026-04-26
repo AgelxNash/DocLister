@@ -50,6 +50,13 @@ if (!empty($_parents) && count($_parents) >= (empty($minDocs) ? 0 : (int) $minDo
             'documents' => implode(",", $_parents),
         ]
     );
+
+    // fix problem with old param name and config in json
+    if (isset($_options['ownerTPL'])) {
+        $_options['ownerTpl'] = $_options['ownerTPL'];
+        unset($_options['ownerTPL']);
+    }
+
     $_out = $modx->runSnippet("DocLister", $_options);
 }
 
