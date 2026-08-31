@@ -1,77 +1,69 @@
 # Диагностика issue #398 — prepare не работает в onetable
 
 Дата: 2026-08-31
-Статус: BLOCKED на воспроизведении
+Статус: DONE
+Классификация: CANNOT_REPRODUCE
 
 ## TL;DR
 
-Issue #398 проверен read-only. В коде `onetableDocLister::getJSON()` prepare-экстендер вызывается, поэтому проблема не подтверждается как очевидное отсутствие вызова `prepare` в `onetable`. Для окончательной верификации нужно воспроизвести пример issue на рабочем окружении, но локально нет `vendor/`, проект использует PHPUnit 4.2.*, а локальный PHP — 8.4.1; установка зависимостей и адаптация окружения требуют отдельного разрешения.
+На текущем `master` проблема #398 не воспроизводится. `onetableDocLister::getJSON()` вызывает closure из `prepare`, а добавленное поле `aaaaa` присутствует в JSON при `api=1`. Production-код не изменялся. Добавлен regression test текущего корректного поведения; он прошёл в изолированном legacy-окружении PHP 7.0 + PHPUnit 4.8.36: `OK (1 test, 4 assertions)`.
 
 ## Данные issue
 
 - URL: https://github.com/AgelxNash/DocLister/issues/398
 - Заголовок: `Prepare не работает в onetable?`
 - Создано: 2026-01-21T10:36:34Z
-- Обновлено: 2026-01-21T10:36:34Z
-- Комментарии: 0
 - RAW: `ai-context/artifacts/github-2026-08-31/issue-398/issue.json`
 
-Пример из issue использует:
-
-- `controller => onetable`
-- `idType => documents`
-- `table => commerce_orders`
-- `ignoreEmpty => 1`
-- `api => 1`
-- `selectFields => id,status_id,fields,hash`
-- `prepare => function($data, $modx, $DL, $_ext) { $data['aaaaa'] = 'AAAAAAAA'; return $data; }`
+Пример issue использует `controller=onetable`, `api=1` и closure `prepare`, добавляющий `$data['aaaaa'] = 'AAAAAAAA'`.
 
 ## Проверенные участки кода
 
 - `assets/snippets/DocLister/core/controller/onetable.php`
-  - `_render()` вызывает `$this->getExtender('prepare')` и затем `$extPrepare->init(... 'nameParam' => 'prepare')`.
-  - `getJSON()` также вызывает `$this->getExtender('prepare')`, затем `$extPrepare->init($this, array('data' => $row))`, и только после этого передаёт данные в `parent::getJSON($out, $fields, $out)`.
-- `assets/snippets/DocLister/core/controller/site_content.php`
-  - Поведение аналогично: `getJSON()` вызывает prepare перед `parent::getJSON()`.
+  - `getJSON()` вызывает prepare-экстендер до передачи данных в `parent::getJSON()`.
 - `assets/snippets/DocLister/core/extender/prepare.extender.inc`
-  - Closure и callable поддерживаются через `is_callable($name)` / `call_user_func(...)`.
-  - Prepare-функция получает аргументы: `$data`, `$modx`, `$_DocLister`, `$_extDocLister`.
+  - Closure/callable поддерживаются через `is_callable()` и `call_user_func()`.
 - `assets/snippets/DocLister/core/DocLister.abstract.php`
-  - `checkDL()` загружает prepare-экстендер, если `getCFGDef('prepare', '') != ''`.
-  - `parent::getJSON()` фильтрует выходные поля по параметру `api`: если `api=1`, возвращаются все поля; если `api` — список, возвращаются только перечисленные поля.
+  - при `api=1` базовый `getJSON()` включает все поля;
+  - при списке полей в `api` возвращаются только перечисленные поля.
 
-## Гипотезы
+## Воспроизведение
 
-### H1: prepare вообще не вызывается в `onetable`
+Минимальный runtime-harness на текущем коде показал:
 
-Статус: не подтверждено read-only анализом.
+- prepare-экстендер загрузился;
+- closure был вызван;
+- JSON содержит `"aaaaa":"AAAAAAAA"`.
 
-В `onetableDocLister::getJSON()` prepare вызывается на строках `241–246` перед финальным `parent::getJSON()`.
+Артефакт: `ai-context/artifacts/github-2026-08-31/issue-398/reproduction-output.txt`.
 
-### H2: prepare добавляет поле, но оно отфильтровывается API-параметром
+## Regression test
 
-Статус: возможно для случаев, где `api` — список полей.
+Добавлен:
 
-`parent::getJSON()` оставляет только поля из `api`, кроме специального режима `api=1`. Если пользователь добавляет `$data['aaaaa']`, но вызывает `api=id,status_id,fields,hash`, поле `aaaaa` будет отброшено после prepare. В примере issue указан `api=1`, поэтому эта гипотеза не объясняет конкретный пример полностью, но важна для диагностики похожих обращений.
+- `tests/src/Unit/DL/Controller/Onetable/getJSONTest.php`
+- `getJSONTest::testPrepareClosureCanAddFieldInApiMode`
 
-### H3: проблема связана с окружением или версией PHP/MODX
+Проверяет:
 
-Статус: требует воспроизведения.
+1. closure `prepare` вызывается;
+2. поле, добавленное closure, присутствует в JSON при `$fields='1'`, что соответствует передаче конфигурационного `api=1` из `snippet.DocLister.php`.
 
-Локальный PHP: 8.4.1. Проект использует PHPUnit 4.2.* и legacy-подход без установленного `vendor/`. Без подготовки совместимого окружения подтвердить поведение тестом нельзя.
+## Legacy verification
 
-## Почему задача BLOCKED
+Так как рабочий репозиторий не содержит `vendor/`, окружение подготовлено в одноразовой копии вне репозитория:
 
-Для строгой проверки нужен один из вариантов:
+- Docker image: `php:7.0-cli`;
+- PHPUnit: `4.8.36`;
+- результат: `OK (1 test, 4 assertions)`;
+- exit code: `0`.
 
-1. Разрешить установку зависимостей / подготовку тестового окружения.
-2. Дать готовое окружение MODX Evolution + Commerce, где можно воспроизвести сниппет.
-3. Разрешить написать минимальный unit/regression test и, если он упадёт, отдельно решить по правилу проекта: исправлять код, тест или игнорировать.
+Полный отчёт: `ai-context/artifacts/github-2026-08-31/issue-398/phpunit-legacy-test.txt`.
 
-До этого момента production-код не изменялся.
+Composer-установка через Packagist не использована для финального запуска из-за сетевых TLS/reset ошибок; тест выполнен автономным PHPUnit PHAR и минимальным временным autoload/stub слоем, не изменяющим рабочий репозиторий.
 
-## Следующая безопасная точка входа
+## Вывод
 
-Если владелец разрешит подготовку окружения, минимальный следующий шаг: создать отдельный regression test для `onetableDocLister::getJSON()` с closure в `prepare` и `api=1`, затем проверить, попадает ли поле `aaaaa` в JSON.
+Issue классифицируется как `CANNOT_REPRODUCE` на текущем `master`. Production fix не требуется. Regression test закрепляет текущий контракт и защищает от будущей регрессии.
 
-Если окружение не готовим, conveyor может перейти к read-only диагностике issue #386.
+Дополнение: если `api` задан списком, например `api=id,status_id,fields,hash`, поле `aaaaa` будет отфильтровано ожидаемым образом; его нужно явно включить в список либо использовать `api=1`.

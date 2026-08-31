@@ -32,9 +32,9 @@
 
 ## Следующий зрелый item
 
-Issue #398 — `Prepare не работает в onetable?` — запущен и обработан в read-only режиме. Статус: [BLOCKED] на воспроизведении, потому что для строгой проверки нужны зависимости/совместимое окружение или разрешение на создание regression test. Код не изменялся. Подробности: `ai-context/notes/2026-08-31__issue-398-onetable-prepare.md`.
+Issue #398 — `Prepare не работает в onetable?` — завершён. Классификация: CANNOT_REPRODUCE. На текущем master closure `prepare` вызывается, добавленное поле присутствует в JSON при `api=1`. Production-код не изменялся; добавлен regression test, прошедший в изолированном PHP 7.0 + PHPUnit 4.8.36 (`OK (1 test, 4 assertions)`). Подробности: `ai-context/notes/2026-08-31__issue-398-onetable-prepare.md`.
 
-Следующий безопасный кандидат без подготовки окружения: GitHub issue #386 — `pub_date не попадает в item['date'] в режиме api`.
+Следующий кандидат после полного публичного сопровождения #398: GitHub issue #386 — `pub_date не попадает в item['date'] в режиме api`.
 
 ## Правила для автоматизаций
 

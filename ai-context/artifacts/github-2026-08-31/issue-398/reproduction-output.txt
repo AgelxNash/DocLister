@@ -1,0 +1,17 @@
+array (
+  'extender_loaded' => true,
+  'prepare_called' => true,
+  'json' => '[{"id":1,"status_id":1,"fields":"{}","hash":"test","e_title":"","aaaaa":"AAAAAAAA"}]',
+  'decoded' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'status_id' => 1,
+      'fields' => '{}',
+      'hash' => 'test',
+      'e_title' => '',
+      'aaaaa' => 'AAAAAAAA',
+    ),
+  ),
+)
