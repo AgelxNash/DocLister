@@ -163,19 +163,19 @@ abstract class filterDocLister
                 break;
             case '>':
             case 'gt':
-                $output .= ' > ' . str_replace(',', '.', floatval($value));
+                $output .= ' > ' . $this->getComparisonValue($value);
                 break;
             case '<':
             case 'lt':
-                $output .= ' < ' . str_replace(',', '.', floatval($value));
+                $output .= ' < ' . $this->getComparisonValue($value);
                 break;
             case '<=':
             case 'elt':
-                $output .= ' <= ' . str_replace(',', '.', floatval($value));
+                $output .= ' <= ' . $this->getComparisonValue($value);
                 break;
             case '>=':
             case 'egt':
-                $output .= ' >= ' . str_replace(',', '.', floatval($value));
+                $output .= ' >= ' . $this->getComparisonValue($value);
                 break;
             case '%':
             case 'like':
@@ -248,6 +248,23 @@ abstract class filterDocLister
         $this->DocLister->debug->debugEnd("buildQuery");
 
         return $output;
+    }
+
+    /**
+     * Преобразование значения для операторов сравнения
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function getComparisonValue($value)
+    {
+        $numericValue = str_replace(',', '.', $value);
+
+        if (is_numeric($numericValue)) {
+            return str_replace(',', '.', floatval($value));
+        }
+
+        return "'" . $this->modx->db->escape($value) . "'";
     }
 
     /**
