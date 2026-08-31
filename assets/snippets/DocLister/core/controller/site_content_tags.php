@@ -77,13 +77,7 @@ class site_content_tagsDocLister extends site_contentDocLister
                         break;
                 }
 
-                $separator = $this->getCFGDef('tagsSeparator', '||');
-                if (!empty($tag) && !empty($separator)) {
-                    $_tag = array_map('trim', explode($separator, $tag));
-                    if (count($_tag) > 1) {
-                        $tag = $_tag;
-                    }
-                }
+                $tag = $this->splitTags($tag);
 
                 $this->tag = array("mode" => $tmp[0], "tag" => $tag);
                 $this->toPlaceholders($this->sanitarData($tag), 1, "tag");
@@ -99,7 +93,7 @@ class site_content_tagsDocLister extends site_contentDocLister
      */
     private function checkTag($reconst = false)
     {
-        $data = (is_array($this->tag) && count($this->tag) == 2 && isset($this->tag['tag']) && $this->tag['tag'] != '') ? $this->tag : false;
+        $data = (is_array($this->tag) && isset($this->tag['tag']) && $this->tag['tag'] !== '' && $this->tag['tag'] !== array()) ? $this->tag : false;
         if ($data === false && $reconst === true) {
             $data = $this->getTag();
         }
@@ -121,7 +115,7 @@ class site_content_tagsDocLister extends site_contentDocLister
             } else {
                 $where = "t.`name`='" . $this->modx->db->escape($tag['tag']) . "'";
             }
-            $where .= ($this->getCFGDef('tagsTV', '') > 0) ? "AND ct.tv_id=" . (int)$this->getCFGDef(
+            $where .= ($this->getCFGDef('tagsTV', '') > 0) ? " AND ct.tv_id=" . (int)$this->getCFGDef(
                 'tagsTV',
                 ''
             ) : "";
@@ -140,6 +134,31 @@ class site_content_tagsDocLister extends site_contentDocLister
         }
 
         return $this->_filters;
+    }
+
+    /**
+     * Split a raw tag string by the configured separator, with comma as fallback.
+     * Checkbox TV values and TagSaver output often use commas instead of ||.
+     *
+     * @see https://github.com/AgelxNash/DocLister/issues/372
+     * @param mixed $tag
+     * @return array|string
+     */
+    private function splitTags($tag)
+    {
+        if (!is_scalar($tag) || $tag === '') {
+            return $tag;
+        }
+        $tag = (string)$tag;
+        $separator = $this->getCFGDef('tagsSeparator', '||');
+        if ($separator !== '' && strpos($tag, $separator) !== false) {
+            return array_values(array_filter(array_map('trim', explode($separator, $tag)), 'strlen'));
+        }
+        if (strpos($tag, ',') !== false) {
+            return array_values(array_filter(array_map('trim', explode(',', $tag)), 'strlen'));
+        }
+
+        return $tag;
     }
 
 }
