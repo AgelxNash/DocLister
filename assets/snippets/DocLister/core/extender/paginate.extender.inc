@@ -138,6 +138,18 @@ class paginate_DL_Extender extends extDocLister
             $tmp = $this->count = (int)$this->DocLister->getChildrenCount();
             $this->DocLister->AddTable = $addTables;
 
+            /**
+             * offset skips documents from the start of the result set.
+             * maxDocs already applies LimitSQL (including offset) inside getChildrenCount().
+             * @see https://github.com/AgelxNash/DocLister/issues/320
+             */
+            if ((int)$this->DocLister->getCFGDef('maxDocs', 0) <= 0) {
+                $offset = (int)$this->DocLister->getCFGDef('offset', 0);
+                if ($offset > 0) {
+                    $tmp = $this->count = max(0, $tmp - $offset);
+                }
+            }
+
             $display = $this->DocLister->getCFGDef('display', 0);
             $this->_pages['total'] = ceil($tmp / $display);
             if ($this->currentPage() <= $this->totalPage() || $this->totalPage() == 0 || $this->DocLister->getCFGDef('noRedirect',
