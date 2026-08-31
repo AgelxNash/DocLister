@@ -238,7 +238,7 @@ class site_contentDocLister extends DocLister
     {
         $out = array();
         $fields = is_array($fields) ? $fields : explode(",", $fields);
-        $date = $this->getCFGDef('dateSource', 'pub_date');
+        $dateSource = $this->getCFGDef('dateSource', 'pub_date');
         /**
          * @var $extSummary summary_DL_Extender
          */
@@ -260,6 +260,7 @@ class site_contentDocLister extends DocLister
             }
 
             if (array('1') == $fields || in_array('date', $fields)) {
+                $date = $dateSource;
                 if (isset($row[$date])) {
                     if (!$row[$date] && $date == 'pub_date' && isset($row['createdon'])) {
                         $date = 'createdon';
