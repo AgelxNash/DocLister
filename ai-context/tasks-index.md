@@ -12,3 +12,4 @@
 | 2026-09-01 | [Отчёт о стабилизации DocLister](tasks/2026-09-01__stabilization-report.md) | [DOCUMENTING] | High | DL-AUTO-003 | Cursor |
 | 2026-09-01 | [Живой CI и Dependabot #10](tasks/2026-09-01__ci-phpunit-9-dependabot.md) | [DONE] | High | DL-CI-001 | Cursor |
 | 2026-09-01 | [FileAPI npm-шум и Scrutinizer](tasks/2026-09-01__fileapi-scrutinizer-cleanup.md) | [DONE] | Medium | DL-CI-002 | Cursor |
+| 2026-09-01 | [Ежедневная верификация issues](notes/2026-09-01__github-issues-triage.md) | [DONE] | High | DL-AUTO-004 | ZCode |

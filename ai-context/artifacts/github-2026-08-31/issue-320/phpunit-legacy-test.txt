@@ -1,0 +1,47 @@
+Issue: #320
+Environment: Docker image php:7.0-cli
+
+PHP version:
+PHP 7.0.33 (cli) (built: Dec 29 2018 06:46:27) ( NTS )
+Copyright (c) 1997-2017 The PHP Group
+Zend Engine v3.0.0, Copyright (c) 1998-2017 Zend Technologies
+
+PHPUnit version:
+PHPUnit 4.8.36 by Sebastian Bergmann and contributors.
+
+
+Issue320Test:
+PHPUnit 4.8.36 by Sebastian Bergmann and contributors.
+
+......
+
+Time: 33 ms, Memory: 10.00MB
+
+OK (6 tests, 23 assertions)
+
+SiteContent getChildrenListTest:
+PHPUnit 4.8.36 by Sebastian Bergmann and contributors.
+
+..........
+
+Time: 43 ms, Memory: 10.00MB
+
+OK (10 tests, 39 assertions)
+
+Onetable getChildrenListTest:
+PHPUnit 4.8.36 by Sebastian Bergmann and contributors.
+
+..........
+
+Time: 36 ms, Memory: 10.00MB
+
+OK (10 tests, 39 assertions)
+
+Issue398 getJSONTest:
+PHPUnit 4.8.36 by Sebastian Bergmann and contributors.
+
+.
+
+Time: 30 ms, Memory: 10.00MB
+
+OK (1 test, 4 assertions)
