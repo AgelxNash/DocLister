@@ -18,6 +18,7 @@ DocLister — legacy PHP-пакет для MODX Evolution / Evolution CMS. Ос�
 - `tests/` — PHPUnit-тесты, SQL-фикстуры MODX Evolution и мок `DocumentParser`.
 - `composer.json` — classmap autoload для legacy-кода и dev-зависимости `phpunit/phpunit:^9.6.33`, `agelxnash/modx-evo-database:1.4.*`.
 - `.github/workflows/ci.yml` — PHPUnit + MySQL 8.0.
+- `AGENTS.md` — правила stabilization: один issue за цикл, без breaking change без ADR.
 - `phpunit.xml` — suites `Unit` и `Real`.
 - `phpcs.xml` — PSR-2 с исключением отсутствующих namespace для legacy-классов.
 

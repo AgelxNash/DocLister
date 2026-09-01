@@ -7,9 +7,9 @@ tools:
     - install
   php_pdepend: true
   php_sim: true
-  sensiolabs_security_checker: true
+  sensiolabs_security_checker: false
   external_code_coverage: false
-  php_code_coverage: true
+  php_code_coverage: false
   php_cs_fixer:
     config:
       level: psr2
@@ -26,42 +26,16 @@ build:
       ini:
         'date.timezone': 'Europe/Moscow'
     rabbitmq: false
-    mysql: 5.7             # 5.5 or 5.6 or 5.7
+    mysql: false
     postgresql: false
     mongodb: false
     elasticsearch: false
     redis: false
     memcached: false
     neo4j: false
-    variables:
-      DB_HOST: '127.0.0.1'
-      DB_BASE: 'doclister'
-      DB_USER: 'root'
-      DB_PASSWORD: ''
-      DB_PREFIX: 'modx_'
-      DB_CHARSET: 'utf8mb4'
-      DB_METHOD: 'SET NAMES'
-      DB_COLLATION: 'utf8mb4_unicode_ci'
-  dependencies:
-    before:
-    - mysql -h 127.0.0.1 -u root -e "SET GLOBAL sql_mode = ''"
-    - mysql -h 127.0.0.1 -u root -e 'create database doclister'
-    - mysql -h 127.0.0.1 -u root doclister < tests/database/site_templates.sql
-    - mysql -h 127.0.0.1 -u root doclister < tests/database/site_tmplvars.sql
-    - mysql -h 127.0.0.1 -u root doclister < tests/database/site_tmplvar_templates.sql
-    - mysql -h 127.0.0.1 -u root doclister < tests/database/site_content.sql
-    - mysql -h 127.0.0.1 -u root doclister < tests/database/site_tmplvar_contentvalues.sql
-    - mysql -h 127.0.0.1 -u root doclister < tests/database/user_attributes.sql
-    - mysql -h 127.0.0.1 -u root doclister < tests/database/manager_users.sql
   tests:
     override:
-    - command: phpcs-run --standard=phpcs.xml
     - php-scrutinizer-run
-    -
-      command: 'vendor/bin/phpunit --coverage-clover=clover.xml'
-      coverage:
-        file: 'clover.xml'
-        format: 'php-clover'
 checks:
   php: true
 filter:

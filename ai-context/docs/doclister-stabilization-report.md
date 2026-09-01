@@ -109,7 +109,8 @@ SimpleGallery, SimpleTube, SimpleFiles, SimplePolls, LikeDislike, FormLister, Fa
 ## 7. Сознательно не исправленный долг
 
 - PHPUnit 9.6 закрывает CVE-2026-24765; переход на PHPUnit 10+ потребует атрибутов и PHP 8.1+.
-- Scrutinizer всё ещё PHP 7.4; после живого GitHub Actions он не является source of truth.
+- Scrutinizer оставлен только для static analysis; тесты и coverage — GitHub Actions.
+- FileAPI поставляется как готовый JS; npm/grunt манифест удалён, чтобы Dependabot не сканировал чужой toolchain.
 - `getUrl()` для `site_start` минует `makeUrl` (мультиязычие — зона ядра/bLang).
 - Контроллер тегов не умеет «вывести теги текущего документа» — он фильтрует документы.
 - Нет Intl-форматирования дат.
