@@ -57,7 +57,7 @@ class DocumentParser
                 'collation' => $this->test_env('DB_COLLATION', 'utf8mb4_unicode_ci')
             )
         );
-        $database->setDebug(true)->connect();
+        $database->connect();
 
         return $database;
     }
