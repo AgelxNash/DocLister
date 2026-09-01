@@ -5,3 +5,12 @@ DocLister.iml
 /vendor
 composer.lock
 ftpsync.settings
+
+# AI context is local by default
+ai-context/*
+
+# Shared context
+!ai-context/.gitignore
+!ai-context/docs/
+!ai-context/docs/**
+!ai-context/docs-index.md

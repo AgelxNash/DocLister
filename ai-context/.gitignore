@@ -1,0 +1,5 @@
+# AI context is local by default; shared context is whitelisted here and in the root .gitignore
+/*
+!/.gitignore
+!/docs/
+!/docs-index.md
