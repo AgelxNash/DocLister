@@ -10,9 +10,12 @@ abstract class TVAbstract extends DLAbstract
         'other' => 3
     );
 
-    public function getTVExtender(&$DL)
+    public function getTVExtender($DL)
     {
-        $extTV = $this->getMock('tv_DL_Extender', array('getTVnames'), array($DL, 'tv'));
+        $extTV = $this->getMockBuilder('tv_DL_Extender')
+            ->onlyMethods(array('getTVnames'))
+            ->setConstructorArgs(array($DL, 'tv'))
+            ->getMock();
 
         $extTV->expects($this->any())
             ->method('getTVnames')

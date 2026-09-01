@@ -8,7 +8,7 @@ abstract class DLAbstract extends ModxAbstract
     protected $DL = null;
 
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -19,8 +19,18 @@ abstract class DLAbstract extends ModxAbstract
     {
         $cfg = array_merge(array('debug' => 0), $cfg);
         if (empty($controller)) {
-            /** @var \DocLister|\PHPUnit_Framework_MockObject_MockObject $DL */
-            $DL = $this->getMockForAbstractClass('DocLister', array($this->modx, $cfg));
+            /** @var \DocLister|\PHPUnit\Framework\MockObject\MockObject $DL */
+            $DL = $this->getMockBuilder('DocLister')
+                ->setConstructorArgs(array($this->modx, $cfg))
+                ->onlyMethods(array(
+                    'getUrl',
+                    'getDocs',
+                    '_render',
+                    'getChildrenCount',
+                    'getChildrenFolder',
+                    'sanitarData',
+                ))
+                ->getMockForAbstractClass();
             $DL->expects($this->any())
                 ->method('getUrl')
                 ->will($this->returnValue('url'));
@@ -41,8 +51,11 @@ abstract class DLAbstract extends ModxAbstract
                 ->method('getChildrenFolder')
                 ->will($this->returnValue(0));
         } else {
-            /** @var \DocLister|\PHPUnit_Framework_MockObject_MockObject $DL */
-            $DL = $this->getMock($controller . 'DocLister', array('sanitarData'), array($this->modx, $cfg));
+            /** @var \DocLister|\PHPUnit\Framework\MockObject\MockObject $DL */
+            $DL = $this->getMockBuilder($controller . 'DocLister')
+                ->onlyMethods(array('sanitarData'))
+                ->setConstructorArgs(array($this->modx, $cfg))
+                ->getMock();
         }
 
         /** Чтобы в debug хранились не экранированные результаты */

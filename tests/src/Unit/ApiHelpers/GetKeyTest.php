@@ -2,7 +2,7 @@
 
 use APIhelpers;
 
-class GetKeyTest extends \PHPUnit_Framework_TestCase
+class GetKeyTest extends \PHPUnit\Framework\TestCase
 {
     protected $data = array(
         'subArray' => array(

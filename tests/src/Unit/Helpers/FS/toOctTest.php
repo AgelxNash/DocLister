@@ -2,11 +2,11 @@
 
 use \Helpers\FS;
 
-class toOctTest extends \PHPUnit_Framework_TestCase
+class toOctTest extends \PHPUnit\Framework\TestCase
 {
     protected $FS = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->FS = FS::getInstance();
     }

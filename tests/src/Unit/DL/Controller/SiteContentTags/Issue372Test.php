@@ -19,12 +19,12 @@ class Issue372Test extends DLAbstract
 
         $filters = $this->getProperty($DL, '_filters');
 
-        $this->assertContains("t.`name` IN (", $filters['where']);
-        $this->assertContains('Blue', $filters['where']);
-        $this->assertContains('Dark Grey', $filters['where']);
-        $this->assertContains('Turquoise', $filters['where']);
-        $this->assertNotContains("t.`name`='Blue,Dark Grey", $filters['where']);
-        $this->assertContains('site_content_tags', $filters['join']);
+        $this->assertStringContainsString("t.`name` IN (", $filters['where']);
+        $this->assertStringContainsString('Blue', $filters['where']);
+        $this->assertStringContainsString('Dark Grey', $filters['where']);
+        $this->assertStringContainsString('Turquoise', $filters['where']);
+        $this->assertStringNotContainsString("t.`name`='Blue,Dark Grey", $filters['where']);
+        $this->assertStringContainsString('site_content_tags', $filters['join']);
     }
 
     public function testConfiguredPipeSeparatorStillWins()
@@ -38,9 +38,9 @@ class Issue372Test extends DLAbstract
 
         $filters = $this->getProperty($DL, '_filters');
 
-        $this->assertContains("t.`name` IN (", $filters['where']);
-        $this->assertContains('Green', $filters['where']);
-        $this->assertNotContains(',', $filters['where']);
+        $this->assertStringContainsString("t.`name` IN (", $filters['where']);
+        $this->assertStringContainsString('Green', $filters['where']);
+        $this->assertStringNotContainsString('Blue||Green', $filters['where']);
     }
 
     public function testSingleTagKeepsEqualityFilter()
@@ -54,8 +54,8 @@ class Issue372Test extends DLAbstract
 
         $filters = $this->getProperty($DL, '_filters');
 
-        $this->assertContains("t.`name`='Blue'", $filters['where']);
-        $this->assertNotContains(' IN (', $filters['where']);
+        $this->assertStringContainsString("t.`name`='Blue'", $filters['where']);
+        $this->assertStringNotContainsString(' IN (', $filters['where']);
     }
 
     public function testGetModeWithoutRequestDoesNotJoinTags()

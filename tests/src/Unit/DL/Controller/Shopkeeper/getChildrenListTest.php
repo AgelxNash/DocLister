@@ -4,6 +4,15 @@ use DocLister\Tests\Unit\DL\DLAbstract;
 
 class getChildrenListTest extends DLAbstract
 {
+    public function setUp(): void
+    {
+        if (!class_exists('shopkeeperDocLister')) {
+            $this->markTestSkipped('shopkeeperDocLister is not shipped with this package');
+        }
+
+        parent::setUp();
+    }
+
     public function testShowParent()
     {
         $out = array(

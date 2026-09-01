@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.3']
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: doclister
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_BASE: doclister
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_PREFIX: modx_
+      DB_CHARSET: utf8mb4
+      DB_METHOD: SET NAMES
+      DB_COLLATION: utf8mb4_unicode_ci
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli, pdo_mysql
+          coverage: none
+          tools: composer:v2
+
+      - name: Install MySQL client
+        run: sudo apt-get update && sudo apt-get install -y mysql-client
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Import fixtures
+        run: |
+          mysql -h 127.0.0.1 -u root -proot -e "SET GLOBAL sql_mode = ''"
+          mysql -h 127.0.0.1 -u root -proot doclister < tests/database/site_templates.sql
+          mysql -h 127.0.0.1 -u root -proot doclister < tests/database/site_tmplvars.sql
+          mysql -h 127.0.0.1 -u root -proot doclister < tests/database/site_tmplvar_templates.sql
+          mysql -h 127.0.0.1 -u root -proot doclister < tests/database/site_content.sql
+          mysql -h 127.0.0.1 -u root -proot doclister < tests/database/site_tmplvar_contentvalues.sql
+          mysql -h 127.0.0.1 -u root -proot doclister < tests/database/user_attributes.sql
+          mysql -h 127.0.0.1 -u root -proot doclister < tests/database/manager_users.sql
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit

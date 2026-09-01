@@ -67,7 +67,7 @@ ADR в этом этапе **не принимались**. Крупный refac
 | `tests/src/Unit/DL/Controller/SiteContent/Issue386Test.php` | #386 |
 | `tests/src/Unit/DL/Controller/SiteContentTags/Issue372Test.php` | #372 |
 
-Ограничение: штатный PHPUnit 4.2 не бежит на PHP 8.4 / Packagist. Фиксы проверялись `php -l` и автономными harness на PHP 8.4. CI (Travis PHP 7.4, Scrutinizer) на этих PR падал по окружению, не по логике патча.
+Ограничение на момент багфиксов: PHPUnit 4.2 не бежал на PHP 8.4. После отдельного CI-PR раннер — PHPUnit ^9.6.33, GitHub Actions (PHP 7.4 / 8.1 / 8.3). Travis удалён. Dependabot alert #10 (CVE-2026-24765) закрывается обновлением PHPUnit.
 
 ---
 
@@ -101,15 +101,15 @@ SimpleGallery, SimpleTube, SimpleFiles, SimplePolls, LikeDislike, FormLister, Fa
 
 - `offset` теперь уменьшает `[+count+]`, `totalPages`, `from`/`to`. Сырой `getChildrenCount()` не менялся.
 - Списки тегов с запятой внутри имени тега могут разрезаться fallback-сплиттером.
-- PHPUnit 4.2 / Travis — мёртвый контур на современном PHP.
+- Исторический PHPUnit 4.2 / Travis заменены PHPUnit 9.6 и GitHub Actions.
 - `strftime` больше не используется; `&locale` не локализует `date()`.
 
 ---
 
 ## 7. Сознательно не исправленный долг
 
-- PHPUnit 4.2 → актуальный runner.
-- Travis → GitHub Actions.
+- PHPUnit 9.6 закрывает CVE-2026-24765; переход на PHPUnit 10+ потребует атрибутов и PHP 8.1+.
+- Scrutinizer всё ещё PHP 7.4; после живого GitHub Actions он не является source of truth.
 - `getUrl()` для `site_start` минует `makeUrl` (мультиязычие — зона ядра/bLang).
 - Контроллер тегов не умеет «вывести теги текущего документа» — он фильтрует документы.
 - Нет Intl-форматирования дат.
@@ -119,7 +119,7 @@ SimpleGallery, SimpleTube, SimpleFiles, SimplePolls, LikeDislike, FormLister, Fa
 
 ## 8. Кандидаты на следующий major
 
-1. PHPUnit 9/10 + CI на PHP 7.4 и 8.x.  
+1. PHPUnit 10+ (после отказа от PHP 7.4 в CI).  
 2. Опциональный `IntlDateFormatter` при заданном `locale`.  
 3. Единый `getUrl()` через `makeUrl` (после проверки bLang/eFilter).  
 4. PSR-4 только вместе с ядром Evo, не отдельным include-cleanup.

@@ -11,17 +11,16 @@ class Issue320Test extends DLAbstract
      */
     public function testOffsetReducesPaginationTotal($childrenCount, $cfg, $expectedPages, $expectedDocs)
     {
-        $DL = $this->getMock(
-            'site_contentDocLister',
-            array('sanitarData', 'getChildrenCount'),
-            array($this->modx, array_merge(array(
+        $DL = $this->getMockBuilder('site_contentDocLister')
+            ->onlyMethods(array('sanitarData', 'getChildrenCount'))
+            ->setConstructorArgs(array($this->modx, array_merge(array(
                 'debug' => 0,
                 'idType' => 'parents',
                 'parents' => 5,
                 'paginate' => 'pages',
                 'noRedirect' => 1,
-            ), $cfg))
-        );
+            ), $cfg)))
+            ->getMock();
         $DL->expects($this->any())
             ->method('sanitarData')
             ->will($this->returnArgument(0));

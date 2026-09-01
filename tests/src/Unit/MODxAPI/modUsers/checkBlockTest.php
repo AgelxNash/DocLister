@@ -7,7 +7,7 @@ class checkBlockTest extends apiAbstract
     /** @var \modUsers */
     protected $modUsers = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->modUsers = $this->mockModUsers();

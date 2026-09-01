@@ -2,6 +2,7 @@
 
 use AgelxNash\Modx\Evo\Database\Database;
 
+#[\AllowDynamicProperties]
 class DocumentParser
 {
     const CMS_VERSION = '1.4.6';
@@ -10,8 +11,11 @@ class DocumentParser
     public $db;
 
     public $documentIdentifier;
+    public $documentObject = array();
     public $config = array();
     public $aliasListing = array();
+    public $_TVnames = array();
+    public $Event;
 
     public $test_userId = 0;
 
@@ -26,18 +30,31 @@ class DocumentParser
 
     }
 
+    protected function test_env($key, $default)
+    {
+        $value = getenv($key);
+        if ($value !== false && $value !== '') {
+            return $value;
+        }
+        if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
+            return $_SERVER[$key];
+        }
+
+        return $default;
+    }
+
     protected function test_loadDbApi()
     {
         $database = new Database(
             array(
-                'host' => isset($_SERVER['DB_HOST']) ? $_SERVER['DB_HOST'] : 'localhost',
-                'database' => isset($_SERVER['DB_BASE']) ? $_SERVER['DB_BASE'] : 'doclister',
-                'username' => isset($_SERVER['DB_USER']) ? $_SERVER['DB_USER'] : 'homestead',
-                'password' => isset($_SERVER['DB_PASSWORD']) ? $_SERVER['DB_PASSWORD'] : 'secret',
-                'prefix' => isset($_SERVER['DB_PREFIX']) ? $_SERVER['DB_PREFIX'] : 'modx_',
-                'charset' => isset($_SERVER['DB_CHARSET']) ? $_SERVER['DB_CHARSET'] : 'utf8mb4',
-                'method' => isset($_SERVER['DB_METHOD']) ? $_SERVER['DB_METHOD'] : 'SET NAMES',
-                'collation' => isset($_SERVER['DB_COLLATION']) ? $_SERVER['DB_COLLATION'] : 'utf8mb4_unicode_ci'
+                'host' => $this->test_env('DB_HOST', '127.0.0.1'),
+                'database' => $this->test_env('DB_BASE', 'doclister'),
+                'username' => $this->test_env('DB_USER', 'root'),
+                'password' => $this->test_env('DB_PASSWORD', ''),
+                'prefix' => $this->test_env('DB_PREFIX', 'modx_'),
+                'charset' => $this->test_env('DB_CHARSET', 'utf8mb4'),
+                'method' => $this->test_env('DB_METHOD', 'SET NAMES'),
+                'collation' => $this->test_env('DB_COLLATION', 'utf8mb4_unicode_ci')
             )
         );
         $database->setDebug(true)->connect();
@@ -50,9 +67,40 @@ class DocumentParser
         return $this->db->getFullTableName($table);
     }
 
-    public function getLoginUserID()
+    public function getLoginUserID($context = '')
     {
         return $this->test_userId;
+    }
+
+    public function getLocale()
+    {
+        return 'en';
+    }
+
+    public function makeUrl($id, $alias = '', $args = '', $scheme = '')
+    {
+        return 'http://example.com/' . $id;
+    }
+
+    public function sendRedirect($url, $count_attempts = 0, $type = '', $responseCode = '')
+    {
+    }
+
+    public function setPlaceholder($key, $value)
+    {
+    }
+
+    public function regClientStartupHTMLBlock($html)
+    {
+    }
+
+    public function toPlaceholder($key, $value, $prefix = '')
+    {
+    }
+
+    public function __call($name, $arguments)
+    {
+        return null;
     }
 
     public function stripAlias($alias)
