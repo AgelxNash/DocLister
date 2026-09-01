@@ -2,23 +2,12 @@
 
 use APIhelpers;
 
-class CleanIDsTest extends \PHPUnit_Framework_TestCase
+class CleanIDsTest extends \PHPUnit\Framework\TestCase
 {
     public function testInvalidIdList()
     {
-        try {
-            APIhelpers::cleanIDs(null);
-            $this->assertFalse(true);
-        } catch (\Exception $exception) {
-            $this->assertStringStartsWith('Invalid IDs list', $exception->getMessage());
-        }
-
-        try {
-            APIhelpers::cleanIDs(new \stdClass);
-            $this->assertFalse(true);
-        } catch (\Exception $exception) {
-            $this->assertStringStartsWith('Invalid IDs list', $exception->getMessage());
-        }
+        $this->assertSame(array(), APIhelpers::cleanIDs(null));
+        $this->assertSame(array(), APIhelpers::cleanIDs(new \stdClass));
     }
 
     public function testZero()

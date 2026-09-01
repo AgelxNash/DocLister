@@ -4,7 +4,7 @@
 
 ## TL;DR
 
-DocLister — legacy PHP-пакет для MODX Evolution / Evolution CMS. Основной функционал расположен в `assets/snippets/DocLister/` и `assets/lib/`. Проект содержит PHPUnit 4.2 тесты и PSR-2 настройки PHPCS, но локальные зависимости (`vendor/`) отсутствуют, поэтому тесты без `composer install` не запускаются.
+DocLister — legacy PHP-пакет для MODX Evolution / Evolution CMS. Основной функционал расположен в `assets/snippets/DocLister/` и `assets/lib/`. Тесты — PHPUnit 9.6 (патч CVE-2026-24765), CI — GitHub Actions на PHP 7.4 / 8.1 / 8.3. PHPCS остаётся PSR-2.
 
 ## Назначение
 
@@ -16,7 +16,8 @@ DocLister — legacy PHP-пакет для MODX Evolution / Evolution CMS. Ос�
 - `assets/lib/` — вспомогательные классы, MODxAPI, форматтеры, модульные helpers и SimpleTab.
 - `install/assets/snippets/` — шаблоны `.tpl` для установки.
 - `tests/` — PHPUnit-тесты, SQL-фикстуры MODX Evolution и мок `DocumentParser`.
-- `composer.json` — classmap autoload для legacy-кода и dev-зависимости `phpunit/phpunit:4.2.*`, `agelxnash/modx-evo-database:1.4.*`.
+- `composer.json` — classmap autoload для legacy-кода и dev-зависимости `phpunit/phpunit:^9.6.33`, `agelxnash/modx-evo-database:1.4.*`.
+- `.github/workflows/ci.yml` — PHPUnit + MySQL 8.0.
 - `phpunit.xml` — suites `Unit` и `Real`.
 - `phpcs.xml` — PSR-2 с исключением отсутствующих namespace для legacy-классов.
 

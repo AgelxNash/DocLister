@@ -8,7 +8,7 @@ class modResourceTest extends TestAbstract
 {
     protected $object;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->modx = $this->mockMODX();
 

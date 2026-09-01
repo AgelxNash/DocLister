@@ -1,6 +1,6 @@
 <?php namespace DocLister\Tests\Unit;
 
-class TestAbstract extends \PHPUnit_Framework_TestCase
+class TestAbstract extends \PHPUnit\Framework\TestCase
 {
     public function getMethod($class, $method)
     {

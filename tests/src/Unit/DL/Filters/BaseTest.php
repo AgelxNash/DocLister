@@ -6,12 +6,15 @@ class BaseTest extends DLAbstract
 {
     public function testEmptyFilterSuccess()
     {
-        $out = null;
+        $out = array(
+            'join'  => '',
+            'where' => '',
+        );
 
         $method = $this->getMethod($this->DL, "getFilters");
         $filters = $method->invoke($this->DL, '');
 
-        $this->assertNull($filters);
+        $this->assertSame($out, $filters);
     }
 
     public function testOneFilterSuccess()

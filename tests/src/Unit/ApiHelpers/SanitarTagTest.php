@@ -2,7 +2,7 @@
 
 use APIhelpers;
 
-class SanitarTagTest extends \PHPUnit_Framework_TestCase
+class SanitarTagTest extends \PHPUnit\Framework\TestCase
 {
     public function testEmptyString()
     {

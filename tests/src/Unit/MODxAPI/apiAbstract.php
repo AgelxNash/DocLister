@@ -7,7 +7,7 @@ abstract class apiAbstract extends ModxAbstract
     /** @var \MODxAPI */
     protected $api = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->api = $this->mockMODxAPI();
@@ -15,7 +15,7 @@ abstract class apiAbstract extends ModxAbstract
 
     protected function mockMODxAPI()
     {
-        /** @var \MODxAPI|\PHPUnit_Framework_MockObject_MockObject $api */
+        /** @var \MODxAPI|\PHPUnit\Framework\MockObject\MockObject $api */
         $api = $this->getMockForAbstractClass('MODxAPI', array($this->modx));
         $api->expects($this->any())
             ->method('edit')
@@ -34,7 +34,10 @@ abstract class apiAbstract extends ModxAbstract
 
     protected function mockModUsers()
     {
-        $obj = $this->getMock('modUsers', null, array($this->modx));
+        $obj = $this->getMockBuilder('modUsers')
+            ->setConstructorArgs(array($this->modx))
+            ->onlyMethods(array())
+            ->getMock();
 
         return $obj;
     }

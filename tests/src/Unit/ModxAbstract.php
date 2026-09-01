@@ -5,7 +5,7 @@ abstract class ModxAbstract extends TestAbstract
 {
     protected $modx = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->modx = $this->mockMODX();
         $this->assertTrue($this->modx instanceof \DocumentParser);
@@ -15,7 +15,7 @@ abstract class ModxAbstract extends TestAbstract
     protected function mockDBAPI()
     {
         $DBAPI = $this->getMockBuilder('DBAPI')
-            ->setMethods(array('query', 'makeArray', 'getRow', 'escape', 'getValue'))
+            ->onlyMethods(array('query', 'makeArray', 'getRow', 'escape', 'getValue'))
             ->getMock();
 
         $DBAPI->expects($this->any())
@@ -40,7 +40,8 @@ abstract class ModxAbstract extends TestAbstract
     protected function mockMODX(array $config = array())
     {
         $modx = $this->getMockBuilder('\DocumentParser')
-            ->setMethods(array('getFullTableName'))
+            ->disableOriginalConstructor()
+            ->onlyMethods(array('getFullTableName'))
             ->getMock();
 
         $modx->expects($this->any())
@@ -48,6 +49,7 @@ abstract class ModxAbstract extends TestAbstract
             ->will($this->returnArgument(0));
 
         $modx->db = $this->mockDBAPI();
+        $modx->Event = (object) array('params' => array());
 
         $modx->documentObject = array(
             'id'              => 1,
@@ -112,6 +114,8 @@ abstract class ModxAbstract extends TestAbstract
                 'display_params' => ''
             )
         );
+
+        $GLOBALS['modx'] = $modx;
 
         return $modx;
 
