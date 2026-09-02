@@ -309,7 +309,6 @@ class site_content_menuDocLister extends site_contentDocLister
             $docs = $this->levels;
             /** @var prepare_DL_Extender_ $extPrepare */
             $extPrepare = $this->getExtender('prepare');
-            $countChildren = !empty($this->countChildren);
             while ($currentLevel > 0) {
                 foreach ($docs[$currentLevel] as $id => &$data) {
 

@@ -1132,6 +1132,7 @@ abstract class DocLister
         }
 
         $format = $this->getCFGDef('JSONformat', 'old');
+        $return = [];
         switch ($format) {
             case 'new':
                 $return['rows'] = array_values($out);
